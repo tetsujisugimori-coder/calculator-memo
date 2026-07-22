@@ -8,20 +8,68 @@ export const defaultData: StoredData = {
   settings: { theme: "system", activePanel: "history" },
 };
 
-export function loadData(): StoredData {
-  if (typeof window === "undefined") return defaultData;
+export type StorageLoadFailureReason =
+  | "invalid-json"
+  | "unsupported-version"
+  | "invalid-data"
+  | "storage-unavailable";
+
+export type StorageLoadResult =
+  | { status: "empty"; data: StoredData }
+  | { status: "ok"; data: StoredData; raw: string }
+  | { status: "error"; reason: StorageLoadFailureReason; raw: string | null; message: string };
+
+type ReadableStorage = Pick<Storage, "getItem">;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function cloneDefaultData(): StoredData {
+  return { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
+}
+
+export function loadData(storage?: ReadableStorage): StorageLoadResult {
+  if (typeof window === "undefined" && !storage) return { status: "empty", data: cloneDefaultData() };
+  let raw: string | null = null;
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as Partial<StoredData> | null;
-    if (!parsed || parsed.version !== 1) return defaultData;
-    return {
+    const target = storage ?? window.localStorage;
+    raw = target.getItem(STORAGE_KEY);
+    if (raw === null) return { status: "empty", data: cloneDefaultData() };
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (error) {
+      console.error("保存データのJSONが壊れています", error);
+      return { status: "error", reason: "invalid-json", raw, message: "保存データのJSONを読み取れませんでした。" };
+    }
+
+    if (!isRecord(parsed) || typeof parsed.version !== "number") {
+      return { status: "error", reason: "invalid-data", raw, message: "保存データの形式を確認できませんでした。" };
+    }
+    if (parsed.version !== 1) {
+      return { status: "error", reason: "unsupported-version", raw, message: `保存データのバージョン ${parsed.version} には対応していません。` };
+    }
+    if (!Array.isArray(parsed.history) || !Array.isArray(parsed.notes) || !isRecord(parsed.settings)) {
+      return { status: "error", reason: "invalid-data", raw, message: "保存データの必須項目が壊れています。" };
+    }
+
+    const theme = ["light", "dark", "system"].includes(String(parsed.settings.theme))
+      ? parsed.settings.theme as StoredData["settings"]["theme"]
+      : defaultData.settings.theme;
+    const activePanel = ["history", "notes"].includes(String(parsed.settings.activePanel))
+      ? parsed.settings.activePanel as StoredData["settings"]["activePanel"]
+      : defaultData.settings.activePanel;
+    return { status: "ok", raw, data: {
       version: 1,
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
       notes: Array.isArray(parsed.notes) ? parsed.notes.filter((item) => item?.id && item?.schemaVersion === 1) : [],
-      settings: { ...defaultData.settings, ...parsed.settings },
-    };
+      settings: { theme, activePanel },
+    } };
   } catch (error) {
-    console.error("保存データを読み込めませんでした", error);
-    return defaultData;
+    console.error("ローカル保存領域へアクセスできませんでした", error);
+    return { status: "error", reason: "storage-unavailable", raw, message: "ブラウザの保存領域へアクセスできませんでした。" };
   }
 }
 

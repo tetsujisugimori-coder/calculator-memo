@@ -34,12 +34,14 @@ export function validateExpression(expression: string): string {
 }
 
 function expandPercent(expression: string): string {
-  let previous = expression;
-  let next = previous.replace(/(\d+(?:\.\d+)?)%/g, "($1/100)");
-  while (next !== previous) {
+  let previous: string;
+  let next = expression;
+  do {
     previous = next;
-    next = previous.replace(/(\([^()]+\))%/g, "($1/100)");
-  }
+    next = previous
+      .replace(/(\d+(?:\.\d+)?)%/g, "($1/100)")
+      .replace(/(\([^()]+\))%/g, "($1/100)");
+  } while (next !== previous);
   if (next.includes("%")) throw new Error("% の位置を確認してください");
   return next;
 }

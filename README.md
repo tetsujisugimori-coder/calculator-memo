@@ -1,98 +1,63 @@
-# vinext-starter
+# Calculation Memo
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+卓上電卓のような操作感で計算し、式と結果を履歴や「計算メモ」として残せるWebアプリです。データは現在、利用しているブラウザ内だけに保存されます。
 
-## Prerequisites
+## 主な機能
 
-- Node.js `>=22.13.0`
+- 四則演算、小数、負数、括弧、符号反転、パーセントに対応した通常電卓
+- 計算式と結果を同時に確認できる2段の液晶表示
+- 正常に完了した計算の履歴保存、復元、コピー、削除
+- タイトル、単位、前提、タグ、関連メモ名を付けられる計算メモ
+- 標準表示とKaTeXによる数式表示
+- 検索、コピー、編集中のLaTeX欄への挿入ができる数式ガイド
+- ライト／ダークテーマ、キーボード操作、レスポンシブ表示
 
-## Quick Start
+## パーセントの仕様
+
+`%`は、直前の数値または括弧式を100で割る単項演算として扱います。一般的な実機電卓にある「基準値に対する相対パーセント加算」ではありません。
+
+```text
+200 + 10% = 200.1
+200 - 10% = 199.9
+200 × 10% = 20
+200 ÷ 10% = 2,000
+10% = 0.1
+```
+
+表示、履歴、コピー結果でも同じ数式として扱われます。
+
+## データ保存
+
+計算履歴、計算メモ、テーマ、最後に選択したパネルはブラウザの`localStorage`へ保存されます。アカウント同期やクラウド保存はありません。
+
+ブラウザのサイトデータや`localStorage`を削除すると、保存した履歴と計算メモは失われる可能性があります。読み込めない保存データを検出した場合は自動保存を停止し、元データのコピーまたは確認付き初期化を選べます。
+
+## 開発環境
+
+Node.js `22.13.0`以上が必要です。
 
 ```bash
 npm install
 npm run dev
+```
+
+開発サーバーの表示に従い、通常は `http://localhost:3000` を開きます。
+
+## 検証コマンド
+
+```bash
+npm test
+npm run lint
+npx tsc --noEmit
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## 今後の候補
 
-## Included Shape
+以下は現時点では未実装です。
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- 関数電卓
+- 関数電卓追加時の履歴・計算メモ領域のドロワー化
+- 保存データの本格的なJSON書き出し・復元
+- Memo Nexusとの直接連携
+- 複数端末同期
