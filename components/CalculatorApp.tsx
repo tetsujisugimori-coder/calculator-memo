@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { appendInput, calculateExpression, clearEntry, toggleSign } from "../lib/calculator";
+import { appendInput, clearEntry, toggleSign } from "../lib/calculator";
 import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
-import { defaultData, loadData, saveData } from "../lib/storage";
+import { createHistoryEntry } from "../lib/history";
+import { defaultData, loadData, saveData, type StorageLoadResult } from "../lib/storage";
 import type { CalculationNote, HistoryEntry, NoteDraft, Panel, StoredData, Theme } from "../lib/types";
 import { CalculatorPad } from "./CalculatorPad";
 import { HistoryPanel } from "./HistoryPanel";
@@ -14,9 +15,11 @@ import { GuideModal } from "./GuideModal";
 import { CopyModal } from "./CopyModal";
 import { KatexFormula } from "./KatexFormula";
 import { Modal } from "./Modal";
+import { StorageRecoveryBanner } from "./StorageRecoveryBanner";
 
 type NoteEditor = { draft: NoteDraft | CalculationNote; editingId?: string } | null;
 type ConfirmState = { title: string; message: string; confirmLabel: string; action: () => void } | null;
+type StorageIssue = Extract<StorageLoadResult, { status: "error" }>;
 
 const blankResult = { value: 0, text: "0", displayExpression: "" };
 const makeId = (prefix: string) => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -27,7 +30,8 @@ function noteDraftFromCalculation(expression: string, displayExpression: string,
 
 export function CalculatorApp() {
   const [data, setData] = useState<StoredData>(defaultData);
-  const [hydrated, setHydrated] = useState(false);
+  const [storageStatus, setStorageStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [storageIssue, setStorageIssue] = useState<StorageIssue | null>(null);
   const [expression, setExpression] = useState("");
   const [result, setResult] = useState(blankResult);
   const [error, setError] = useState("");
@@ -46,14 +50,23 @@ export function CalculatorApp() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => { setData(loadData()); setHydrated(true); }, 0);
+    const timer = window.setTimeout(() => {
+      const loaded = loadData();
+      if (loaded.status === "error") {
+        setStorageIssue(loaded);
+        setStorageStatus("error");
+        return;
+      }
+      setData(loaded.data);
+      setStorageStatus("ready");
+    }, 0);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
-    if (!hydrated || saveData(data)) return;
+    if (storageStatus !== "ready" || saveData(data)) return;
     const timer = window.setTimeout(() => showToast("ローカル保存に失敗しました"), 0);
     return () => window.clearTimeout(timer);
-  }, [data, hydrated, showToast]);
+  }, [data, storageStatus, showToast]);
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = data.settings.theme;
@@ -84,11 +97,10 @@ export function CalculatorApp() {
 
   const calculate = useCallback(() => {
     try {
-      const calculated = calculateExpression(expression);
-      setResult({ value: calculated.value, text: calculated.resultText, displayExpression: calculated.displayExpression });
-      setError(""); setAfterEquals(true);
       const now = new Date().toISOString();
-      const item: HistoryEntry = { id: makeId("history"), expression, displayExpression: calculated.displayExpression, result: calculated.value, resultText: calculated.resultText, createdAt: now };
+      const item = createHistoryEntry(expression, makeId("history"), now);
+      setResult({ value: item.result, text: item.resultText, displayExpression: item.displayExpression });
+      setError(""); setAfterEquals(true);
       setData((current) => {
         const previous = current.history[0];
         if (previous && previous.expression === item.expression && new Date(item.createdAt).getTime() - new Date(previous.createdAt).getTime() < 2000) return current;
@@ -138,6 +150,32 @@ export function CalculatorApp() {
 
   const setPanel = (panel: Panel) => setData((current) => ({ ...current, settings: { ...current.settings, activePanel: panel } }));
   const setTheme = (theme: Theme) => setData((current) => ({ ...current, settings: { ...current.settings, theme } }));
+  const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, panel: Panel) => {
+    if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+    event.preventDefault();
+    const nextPanel: Panel = panel === "history" ? "notes" : "history";
+    setPanel(nextPanel);
+    document.getElementById(`${nextPanel}-tab`)?.focus();
+  };
+
+  const confirmStorageReset = () => setConfirm({
+    title: "保存データを初期化しますか？",
+    message: "読み込めなかった元データを削除し、空の履歴と計算メモで開始します。この操作は取り消せません。必要であれば先に元データをコピーしてください。",
+    confirmLabel: "初期化する",
+    action: () => {
+      const cleanData: StoredData = { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
+      if (!saveData(cleanData)) {
+        setConfirm(null);
+        showToast("保存データを初期化できませんでした");
+        return;
+      }
+      setData(cleanData);
+      setStorageIssue(null);
+      setStorageStatus("ready");
+      setConfirm(null);
+      showToast("保存データを初期化しました");
+    },
+  });
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -156,21 +194,23 @@ export function CalculatorApp() {
     <main className="app-shell">
       <header className="topbar">
         <a className="wordmark" href="#calculator" aria-label="Calculation Memo ホーム"><span className="wordmark-mark">CM</span><span><strong>Calculation Memo</strong><small>計算を、意味のある記録へ。</small></span></a>
-        <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
+        <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
       </header>
 
+      {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
+
       <section className="workspace" id="calculator">
-        <aside className={`side-panel history-panel ${data.settings.activePanel === "history" ? "mobile-active" : ""}`}>
+        <aside id="history-panel" role="tabpanel" aria-labelledby="history-tab" className={`side-panel history-panel ${data.settings.activePanel === "history" ? "mobile-active" : ""}`}>
           <HistoryPanel history={data.history} onRestore={restore} onNote={openNoteForHistory} onCopy={(item) => copy(historyText(item))} onDelete={(id) => requestDelete("history", id)} onClearAll={() => setConfirm({ title: "すべての計算履歴を削除します", message: `${data.history.length}件の履歴を削除します。計算メモは削除されません。`, confirmLabel: "すべて削除", action: () => { setData((current) => ({ ...current, history: [] })); setConfirm(null); showToast("履歴をすべて削除しました"); } })} />
         </aside>
 
         <div className="calculator-column">
-          <div className="mobile-tabs" role="tablist" aria-label="表示切り替え"><button className={data.settings.activePanel === "history" ? "active" : ""} onClick={() => setPanel("history")}>履歴 <span>{data.history.length}</span></button><button className={data.settings.activePanel === "notes" ? "active" : ""} onClick={() => setPanel("notes")}>メモ <span>{data.notes.length}</span></button></div>
+          <div className="mobile-tabs" role="tablist" aria-label="表示切り替え"><button id="history-tab" role="tab" aria-selected={data.settings.activePanel === "history"} aria-controls="history-panel" tabIndex={data.settings.activePanel === "history" ? 0 : -1} className={data.settings.activePanel === "history" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "history")} onClick={() => setPanel("history")}>履歴 <span>{data.history.length}</span></button><button id="notes-tab" role="tab" aria-selected={data.settings.activePanel === "notes"} aria-controls="notes-panel" tabIndex={data.settings.activePanel === "notes" ? 0 : -1} className={data.settings.activePanel === "notes" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "notes")} onClick={() => setPanel("notes")}>メモ <span>{data.notes.length}</span></button></div>
           <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onCalculate={calculate} onClear={() => { setExpression(""); setResult(blankResult); setError(""); setAfterEquals(false); }} onClearEntry={() => { setExpression((current) => clearEntry(current)); setError(""); }} onBackspace={() => { setExpression((current) => current.slice(0, -1)); setError(""); }} onToggleSign={() => { setExpression((current) => toggleSign(current)); setError(""); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
           <p className="keyboard-hint"><kbd>Enter</kbd> 計算　<kbd>Esc</kbd> クリア　数字・演算子はそのまま入力</p>
         </div>
 
-        <aside className={`side-panel notes-panel ${data.settings.activePanel === "notes" ? "mobile-active" : ""}`}>
+        <aside id="notes-panel" role="tabpanel" aria-labelledby="notes-tab" className={`side-panel notes-panel ${data.settings.activePanel === "notes" ? "mobile-active" : ""}`}>
           <NotesPanel notes={data.notes} onView={setViewNote} onEdit={(note) => setNoteEditor({ draft: note, editingId: note.id })} onRestore={restore} onCopy={setCopyNote} onDelete={(id) => requestDelete("note", id)} />
         </aside>
       </section>

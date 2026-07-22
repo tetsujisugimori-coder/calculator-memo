@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { formatExpression, formatNumber } from "../lib/format";
-import { noteToJson, noteToMarkdown, noteToPlainText } from "../lib/copy";
+import { historyText, noteToJson, noteToMarkdown, noteToPlainText } from "../lib/copy";
 import type { CalculationNote } from "../lib/types";
 
 const note: CalculationNote = {
@@ -17,6 +17,9 @@ describe("formatting", () => {
 });
 
 describe("copy formats", () => {
+  it("keeps the mathematical percent interpretation in history copy", () => {
+    expect(historyText({ id: "percent", expression: "200+10%", displayExpression: "200 ＋ 10%", result: 200.1, resultText: "200.1", createdAt: "2026-07-22T00:00:00.000Z" })).toBe("200 ＋ 10% = 200.1");
+  });
   it("builds plain text", () => expect(noteToPlainText(note)).toContain("31,000円"));
   it("includes latex in Markdown", () => expect(noteToMarkdown(note)).toContain("\\frac{a}{b}"));
   it("serializes schema without generated HTML", () => {

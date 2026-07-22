@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { appendInput, calculateExpression, clearEntry, normalizeExpression, toggleSign } from "../lib/calculator";
+import { createHistoryEntry } from "../lib/history";
 
 describe("calculateExpression", () => {
   it.each([
@@ -9,7 +10,13 @@ describe("calculateExpression", () => {
     ["10/4", 2.5],
     ["-3+1", -2],
     ["0.1+0.2", 0.30000000000000004],
+    ["200+10%", 200.1],
+    ["200-10%", 199.9],
     ["200*10%", 20],
+    ["200/10%", 2000],
+    ["10%", 0.1],
+    ["(50+50)%", 1],
+    ["200*(5%+5%)", 20],
   ])("calculates %s", (expression, expected) => {
     expect(calculateExpression(expression).value).toBe(expected);
   });
@@ -18,6 +25,18 @@ describe("calculateExpression", () => {
   it("rejects incomplete expressions", () => expect(() => calculateExpression("2+")).toThrow("式が不完全です"));
   it("rejects unclosed parentheses", () => expect(() => calculateExpression("(2+3")).toThrow("括弧が閉じていません"));
   it("rejects executable or named input", () => expect(() => calculateExpression("import(1)")).toThrow("使用できない文字"));
+});
+
+describe("percentage history", () => {
+  it("stores the original percent expression and its mathematical result", () => {
+    const entry = createHistoryEntry("200+10%", "history-percent", "2026-07-22T00:00:00.000Z");
+    expect(entry).toEqual(expect.objectContaining({
+      expression: "200+10%",
+      displayExpression: "200 ＋ 10%",
+      result: 200.1,
+      resultText: "200.1",
+    }));
+  });
 });
 
 describe("calculator input helpers", () => {
