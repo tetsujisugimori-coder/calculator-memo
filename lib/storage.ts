@@ -1,4 +1,5 @@
 import type { StoredData } from "./types";
+import { sanitizeMemoBlocks } from "./memo-blocks";
 
 export const STORAGE_KEY = "calculation-memo:data";
 export const defaultData: StoredData = {
@@ -29,15 +30,27 @@ function cloneDefaultData(): StoredData {
   return { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
 }
 
-function isStoredMemo(item: unknown): boolean {
-  if (!isRecord(item) || typeof item.id !== "string") return false;
+function normalizeStoredMemo(item: unknown): StoredData["notes"][number] | null {
+  if (!isRecord(item) || typeof item.id !== "string") return null;
   if (item.type === "plain-calculation") {
-    return typeof item.title === "string"
-      && typeof item.content === "string"
-      && typeof item.createdAt === "string"
-      && typeof item.updatedAt === "string";
+    if (typeof item.title !== "string"
+      || typeof item.content !== "string"
+      || typeof item.createdAt !== "string"
+      || typeof item.updatedAt !== "string") return null;
+    const blocks = sanitizeMemoBlocks(item.blocks);
+    return {
+      id: item.id,
+      type: "plain-calculation",
+      title: item.title,
+      content: item.content,
+      ...(blocks !== undefined ? { blocks } : {}),
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    };
   }
-  return item.type === "calculation" && item.schemaVersion === 1;
+  return item.type === "calculation" && item.schemaVersion === 1
+    ? item as StoredData["notes"][number]
+    : null;
 }
 
 export function loadData(storage?: ReadableStorage): StorageLoadResult {
@@ -75,7 +88,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
     return { status: "ok", raw, data: {
       version: 1,
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
-      notes: Array.isArray(parsed.notes) ? parsed.notes.filter(isStoredMemo) as StoredData["notes"] : [],
+      notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredMemo).filter((item): item is StoredData["notes"][number] => item !== null) : [],
       settings: { theme, activePanel },
     } };
   } catch (error) {

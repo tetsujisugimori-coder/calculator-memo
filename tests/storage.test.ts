@@ -61,4 +61,47 @@ describe("loadData", () => {
     expect(result.status).toBe("ok");
     if (result.status === "ok") expect(result.data.notes).toEqual([]);
   });
+
+  it("restores mixed memo blocks with their order and calculated results", () => {
+    const blocks = [
+      { id: "text", type: "text", content: "説明" },
+      { id: "formula", type: "formula", latex: "x^2" },
+      { id: "calc", type: "calculation", expression: "2+3", displayExpression: "2 ＋ 3", result: 5, resultText: "5", error: null },
+    ];
+    const raw = JSON.stringify({
+      version: 1,
+      history: [],
+      notes: [{
+        id: "plain-blocks", type: "plain-calculation", title: "混在",
+        content: "fallback", blocks,
+        createdAt: "2026-07-23T00:00:00.000Z", updatedAt: "2026-07-23T00:00:00.000Z",
+      }],
+      settings: { theme: "system", activePanel: "notes" },
+    });
+    const result = loadData(storageWith(raw));
+    expect(result.status).toBe("ok");
+    if (result.status === "ok" && result.data.notes[0]?.type === "plain-calculation") {
+      expect(result.data.notes[0].blocks).toEqual(blocks);
+    }
+  });
+
+  it("preserves legacy content when an optional block array is malformed", () => {
+    const raw = JSON.stringify({
+      version: 1,
+      history: [],
+      notes: [{
+        id: "plain-fallback", type: "plain-calculation", title: "既存本文",
+        content: "消してはいけない本文",
+        blocks: [{ id: "broken", type: "calculation", expression: "2+3" }],
+        createdAt: "2026-07-23T00:00:00.000Z", updatedAt: "2026-07-23T00:00:00.000Z",
+      }],
+      settings: { theme: "system", activePanel: "notes" },
+    });
+    const result = loadData(storageWith(raw));
+    expect(result.status).toBe("ok");
+    if (result.status === "ok" && result.data.notes[0]?.type === "plain-calculation") {
+      expect(result.data.notes[0].content).toBe("消してはいけない本文");
+      expect(result.data.notes[0].blocks).toBeUndefined();
+    }
+  });
 });

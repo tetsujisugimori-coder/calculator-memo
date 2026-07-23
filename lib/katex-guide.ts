@@ -1,15 +1,37 @@
 export type GuideCategory =
-  | "基本" | "分数・根号" | "指数・添字" | "ギリシャ文字" | "演算記号"
+  | "ブロック" | "基本" | "分数・根号" | "指数・添字" | "ギリシャ文字" | "演算記号"
   | "比較記号" | "括弧" | "総和・積分" | "極限" | "行列" | "場合分け" | "よく使う公式";
 
-export type GuideItem = { category: GuideCategory; name: string; latex: string; description: string };
+export type GuideItem = {
+  category: GuideCategory;
+  name: string;
+  latex: string;
+  description: string;
+  previewType?: "katex" | "calculation";
+  limitations?: string;
+};
 
 export const guideCategories: GuideCategory[] = [
-  "基本", "分数・根号", "指数・添字", "ギリシャ文字", "演算記号", "比較記号",
+  "ブロック", "基本", "分数・根号", "指数・添字", "ギリシャ文字", "演算記号", "比較記号",
   "括弧", "総和・積分", "極限", "行列", "場合分け", "よく使う公式",
 ];
 
 export const guideItems: GuideItem[] = [
+  {
+    category: "ブロック",
+    name: "数式ブロック",
+    latex: "\\frac{a}{b} + \\sqrt{x}",
+    description: "KaTeXで整形して表示する専用ブロックです。数式を見せるための機能であり、値の計算や結果生成は行いません。",
+    previewType: "katex",
+  },
+  {
+    category: "ブロック",
+    name: "計算ブロック",
+    latex: "200*(5%+5%)",
+    description: "電卓と同じ計算エンジンで式を評価し、入力欄と結果をセットで保存・表示します。不正な式はそのブロック内だけにエラー表示されます。",
+    previewType: "calculation",
+    limitations: "使用可能: 数値、+ - * /、小数、括弧、負数、%。使用不可: 変数、LaTeX（\\fracなど）、^による累乗、関数。",
+  },
   { category: "基本", name: "二乗", latex: "x^2", description: "文字や数の右上に指数を付けます。" },
   { category: "指数・添字", name: "添字", latex: "x_{1}", description: "複数文字の添字は波括弧で囲みます。" },
   { category: "分数・根号", name: "分数", latex: "\\frac{a}{b}", description: "分子と分母を波括弧に入力します。" },

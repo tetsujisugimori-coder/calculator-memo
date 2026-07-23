@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { PlainCalculationNote, PlainNoteDraft } from "../lib/types";
-import { MarkdownEditor } from "./MarkdownEditor";
+import { blocksToMarkdown, recalculateMemoBlocks, resolveMemoBlocks } from "../lib/memo-blocks";
+import { MemoBlockEditor } from "./MemoBlockEditor";
 import { Modal } from "./Modal";
 
 type Props = {
@@ -13,17 +14,22 @@ type Props = {
 };
 
 export function PlainNoteModal({ initial, onSave, onClose, onOpenGuide }: Props) {
-  const [draft, setDraft] = useState<PlainNoteDraft>({ title: initial.title, content: initial.content });
+  const [draft, setDraft] = useState<PlainNoteDraft>({
+    title: initial.title,
+    content: initial.content,
+    blocks: resolveMemoBlocks({ id: "id" in initial ? initial.id : "draft", content: initial.content, blocks: initial.blocks }),
+  });
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSave({ title: draft.title.trim(), content: draft.content });
+    const blocks = recalculateMemoBlocks(draft.blocks ?? []);
+    onSave({ title: draft.title.trim(), blocks, content: blocksToMarkdown(blocks) });
   };
   return (
     <Modal title="プレーン計算メモを編集" onClose={onClose} wide>
       <form className="note-form" onSubmit={submit}>
         <label>タイトル <small>任意</small><input value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} placeholder="例：平方完成による解の導出" /></label>
-        <MarkdownEditor value={draft.content} onChange={(content) => setDraft((current) => ({ ...current, content }))} onOpenMathGuide={onOpenGuide} />
-        <div className="modal-actions"><button type="button" className="button-secondary" onClick={onClose}>キャンセル</button><button type="submit" className="button-primary" disabled={!draft.title.trim() && !draft.content.trim()}>保存する</button></div>
+        <MemoBlockEditor blocks={draft.blocks ?? []} onChange={(blocks) => setDraft((current) => ({ ...current, blocks }))} onOpenGuide={onOpenGuide} />
+        <div className="modal-actions"><button type="button" className="button-secondary" onClick={onClose}>キャンセル</button><button type="submit" className="button-primary" disabled={!draft.title.trim() && !(draft.blocks?.length)}>保存する</button></div>
       </form>
     </Modal>
   );

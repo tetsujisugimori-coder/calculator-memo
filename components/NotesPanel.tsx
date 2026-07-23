@@ -2,6 +2,8 @@
 
 import { KatexFormula } from "./KatexFormula";
 import { MarkdownContent } from "./MarkdownContent";
+import { MemoBlocks } from "./MemoBlocks";
+import { resolveMemoBlocks } from "../lib/memo-blocks";
 import type { CalculationNote, Memo } from "../lib/types";
 
 type Props = {
@@ -31,7 +33,7 @@ export function NotesPanel({ notes, onCreate, onView, onEdit, onRestore, onCopy,
             </div>
             {note.note && <p className="note-preview">{note.note}</p>}
             {note.tags.length > 0 && <div className="tags">{note.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}
-          </> : <MarkdownContent content={note.content} compact />}
+          </> : note.blocks !== undefined ? <MemoBlocks blocks={resolveMemoBlocks(note)} compact /> : <MarkdownContent content={note.content} compact />}
           <div className="item-actions"><button onClick={() => onView(note)}>詳細</button><button onClick={() => onEdit(note)}>編集</button>{note.type === "calculation" && <button onClick={() => onRestore(note)}>戻す</button>}<button onClick={() => onCopy(note)}>コピー</button><button className="danger" onClick={() => onDelete(note.id)}>削除</button></div>
         </article>)}
       </div>
