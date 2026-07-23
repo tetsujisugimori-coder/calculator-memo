@@ -29,6 +29,17 @@ function cloneDefaultData(): StoredData {
   return { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
 }
 
+function isStoredMemo(item: unknown): boolean {
+  if (!isRecord(item) || typeof item.id !== "string") return false;
+  if (item.type === "plain-calculation") {
+    return typeof item.title === "string"
+      && typeof item.content === "string"
+      && typeof item.createdAt === "string"
+      && typeof item.updatedAt === "string";
+  }
+  return item.type === "calculation" && item.schemaVersion === 1;
+}
+
 export function loadData(storage?: ReadableStorage): StorageLoadResult {
   if (typeof window === "undefined" && !storage) return { status: "empty", data: cloneDefaultData() };
   let raw: string | null = null;
@@ -64,7 +75,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
     return { status: "ok", raw, data: {
       version: 1,
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
-      notes: Array.isArray(parsed.notes) ? parsed.notes.filter((item) => item?.id && item?.schemaVersion === 1) : [],
+      notes: Array.isArray(parsed.notes) ? parsed.notes.filter(isStoredMemo) as StoredData["notes"] : [],
       settings: { theme, activePanel },
     } };
   } catch (error) {

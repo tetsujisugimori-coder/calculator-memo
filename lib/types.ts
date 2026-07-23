@@ -28,14 +28,26 @@ export type CalculationNote = {
   updatedAt: string;
 };
 
+export type PlainCalculationNote = {
+  id: string;
+  type: "plain-calculation";
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Memo = CalculationNote | PlainCalculationNote;
+
 export type Theme = "light" | "dark" | "system";
 export type Panel = "history" | "notes";
 
 export type StoredData = {
   version: 1;
   history: HistoryEntry[];
-  notes: CalculationNote[];
+  notes: Memo[];
   settings: { theme: Theme; activePanel: Panel };
 };
 
 export type NoteDraft = Omit<CalculationNote, "id" | "schemaVersion" | "type" | "createdAt" | "updatedAt">;
+export type PlainNoteDraft = Pick<PlainCalculationNote, "title" | "content">;
