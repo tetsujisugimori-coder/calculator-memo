@@ -1,6 +1,7 @@
 "use client";
 
 import { resultSize } from "../lib/format";
+import { MEMO_LABELS } from "../lib/memo-labels";
 
 type Props = {
   expression: string;
@@ -45,7 +46,7 @@ export function CalculatorPad(props: Props) {
       </div>
       <div className="utility-row" aria-label="補助キー">
         {["(", ")", "%"].map((key) => <button key={key} className="calc-key utility-key" onClick={() => props.onInput(key)} aria-label={key === "%" ? "パーセント" : key}>{key}</button>)}
-        <button className="guide-shortcut" onClick={props.onCreateNote} disabled={!props.canCreateNote}>計算メモを作成</button>
+        <button className="guide-shortcut" onClick={props.onCreateNote} disabled={!props.canCreateNote}>{MEMO_LABELS.single}を作成</button>
       </div>
       <div className="key-grid">
         {mainKeys.map(([label, action]) => {

@@ -21,6 +21,7 @@ import { CreateMemoModal } from "./CreateMemoModal";
 import { MarkdownContent } from "./MarkdownContent";
 import { MemoBlocks } from "./MemoBlocks";
 import { resolveMemoBlocks } from "../lib/memo-blocks";
+import { MEMO_LABELS, memoTypeLabel } from "../lib/memo-labels";
 
 type NoteEditor = { draft: NoteDraft | CalculationNote; editingId?: string } | null;
 type PlainNoteEditor = { draft: PlainNoteDraft | PlainCalculationNote; editingId?: string } | null;
@@ -145,7 +146,7 @@ export function CalculatorApp() {
       const note: CalculationNote = { ...draft, id: makeId("calc-note"), schemaVersion: 1, type: "calculation", createdAt: now, updatedAt: now };
       return { ...current, notes: [note, ...current.notes] };
     });
-    setNoteEditor(null); showToast(noteEditor?.editingId ? "計算メモを更新しました" : "計算メモを保存しました");
+    setNoteEditor(null); showToast(noteEditor?.editingId ? `${MEMO_LABELS.single}を更新しました` : `${MEMO_LABELS.single}を保存しました`);
   }, [noteEditor, showToast]);
 
   const savePlainNote = useCallback((draft: PlainNoteDraft) => {
@@ -158,7 +159,7 @@ export function CalculatorApp() {
       return { ...current, notes: [note, ...current.notes] };
     });
     setPlainNoteEditor(null);
-    showToast(plainNoteEditor?.editingId ? "プレーン計算メモを更新しました" : "プレーン計算メモを保存しました");
+    showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
   }, [plainNoteEditor, showToast]);
 
   const requestDelete = useCallback((kind: "history" | "note", id: string) => {
@@ -246,10 +247,10 @@ export function CalculatorApp() {
 
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal initial={plainNoteEditor.draft} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
-      {createMenuOpen && <CreateMemoModal canCreateCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} onPlain={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} />}
+      {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}
-      {viewNote && <Modal title={viewNote.title || (viewNote.type === "calculation" ? viewNote.displayExpression : "無題のメモ")} onClose={() => setViewNote(null)} wide={viewNote.type === "plain-calculation"}><div className="note-detail">{viewNote.type === "calculation" ? <>{viewNote.displayMode === "katex" && viewNote.latexExpression ? <KatexFormula latex={viewNote.latexExpression} block /> : <p className="detail-expression">{viewNote.displayExpression}</p>}<strong className="detail-result">= {viewNote.resultText}{viewNote.unit}</strong>{viewNote.note && <div><span className="eyebrow">前提・補足</span><p>{viewNote.note}</p></div>}{viewNote.relatedMemoName && <div><span className="eyebrow">関連メモ名</span><p>{viewNote.relatedMemoName}</p></div>}{viewNote.tags.length > 0 && <div className="tags">{viewNote.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}</> : viewNote.blocks !== undefined ? <MemoBlocks blocks={resolveMemoBlocks(viewNote)} /> : <MarkdownContent content={viewNote.content} />}<div className="modal-actions"><button className="button-secondary" onClick={() => setViewNote(null)}>閉じる</button><button className="button-primary" onClick={() => { if (viewNote.type === "calculation") setCopyNote(viewNote); else copy(viewNote.content, "Markdown"); setViewNote(null); }}>コピー</button></div></div></Modal>}
+      {viewNote && <Modal title={viewNote.title || (viewNote.type === "calculation" ? viewNote.displayExpression : "無題のメモ")} onClose={() => setViewNote(null)} wide={viewNote.type === "plain-calculation"}><div className="note-detail"><span className={`memo-kind detail-memo-kind ${viewNote.type === "plain-calculation" ? "plain" : ""}`}>{memoTypeLabel(viewNote.type)}</span>{viewNote.type === "calculation" ? <>{viewNote.displayMode === "katex" && viewNote.latexExpression ? <KatexFormula latex={viewNote.latexExpression} block /> : <p className="detail-expression">{viewNote.displayExpression}</p>}<strong className="detail-result">= {viewNote.resultText}{viewNote.unit}</strong>{viewNote.note && <div><span className="eyebrow">前提・補足</span><p>{viewNote.note}</p></div>}{viewNote.relatedMemoName && <div><span className="eyebrow">関連メモ名</span><p>{viewNote.relatedMemoName}</p></div>}{viewNote.tags.length > 0 && <div className="tags">{viewNote.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}</> : viewNote.blocks !== undefined ? <MemoBlocks blocks={resolveMemoBlocks(viewNote)} /> : <MarkdownContent content={viewNote.content} />}<div className="modal-actions"><button className="button-secondary" onClick={() => setViewNote(null)}>閉じる</button><button className="button-primary" onClick={() => { if (viewNote.type === "calculation") setCopyNote(viewNote); else copy(viewNote.content, "Markdown"); setViewNote(null); }}>コピー</button></div></div></Modal>}
       {confirm && <Modal title={confirm.title} onClose={() => setConfirm(null)}><div className="confirm-body"><p>{confirm.message}</p><div className="modal-actions"><button className="button-secondary" onClick={() => setConfirm(null)}>キャンセル</button><button className="button-danger" onClick={confirm.action}>{confirm.confirmLabel}</button></div></div></Modal>}
       <div className={`toast ${toast ? "visible" : ""}`} role="status" aria-live="polite">{toast}</div>
     </main>

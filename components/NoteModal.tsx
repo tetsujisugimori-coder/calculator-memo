@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { CalculationNote, NoteDraft } from "../lib/types";
 import { calculateExpression } from "../lib/calculator";
+import { MEMO_LABELS } from "../lib/memo-labels";
 import { KatexFormula, validateLatex } from "./KatexFormula";
 import { Modal } from "./Modal";
 
@@ -36,7 +37,7 @@ export function NoteModal({ initial, onSave, onClose, onOpenGuide }: { initial: 
     }
   };
   return (
-    <Modal title="計算メモを編集" onClose={onClose} wide>
+    <Modal title={`${MEMO_LABELS.single}を編集`} onClose={onClose} wide>
       <form className="note-form" onSubmit={submit}>
         <div className="form-intro"><span>結果</span><strong>{draft.resultText}{draft.unit}</strong><small>計算式を変更した場合、保存時に結果を再計算します。</small></div>
         <label>計算式<input className="code-input" value={draft.expression} onChange={(e) => { update("expression", e.target.value); setExpressionError(""); }} placeholder="例：14000*2+3000" />{expressionError && <span className="field-error" role="alert">{expressionError}</span>}</label>

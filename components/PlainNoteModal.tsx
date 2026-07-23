@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PlainCalculationNote, PlainNoteDraft } from "../lib/types";
 import { blocksToMarkdown, recalculateMemoBlocks, resolveMemoBlocks } from "../lib/memo-blocks";
+import { MEMO_LABELS } from "../lib/memo-labels";
 import { MemoBlockEditor } from "./MemoBlockEditor";
 import { Modal } from "./Modal";
 
@@ -25,7 +26,7 @@ export function PlainNoteModal({ initial, onSave, onClose, onOpenGuide }: Props)
     onSave({ title: draft.title.trim(), blocks, content: blocksToMarkdown(blocks) });
   };
   return (
-    <Modal title="プレーン計算メモを編集" onClose={onClose} wide>
+    <Modal title={`${MEMO_LABELS.blocks}を編集`} onClose={onClose} wide>
       <form className="note-form" onSubmit={submit}>
         <label>タイトル <small>任意</small><input value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} placeholder="例：平方完成による解の導出" /></label>
         <MemoBlockEditor blocks={draft.blocks ?? []} onChange={(blocks) => setDraft((current) => ({ ...current, blocks }))} onOpenGuide={onOpenGuide} />

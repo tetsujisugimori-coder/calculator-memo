@@ -174,6 +174,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .guide-card .guide-limitations { padding: 9px; border-left: 3px solid var(--brand); background: color-mix(in srgb, var(--brand) 7%, transparent); color: var(--ink); }
 .copy-options { display: grid; gap: 10px; }.copy-options button { text-align: left; padding: 16px; background: var(--surface-strong); border: 1px solid var(--line); cursor: pointer; }.copy-options strong, .copy-options span { display: block; }.copy-options span { color: var(--muted); font-size: 11px; margin-top: 5px; }
 .note-detail { display: grid; gap: 18px; }.detail-expression { font-family: var(--font-geist-mono), monospace; text-align: center; }.detail-result { display: block; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--green); text-align: center; font-family: var(--font-geist-mono), monospace; font-size: 28px; }.note-detail p { line-height: 1.75; white-space: pre-wrap; }.confirm-body p { color: var(--muted); line-height: 1.7; }
+.detail-memo-kind { justify-self: start; margin-top: 0; }
 .memo-type-grid { display: grid; gap: 12px; }
 .memo-type-grid > button { min-height: 112px; display: grid; gap: 7px; text-align: left; padding: 18px; border: 1px solid var(--line); border-left: 4px solid var(--green); background: var(--surface-strong); cursor: pointer; }
 .memo-type-grid > button + button { border-left-color: var(--brand); }
