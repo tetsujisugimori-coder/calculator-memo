@@ -28,14 +28,51 @@ export type CalculationNote = {
   updatedAt: string;
 };
 
+export type TextMemoBlock = {
+  id: string;
+  type: "text";
+  content: string;
+};
+
+export type FormulaMemoBlock = {
+  id: string;
+  type: "formula";
+  latex: string;
+};
+
+export type CalculationMemoBlock = {
+  id: string;
+  type: "calculation";
+  expression: string;
+  displayExpression: string;
+  result: number | null;
+  resultText: string;
+  error: string | null;
+};
+
+export type MemoBlock = TextMemoBlock | FormulaMemoBlock | CalculationMemoBlock;
+
+export type PlainCalculationNote = {
+  id: string;
+  type: "plain-calculation";
+  title: string;
+  content: string;
+  blocks?: MemoBlock[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Memo = CalculationNote | PlainCalculationNote;
+
 export type Theme = "light" | "dark" | "system";
 export type Panel = "history" | "notes";
 
 export type StoredData = {
   version: 1;
   history: HistoryEntry[];
-  notes: CalculationNote[];
+  notes: Memo[];
   settings: { theme: Theme; activePanel: Panel };
 };
 
 export type NoteDraft = Omit<CalculationNote, "id" | "schemaVersion" | "type" | "createdAt" | "updatedAt">;
+export type PlainNoteDraft = Pick<PlainCalculationNote, "title" | "content" | "blocks">;

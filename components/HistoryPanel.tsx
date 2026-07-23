@@ -2,6 +2,7 @@
 
 import { groupDate } from "../lib/format";
 import type { HistoryEntry } from "../lib/types";
+import { MEMO_LABELS } from "../lib/memo-labels";
 
 type Props = {
   history: HistoryEntry[];
@@ -30,7 +31,7 @@ export function HistoryPanel({ history, onRestore, onNote, onCopy, onDelete, onC
               <span>{item.displayExpression}</span><strong>= {item.resultText}</strong>
             </button>
             <time>{new Intl.DateTimeFormat("ja-JP", { hour: "2-digit", minute: "2-digit" }).format(new Date(item.createdAt))}</time>
-            <div className="item-actions"><button onClick={() => onRestore(item)}>戻す</button><button onClick={() => onNote(item)}>メモ</button><button onClick={() => onCopy(item)}>コピー</button><button className="danger" onClick={() => onDelete(item.id)}>削除</button></div>
+            <div className="item-actions"><button onClick={() => onRestore(item)}>戻す</button><button onClick={() => onNote(item)}>{MEMO_LABELS.single}</button><button onClick={() => onCopy(item)}>コピー</button><button className="danger" onClick={() => onDelete(item.id)}>削除</button></div>
           </article>)}
         </section>
       ))}

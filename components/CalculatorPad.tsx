@@ -1,6 +1,7 @@
 "use client";
 
 import { resultSize } from "../lib/format";
+import { MEMO_LABELS } from "../lib/memo-labels";
 
 type Props = {
   expression: string;
@@ -18,7 +19,7 @@ type Props = {
 };
 
 const mainKeys = [
-  ["C", "clear"], ["CE", "clear-entry"], ["⌫", "backspace"], ["÷", "/"],
+  ["C", "clear"], ["CE", "clear-entry"], ["⌫ 戻す", "backspace"], ["÷", "/"],
   ["7", "7"], ["8", "8"], ["9", "9"], ["×", "*"],
   ["4", "4"], ["5", "5"], ["6", "6"], ["−", "-"],
   ["1", "1"], ["2", "2"], ["3", "3"], ["＋", "+"],
@@ -45,14 +46,14 @@ export function CalculatorPad(props: Props) {
       </div>
       <div className="utility-row" aria-label="補助キー">
         {["(", ")", "%"].map((key) => <button key={key} className="calc-key utility-key" onClick={() => props.onInput(key)} aria-label={key === "%" ? "パーセント" : key}>{key}</button>)}
-        <button className="guide-shortcut" onClick={props.onCreateNote} disabled={!props.canCreateNote}>計算メモを作成</button>
+        <button className="guide-shortcut" onClick={props.onCreateNote} disabled={!props.canCreateNote}>{MEMO_LABELS.single}を作成</button>
       </div>
       <div className="key-grid">
         {mainKeys.map(([label, action]) => {
           const kind = ["/", "*", "-", "+"].includes(action) ? "operator" : action === "equals" ? "equals" : action.startsWith("clear") || action === "backspace" ? "clear" : "number";
-          const ariaLabels: Record<string, string> = { "÷": "割る", "×": "掛ける", "−": "引く", "＋": "足す", "⌫": "1文字削除", "±": "符号反転", "=": "計算する", "C": "すべて消去", "CE": "現在の数値を消去" };
+          const ariaLabels: Record<string, string> = { "÷": "割る", "×": "掛ける", "−": "引く", "＋": "足す", "⌫ 戻す": "1文字削除", "±": "符号反転", "=": "計算する", "C": "すべて消去", "CE": "現在の数値を消去" };
           const aria = ariaLabels[label] || label;
-          return <button key={label} className={`calc-key ${kind}`} onClick={() => run(action)} aria-label={aria}>{label}</button>;
+          return <button key={label} className={`calc-key ${kind} ${action === "backspace" ? "backspace-key" : ""}`} onClick={() => run(action)} aria-label={aria}>{label}</button>;
         })}
       </div>
       <div className="calculator-foot"><span>12 DIGIT</span><span>LOCAL MEMORY</span></div>
