@@ -362,3 +362,11 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 ### 関連情報
 
 - Pull Request #4: https://github.com/tetsujisugimori-coder/calculator-memo/pull/4
+
+## 2026-07-25: Memo Nexusからの計算式受け取り
+
+- URLの`expr`クエリパラメータを`URLSearchParams`で読み取り、初回表示時に既存の計算式stateへ設定する一方向連携を追加した。
+- 受け取った式は自動計算せず、結果と履歴も作らない。日本語や未対応記号を含む値も文字列として表示し、既存の計算操作時に従来のエラー処理へ渡す。
+- 極端に長い値は2,000文字へ制限し、URL読取処理を`lib/url-expression.ts`へ分離した。
+- `npm test`は既存回帰を含む全51件、`npm run lint`、`npx tsc --noEmit`、`npm run build:pages`、`git diff --check`が成功した。Pagesビルドには既存のチャンクサイズ警告だけが出た。
+- ブラウザで`expr=2 * (5 + 3)`が入力中の式として表示され、起動直後は結果`0`のまま履歴を追加せず、「=」を押すと既存仕様どおり`16`になること、ダークテーマでの表示、コンソールerror 0件を確認した。接続ブラウザの幅変更が反映されず実画面での3幅比較は未実施。
