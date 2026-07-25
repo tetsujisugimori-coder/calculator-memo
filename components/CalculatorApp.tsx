@@ -22,6 +22,7 @@ import { MarkdownContent } from "./MarkdownContent";
 import { MemoBlocks } from "./MemoBlocks";
 import { resolveMemoBlocks } from "../lib/memo-blocks";
 import { MEMO_LABELS, memoTypeLabel } from "../lib/memo-labels";
+import { expressionFromSearch } from "../lib/url-expression";
 
 type NoteEditor = { draft: NoteDraft | CalculationNote; editingId?: string } | null;
 type PlainNoteEditor = { draft: PlainNoteDraft | PlainCalculationNote; editingId?: string } | null;
@@ -58,6 +59,12 @@ export function CalculatorApp() {
     window.setTimeout(() => setToast(""), 2200);
   }, []);
 
+  useEffect(() => {
+    const sharedExpression = expressionFromSearch(window.location.search);
+    if (sharedExpression === null) return;
+    const timer = window.setTimeout(() => setExpression(sharedExpression), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const loaded = loadData();
