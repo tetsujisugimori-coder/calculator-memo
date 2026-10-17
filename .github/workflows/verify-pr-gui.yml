@@ -1,0 +1,49 @@
+name: Verify PR GUI (temporary environment proof)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+concurrency:
+  group: verify-pr-gui-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    if: github.head_ref == 'verify/pr-gui-20261017'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22.13.0
+      - name: Install locked application dependencies
+        run: npm ci --ignore-scripts
+      - name: Existing checks and static build
+        run: |
+          npm test
+          npm run lint
+          npx --no-install tsc --noEmit
+          npm run build:pages
+      - name: Install isolated pinned browser tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/gui-tools" --no-save --package-lock=false --ignore-scripts @playwright/test@1.56.1
+          node "$RUNNER_TEMP/gui-tools/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Test exact PR head on runner-local preview
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GUI_TOOLS: ${{ runner.temp }}/gui-tools
+        run: node scripts/verify-pr-gui.mjs
+      - name: Upload synthetic screenshots, trace, and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-gui-${{ github.event.pull_request.head.sha }}
+          path: gui-evidence/
+          retention-days: 1
+          if-no-files-found: warn
