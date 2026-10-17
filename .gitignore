@@ -42,3 +42,7 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# isolated GUI tests
+/e2e/node_modules/
+/gui-evidence/
