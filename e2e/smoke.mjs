@@ -5,6 +5,7 @@ import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
+import { stripVTControlCharacters } from "node:util";
 
 process.chdir(fileURLToPath(new URL("../", import.meta.url)));
 
@@ -193,7 +194,7 @@ try {
   let startupOutput = "";
   server.stdout.on("data", (chunk) => {
     startupOutput = (startupOutput + chunk.toString()).slice(-4096);
-    if (startupOutput.includes(base)) serverReady = true;
+    if (stripVTControlCharacters(startupOutput).includes(base)) serverReady = true;
   });
   server.on("error", (error) => { metadata.serverError = String(error); });
   await expect.poll(async () => {
