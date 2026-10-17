@@ -79,9 +79,9 @@ try {
   await screenshot("01-arithmetic-history-desktop");
   await button("すべて消去").click();
   await page.locator(".history-item").getByRole("button", { name: "戻す", exact: true }).click();
-  await expect(page.locator(".lcd-result")).toHaveText("46");
-  await record("History restore");
-  await button("単独計算メモを作成").click();
+  await expect(page.locator(".lcd-expression")).toHaveText(/12\s*\+\s*34/);
+  await record("History restores the expression for editing without recalculating");
+  await page.locator(".history-item").getByRole("button", { name: "単独計算メモ", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic PR GUI memo");
   await dialog.getByLabel("前提・補足", { exact: false }).fill("Synthetic data only. No real user data.");
