@@ -79,7 +79,7 @@ try {
   await screenshot("01-arithmetic-history-desktop");
   await button("すべて消去").click();
   await page.locator(".history-item").getByRole("button", { name: "戻す", exact: true }).click();
-  await expect(page.locator(".lcd-expression")).toHaveText(/12\s*\+\s*34/);
+  await expect(page.locator(".lcd-expression")).toHaveText("12 ＋ 34");
   await record("History restores the expression for editing without recalculating");
   await page.locator(".history-item").getByRole("button", { name: "単独計算メモ", exact: true }).click();
   const dialog = page.getByRole("dialog");
