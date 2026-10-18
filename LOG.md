@@ -2,6 +2,19 @@
 
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
+## 2026-10-18 (JST): 基本数学関数を安全な共通評価経路へ追加
+- 変更内容: mathjs既存parser/evaluationを維持し、累乗・sqrt/abs・pi/eを明示AST許可。通常電卓へ折畳み式入力欄、^の継続/編集を追加。履歴・単独メモ・計算ブロック・保存・URLは共通評価器を使用し保存形式を変更しない。
+- 理由・境界: 将来の関数電卓/数学文書の基礎を小規模独立PRで整える。`2^3^2=512`、`-2^2=-4`、`(-2)^2=4`。結果からの^は負値を括弧化する。数値の表示丸めを計算/保存へ流用しない。
+- 従来方針 / 変更理由 / 新方針: 数字・四則・括弧・%の文字検証だけから、新しい名前を安全に扱う必要があるため、限定文字列＋mathjs AST全体検証へ進める。代入/任意関数/変数/非数値を拒否し、正規化前長さ2000/深度32/ノード256/指数絶対値10000、各中間有限実数/最終既存最大安全値に制限。数値だけの旧暗黙乗算は維持、新構文は明示*を要求。過大式・非有限中間値の新拒否をREADMEに明記。
+- 第一希望 / 制約 / 採用策: 将来は関数結果・累乗と%も一貫して扱いたいが、旧置換は`sqrt(100)%`を誤算させる。Issue #19と評価器全面改修は今回対象外のため、新構文と%の混在を明示拒否し、既存%変換そのものは変更しない。後続の後置%構文対応で見直す。CE/±の末尾数値契約も維持し、閉括弧/定数への限界を説明。
+- 検証結果: cloud Node24.19.0で228単体・lint・型検査・通常/Pages build成功。ローカルChromium4条件67検証成功。ローカルWebKitはOSライブラリ不足で起動失敗し、下記Actionsで代替検証した。新単体は仕様/安全性/資源制限/旧%/編集/内部精度/履歴/両メモ/保存/URLを対象。GUI既存6条件へ新数学シナリオを追加する。
+- 関連: [Issue #21](https://github.com/tetsujisugimori-coder/calculator-memo/issues/21)。[PR #22](https://github.com/tetsujisugimori-coder/calculator-memo/pull/22)。基点main `6754813bad54a917bd111e0931de4adce016c54d`でPR #20マージを確認。
+- Actions確認: [39133495835](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39133495835)、head `4002c5083085c3773b35e6e7d527772077373e95`、Node22.13.0で228単体・lint・型・両build・GUI全工程成功。2026-10-18 22:54:38〜22:59:31 JST、Playwright1.56.1 / Chromium141.0.7390.37 / WebKit26.0 の既存6条件102検証・エラー0、mobile4条件各228touchを確認。[88画面・6trace・診断](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39133495835/artifacts/12139191810)を取得しZIP SHA256・provenanceのhead/配信SHA/branch/run一致を照合。成果物は7日保持。この結果追記コミット自身のCIは[PR #22 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/22/checks)で別途確認し、前SHAの成功を流用しない。
+- 独立レビュー: 実装と最終help文差分にblocking指摘なし。独立228単体、旧main比1000の四則/括弧/%合成式差分0、極端入力と禁止ASTの拒否を再確認。任意のinput maxLength案は貼付け式の黙った切断を避け不採用、共通評価器で全入力を明示拒否する。GUIで発見した旧「累乗・関数未対応」の説明2か所を現仕様へ訂正した。
+- 公開方法: 通常git pushは認証が利用できず失敗。同repoの公式GitHubコネクタでmainを親に同一treeをcommitし作業枝を公開、fetch後にローカルtree一致を確認。認証・権限設定は変更しない。
+- 未解決事項: Issue #19、実機iPhone Safari/OSキーボード/長期保存、新関数と%混在、関数パレット・三角/対数/階乗・グラフ等。Memo-Nexus側変更なし。依存警告は別件。
+- 参照: AGENTS/関連docs/README/LOG/コード/Actions/既存Issueを確認。江戸弁ガイドの現行方針と辞典v19冒頭を参照（辞典全読ではない）。software-engineering skillは親の取得時package unavailable。利用者PCを使用せずcloud/隔離Actionsで検証する。
+
 ## 2026-10-18 19:33 (JST): PR20の元文字列オフセットを追加確認（不具合再現なし）
 - 基点: PR #20 head `1b40bfea68c4ccab3d5fa3b7dea7de59cea9ebff`、最新main `f6ae38a972575858db7236ad1a9846a61ec16e88`を再確認。cloud既存checkoutの全tree `4cc32e301254ea2a7560eba5e4aceeff12884b40`とremote headのtreeが一致。AGENTS・README・関連docs・workflow・Issue #19・PR #20を読んだ。
 - 変更内容/理由: 指定6式について元文字列の負号位置・抽出start/text・±・CEの期待値を固定した回帰を追加。[期待＝実測の全6式表と位置の根拠](docs/agent/calculator-state-audit.md#pr-20-マージ前追加確認-元文字列の位置2026-10-18-jst)を記録。改行例は実改行を使用。元文字列の位置不整合は未変更実装で再現せず、アプリ修正は行わない。正規化後の添字流用やrefactorなし。

@@ -32,6 +32,11 @@ Each scenario actively exercises:
 - Both memo types and history unchanged after reload
 - Visible history/notes panels, narrow-screen tab switching, and detail modal open/close
 - Trailing-number sign/CE edits preserving subtraction, decimal keyboard replacement, chained/re-entry calculation and URL input/history checks
+- Basic math via the normal calculator expression textbox: right-associative `2^3^2`, `-2^2` versus `(-2)^2`, `sqrt`, `abs`, `pi`, `e`, and a combined expression
+- Rounded LCD/result text and unrounded internal numeric history/memo values are checked separately (`sqrt(2)` and `2*pi` use independent `Math` expectations, tolerance 4 × machine epsilon × max(1, |expected|), tight enough to detect storage of rounded display text)
+- Expression edits and history restores invalidate confirmed results; `^` keyboard input after equals continues from the result
+- Disallowed function, wrong arity, constant-call syntax, negative square root, unsafe-magnitude and unsupported math/percent-mixing errors leave history/memos unchanged; corrected expression input recovers
+- Math single-memo save/re-edit, block live preview/save/recalculation, URL expression receipt without automatic evaluation, and exact stored values plus rendered results after reload
 - Unexpected console/page errors, HTTP errors, and non-loopback requests fail the test
 - Document/body horizontal overflow at initial display, memo dialogs and screenshot checkpoints fails the test
 - After-equals BS/CE/± edits, disabled memo entrances, recalculated memo payload, repeated/chained equals and zero-division recovery
@@ -99,3 +104,9 @@ The header wraps whole groups when their intrinsic width no longer fits, rather 
 The real application additionally runs 721/800/1365px header text-size stress in Chromium and WebKit, at 200% and then 100% computed font sizes. It scrolls 250px and back, checking a 28px (±1px) gap between the sticky header and calculator after growth and shrink. A temporary 2000px workspace-height fixture supplies sufficient scroll range so the sticky parent's end does not confound the offset test; the fixture, font overrides and viewport are restored afterward. The 721px expanded/restored screenshots and `stickyGeometry` preserve this evidence. This is not a claim about native browser text zoom or iPhone Safari.
 
 The first implementation left the calculator at a fixed 104px sticky offset, introducing overlap when the header grew. A matched baseline comparison exposed this regression; the header border-box height now updates a CSS custom property through a scoped ResizeObserver. Calculation/persistence state is unaffected, and the observer is disconnected on cleanup.
+
+## Basic-math evidence
+
+The new math checks run in every existing six-context scenario after the prior regressions, preserving their fixed entry-count assertions. Named `*-basic-math-history`, `*-basic-math-domain-error`, `*-basic-math-block-editor`, `*-basic-math-persisted-memos`, and `*-basic-math-url-history` screenshots complement each scenario's trace. Expression text is entered with `fill`; equals, restore, save, edit and tabs still use the shared mouse/touch activation helper. This does not verify a physical iOS keyboard.
+
+These checks do not change or resolve the known nested-postfix-percent issue (#19); the existing simple-percent regressions remain intact.

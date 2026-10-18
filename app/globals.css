@@ -283,3 +283,9 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .001ms !important; animation-duration: .001ms !important; }
 }
+
+.expression-entry { margin-top: 12px; font-size: .8rem; }
+.expression-entry summary { cursor: pointer; padding: 10px 0; }
+.expression-entry label { display: grid; gap: 6px; }
+.expression-entry input { width: 100%; min-width: 0; min-height: 44px; font-size: 16px; }
+.expression-entry small { display: block; margin-top: 6px; overflow-wrap: anywhere; }

@@ -30,7 +30,7 @@ export const guideItems: GuideItem[] = [
     latex: "200*(5%+5%)",
     description: "計算メモで使用できるブロックです。電卓と同じ計算エンジンで式を評価し、入力欄と結果をセットで保存・表示します。不正な式はそのブロック内だけにエラー表示されます。",
     previewType: "calculation",
-    limitations: "使用可能: 数値、+ - * /、小数、括弧、負数、%。使用不可: 変数、LaTeX（\\fracなど）、^による累乗、関数。",
+    limitations: "使用可能: 数値、+ - * / ^、小数、括弧、負数、sqrt・abs（1引数）、pi・e。%は従来の四則式のみ。使用不可: 変数、LaTeX（\\fracなど）、その他の関数。",
   },
   { category: "基本", name: "二乗", latex: "x^2", description: "文字や数の右上に指数を付けます。" },
   { category: "指数・添字", name: "添字", latex: "x_{1}", description: "複数文字の添字は波括弧で囲みます。" },
