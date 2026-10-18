@@ -3,6 +3,15 @@
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 
+## 2026-10-18 (JST): モバイル WebKit・タッチ回帰検証を追加
+- 変更内容: 既存GUIハーネスをChromium desktop 1365px / narrow 390px / mobile 390pxとWebKit mobile 390/375pxへ拡張。mobileはisMobile/hasTouchを有効化し、ボタン・タブをtap、touchstart実配信と横はみ出しを検査。各scenarioのエンジン・実行条件・時刻・画面・traceを区別して記録する。
+- 変更理由: 従来390px検証はマウスclickのChromiumであり、WebKitとtouchを確認できていなかった。基点main `0fe78372917793ffccc755f4ac998e7ce4d62260` はPR #13の05:56:48 UTCマージをAPIで確認した。
+- 従来の方針 / 新しい方針: Chromium両幅の回帰を共通期待値のまま維持し、従来狭幅のマウス条件も保持した上でmobile/touchとWebKitを必須追加。check名は既存の必須チェック参照を壊さないため保持。public Pagesのworkflow、アプリ、保存形式、依存lockは変更しない。
+- 第一希望 / 制約と採用策: iPhone Safari実機での確認が最終的な補完目標。今回は実端末操作環境がなく、再現可能なLinux Actions上のWebKit mobile/touchを採用する。これは実機検証の代替完了ではなく追加証拠である。
+- 検証結果: cloud Node 24.19.0で91単体テスト・lint・型検査・通常/Pagesビルド成功。GUIは実行中、最終SHAのCI結果はPRとChecksで確定後に記録する。ローカルWebKitは必要OSライブラリ不足を検出し、正規の--with-depsが利用できるActionsを最終検証環境とする。独立レビューで既存狭幅条件保持・失敗scenario状態・モーダル内部はみ出し検査を補強した。最初のローカルnpm ciは既定cache `/home/agent/.npm` が利用できず失敗し、作業可能な一時cacheへ切替えた。セキュリティ制限の解除はしていない。
+- 関連 Issue・PR: [Issue #14](https://github.com/tetsujisugimori-coder/calculator-memo/issues/14)。PR未作成。
+- 未解決事項: iPhone Safari実機、ソフトキーボード、Safari UI、セーフエリア、画面回転、長期保存/プライベートモード。既存の指数表記チェーン制約と依存警告は対象外。工程ガイドの取得失敗は記録し、リポジトリのAGENTSと関連文書は実読した。
+
 ## 2026-10-18 (JST): 計算確定後の編集・エラー復帰を統一
 - 変更内容: BS/CE/±とキーボード編集を共通の入力遷移へ接続し、編集後のafterEquals・エラー・旧結果を無効化する。両メモ入口は再計算まで無効。保存形式・評価エンジン・Memo-Nexus連携は変更しない。
 - 変更理由: main `53a36d5beda76ad04395091a93c1e982c69dcdf9`（PR #11反映済み）では編集後にafterEqualsが残り、数字再入力や表示と内部状態、メモ作成可否が食い違う。

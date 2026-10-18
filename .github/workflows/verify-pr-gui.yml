@@ -56,10 +56,10 @@ jobs:
       - name: Install locked isolated GUI dependencies
         id: gui_install
         run: npm ci --prefix e2e --ignore-scripts 2>&1 | tee gui-evidence/gui-install.log
-      - name: Install matching Chromium and system libraries
+      - name: Install matching Chromium, WebKit and system libraries
         id: browser_install
-        run: node e2e/node_modules/playwright/cli.js install --with-deps chromium 2>&1 | tee gui-evidence/browser-install.log
-      - name: Desktop and narrow GUI regression
+        run: node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit 2>&1 | tee gui-evidence/browser-install.log
+      - name: Desktop Chromium and mobile Chromium/WebKit touch regression
         id: gui
         run: node e2e/smoke.mjs 2>&1 | tee gui-evidence/gui.log
       - name: Preserve outcomes even when setup or tests fail
@@ -88,7 +88,7 @@ jobs:
             '\n\nBranch: ' + safe(diagnostic.branch) +
             '\n\nObserved stage outcomes:\n' +
             Object.entries(outcomes).map(([key, value]) => '- ' + key + ': ' + value).join('\n') +
-            '\n\nArtifacts contain synthetic screenshots, per-width traces, provenance, and stage logs. Assertion failures require diagnosis; they are not automatically application defects.\n');
+            '\n\nArtifacts contain synthetic screenshots, per-browser/viewport traces, provenance, and stage logs. Assertion failures require diagnosis; they are not automatically application defects.\n');
           NODE
       - name: Upload diagnostic evidence
         id: artifact
