@@ -33,6 +33,8 @@
 
 ![モバイルで押しやすくしたBackspaceボタン](docs/screenshots/calculator-mobile-backspace.png)
 
+ASTは全体の許可構文検証後、検証済みの子の値を再利用して各ノードを一度だけ評価します。数値演算は既存mathjsを使用します。[互換性・性能の測定方法](docs/agent/ast-evaluation.md)。
+
 ## 基本数学関数
 
 通常電卓、履歴、単独計算メモ、計算ブロックは同じmathjs 15.2.0の評価経路を使います。

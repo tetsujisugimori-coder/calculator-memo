@@ -1,4 +1,4 @@
-import { parse, type MathNode } from "mathjs";
+import { abs, add, divide, e, multiply, parse, pi, pow, sqrt, subtract, unaryMinus, unaryPlus, type MathNode } from "mathjs";
 import { formatExpression, formatNumber } from "./format";
 
 const ALLOWED_EXPRESSION = /^(?:[0-9+\-*/^().%]|sqrt|abs|pi|e)+$/;
@@ -95,6 +95,50 @@ function allowedTree(root: MathNode, allowLegacyImplicit: boolean): MathNode[] {
   return postorder;
 }
 
+// Only called with the complete allowlisted postorder from allowedTree.
+// Read already-checked child values; never compile/evaluate a subtree again.
+function evaluateTree(nodes: MathNode[]): number {
+  const values = new Map<MathNode, number>();
+  for (const node of nodes) {
+    let raw: unknown;
+    if (node.type === "OperatorNode") {
+      const operator = node as import("mathjs").OperatorNode;
+      const [left, right] = operator.args.map((arg) => values.get(arg)!);
+      if (operator.fn === "divide" && right === 0) throw new Error("0では割れません");
+      if (operator.fn === "pow" && Math.abs(right) > EXPRESSION_LIMITS.exponent) {
+        throw new Error("指数の絶対値は10000以下にしてください");
+      }
+      // Keep mathjs's number semantics (including signed zero and complex
+      // results, which the common finite-real guard below rejects).
+      try {
+        switch (operator.fn) {
+          case "add": raw = add(left, right); break;
+          case "subtract": raw = subtract(left, right); break;
+          case "multiply": raw = multiply(left, right); break;
+          case "divide": raw = divide(left, right); break;
+          case "pow": raw = pow(left, right); break;
+          case "unaryPlus": raw = unaryPlus(left); break;
+          case "unaryMinus": raw = unaryMinus(left); break;
+        }
+      } catch { throw new Error("式が不完全か、計算できない内容です"); }
+    } else if (node.type === "FunctionNode") {
+      const call = node as import("mathjs").FunctionNode;
+      const value = values.get(call.args[0])!;
+      try { raw = call.fn.name === "sqrt" ? sqrt(value) : abs(value); }
+      catch { throw new Error("式が不完全か、計算できない内容です"); }
+    } else if (node.type === "ParenthesisNode") {
+      raw = values.get((node as import("mathjs").ParenthesisNode).content)!;
+    } else if (node.type === "SymbolNode") {
+      raw = (node as import("mathjs").SymbolNode).name === "pi" ? pi : e;
+    } else {
+      raw = (node as import("mathjs").ConstantNode).value;
+    }
+    if (typeof raw !== "number" || !Number.isFinite(raw)) throw new Error("有限の実数として計算できません");
+    values.set(node, raw);
+  }
+  return values.get(nodes[nodes.length - 1])!;
+}
+
 export function calculateExpression(expression: string): CalculationResult {
   const normalized = validateExpression(expression);
   let root: MathNode;
@@ -103,26 +147,9 @@ export function calculateExpression(expression: string): CalculationResult {
   } catch {
     throw new Error("式が不完全か、計算できない内容です");
   }
-  const nodes = allowedTree(root, !/[a-z^]/.test(normalized));
-  const values = new Map<MathNode, number>();
-  // Keep mathjs's parser, precedence and numerical evaluation. Bounded trees
-  // are checked bottom-up so a bad intermediate or exponent never reaches its
-  // parent. Re-evaluation is bounded by 256 nodes / 32 levels, not user code.
-  for (const node of nodes) {
-    if (node.type === "OperatorNode") {
-      const operator = node as import("mathjs").OperatorNode;
-      if (operator.fn === "divide" && values.get(operator.args[1]) === 0) throw new Error("0では割れません");
-      if (operator.fn === "pow" && Math.abs(values.get(operator.args[1])!) > EXPRESSION_LIMITS.exponent) {
-        throw new Error("指数の絶対値は10000以下にしてください");
-      }
-    }
-    let raw: unknown;
-    try { raw = node.evaluate(); }
-    catch { throw new Error("式が不完全か、計算できない内容です"); }
-    if (typeof raw !== "number" || !Number.isFinite(raw)) throw new Error("有限の実数として計算できません");
-    values.set(node, raw);
-  }
-  const value = values.get(root)!;
+  // Complete syntax validation precedes every numerical operation, preserving
+  // validation-error precedence. Postorder keeps left-to-right runtime errors.
+  const value = evaluateTree(allowedTree(root, !/[a-z^]/.test(normalized)));
   if (Math.abs(value) > Number.MAX_SAFE_INTEGER) throw new Error("扱える桁数を超えました");
   return { value, resultText: formatNumber(value), displayExpression: formatExpression(normalized) };
 }
