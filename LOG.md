@@ -9,8 +9,10 @@
 - 変更理由: `1/10000000=`の後`*2=`は`1e-7*2`が許可文字違反、演算子BS後の±は`1e--7`になる。`12 * - 34 ` / `12 × − 34 `は評価できるのに編集時の数値/符号を誤認した。修正前の指数回帰14件中10件失敗、修正後成功。
 - 設計判断: 数値結果の文字列だけを展開する最小変更を採用。表示値を再利用する丸め、評価器へ指数構文を追加する案、全面状態機械化は不要。有限・最大安全値の制約と保存形式を維持。状態表・境界・理由は[調査記録](docs/agent/calculator-state-audit.md)へ記載。
 - 検証結果: cloud Node24.19.0で126単体・lint・型・通常/Pages build成功。独立数値探索10,021有限値で変換同値、許容範囲5,454件でmathjs評価同値。−0・正負極小・正負指数・最大安全値・非有限/範囲外の拒否も確認。GUIに小さい正負結果継続、URL訂正、括弧エラー復帰、単純括弧%、履歴/メモpayloadと再読込を追加。最初のローカルGUIは既存ブラウザcache未指定で起動失敗したため成功扱いせず、既存cacheを明示して再実行中。最終remote SHAのGUI/CIはまだ未確認。
-- 関連: [Issue #18](https://github.com/tetsujisugimori-coder/calculator-memo/issues/18)。PRは未作成、作成後に追記。独立レビューはblocking指摘なし。追加288組のUnicode/空白/演算子組合せで数値位置・CE・符号反転を確認。指摘により−MIN_VALUEの永続回帰と%直前空白の検出を補強した。
+- 関連: [Issue #18](https://github.com/tetsujisugimori-coder/calculator-memo/issues/18)。[PR #20](https://github.com/tetsujisugimori-coder/calculator-memo/pull/20)。独立レビューはblocking指摘なし。追加1,080組のUnicode/空白/演算子組合せで数値位置・CE・符号反転を確認。指摘により−MIN_VALUEの永続回帰と%直前空白の検出を補強した。
 - 未解決事項: ネスト括弧の%は既存の評価器変換の問題で、計算ブロック・メモ保存にも影響するため[Issue #19](https://github.com/tetsujisugimori-coder/calculator-memo/issues/19)へ別件化。再現/期待/影響と分離理由を記録し、解決済みとは扱わない。実機Safari・OSキーボード/native text zoom・長期保存、依存警告は残る。レイアウト・保存形式・workflow・依存変更なし。
+- CI実測: head `9d39a0cd3b18728cbeb36f30a680c16c5ed417be` の[39112512860](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39112512860)は126単体/lint/型/通常・Pages build/全GUI成功。17:44:41〜17:48:19 JST、Chromium141.0.7390.37/WebKit26.0の6条件78検証、mobile各187tap、エラー0。[58画面・6trace・ログ](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39112512860/artifacts/12130169627)のZIP SHA256 `e4eee343626b35c104b6d4262024d0d18e6c59a5d7a684bdc1fcb48a0913da71` と配信SHAを照合（7日保持）。sticky全12測定も28px。ローカルはChromium4条件の暫定snapshot操作を確認したが再buildとの同時進行があり最終SHA証明には使用せず、WebKitはlibgtk等の不足で起動未実施。上記Actionsで全6条件を実証した。
+- 証拠の補強: 初回WebKitの追加full-page画像にはスクロール位置によりsticky headerが画像途中へ描画された。UI/CSS変更による退行とは断定せず、追加2場面だけ撮影前に上端へ戻しscrollY0と既存header包含検査を行う。既存sticky stressは変更しない。この記録/撮影補強後の最終SHA全CIは[PR #20 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/20/checks)で再確認する。
 - 環境と参照: 工程ガイドは参照済み。江戸弁ガイド/辞典の指定Library参照は可視性エラーで本文未確認、作業継続。既存GitHubコネクタで同repo・基点commitを親にする公開を利用し、認証/権限は変更しない。破壊的操作・main push・マージ・公開deployなし。
 
 

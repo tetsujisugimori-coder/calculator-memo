@@ -522,6 +522,9 @@ async function exercise(scenario) {
     expression: "0.0000002", result: 2e-7, resultText: "0.0000002", title: "Synthetic tiny result",
   });
   assert.deepEqual((await storage()).notes.slice(1), notesBeforeChains);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+  await assertHeaderFit("small-result-chain-capture");
   await screenshot(prefix + "-small-result-chain");
   await activate(button("足す"));
   await activate(button("1文字削除"));
@@ -547,6 +550,9 @@ async function exercise(scenario) {
     beforeImported.history = (await storage()).history;
   }
   assert.deepEqual((await storage()).notes, beforeImported.notes);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+  await assertHeaderFit("imported-negative-edit-capture");
   await screenshot(prefix + "-imported-negative-edit");
   await passed(prefix + ": positive/negative tiny result chain, editable decimal, exact history/memo payload and imported whitespace/Unicode signs");
   await stage(prefix + ": parentheses-percent-and-error-boundaries");
