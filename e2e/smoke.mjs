@@ -490,6 +490,98 @@ async function exercise(scenario) {
   }
   await screenshot(prefix + "-after-equals-recovery");
   await passed(prefix + ": chained/repeated equals, decimal/digit re-entry, empty CE, and zero-division CE/BS/digit recovery");
+  await stage(prefix + ": small-result-chain-and-imported-editing");
+  const notesBeforeChains = (await storage()).notes;
+  for (const negative of [false, true]) {
+    await activate(button("すべて消去"));
+    await page.keyboard.type((negative ? "-" : "") + "1/10000000=");
+    await expect(page.locator(".lcd-result")).toHaveText(negative ? "-0.0000001" : "0.0000001");
+    const historyBeforeChain = (await storage()).history;
+    await activate(button("掛ける"));
+    await noteDisabled();
+    await expect(page.locator(".lcd-expression")).not.toContainText("e");
+    assert.deepEqual((await storage()).history, historyBeforeChain);
+    await activate(button("2"));
+    await activate(button("計算する"));
+    await expect(page.locator(".lcd-result")).toHaveText(negative ? "-0.0000002" : "0.0000002");
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject({
+      expression: (negative ? "-" : "") + "0.0000001*2", result: negative ? -2e-7 : 2e-7,
+    });
+  }
+  // The generated decimal remains editable; sign and CE must not target an exponent.
+  await activate(button("足す"));
+  await activate(button("1文字削除"));
+  await activate(button("符号反転"));
+  await expect(page.locator(".lcd-result")).toHaveText("0.0000002");
+  await noteDisabled();
+  await activate(button("計算する"));
+  await activate(button("単独計算メモを作成"));
+  await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic tiny result");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  await expect.poll(async () => (await storage()).notes[0]).toMatchObject({
+    expression: "0.0000002", result: 2e-7, resultText: "0.0000002", title: "Synthetic tiny result",
+  });
+  assert.deepEqual((await storage()).notes.slice(1), notesBeforeChains);
+  await screenshot(prefix + "-small-result-chain");
+  await activate(button("足す"));
+  await activate(button("1文字削除"));
+  await activate(button("現在の数値を消去"));
+  await expect(page.locator(".lcd-expression")).toHaveText("0");
+  await noteDisabled();
+  const beforeImported = await storage();
+  for (const imported of ["12 * - 34 ", "12 × − 34 "]) {
+    await page.goto(base + "?expr=" + encodeURIComponent(imported));
+    await expect(page.locator(".lcd-result")).toHaveText("-34");
+    assert.deepEqual((await storage()).history, beforeImported.history);
+    await noteDisabled();
+    await activate(button("計算する"));
+    await expect(page.locator(".lcd-result")).toHaveText("-408");
+    await activate(button("符号反転"));
+    await expect(page.locator(".lcd-result")).toHaveText("34");
+    await noteDisabled();
+    await activate(button("現在の数値を消去"));
+    await activate(button("2"));
+    await activate(button("計算する"));
+    await expect(page.locator(".lcd-result")).toHaveText("24");
+    // A new URL navigation must preserve all stored items, with no automatic history.
+    beforeImported.history = (await storage()).history;
+  }
+  assert.deepEqual((await storage()).notes, beforeImported.notes);
+  await screenshot(prefix + "-imported-negative-edit");
+  await passed(prefix + ": positive/negative tiny result chain, editable decimal, exact history/memo payload and imported whitespace/Unicode signs");
+  await stage(prefix + ": parentheses-percent-and-error-boundaries");
+  for (const sample of [
+    { expression: "(2+3", correction: ")", result: "5" },
+    { expression: "12+", correction: "*2", result: "24" },
+  ]) {
+    await activate(button("すべて消去"));
+    const snapshot = await storage();
+    await page.keyboard.type(sample.expression + "=");
+    await expect(page.locator(".lcd-result")).toHaveText("Error");
+    await noteDisabled();
+    assert.deepEqual((await storage()).history, snapshot.history);
+    await page.keyboard.type(sample.correction + "=");
+    await expect(page.locator(".lcd-result")).toHaveText(sample.result);
+  }
+  await page.keyboard.type("(50+50)="); // Left parenthesis starts fresh after equals.
+  await expect(page.locator(".lcd-result")).toHaveText("100");
+  await page.keyboard.type("%"); // Postfix percent edits the original expression.
+  await noteDisabled();
+  await page.keyboard.type("=");
+  await expect(page.locator(".lcd-result")).toHaveText("1");
+  await activate(button("現在の数値を消去")); // Closed parentheses retain existing conservative editing contract.
+  await noteDisabled();
+  await page.keyboard.type("=");
+  await expect(page.locator(".lcd-result")).toHaveText("1");
+  await page.keyboard.type("+2=");
+  await expect(page.locator(".lcd-result")).toHaveText("3");
+  const beforeFinalReload = await storage();
+  await page.goto(base);
+  await selectPanel("notes");
+  await expect(page.locator(".note-card").filter({ hasText: "Synthetic tiny result" })).toContainText("0.0000002");
+  assert.deepEqual((await storage()).history, beforeFinalReload.history);
+  assert.deepEqual((await storage()).notes, beforeFinalReload.notes);
+  await passed(prefix + ": failed expressions corrected without history side effects, fresh parentheses, postfix percent and final persistence");
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

@@ -35,6 +35,7 @@ Each scenario actively exercises:
 - Unexpected console/page errors, HTTP errors, and non-loopback requests fail the test
 - Document/body horizontal overflow at initial display, memo dialogs and screenshot checkpoints fails the test
 - After-equals BS/CE/± edits, disabled memo entrances, recalculated memo payload, repeated/chained equals and zero-division recovery
+- Small positive/negative result chaining without exponent syntax, exact history/memo values, editable chained operands, whitespace/Unicode-sign URL editing, parentheses error correction and simple postfix percent
 
 The harness checks `git rev-parse HEAD` against the PR head SHA. Only after the Pages build, it generates `dist-pages/__gui_provenance.json` with exact SHA, branch, run and attempt; each browser fetches and compares it. No test marker is added to `public/` or application source. Screenshots have a clearly labeled test-only overlay that is immediately removed; provenance JSON and trace retain the unambiguous identity.
 
