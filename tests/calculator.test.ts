@@ -97,3 +97,24 @@ describe("spaced URL operands", () => {
     expect(clearEntry(input)).toBe(cleared);
   });
 });
+
+describe("PR20 original-string operand offsets", () => {
+  // Positions are zero-based UTF-16 offsets in the unnormalized input.
+  // The newline case contains an actual newline at runtime, not a literal \\n.
+  it.each([
+    { input: "12 * − 34", minus: 5, start: 5, text: "-34", flipped: "12 * 34", cleared: "12 * " },
+    { input: "12 * −   34", minus: 5, start: 5, text: "-34", flipped: "12 * 34", cleared: "12 * " },
+    { input: "12 * −\n34", minus: 5, start: 5, text: "-34", flipped: "12 * 34", cleared: "12 * " },
+    { input: "12 * - 34", minus: 5, start: 5, text: "-34", flipped: "12 * 34", cleared: "12 * " },
+    { input: "12 - 34", minus: 3, start: 5, text: "34", flipped: "12 - -34", cleared: "12 - " },
+    { input: "12 * --34", minus: 6, start: 6, text: "-34", flipped: "12 * -34", cleared: "12 * -" },
+  ])("preserves source offsets and edit expectations for $input", ({ input, minus, start, text, flipped, cleared }) => {
+    const prefix = input.slice(0, input.indexOf("34")).trimEnd();
+    expect(prefix.length - 1).toBe(minus);
+    expect(input[minus]).toMatch(/[-−]/);
+    expect(trailingNumber(input)).toEqual({ start, text });
+    expect(normalizeExpression(input.slice(start))).toBe(text);
+    expect(toggleSign(input)).toBe(flipped);
+    expect(clearEntry(input)).toBe(cleared);
+  });
+});

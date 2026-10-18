@@ -2,6 +2,15 @@
 
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
+## 2026-10-18 19:33 (JST): PR20の元文字列オフセットを追加確認（不具合再現なし）
+- 基点: PR #20 head `1b40bfea68c4ccab3d5fa3b7dea7de59cea9ebff`、最新main `f6ae38a972575858db7236ad1a9846a61ec16e88`を再確認。cloud既存checkoutの全tree `4cc32e301254ea2a7560eba5e4aceeff12884b40`とremote headのtreeが一致。AGENTS・README・関連docs・workflow・Issue #19・PR #20を読んだ。
+- 変更内容/理由: 指定6式について元文字列の負号位置・抽出start/text・±・CEの期待値を固定した回帰を追加。[期待＝実測の全6式表と位置の根拠](docs/agent/calculator-state-audit.md#pr-20-マージ前追加確認-元文字列の位置2026-10-18-jst)を記録。改行例は実改行を使用。元文字列の位置不整合は未変更実装で再現せず、アプリ修正は行わない。正規化後の添字流用やrefactorなし。
+- 検証結果: cloud Node24.19.0で132単体（既存126＋追加6）・lint・型・通常/Pages buildがすべて成功。既存chunk-size/proxy/vinext分類警告は残る。独立エージェントがソースと6式の期待値を照合し阻害指摘なし。人間の独立レビュー完了とは扱わない。
+- GUI影響判断: アプリ/レイアウト/状態処理は無変更で、新規GUI操作の追加は不要。既存Chromium/WebKit全6条件・78検証を最終remote SHAのActionsで再実行する。現在は新SHAのCI未実行、結果は[PR #20 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/20/checks)および追記コメントで確認する。過去SHAの成功を流用しない。
+- 関連/範囲: [PR #20](https://github.com/tetsujisugimori-coder/calculator-memo/pull/20)、[Issue #18](https://github.com/tetsujisugimori-coder/calculator-memo/issues/18)。評価器/%変換、[Issue #19](https://github.com/tetsujisugimori-coder/calculator-memo/issues/19)、PR20既存の状態遷移・小さい結果の十進展開・保存形式・workflow・依存は変更なし。新規PR・main push・マージ・deployなし。既存作業枝へ追記し独立レビュー待ちで停止する。
+- 制約: 既存snapshotはGit remote/認証を持たないため、既存公式GitHubコネクタで基点headを親にcommitし同じ枝へ非強制更新する。権限/認証の変更や制限回避なし。実機Safari/OSキーボード/native文字拡大/長期保存と既存依存警告は引き続き未検証・残存。
+
+
 
 ## 2026-10-18 17:40 (JST): 計算状態の境界を調査し小さい結果の継続・輸入式の訂正を修正
 - 基点: PR #17は17:31:52 JSTにマージ済み。最新main `f6ae38a972575858db7236ad1a9846a61ec16e88` と83blobのGit SHAを照合してcloud作業snapshotを作成。AGENTS・README・関連docs・workflow・LOG・Issue/PRを確認。
