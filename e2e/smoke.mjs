@@ -12,14 +12,14 @@ process.chdir(fileURLToPath(new URL("../", import.meta.url)));
 const output = "gui-evidence";
 await mkdir(output, { recursive: true });
 const metadata = {
-  schemaVersion: 1, status: "running", stage: "provenance", checks: [], errors: [],
+  schemaVersion: 2, scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
   expectedSha: process.env.EXPECTED_SHA || null,
   branch: process.env.PR_BRANCH || null, pr: process.env.PR_NUMBER || null,
   run: process.env.GITHUB_RUN_ID || "local", attempt: process.env.GITHUB_RUN_ATTEMPT || "1",
   startedAt: new Date().toISOString(), node: process.version,
   runner: { os: process.env.RUNNER_OS, image: process.env.ImageOS, version: process.env.ImageVersion },
   syntheticDataOnly: true, productionDeployed: false,
-  method: "Playwright Chromium on loopback-only Vite Pages preview; not interactive Cloud Browser",
+  method: "Playwright Chromium and WebKit on loopback-only Pages preview; mobile/touch emulation, not physical iPhone Safari",
 };
 const persist = () => writeFile(output + "/provenance.json", JSON.stringify(metadata, null, 2) + "\n");
 await persist();
@@ -31,9 +31,36 @@ function assertOwnedServer() {
   assert.ok(server && serverReady && server.exitCode === null && server.signalCode === null && !metadata.serverError, "The preview started by this harness must still be alive");
 }
 let browserErrors = [];
+let currentScenario;
+let activeScenarioRecord;
+// Locator.tap emits touch input; desktop retains mouse clicks. No forced clicks.
+async function activate(locator) {
+  if (currentScenario.hasTouch) {
+    const before = await page.evaluate(() => window.__guiTouchStarts);
+    await locator.tap();
+    await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
+    activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
+  } else await locator.click();
+}
+async function assertHorizontalFit() {
+  const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
+  assert.equal(dimensions.viewport, currentScenario.width, "CSS viewport must remain configured width");
+  assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.body <= dimensions.viewport + 1, JSON.stringify(dimensions));
+  for (const modal of await page.getByRole("dialog").all()) {
+    if (!(await modal.isVisible())) continue;
+    const bounds = await modal.boundingBox();
+    assert.ok(bounds && bounds.x >= -1 && bounds.x + bounds.width <= currentScenario.width + 1, "Dialog must fit horizontal viewport");
+    const content = modal.locator(".modal-content");
+    for (const scrollArea of await content.all()) {
+      const size = await scrollArea.evaluate((element) => ({ scroll: element.scrollWidth, client: element.clientWidth }));
+      assert.ok(size.scroll <= size.client + 1, "Synthetic modal content must not be horizontally clipped: " + JSON.stringify(size));
+    }
+  }
+}
 async function stage(name) { metadata.stage = name; await persist(); }
 async function passed(name) { metadata.checks.push(name); console.log("PASS:", name); await persist(); }
 async function screenshot(name) {
+  await assertHorizontalFit();
   // Test-only visual label, removed immediately after capture; not an app feature.
   await page.evaluate((identity) => {
     const banner = document.createElement("div");
@@ -41,7 +68,7 @@ async function screenshot(name) {
     banner.textContent = "TEST OVERLAY | " + identity;
     banner.style.cssText = "position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#101820;color:#fff;font:11px monospace;padding:8px;overflow-wrap:anywhere;pointer-events:none";
     document.body.append(banner);
-  }, metadata.branch + " | SHA " + metadata.sha + " | run " + metadata.run + "/" + metadata.attempt);
+  }, currentScenario.id + " | " + metadata.branch + " | SHA " + metadata.sha + " | run " + metadata.run + "/" + metadata.attempt);
   try { await page.screenshot({ path: output + "/" + name + ".png", fullPage: true }); }
   finally { await page.locator("#gui-test-overlay").evaluate((element) => element.remove()); }
 }
@@ -49,24 +76,33 @@ const button = (name) => page.getByRole("button", { name, exact: true });
 async function selectPanel(panel) {
   const tab = page.getByRole("tab", { name: panel === "notes" ? /^メモ/ : /^履歴/ });
   if (await tab.isVisible()) {
-    await tab.click();
+    await activate(tab);
     await expect(tab).toHaveAttribute("aria-selected", "true");
   }
   await expect(page.locator("#" + panel + "-panel")).toBeVisible();
 }
 async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }
-async function exercise(width) {
+async function exercise(scenario) {
   assertOwnedServer();
-  const prefix = width + "px";
+  currentScenario = scenario;
+  const { width, height, isMobile, hasTouch, deviceScaleFactor } = scenario;
+  const prefix = scenario.id;
+  const record = { ...scenario, browserVersion: browser.version(), startedAt: new Date().toISOString(), status: "running" };
+  activeScenarioRecord = record;
+  metadata.scenarios.push(record);
   await stage(prefix + ": browser-context");
   browserErrors = [];
-  context = await browser.newContext({ viewport: { width, height: 1000 }, locale: "ja-JP", timezoneId: "Asia/Tokyo", colorScheme: "light", serviceWorkers: "block" });
+  context = await browser.newContext({ viewport: { width, height }, isMobile, hasTouch, deviceScaleFactor, locale: "ja-JP", timezoneId: "Asia/Tokyo", colorScheme: "light", serviceWorkers: "block" });
   await context.route("**/*", (route) => {
     if (new URL(route.request().url()).origin !== origin) {
       browserErrors.push({ type: "blocked-external-request", url: route.request().url() });
       return route.abort();
     }
     return route.continue();
+  });
+  await context.addInitScript(() => {
+    window.__guiTouchStarts = 0;
+    document.addEventListener("touchstart", () => { window.__guiTouchStarts += 1; }, { passive: true });
   });
   await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
   page = await context.newPage();
@@ -84,6 +120,19 @@ async function exercise(width) {
   assert.deepEqual(served, metadata.servedIdentity);
   await passed(prefix + ": browser fetched exact SHA/branch/run provenance from built output");
   await expect.poll(storage).toMatchObject({ notes: [], history: [] });
+  await assertHorizontalFit();
+  record.environment = await page.evaluate(() => ({ userAgent: navigator.userAgent, maxTouchPoints: navigator.maxTouchPoints, coarsePointer: matchMedia("(pointer: coarse)").matches, innerWidth, devicePixelRatio }));
+  assert.equal(record.environment.innerWidth, width, "Viewport meta must preserve CSS width");
+  if (hasTouch) {
+    // Linux Playwright WebKit 26 reports maxTouchPoints=0 even with touch
+    // emulation enabled. Record it without spoofing; actual tap delivery is required.
+    assert.ok(record.environment.coarsePointer, "Mobile context must expose a coarse pointer");
+    await activate(button("1"));
+    await expect(page.locator(".lcd-result")).toHaveText("1");
+    record.touchStarts = await page.evaluate(() => window.__guiTouchStarts);
+    assert.ok(record.touchStarts > 0, "Mobile activation must deliver real browser touch events");
+    await passed(prefix + ": mobile viewport/coarse pointer and touch event delivery confirmed");
+  }
   await stage(prefix + ": arithmetic-history-error-recovery");
   const cases = [
     { keys: ["1", "2", "足す", "3", "4"], expression: "12 ＋ 34", result: "46" },
@@ -92,60 +141,62 @@ async function exercise(width) {
     { keys: ["8", "割る", "2"], expression: "8 ÷ 2", result: "4" },
   ];
   for (const [index, sample] of cases.entries()) {
-    await button("すべて消去").click();
-    for (const key of sample.keys) await button(key).click();
-    await button("計算する").click();
+    await activate(button("すべて消去"));
+    for (const key of sample.keys) await activate(button(key));
+    await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText(sample.result);
     await expect(page.locator(".lcd-expression")).toHaveText(sample.expression);
     await selectPanel("history");
     await expect(page.locator(".history-item")).toHaveCount(index + 1);
     await expect(page.locator(".history-item").first()).toContainText("= " + sample.result);
   }
-  await button("すべて消去").click();
-  for (const key of ["1", "割る", "0", "計算する"]) await button(key).click();
+  await activate(button("すべて消去"));
+  for (const key of ["1", "割る", "0", "計算する"]) await activate(button(key));
   await expect(page.locator(".lcd-result")).toHaveText("Error");
   await expect(page.locator(".history-item")).toHaveCount(4);
   await expect(button("単独計算メモを作成")).toBeDisabled();
-  await button("すべて消去").click();
+  await activate(button("すべて消去"));
   await expect(page.locator(".lcd-result")).toHaveText("0");
   const history = page.locator(".history-item").filter({ has: page.locator(".history-formula span", { hasText: "12 ＋ 34" }) });
-  await history.getByRole("button", { name: "戻す", exact: true }).click();
+  await activate(history.getByRole("button", { name: "戻す", exact: true }));
   await expect(page.locator(".lcd-expression")).toHaveText("12 ＋ 34");
   await expect(page.locator(".lcd-result")).toHaveText("34"); // Editing state, not recomputation.
   await expect(button("単独計算メモを作成")).toBeDisabled();
   await passed(prefix + ": all four arithmetic operations, four history entries, error recovery, editable history restore");
   await screenshot(prefix + "-arithmetic-history");
   await stage(prefix + ": single-memo-save-cancel-edit");
-  await history.getByRole("button", { name: "単独計算メモ", exact: true }).click();
+  await activate(history.getByRole("button", { name: "単独計算メモ", exact: true }));
   const dialog = page.getByRole("dialog");
+  await assertHorizontalFit();
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic single memo");
   await dialog.getByLabel("前提・補足", { exact: false }).fill("Synthetic data only.");
-  await dialog.getByRole("button", { name: "保存する", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
   await selectPanel("notes");
   const single = page.locator(".note-card").filter({ hasText: "Synthetic single memo" });
   await expect(single).toBeVisible();
   await expect(single).toContainText("= 46");
-  await single.getByRole("button", { name: "編集", exact: true }).click();
+  await activate(single.getByRole("button", { name: "編集", exact: true }));
   await dialog.getByLabel("タイトル", { exact: false }).fill("Discard this synthetic edit");
-  await dialog.getByRole("button", { name: "キャンセル", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
   await expect(dialog).toHaveCount(0);
   await expect(single).toBeVisible();
   await expect(page.getByText("Discard this synthetic edit")).toHaveCount(0);
-  await single.getByRole("button", { name: "編集", exact: true }).click();
+  await activate(single.getByRole("button", { name: "編集", exact: true }));
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic single memo edited");
-  await dialog.getByRole("button", { name: "保存する", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
   await expect(single).toContainText("Synthetic single memo edited");
   await passed(prefix + ": single memo saved, cancelled edit discarded, subsequent edit saved");
   await stage(prefix + ": block-memo-save");
-  await page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }).click();
-  await dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }).click();
+  await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
+  await activate(dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }));
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic block memo");
-  await dialog.getByRole("button", { name: "＋ 文章", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "＋ 文章", exact: true }));
   await dialog.getByLabel("Markdown文章").fill("Synthetic block text.");
-  await dialog.getByRole("button", { name: "＋ 計算", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+  await assertHorizontalFit();
   await dialog.getByLabel("計算式", { exact: true }).fill("2*(5+3)");
   await expect(dialog.locator(".calculation-live-result strong")).toHaveText("2 × (5 ＋ 3) = 16");
-  await dialog.getByRole("button", { name: "保存する", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
   await expect(page.locator(".note-card")).toHaveCount(2);
   await assertSavedMemoContents();
   async function assertSavedMemoContents() {
@@ -176,9 +227,9 @@ async function exercise(width) {
   assert.deepEqual(after.notes, before.notes);
   assert.deepEqual(after.history, before.history);
   await screenshot(prefix + "-persisted-memos");
-  await single.getByRole("button", { name: "詳細", exact: true }).click();
+  await activate(single.getByRole("button", { name: "詳細", exact: true }));
   await expect(dialog).toContainText("= 46");
-  await dialog.getByRole("button", { name: "閉じる", exact: true }).last().click();
+  await activate(dialog.getByRole("button", { name: "閉じる", exact: true }).last());
   await expect(dialog).toHaveCount(0);
   await selectPanel("history");
   await expect(page.locator(".history-item")).toHaveCount(4);
@@ -186,29 +237,29 @@ async function exercise(width) {
   await screenshot(prefix + "-persisted-history");
   await passed(prefix + ": both memos/history preserved across reload; panels and detail modal actively exercised");
   await stage(prefix + ": trailing-number-edit-regression");
-  await button("すべて消去").click();
-  for (const key of ["1", "2", "引く", "3", "4"]) await button(key).click();
+  await activate(button("すべて消去"));
+  for (const key of ["1", "2", "引く", "3", "4"]) await activate(button(key));
   await expect(page.locator(".lcd-result")).toHaveText("34");
-  await button("符号反転").click();
+  await activate(button("符号反転"));
   await expect(page.locator(".lcd-result")).toHaveText("-34");
-  await button("符号反転").click();
+  await activate(button("符号反転"));
   await expect(page.locator(".lcd-result")).toHaveText("34");
-  await button("現在の数値を消去").click();
+  await activate(button("現在の数値を消去"));
   await expect(page.locator(".lcd-expression")).toHaveText("12 −");
-  for (const key of ["5", "計算する"]) await button(key).click();
+  for (const key of ["5", "計算する"]) await activate(button(key));
   await expect(page.locator(".lcd-result")).toHaveText("7");
   await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12-5", result: 7 });
   // Existing post-equals numeric re-entry and chained calculation remain supported.
-  for (const key of ["掛ける", "2", "計算する"]) await button(key).click();
+  for (const key of ["掛ける", "2", "計算する"]) await activate(button(key));
   await expect(page.locator(".lcd-result")).toHaveText("14");
-  await button("3").click();
+  await activate(button("3"));
   await expect(page.locator(".lcd-expression")).toHaveText("3");
-  await button("すべて消去").click();
+  await activate(button("すべて消去"));
   // Keyboard input shares the same trailing-number display and CE behavior.
   await page.keyboard.type("12-3.");
-  await button("符号反転").click();
+  await activate(button("符号反転"));
   await expect(page.locator(".lcd-result")).toHaveText("-3");
-  await button("現在の数値を消去").click();
+  await activate(button("現在の数値を消去"));
   await page.keyboard.type("0.5");
   await page.keyboard.press("Enter");
   await expect(page.locator(".lcd-result")).toHaveText("11.5");
@@ -219,37 +270,37 @@ async function exercise(width) {
   await expect(page.locator(".lcd-result")).toHaveText("-34");
   assert.deepEqual((await storage()).history, beforeUrl.history);
   await expect(button("単独計算メモを作成")).toBeDisabled();
-  await button("符号反転").click();
-  await button("計算する").click();
+  await activate(button("符号反転"));
+  await activate(button("計算する"));
   await expect(page.locator(".lcd-result")).toHaveText("-22");
   await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12-34", result: -22 });
   await passed(prefix + ": binary subtraction preserved by sign/CE, decimal keyboard replacement, chained/re-entry and URL history checks");
   await stage(prefix + ": after-equals-state-transitions");
   async function confirmed15() {
-    await button("すべて消去").click();
+    await activate(button("すべて消去"));
     await page.keyboard.type("12+3");
-    await button("計算する").click();
+    await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText("15");
     await expect(button("単独計算メモを作成")).toBeEnabled();
   }
   async function noteDisabled() {
     await expect(button("単独計算メモを作成")).toBeDisabled();
     await selectPanel("notes");
-    await page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }).click();
+    await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
     await expect(page.getByRole("dialog").getByRole("button", { name: /SINGLE RESULT/ })).toBeDisabled();
     await page.keyboard.press("Escape");
   }
   for (const edit of ["1文字削除", "現在の数値を消去"]) {
     await confirmed15();
     const historyBeforeEdit = (await storage()).history;
-    await button(edit).click();
+    await activate(button(edit));
     await expect(page.locator(".lcd-expression")).toHaveText("12 ＋");
     await expect(page.locator(".lcd-result")).toHaveText("0");
     await noteDisabled();
-    await button("4").click();
+    await activate(button("4"));
     assert.deepEqual((await storage()).history, historyBeforeEdit);
     await expect(page.locator(".lcd-expression")).toHaveText("12 ＋ 4");
-    await button("計算する").click();
+    await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText("16");
     await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12+4", result: 16 });
   }
@@ -259,17 +310,17 @@ async function exercise(width) {
   await page.keyboard.press("Enter");
   await expect(page.locator(".lcd-result")).toHaveText("16");
   await confirmed15();
-  await button("符号反転").click();
+  await activate(button("符号反転"));
   await expect(page.locator(".lcd-result")).toHaveText("-3");
   await noteDisabled();
-  await button("符号反転").click();
+  await activate(button("符号反転"));
   await noteDisabled();
-  await button("符号反転").click();
-  await button("計算する").click();
+  await activate(button("符号反転"));
+  await activate(button("計算する"));
   await expect(page.locator(".lcd-result")).toHaveText("9");
-  await button("単独計算メモを作成").click();
+  await activate(button("単独計算メモを作成"));
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic edited result");
-  await dialog.getByRole("button", { name: "保存する", exact: true }).click();
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
   await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic edited result")).toMatchObject({ expression: "12+-3", result: 9, resultText: "9" });
   await passed(prefix + ": BS/CE/sign/keyboard edits invalidate confirmation and both memo entrances; recalculated memo stores new result");
   await confirmed15();
@@ -277,28 +328,28 @@ async function exercise(width) {
   await expect(page.locator(".lcd-result")).toHaveText("17");
   await page.keyboard.type("=");
   await expect(page.locator(".lcd-result")).toHaveText("17");
-  await button(".").click();
+  await activate(button("."));
   await expect(page.locator(".lcd-expression")).toHaveText("0.");
-  await button("5").click();
-  await button("計算する").click();
+  await activate(button("5"));
+  await activate(button("計算する"));
   await expect(page.locator(".lcd-result")).toHaveText("0.5");
-  await button("7").click();
+  await activate(button("7"));
   await expect(page.locator(".lcd-expression")).toHaveText("7");
-  await button("計算する").click();
-  await button("現在の数値を消去").click();
+  await activate(button("計算する"));
+  await activate(button("現在の数値を消去"));
   await expect(page.locator(".lcd-expression")).toHaveText("0");
   await expect(page.locator(".lcd-result")).toHaveText("0");
-  await button("足す").click();
+  await activate(button("足す"));
   await expect(page.locator(".lcd-expression")).toHaveText("0");
   await noteDisabled();
   for (const repair of ["現在の数値を消去", "1文字削除", "fresh-digit"]) {
-    await button("すべて消去").click();
+    await activate(button("すべて消去"));
     await page.keyboard.type("8/0=");
     await expect(page.locator(".lcd-result")).toHaveText("Error");
     await noteDisabled();
-    if (repair !== "fresh-digit") await button(repair).click();
-    await button("2").click();
-    await button("計算する").click();
+    if (repair !== "fresh-digit") await activate(button(repair));
+    await activate(button("2"));
+    await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText(repair === "fresh-digit" ? "2" : "4");
   }
   await screenshot(prefix + "-after-equals-recovery");
@@ -306,6 +357,7 @@ async function exercise(width) {
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });
+  record.status = "passed"; record.finishedAt = new Date().toISOString();
   await context.close(); context = null; page = null;
 }
 try {
@@ -339,13 +391,28 @@ try {
   }, { timeout: 30000 }).toBe(200);
   assertOwnedServer();
   await stage("browser-launch");
-  browser = await playwright.chromium.launch();
-  metadata.browserVersion = browser.version();
-  for (const width of [1365, 390]) await exercise(width);
+  const scenarios = [
+    { id: "chromium-desktop-1365px", engine: "chromium", width: 1365, height: 1000, isMobile: false, hasTouch: false, deviceScaleFactor: 1 },
+    { id: "chromium-narrow-390px", engine: "chromium", width: 390, height: 1000, isMobile: false, hasTouch: false, deviceScaleFactor: 1 },
+    { id: "chromium-mobile-390px", engine: "chromium", width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },
+    { id: "webkit-mobile-390px", engine: "webkit", width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },
+    { id: "webkit-mobile-375px", engine: "webkit", width: 375, height: 667, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
+  ];
+  for (const scenario of scenarios) {
+    await stage(scenario.id + "-launch");
+    browser = await playwright[scenario.engine].launch();
+    await exercise(scenario);
+    await browser.close(); browser = null;
+  }
   assertOwnedServer();
   metadata.status = "passed"; metadata.stage = "complete";
 } catch (error) {
   metadata.status = "failed";
+  if (activeScenarioRecord?.status === "running") {
+    activeScenarioRecord.status = "failed";
+    activeScenarioRecord.finishedAt = new Date().toISOString();
+    activeScenarioRecord.failureStage = metadata.stage;
+  }
   metadata.failure = { message: String(error.message || error), stack: String(error.stack || error), stage: metadata.stage,
     classification: metadata.stage.includes(":") ? "test-or-application: requires diagnosis" : "environment-or-configuration: requires diagnosis" };
   metadata.errors = browserErrors;

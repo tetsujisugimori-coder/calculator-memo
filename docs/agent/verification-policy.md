@@ -11,7 +11,7 @@
 ## 基本の検証
 既存の単体テスト、lint、型検査、通常ビルド、Pages ビルドを基準とする。GUI の実行環境・コマンド・成果物は [e2e/README.md](../../e2e/README.md) を参照し、workflow と照合する。現在の PR GUI workflow は PR head を checkout するため、マージ結果や公開サイトを検証したと書かない。
 
-GUI は GitHub Actions の隔離 runner と Playwright Chromium を継続利用する。Windows や新しい公開ホスティングを必須にしない。公開アプリの成功と修正ブランチの成功を区別する。自動 GUI は実ブラウザ操作だが、対話的 Cloud Browser 接続、iPhone Safari、全操作・全幅の保証ではない。
+GUI は GitHub Actions の隔離 runner と Playwright Chromium / WebKit を継続利用する。Windows や新しい公開ホスティングを必須にしない。公開アプリの成功と修正ブランチの成功を区別する。自動 GUI は実ブラウザ操作だが、対話的 Cloud Browser 接続、iPhone Safari実機、全操作・全幅の保証ではない。WebKitのmobile/touchエミュレーションと実機Safariの結果を分け、ソフトキーボード・セーフエリア・長期保存等は実施していなければ未検証とする。
 
 GUI が実行できない場合、接続・起動・権限などの具体的な原因を切り分け、既存の Pages preview や Actions 等の許可された代替を試す。安全制限を回避せず、必要な承認だけを尋ねる。代替の成功が元の未検証項目を満たすかを明示する。
 

@@ -104,3 +104,9 @@ npm run build
 ## 開発運用と履歴
 
 エージェントの作業規則と PR 作成前の確認は [AGENTS.md](AGENTS.md)、開発履歴・重要な設計判断は [LOG.md](LOG.md)、PR の GUI 検証手順は [e2e/README.md](e2e/README.md) を参照してください。[GitHub 開発運用](docs/agent/github-workflow.md) と [検証方針](docs/agent/verification-policy.md) が Issue・PR・レビュー・CI の手順を定めます。各 PR では原則 LOG.md を更新し、不要な場合は PR 本文に理由を記載します。
+
+### モバイル GUI 自動検証
+
+PR の GUI 検証は Chromium の1365px・390pxマウス条件および390px mobile/touch、WebKit の390px・375px mobile/touchを対象にします。数字・編集・連続計算・異常系復帰・履歴・両メモの保存と再読込を同じ期待値で確認し、タッチイベントと横方向のはみ出しも検査します。結果と画像・trace・対象SHAは [GUI手順](e2e/README.md) を参照してください。
+
+WebKit自動操作はiPhone Safari実機の成功を意味しません。実機のソフトキーボード、Safari UI、セーフエリア、画面回転、長期保存などは別途確認が必要です。
