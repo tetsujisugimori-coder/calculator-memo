@@ -224,6 +224,85 @@ async function exercise(width) {
   await expect(page.locator(".lcd-result")).toHaveText("-22");
   await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12-34", result: -22 });
   await passed(prefix + ": binary subtraction preserved by sign/CE, decimal keyboard replacement, chained/re-entry and URL history checks");
+  await stage(prefix + ": after-equals-state-transitions");
+  async function confirmed15() {
+    await button("すべて消去").click();
+    await page.keyboard.type("12+3");
+    await button("計算する").click();
+    await expect(page.locator(".lcd-result")).toHaveText("15");
+    await expect(button("単独計算メモを作成")).toBeEnabled();
+  }
+  async function noteDisabled() {
+    await expect(button("単独計算メモを作成")).toBeDisabled();
+    await selectPanel("notes");
+    await page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("button", { name: /SINGLE RESULT/ })).toBeDisabled();
+    await page.keyboard.press("Escape");
+  }
+  for (const edit of ["1文字削除", "現在の数値を消去"]) {
+    await confirmed15();
+    const historyBeforeEdit = (await storage()).history;
+    await button(edit).click();
+    await expect(page.locator(".lcd-expression")).toHaveText("12 ＋");
+    await expect(page.locator(".lcd-result")).toHaveText("0");
+    await noteDisabled();
+    await button("4").click();
+    assert.deepEqual((await storage()).history, historyBeforeEdit);
+    await expect(page.locator(".lcd-expression")).toHaveText("12 ＋ 4");
+    await button("計算する").click();
+    await expect(page.locator(".lcd-result")).toHaveText("16");
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12+4", result: 16 });
+  }
+  await confirmed15();
+  await page.keyboard.press("Backspace");
+  await page.keyboard.type("4");
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".lcd-result")).toHaveText("16");
+  await confirmed15();
+  await button("符号反転").click();
+  await expect(page.locator(".lcd-result")).toHaveText("-3");
+  await noteDisabled();
+  await button("符号反転").click();
+  await noteDisabled();
+  await button("符号反転").click();
+  await button("計算する").click();
+  await expect(page.locator(".lcd-result")).toHaveText("9");
+  await button("単独計算メモを作成").click();
+  await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic edited result");
+  await dialog.getByRole("button", { name: "保存する", exact: true }).click();
+  await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic edited result")).toMatchObject({ expression: "12+-3", result: 9, resultText: "9" });
+  await passed(prefix + ": BS/CE/sign/keyboard edits invalidate confirmation and both memo entrances; recalculated memo stores new result");
+  await confirmed15();
+  await page.keyboard.type("+2=");
+  await expect(page.locator(".lcd-result")).toHaveText("17");
+  await page.keyboard.type("=");
+  await expect(page.locator(".lcd-result")).toHaveText("17");
+  await button(".").click();
+  await expect(page.locator(".lcd-expression")).toHaveText("0.");
+  await button("5").click();
+  await button("計算する").click();
+  await expect(page.locator(".lcd-result")).toHaveText("0.5");
+  await button("7").click();
+  await expect(page.locator(".lcd-expression")).toHaveText("7");
+  await button("計算する").click();
+  await button("現在の数値を消去").click();
+  await expect(page.locator(".lcd-expression")).toHaveText("0");
+  await expect(page.locator(".lcd-result")).toHaveText("0");
+  await button("足す").click();
+  await expect(page.locator(".lcd-expression")).toHaveText("0");
+  await noteDisabled();
+  for (const repair of ["現在の数値を消去", "1文字削除", "fresh-digit"]) {
+    await button("すべて消去").click();
+    await page.keyboard.type("8/0=");
+    await expect(page.locator(".lcd-result")).toHaveText("Error");
+    await noteDisabled();
+    if (repair !== "fresh-digit") await button(repair).click();
+    await button("2").click();
+    await button("計算する").click();
+    await expect(page.locator(".lcd-result")).toHaveText(repair === "fresh-digit" ? "2" : "4");
+  }
+  await screenshot(prefix + "-after-equals-recovery");
+  await passed(prefix + ": chained/repeated equals, decimal/digit re-entry, empty CE, and zero-division CE/BS/digit recovery");
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { appendInput, clearEntry, toggleSign, trailingNumber } from "../lib/calculator";
+import { trailingNumber } from "../lib/calculator";
+import { transitionInput, type InputAction } from "../lib/calculator-input";
 import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
@@ -97,19 +98,14 @@ export function CalculatorApp() {
     return Number.isFinite(numeric) ? formatNumber(numeric) : current;
   }, [afterEquals, error, expression, result.text]);
 
-  const changeExpression = useCallback((input: string) => {
-    setError("");
-    if (afterEquals) {
-      if (/^[0-9.(]$/.test(input)) {
-        setExpression(appendInput("", input)); setResult(blankResult); setAfterEquals(false); return;
-      }
-      if (/^[+\-*/]$/.test(input)) {
-        setExpression(`${result.value}${input}`); setAfterEquals(false); return;
-      }
-    }
-    setExpression((current) => appendInput(current, input));
-    setAfterEquals(false);
-  }, [afterEquals, result.value]);
+  const editInput = useCallback((action: InputAction) => {
+    const next = transitionInput({ expression, afterEquals, error, resultValue: result.value }, action);
+    setExpression(next.expression);
+    setAfterEquals(next.afterEquals);
+    setError(next.error);
+    setResult(blankResult);
+  }, [expression, afterEquals, error, result.value]);
+  const changeExpression = useCallback((input: string) => editInput({ type: "input", value: input }), [editInput]);
 
   const calculate = useCallback(() => {
     try {
@@ -212,12 +208,12 @@ export function CalculatorApp() {
       if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm) return;
       if (/^[0-9+\-*/.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
-      else if (event.key === "Backspace") { event.preventDefault(); setExpression((current) => current.slice(0, -1)); setError(""); }
-      else if (event.key === "Delete" || event.key === "Escape") { event.preventDefault(); setExpression(""); setResult(blankResult); setError(""); setAfterEquals(false); }
+      else if (event.key === "Backspace") { event.preventDefault(); editInput({ type: "backspace" }); }
+      else if (event.key === "Delete" || event.key === "Escape") { event.preventDefault(); editInput({ type: "clear" }); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [calculate, changeExpression, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm]);
+  }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm]);
 
   return (
     <main className="app-shell">
@@ -235,7 +231,7 @@ export function CalculatorApp() {
 
         <div className="calculator-column">
           <div className="mobile-tabs" role="tablist" aria-label="表示切り替え"><button id="history-tab" role="tab" aria-selected={data.settings.activePanel === "history"} aria-controls="history-panel" tabIndex={data.settings.activePanel === "history" ? 0 : -1} className={data.settings.activePanel === "history" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "history")} onClick={() => setPanel("history")}>履歴 <span>{data.history.length}</span></button><button id="notes-tab" role="tab" aria-selected={data.settings.activePanel === "notes"} aria-controls="notes-panel" tabIndex={data.settings.activePanel === "notes" ? 0 : -1} className={data.settings.activePanel === "notes" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "notes")} onClick={() => setPanel("notes")}>メモ <span>{data.notes.length}</span></button></div>
-          <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onCalculate={calculate} onClear={() => { setExpression(""); setResult(blankResult); setError(""); setAfterEquals(false); }} onClearEntry={() => { setExpression((current) => clearEntry(current)); setError(""); }} onBackspace={() => { setExpression((current) => current.slice(0, -1)); setError(""); }} onToggleSign={() => { setExpression((current) => toggleSign(current)); setError(""); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
+          <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onCalculate={calculate} onClear={() => { editInput({ type: "clear" }); }} onClearEntry={() => { editInput({ type: "clear-entry" }); }} onBackspace={() => { editInput({ type: "backspace" }); }} onToggleSign={() => { editInput({ type: "sign" }); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
           <p className="keyboard-hint"><kbd>Enter</kbd> 計算　<kbd>Esc</kbd> クリア　数字・演算子はそのまま入力</p>
         </div>
 
