@@ -1,0 +1,9 @@
+{
+  "name": "calculator-memo-gui-tests",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": "22.13.0" },
+  "scripts": { "test": "node smoke.mjs" },
+  "devDependencies": { "@playwright/test": "1.56.1" }
+}
