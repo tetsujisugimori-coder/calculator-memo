@@ -82,15 +82,15 @@ export function appendInput(expression: string, input: string): string {
 // A minus belongs to the trailing number only in a unary position.
 // In `12-34` it is the binary operator; in `12--34` only the last minus is unary.
 export function trailingNumber(expression: string): { start: number; text: string } | null {
-  const match = expression.match(/(?:\d+(?:\.\d*)?|\.\d+)%?$/);
+  const match = expression.trimEnd().match(/(?:\d+(?:\.\d*)?|\.\d+)(?:\s*%)?$/);
   if (!match || match.index === undefined) return null;
   let start = match.index;
   const prefix = expression.slice(0, start).trimEnd();
-  if (prefix.endsWith("-")) {
-    const beforeMinus = prefix.slice(0, -1).trimEnd();
+  if (normalizeExpression(prefix).endsWith("-")) {
+    const beforeMinus = normalizeExpression(prefix.slice(0, -1));
     if (!beforeMinus || /[+\-*/(]$/.test(beforeMinus)) start = prefix.length - 1;
   }
-  return { start, text: expression.slice(start).replace(/\s+/g, "") };
+  return { start, text: normalizeExpression(expression.slice(start)) };
 }
 
 export function clearEntry(expression: string): string {

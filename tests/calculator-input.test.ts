@@ -44,3 +44,64 @@ describe("confirmed and error input transitions", () => {
     expect(next(error, { type: "clear" }).expression).toBe("");
   });
 });
+
+describe("result chaining retains an editable decimal operand", () => {
+  it.each([1e-7, -1e-7, 1.2345678901234567e-8, -1.2345678901234567e-8, 5e-324, -5e-324, 0, -0, 0.30000000000000004, Number.MAX_SAFE_INTEGER])("round-trips %s without display rounding", (value) => {
+    const state = { ...confirmed, resultValue: value };
+    const chained = next(state, { type: "input", value: "+" });
+    const operand = chained.expression.slice(0, -1);
+    expect(operand).toMatch(/^-?\d+(\.\d+)?$/);
+    expect(Number(operand)).toBe(value === 0 ? 0 : value);
+    expect(calculateExpression(chained.expression + "0").value).toBe(value === 0 ? 0 : value);
+  });
+  it.each([["+", 2.0000001], ["-", -1.9999999], ["*", 2e-7], ["/", 5e-8]] as const)("chains a small result through %s", (operator, expected) => {
+    const value = calculateExpression("1/10000000").value;
+    const chained = next({ ...confirmed, expression: "1/10000000", resultValue: value }, { type: "input", value: operator });
+    expect(calculateExpression(chained.expression + "2").value).toBe(expected);
+  });
+  it("allows BS/CE/sign edits on the chained operand and preserves PR13 original-expression edits", () => {
+    const small = { ...confirmed, expression: "1/10000000", resultValue: 1e-7 };
+    expect(next(small, { type: "backspace" }).expression).toBe("1/1000000");
+    let state = next(small, { type: "input", value: "*" });
+    state = next(state, { type: "backspace" });
+    expect(next(state, { type: "sign" }).expression).toBe("-0.0000001");
+    expect(next(state, { type: "clear-entry" }).expression).toBe("");
+    expect(calculateExpression(next(state, { type: "sign" }).expression).value).toBe(-1e-7);
+  });
+});
+
+describe("state transition audit boundaries", () => {
+  it.each([
+    ["12+3%", "input", "%", "12+3%"],
+    ["(12+3)", "clear-entry", "", "(12+3)"],
+    ["12+3", "input", ")", "12+3)"],
+  ] as const)("even unchanged edits reopen %s conservatively", (expression, type, value, expected) => {
+    const action: InputAction = type === "input" ? { type, value } : { type };
+    expect(next({ ...confirmed, expression }, action)).toEqual({ expression: expected, resultValue: 0, afterEquals: false, error: "" });
+  });
+  it.each([
+    ["(2+3", ")", "(2+3)", 5],
+    ["12+", "*", "12*", 24],
+  ] as const)("repairs error %s without stale result chaining", (expression, input, expected, value) => {
+    let state = next({ ...confirmed, expression, afterEquals: false, error: "invalid" }, { type: "input", value: input });
+    expect(state.expression).toBe(expected);
+    if (expression === "12+") state = next(state, { type: "input", value: "2" });
+    expect(calculateExpression(state.expression).value).toBe(value);
+  });
+  it("edits a restored or confirmed spaced negative operand", () => {
+    for (const afterEquals of [false, true]) {
+      const state = { ...confirmed, expression: "12 * - 34 ", resultValue: -408, afterEquals };
+      expect(next(state, { type: "sign" }).expression).toBe("12 * 34");
+      expect(next(state, { type: "clear-entry" }).expression).toBe("12 * ");
+    }
+  });
+  it.each([NaN, Infinity, -Infinity, 1e21, -1e21, Number.MAX_VALUE])("does not expand evaluator limits for unreachable result %s", (value) => {
+    const expression = next({ ...confirmed, resultValue: value }, { type: "input", value: "+" }).expression + "0";
+    expect(expression.length).toBeLessThanOrEqual(312);
+    expect(() => calculateExpression(expression)).toThrow();
+    if (Number.isFinite(value)) expect(expression).not.toContain("e");
+  });
+  it("keeps external exponent syntax rejected", () => {
+    expect(() => calculateExpression("1e-7*2")).toThrow("使用できない文字");
+  });
+});
