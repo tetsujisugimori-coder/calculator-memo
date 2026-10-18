@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { appendInput, clearEntry, toggleSign } from "../lib/calculator";
+import { appendInput, clearEntry, toggleSign, trailingNumber } from "../lib/calculator";
 import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
@@ -92,7 +92,7 @@ export function CalculatorApp() {
   const displayExpression = useMemo(() => expression ? formatExpression(expression) : result.displayExpression, [expression, result.displayExpression]);
   const displayResult = useMemo(() => {
     if (afterEquals || error) return result.text;
-    const current = expression.match(/-?\d*\.?\d+%?$/)?.[0]?.replace("%", "") ?? "0";
+    const current = trailingNumber(expression)?.text.replace("%", "") ?? "0";
     const numeric = Number(current);
     return Number.isFinite(numeric) ? formatNumber(numeric) : current;
   }, [afterEquals, error, expression, result.text]);

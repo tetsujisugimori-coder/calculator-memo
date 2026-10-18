@@ -185,6 +185,45 @@ async function exercise(width) {
   await expect(page.locator(".history-item").first()).toBeVisible();
   await screenshot(prefix + "-persisted-history");
   await passed(prefix + ": both memos/history preserved across reload; panels and detail modal actively exercised");
+  await stage(prefix + ": trailing-number-edit-regression");
+  await button("すべて消去").click();
+  for (const key of ["1", "2", "引く", "3", "4"]) await button(key).click();
+  await expect(page.locator(".lcd-result")).toHaveText("34");
+  await button("符号反転").click();
+  await expect(page.locator(".lcd-result")).toHaveText("-34");
+  await button("符号反転").click();
+  await expect(page.locator(".lcd-result")).toHaveText("34");
+  await button("現在の数値を消去").click();
+  await expect(page.locator(".lcd-expression")).toHaveText("12 −");
+  for (const key of ["5", "計算する"]) await button(key).click();
+  await expect(page.locator(".lcd-result")).toHaveText("7");
+  await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12-5", result: 7 });
+  // Existing post-equals numeric re-entry and chained calculation remain supported.
+  for (const key of ["掛ける", "2", "計算する"]) await button(key).click();
+  await expect(page.locator(".lcd-result")).toHaveText("14");
+  await button("3").click();
+  await expect(page.locator(".lcd-expression")).toHaveText("3");
+  await button("すべて消去").click();
+  // Keyboard input shares the same trailing-number display and CE behavior.
+  await page.keyboard.type("12-3.");
+  await button("符号反転").click();
+  await expect(page.locator(".lcd-result")).toHaveText("-3");
+  await button("現在の数値を消去").click();
+  await page.keyboard.type("0.5");
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".lcd-result")).toHaveText("11.5");
+  await screenshot(prefix + "-trailing-number-edit");
+  // Memo-Nexus URL input is still editable and does not evaluate/store automatically.
+  const beforeUrl = await storage();
+  await page.goto(base + "?expr=" + encodeURIComponent("12--34"));
+  await expect(page.locator(".lcd-result")).toHaveText("-34");
+  assert.deepEqual((await storage()).history, beforeUrl.history);
+  await expect(button("単独計算メモを作成")).toBeDisabled();
+  await button("符号反転").click();
+  await button("計算する").click();
+  await expect(page.locator(".lcd-result")).toHaveText("-22");
+  await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "12-34", result: -22 });
+  await passed(prefix + ": binary subtraction preserved by sign/CE, decimal keyboard replacement, chained/re-entry and URL history checks");
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });
