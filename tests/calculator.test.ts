@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { appendInput, calculateExpression, clearEntry, normalizeExpression, toggleSign } from "../lib/calculator";
+import { appendInput, calculateExpression, clearEntry, normalizeExpression, toggleSign, trailingNumber } from "../lib/calculator";
 import { createHistoryEntry } from "../lib/history";
 
 describe("calculateExpression", () => {
@@ -45,4 +45,48 @@ describe("calculator input helpers", () => {
   it("prevents duplicate decimals", () => expect(appendInput("1.2", ".")).toBe("1.2"));
   it("clears the current number", () => expect(clearEntry("12+34")).toBe("12+"));
   it("toggles the last number sign", () => expect(toggleSign("12+34")).toBe("12+-34"));
+});
+
+describe("trailing number edits preserve binary operators", () => {
+  it.each([
+    ["12-34", "12--34", "12-"],
+    ["12+-34", "12+34", "12+"],
+    ["12*-34", "12*34", "12*"],
+    ["12/-34", "12/34", "12/"],
+    ["-34", "34", ""],
+    ["12--34", "12-34", "12-"],
+    ["12-3.4", "12--3.4", "12-"],
+    ["12-34.", "12--34.", "12-"],
+    ["12-.5", "12--.5", "12-"],
+    ["12-34%", "12--34%", "12-"],
+    ["(-34", "(34", "("],
+    ["(12)-34", "(12)--34", "(12)-"],
+    ["12 - 34", "12 - -34", "12 - "],
+  ])("edits %s without joining operands", (input, flipped, cleared) => {
+    expect(toggleSign(input)).toBe(flipped);
+    expect(toggleSign(flipped)).toBe(input);
+    expect(clearEntry(input)).toBe(cleared);
+  });
+  it("keeps empty/closed-parenthesis clear behavior", () => {
+    expect(clearEntry("")).toBe("");
+    expect(clearEntry("(12+3)")).toBe("(12+3)");
+    expect(toggleSign("")).toBe("-");
+  });
+  it("preserves subtraction when replacing a cleared entry", () => {
+    expect(calculateExpression(appendInput(clearEntry("12-34"), "5")).value).toBe(7);
+    expect(calculateExpression(toggleSign("12-34")).value).toBe(46);
+  });
+});
+
+
+describe("spaced URL operands", () => {
+  it.each([
+    ["12 * - 34", "12 * 34", "12 * ", "-34"],
+    ["- 34", "34", "", "-34"],
+    ["12 - 34", "12 - -34", "12 - ", "34"],
+  ])("identifies the signed operand of %s", (input, flipped, cleared, text) => {
+    expect(trailingNumber(input)?.text).toBe(text);
+    expect(toggleSign(input)).toBe(flipped);
+    expect(clearEntry(input)).toBe(cleared);
+  });
 });

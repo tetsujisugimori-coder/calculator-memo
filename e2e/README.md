@@ -14,6 +14,7 @@ The job checks out the exact PR head (not the synthetic merge commit), runs exis
 - Saved block text, expression and result checked in rendered cards and storage, before and after reload
 - Both memo types and history unchanged after reload
 - Visible history/notes panels, narrow-screen tab switching, and detail modal open/close
+- Trailing-number sign/CE edits preserving subtraction, decimal keyboard replacement, chained/re-entry calculation and URL input/history checks
 - Unexpected console/page errors, HTTP errors, and non-loopback requests fail the test
 
 The harness checks `git rev-parse HEAD` against the PR head SHA. Only after the Pages build, it generates `dist-pages/__gui_provenance.json` with exact SHA, branch, run and attempt; Chromium fetches and compares it. No test marker is added to `public/` or application source. Screenshots have a clearly labeled test-only overlay that is immediately removed; provenance JSON and trace retain the unambiguous identity.

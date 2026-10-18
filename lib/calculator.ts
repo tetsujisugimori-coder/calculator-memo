@@ -79,14 +79,28 @@ export function appendInput(expression: string, input: string): string {
   return expression + input;
 }
 
+// A minus belongs to the trailing number only in a unary position.
+// In `12-34` it is the binary operator; in `12--34` only the last minus is unary.
+export function trailingNumber(expression: string): { start: number; text: string } | null {
+  const match = expression.match(/(?:\d+(?:\.\d*)?|\.\d+)%?$/);
+  if (!match || match.index === undefined) return null;
+  let start = match.index;
+  const prefix = expression.slice(0, start).trimEnd();
+  if (prefix.endsWith("-")) {
+    const beforeMinus = prefix.slice(0, -1).trimEnd();
+    if (!beforeMinus || /[+\-*/(]$/.test(beforeMinus)) start = prefix.length - 1;
+  }
+  return { start, text: expression.slice(start).replace(/\s+/g, "") };
+}
+
 export function clearEntry(expression: string): string {
-  return expression.replace(/-?\d*\.?\d+%?$/, "") || "";
+  const number = trailingNumber(expression);
+  return number ? expression.slice(0, number.start) : expression;
 }
 
 export function toggleSign(expression: string): string {
-  const match = expression.match(/(-?\d*\.?\d+)%?$/);
-  if (!match || match.index === undefined) return expression ? `${expression}(-` : "-";
-  const token = match[0];
-  const replacement = token.startsWith("-") ? token.slice(1) : `-${token}`;
-  return expression.slice(0, match.index) + replacement;
+  const number = trailingNumber(expression);
+  if (!number) return expression ? `${expression}(-` : "-";
+  const replacement = number.text.startsWith("-") ? number.text.slice(1) : `-${number.text}`;
+  return expression.slice(0, number.start) + replacement;
 }
