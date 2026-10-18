@@ -8,7 +8,9 @@
 - 第一希望 / 採用判断: mathjsの既存数値意味を保った小さい内部整理を第一希望として実現。汎用フレームワーク化、結果キャッシュ、新エンジンは不要と判断し採用しない。制約による暫定仕様は追加しない。
 - 検証結果: cloud Node24.19.0で245単体、lint、型検査、通常/Pages build成功。旧1000式を含む2029式比較で内部値(Object.is、-0含む)・表示・エラー文の差分0。長さ2000/深度32/ノード256/指数絶対値10000境界、全構文検証優先、非有限中間値拒否、最終のみ最大安全値を回帰追加。[再現手順と性能実測](docs/agent/ast-evaluation.md)。31項加算の1式中央値0.350→0.148msはこの環境での参考値。
 - 独立レビュー: 独立生成11,078式（成功8,559/拒否2,519、seed79037）の旧新差分0、245単体成功、blocking指摘なし。最終SHAのActionsと既存6条件GUIはPR Checksで別途確認予定であり、未実行を成功扱いしない。
-- 関連: [Issue #23](https://github.com/tetsujisugimori-coder/calculator-memo/issues/23)。基点main `6f835985e7e53d2f58c89d15bac04352b3bbc5bd` でPR #22のマージを確認。
+- Actions確認: [run 39163728584](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39163728584)、対象 `26053f792e8b992e84b2d0a0eeea6f9b2a7e4151`。Node22.13.0で245単体・lint・型・両build・GUI全工程成功。2026-10-19 05:33:41〜05:38:37 JST、Chromium/WebKit既存6条件102検証・エラー0。[88画面・6trace・診断](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39163728584/artifacts/12150350848)のZIP SHA256をAPI digestと照合、provenanceのhead/expected/配信SHA・branch/runを確認。7日保持。この結果追記コミット自身は[PR #24 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/24/checks)で別途最終確認する。
+- local GUI補足: 同一treeのlocal commitでChromium4条件67検証成功、WebKitは既知のOSライブラリ不足で起動失敗。上記ActionsをWebKit検証の証拠とする。通常git push認証が利用できず、公式GitHub connectorで同一treeを検証して作業branchへ公開した。
+- 関連: [Issue #23](https://github.com/tetsujisugimori-coder/calculator-memo/issues/23)。[PR #24](https://github.com/tetsujisugimori-coder/calculator-memo/pull/24)。基点main `6f835985e7e53d2f58c89d15bac04352b3bbc5bd` でPR #22のマージを確認。
 - 未解決事項: Issue #19、新数学構文と%混在、科学記数法は対象外のまま。実機iPhone Safari、OSキーボード、長期保存は未検証。既存buildのchunkサイズ警告は残存。江戸弁ガイド現行箇所と辞典v19冒頭を参照し、割合ノルマは設けない。
 
 
