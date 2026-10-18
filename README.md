@@ -92,3 +92,7 @@ npm run build
 - 保存データの本格的なJSON書き出し・復元
 - Memo Nexusへ計算結果を戻す双方向連携
 - 複数端末同期
+
+## 開発運用と履歴
+
+エージェントの作業規則と PR 作成前の確認は [AGENTS.md](AGENTS.md)、開発履歴・重要な設計判断は [LOG.md](LOG.md)、PR の GUI 検証手順は [e2e/README.md](e2e/README.md) を参照してください。[GitHub 開発運用](docs/agent/github-workflow.md) と [検証方針](docs/agent/verification-policy.md) が Issue・PR・レビュー・CI の手順を定めます。各 PR では原則 LOG.md を更新し、不要な場合は PR 本文に理由を記載します。
