@@ -41,6 +41,8 @@ export type FormulaMemoBlock = {
 };
 
 export type CalculationMemoBlock = {
+  /** Missing means legacy; unknown string values must fail closed. */
+  evaluationMode?: string;
   id: string;
   type: "calculation";
   expression: string;

@@ -59,7 +59,7 @@ function expandPercent(expression: string): string {
 // Validate the complete tree before evaluating any subtree. No assignments,
 // accessors, arrays, units, user variables or arbitrary calls. Legacy numeric
 // implicit products remain compatible; new mathematics requires explicit *.
-function allowedTree(root: MathNode, allowLegacyImplicit: boolean): MathNode[] {
+function allowedTree(root: MathNode, allowLegacyImplicit: boolean, scope?: ReadonlyMap<string, number>): MathNode[] {
   const postorder: MathNode[] = [];
   let count = 0;
   const visit = (node: MathNode, depth: number) => {
@@ -70,7 +70,12 @@ function allowedTree(root: MathNode, allowLegacyImplicit: boolean): MathNode[] {
       const value = (node as import("mathjs").ConstantNode).value;
       if (typeof value !== "number" || !Number.isFinite(value)) throw new Error("数値を確認してください");
     } else if (node.type === "SymbolNode") {
-      if (!["pi", "e"].includes((node as import("mathjs").SymbolNode).name)) throw new Error("使用できない定数です");
+      const name = (node as import("mathjs").SymbolNode).name;
+      if (!["pi", "e"].includes(name)) {
+        if (!scope) throw new Error("使用できない定数です");
+        assertVariableName(name);
+        if (!scope.has(name)) throw new Error(`未定義の変数です: ${name}`);
+      }
     } else if (node.type === "ParenthesisNode") {
       visit((node as import("mathjs").ParenthesisNode).content, depth + 1);
     } else if (node.type === "OperatorNode") {
@@ -97,7 +102,7 @@ function allowedTree(root: MathNode, allowLegacyImplicit: boolean): MathNode[] {
 
 // Only called with the complete allowlisted postorder from allowedTree.
 // Read already-checked child values; never compile/evaluate a subtree again.
-function evaluateTree(nodes: MathNode[]): number {
+function evaluateTree(nodes: MathNode[], scope?: ReadonlyMap<string, number>): number {
   const values = new Map<MathNode, number>();
   for (const node of nodes) {
     let raw: unknown;
@@ -129,7 +134,8 @@ function evaluateTree(nodes: MathNode[]): number {
     } else if (node.type === "ParenthesisNode") {
       raw = values.get((node as import("mathjs").ParenthesisNode).content)!;
     } else if (node.type === "SymbolNode") {
-      raw = (node as import("mathjs").SymbolNode).name === "pi" ? pi : e;
+      const name = (node as import("mathjs").SymbolNode).name;
+      raw = name === "pi" ? pi : name === "e" ? e : scope?.get(name);
     } else {
       raw = (node as import("mathjs").ConstantNode).value;
     }
@@ -152,6 +158,42 @@ export function calculateExpression(expression: string): CalculationResult {
   const value = evaluateTree(allowedTree(root, !/[a-z^]/.test(normalized)));
   if (Math.abs(value) > Number.MAX_SAFE_INTEGER) throw new Error("扱える桁数を超えました");
   return { value, resultText: formatNumber(value), displayExpression: formatExpression(normalized) };
+}
+
+// Variables are opt-in at the calculation-block boundary. Ordinary calculator,
+// URL and legacy blocks continue to use calculateExpression unchanged.
+const RESERVED_VARIABLES = new Set(["pi", "e", "sqrt", "abs", "constructor", "prototype", "toString", "valueOf", "hasOwnProperty", "__proto__"]);
+export function assertVariableName(name: string): void {
+  if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(name) || RESERVED_VARIABLES.has(name)) {
+    throw new Error("使用できない変数名です");
+  }
+}
+
+export function calculateVariableExpression(expression: string, scope: ReadonlyMap<string, number>): CalculationResult {
+  if (expression.length > EXPRESSION_LIMITS.length) throw new Error("式は2000文字以内で入力してください");
+  const normalized = expression.replace(/＋/g, "+").replace(/[−–—]/g, "-").replace(/×/g, "*").replace(/÷/g, "/").trim();
+  if (!normalized) throw new Error("式を入力してください");
+  if (!/^[A-Za-z0-9_+\-*/^().%\s]+$/.test(normalized)) throw new Error("使用できない文字が含まれています");
+  if (/(?:^|[^A-Za-z0-9_])0[xXbBoO][0-9A-Za-z]/.test(normalized)) throw new Error("数値は十進数で入力してください");
+  // Inspect numeric tokens without mistaking names such as price1e2 for numbers.
+  if (/(?:^|[^A-Za-z0-9_])[0-9]+(?:\.[0-9]*)?[eE][+\-]?[0-9]/.test(normalized)) throw new Error("指数表記は使用できない文字形式です");
+  if (normalized.includes("%") && /[A-Za-z_^]/.test(normalized)) throw new Error("変数・数学関数・定数・累乗と%の組合せにはまだ対応していません");
+  let depth = 0;
+  for (const char of normalized) {
+    if (char === "(" && ++depth > EXPRESSION_LIMITS.depth) throw new Error("式の入れ子が深すぎます");
+    if (char === ")" && --depth < 0) throw new Error("括弧の位置を確認してください");
+  }
+  if (depth !== 0) throw new Error("括弧が閉じていません");
+  let root: MathNode;
+  try { root = parse(expandPercent(normalized)); }
+  catch { throw new Error("式が不完全か、計算できない内容です"); }
+  const value = evaluateTree(allowedTree(root, false, scope), scope);
+  if (Math.abs(value) > Number.MAX_SAFE_INTEGER) throw new Error("扱える桁数を超えました");
+  // Presentation only: suppress at most two relative machine-epsilon units
+  // next to a nonzero integer. Never round stored/referenced values or tiny values.
+  const nearest = Math.round(value);
+  const displayValue = nearest !== 0 && Math.abs(value - nearest) <= Number.EPSILON * Math.abs(value) * 2 ? nearest : value;
+  return { value, resultText: formatNumber(displayValue), displayExpression: normalized };
 }
 
 export function appendInput(expression: string, input: string): string {

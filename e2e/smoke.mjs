@@ -347,6 +347,127 @@ async function exerciseBasicMath(prefix) {
   await screenshot(prefix + "-basic-math-url-history");
   await passed(prefix + ": URL math remains editable until equals, and exact history/memo payloads plus rendered results survive reload");
 }
+async function exerciseVariables(prefix) {
+  await stage(prefix + ": note-scoped-variables-order-and-editing");
+  await selectPanel("notes");
+  const dialog = page.getByRole("dialog");
+  const title = "Synthetic scoped variables";
+  async function createNote(name) {
+    await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
+    await activate(dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }));
+    await dialog.getByLabel("タイトル", { exact: false }).fill(name);
+  }
+  async function add(expression, expected) {
+    await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+    const card = dialog.locator(".block-editor-card.calculation").last();
+    await card.getByLabel("計算式", { exact: true }).fill(expression);
+    if (expected !== null) await expect(card.locator(".calculation-live-result strong")).toHaveText("= " + expected);
+    else await expect(card.locator(".calculation-live-result.has-error")).toBeVisible();
+    return card;
+  }
+  await createNote(title);
+  for (const [expression, expected] of [
+    ["price = 1200", "1,200"], ["quantity = 5", "5"], ["subtotal = price * quantity", "6,000"],
+    ["tax = 0.10", "0.1"], ["total = subtotal * (1 + tax)", "6,600"],
+    ["x = 10", "10"], ["y = x * 2", "20"], ["x = 20", "20"],
+  ]) await add(expression, expected);
+  const cards = dialog.locator(".block-editor-card.calculation");
+  await expect(cards.nth(6).locator(".calculation-live-result strong")).toHaveText("= 20");
+  // Moving a dependency below its consumer must immediately invalidate/recover the consumer.
+  await activate(cards.nth(1).getByRole("button", { name: "計算ブロックを下へ移動", exact: true }));
+  await expect(cards.nth(1).locator(".calculation-live-result.has-error")).toBeVisible();
+  await expect(cards.nth(4).locator(".calculation-live-result.has-error")).toBeVisible();
+  await activate(cards.nth(2).getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
+  await expect(cards.nth(2).locator(".calculation-live-result strong")).toHaveText("= 6,000");
+  await expect(cards.nth(4).locator(".calculation-live-result strong")).toHaveText("= 6,600");
+  await cards.nth(0).getByLabel("計算式", { exact: true }).fill("price = 100");
+  await expect(cards.nth(2).locator(".calculation-live-result strong")).toHaveText("= 500");
+  await cards.nth(0).getByLabel("計算式", { exact: true }).fill("price = 1200");
+  await expect(cards.nth(4).locator(".calculation-live-result strong")).toHaveText("= 6,600");
+  const extra = await add("missing + 1", null);
+  await extra.getByLabel("計算式", { exact: true }).fill("x = sqrt(-1)");
+  await expect(extra.locator(".calculation-live-result.has-error")).toBeVisible();
+  await add("x", "20");
+  await activate(dialog.locator(".block-editor-card.calculation").last().getByRole("button", { name: "計算ブロックを削除", exact: true }));
+  await extra.getByLabel("計算式", { exact: true }).fill("pi = 3");
+  await expect(extra.locator(".calculation-live-result.has-error")).toBeVisible();
+  await activate(extra.getByRole("button", { name: "計算ブロックを削除", exact: true }));
+  // Plain prose is never executed as a definition.
+  await activate(dialog.getByRole("button", { name: "＋ 文章", exact: true }));
+  await dialog.getByLabel("Markdown文章").fill("price = 9999 (plain text only)");
+  await add("price", "1,200");
+  await screenshot(prefix + "-variables-editor-light");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  const saved = page.locator(".note-card").filter({ hasText: title });
+  const readNote = async () => (await storage()).notes.find((note) => note.title === title);
+  await expect.poll(async () => (await readNote()).blocks.filter((block) => block.type === "calculation").map((block) => block.result)).toEqual([1200, 5, 6000, 0.1, 6000 * (1 + 0.1), 10, 20, 20, 1200]);
+  await expect(saved.locator(".calculation-variable").first()).toContainText("変数 price");
+  await expect(saved.locator(".calculation-expression").nth(2)).toContainText("price * quantity");
+  await passed(prefix + ": ordered definitions, reassignment snapshots, upstream edits/reorder/removal, errors and prose isolation");
+
+  await stage(prefix + ": variable-scope-persistence-and-responsive-roles");
+  await createNote("Synthetic isolated variables");
+  await add("price", null);
+  await activate(dialog.locator(".block-editor-card.calculation").first().getByRole("button", { name: "計算ブロックを削除", exact: true }));
+  await add("price = 2", "2");
+  await add("price * 5", "10");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  const before = (await storage()).notes;
+  await page.reload();
+  await selectPanel("notes");
+  assert.deepEqual((await storage()).notes, before, "Both variable scopes persist without changes");
+  await expect(saved.locator(".calculation-block strong").nth(4)).toHaveText("= 6,600");
+  const isolated = page.locator(".note-card").filter({ hasText: "Synthetic isolated variables" });
+  await expect(isolated.locator(".calculation-block strong").nth(1)).toHaveText("= 10");
+  // Check actual application light/dark styling and 200% text-size stress in the editor.
+  const theme = page.getByRole("combobox", { name: "テーマ", exact: true });
+  for (const mode of ["dark", "light"]) {
+    await theme.selectOption(mode);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
+    await activate(saved.getByRole("button", { name: "編集", exact: true }));
+    await expect(dialog.locator(".calculation-variable").first()).toContainText("変数 price");
+    const colors = await dialog.evaluate((element) => [".calculation-variable", ".calculation-expression", ".calculation-live-result"].map((selector) => getComputedStyle(element.querySelector(selector)).backgroundColor));
+    assert.equal(new Set(colors).size, 3, "Variable, expression and result have distinct role backgrounds");
+    await add("long_variable_name_for_wrapping = total + sqrt(144)", "6,612");
+    await dialog.locator(".calculation-variable, .calculation-variable *, .calculation-expression, .calculation-expression *, .calculation-live-result, .calculation-live-result *").evaluateAll((elements) => {
+      const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize) * 2);
+      elements.forEach((element, index) => { element.style.fontSize = sizes[index] + "px"; });
+    });
+    await assertHorizontalFit();
+    for (const role of await dialog.locator(".calculation-variable, .calculation-expression, .calculation-live-result").all()) {
+      const size = await role.evaluate((element) => ({ scroll: element.scrollWidth, client: element.clientWidth }));
+      assert.ok(size.scroll <= size.client + 1, "Calculation roles must wrap rather than clip horizontally: " + JSON.stringify(size));
+    }
+    await dialog.locator(".block-editor-card.calculation").last().locator(".calculation-variable").scrollIntoViewIfNeeded();
+    await screenshot(prefix + "-variables-" + mode + "-text-stress");
+    await dialog.locator(".block-editor-card.calculation").last().locator(".calculation-live-result").scrollIntoViewIfNeeded();
+    await screenshot(prefix + "-variables-" + mode + "-result-stress");
+    await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  }
+  assert.deepEqual((await storage()).notes, before, "Cancelled styling probes do not alter notes");
+  await passed(prefix + ": independent note scopes, reload values, labeled light/dark roles and narrow text wrapping");
+  await stage(prefix + ": legacy-block-opt-in-compatibility");
+  // A synthetic pre-variable saved block intentionally has no evaluationMode field.
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
+    const note = data.notes.find((item) => item.title === "Synthetic isolated variables");
+    note.blocks = [{ id: "legacy-variable-test", type: "calculation", expression: "2x3", displayExpression: "2×3", result: 6, resultText: "6", error: null }];
+    localStorage.setItem("calculation-memo:data", JSON.stringify(data));
+  });
+  await page.reload();
+  await selectPanel("notes");
+  await expect(isolated.locator(".calculation-block strong")).toHaveText("= 6");
+  await activate(isolated.getByRole("button", { name: "編集", exact: true }));
+  await expect(dialog).toContainText("x/X は変数になり");
+  await activate(dialog.getByRole("button", { name: "変数を使う", exact: true }));
+  await expect(dialog.locator(".calculation-live-result.has-error")).toBeVisible();
+  await dialog.getByLabel("計算式", { exact: true }).fill("2*3");
+  await expect(dialog.locator(".calculation-live-result strong")).toHaveText("= 6");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic isolated variables").blocks[0]).toMatchObject({ expression: "2*3", result: 6, evaluationMode: "note-variables" });
+  await passed(prefix + ": old x multiplication preserved until explicit mode opt-in; corrected expression and mode saved");
+}
+
 async function exercise(scenario) {
   assertOwnedServer();
   currentScenario = scenario;
@@ -461,7 +582,8 @@ async function exercise(scenario) {
   await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
   await assertHorizontalFit();
   await dialog.getByLabel("計算式", { exact: true }).fill("2*(5+3)");
-  await expect(dialog.locator(".calculation-live-result strong")).toHaveText("2 × (5 ＋ 3) = 16");
+  await expect(dialog.locator(".calculation-expression code")).toHaveText("2*(5+3)");
+  await expect(dialog.locator(".calculation-live-result strong")).toHaveText("= 16");
   await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
   await expect(page.locator(".note-card")).toHaveCount(2);
   await assertSavedMemoContents();
@@ -469,13 +591,13 @@ async function exercise(scenario) {
     const block = page.locator(".note-card").filter({ hasText: "Synthetic block memo" });
     await expect(block).toBeVisible();
     await expect(block.locator(".text-block")).toHaveText("Synthetic block text.");
-    await expect(block.locator(".calculation-block code")).toHaveText("2 × (5 ＋ 3)");
+    await expect(block.locator(".calculation-block code")).toHaveText("2*(5+3)");
     await expect(block.locator(".calculation-block strong")).toHaveText("= 16");
     await expect(single).toContainText("Synthetic data only.");
     await expect.poll(storage).toMatchObject({ notes: [
       { type: "plain-calculation", title: "Synthetic block memo", blocks: [
         { type: "text", content: "Synthetic block text." },
-        { type: "calculation", expression: "2*(5+3)", displayExpression: "2 × (5 ＋ 3)", result: 16, resultText: "16", error: null },
+        { type: "calculation", expression: "2*(5+3)", displayExpression: "2*(5+3)", evaluationMode: "note-variables", result: 16, resultText: "16", error: null },
       ] },
       { type: "calculation", title: "Synthetic single memo edited", expression: "12+34", result: 46, resultText: "46", note: "Synthetic data only." },
     ] });
@@ -719,6 +841,7 @@ async function exercise(scenario) {
   assert.deepEqual((await storage()).notes, beforeFinalReload.notes);
   await passed(prefix + ": failed expressions corrected without history side effects, fresh parentheses, postfix percent and final persistence");
   await exerciseBasicMath(prefix);
+  await exerciseVariables(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

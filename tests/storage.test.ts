@@ -105,3 +105,16 @@ describe("loadData", () => {
     }
   });
 });
+
+
+it("preserves variable mode and legacy mode across version-one load/save", () => {
+  const base = { type: "calculation", displayExpression: "x", result: 10, resultText: "10", error: null };
+  const blocks = [{ ...base, id: "old", expression: "2x3" }, { ...base, id: "new", expression: "x=10", evaluationMode: "note-variables" }];
+  const source = { version: 1, history: [], settings: { theme: "system", activePanel: "notes" }, notes: [{ id: "n", type: "plain-calculation", title: "test", content: "", blocks, createdAt: "2026-10-19T00:00:00Z", updatedAt: "2026-10-19T00:00:00Z" }] };
+  const loaded = loadData(storageWith(JSON.stringify(source)));
+  expect(loaded.status).toBe("ok");
+  if (loaded.status === "ok") {
+    expect(loaded.data).toEqual(source);
+    expect(loadData(storageWith(JSON.stringify(loaded.data)))).toMatchObject({ status: "ok", data: source });
+  }
+});
