@@ -11,6 +11,7 @@ The job checks out the exact PR head (not the synthetic merge commit), runs exis
 - History restore into editing state, with the existing last-number display (not automatic recalculation)
 - Single-calculation memo save, cancelled edit, successful subsequent edit
 - Block memo with text and a calculation block
+- Saved block text, expression and result checked in rendered cards and storage, before and after reload
 - Both memo types and history unchanged after reload
 - Visible history/notes panels, narrow-screen tab switching, and detail modal open/close
 - Unexpected console/page errors, HTTP errors, and non-loopback requests fail the test
@@ -53,5 +54,7 @@ Open the PR's **Checks → Checks and Chromium GUI → Summary** and follow the 
 Download the ZIP, inspect screenshots and provenance, and use `node e2e/node_modules/playwright/cli.js show-trace <trace.zip>` locally. No report or trace is published as a website. Artifacts inherit repository access; in this public repository any signed-in GitHub reader may download them. Keep all data synthetic. Do not put secrets, authentication state or user data in logs/screenshots/traces.
 
 A failed stage is a fact; root cause is not inferred from an assertion alone. Distinguish environment/setup failures, bad test expectations/selectors, and application regressions using source, logs, screenshots and traces. Record the failed SHA/run before making an authorized test correction. Fix application behavior in a separate scoped change rather than weakening a correct assertion. Earlier temporary proof runs failed because their test expectations disagreed with existing restore/full-width-symbol behavior; the explicit expectations here document that existing contract.
+
+The browser route guard covers routed browser HTTP requests; it is not a runner-wide network sandbox and does not constrain dependency installation or every browser transport. PR code still runs on GitHub’s isolated hosted runner.
 
 A passing job is not a vulnerability audit. Existing dependency-advisory warnings need separate assessment. No merge, production deployment, branch protection, secret or permission setting is changed by this framework.

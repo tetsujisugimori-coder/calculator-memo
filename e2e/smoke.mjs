@@ -147,7 +147,22 @@ async function exercise(width) {
   await expect(dialog.locator(".calculation-live-result strong")).toHaveText("2 × (5 ＋ 3) = 16");
   await dialog.getByRole("button", { name: "保存する", exact: true }).click();
   await expect(page.locator(".note-card")).toHaveCount(2);
-  await expect(page.locator(".note-card").filter({ hasText: "Synthetic block memo" })).toBeVisible();
+  await assertSavedMemoContents();
+  async function assertSavedMemoContents() {
+    const block = page.locator(".note-card").filter({ hasText: "Synthetic block memo" });
+    await expect(block).toBeVisible();
+    await expect(block.locator(".text-block")).toHaveText("Synthetic block text.");
+    await expect(block.locator(".calculation-block code")).toHaveText("2 × (5 ＋ 3)");
+    await expect(block.locator(".calculation-block strong")).toHaveText("= 16");
+    await expect(single).toContainText("Synthetic data only.");
+    await expect.poll(storage).toMatchObject({ notes: [
+      { type: "plain-calculation", title: "Synthetic block memo", blocks: [
+        { type: "text", content: "Synthetic block text." },
+        { type: "calculation", expression: "2*(5+3)", displayExpression: "2 × (5 ＋ 3)", result: 16, resultText: "16", error: null },
+      ] },
+      { type: "calculation", title: "Synthetic single memo edited", expression: "12+34", result: 46, resultText: "46", note: "Synthetic data only." },
+    ] });
+  }
   await passed(prefix + ": block memo text and calculation saved");
   await stage(prefix + ": reload-persistence-visible-panels");
   await expect.poll(storage).toMatchObject({ notes: [{ title: "Synthetic block memo" }, { title: "Synthetic single memo edited" }] });
@@ -156,7 +171,7 @@ async function exercise(width) {
   await selectPanel("notes");
   await expect(page.locator(".note-card")).toHaveCount(2);
   await expect(single).toBeVisible();
-  await expect(page.locator(".note-card").filter({ hasText: "Synthetic block memo" })).toBeVisible();
+  await assertSavedMemoContents();
   const after = await storage();
   assert.deepEqual(after.notes, before.notes);
   assert.deepEqual(after.history, before.history);
