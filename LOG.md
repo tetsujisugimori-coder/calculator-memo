@@ -5,9 +5,9 @@
 ## 2026-10-18 (JST): エージェント開発運用と LOG.md 管理規則を導入
 - 変更内容: root `AGENTS.md` を作成し、各 PR のログ更新、記録項目、判断変更と暫定策の区別、最新順、履歴保持、参照リンク、PR 前の更新要否確認、行動規則との役割分離を定義した。GitHub 開発運用と検証方針を docs/agent に作成し、Issue・PR・コメント・レビュー・CI・承認境界・人間のマージ後の整理を明文化した。README と GUI 検証手順から接続した。既存 `Log.md` は `LOG.md` に統一し、旧本文を末尾にそのまま保持した。
 - 変更理由: 開発履歴・重要な設計判断を継続して追跡できるようにするための依頼に基づく。履歴と現在有効な規則の混同、および大小文字違いの二重管理を防ぐ。
-- 検証結果: 作成前に main `bfd0665d4cde2dd5228a9e8f5f8bea734ac2f49d` と open PR 0 件、既存の文書を確認した。旧本文 20,645 bytes の完全保持と、新規文書リンクの解決を確認した。独立レビューで 8 要件・関連運用規則の整合性を確認し、blocking 指摘はなかった。今回の PR の CI は PR 作成後に確認するため、現段階では未実行。
-- 関連 Issue・PR: [Issue #8](https://github.com/tetsujisugimori-coder/calculator-memo/issues/8)。今回の PR は未作成。基点は [PR #7](https://github.com/tetsujisugimori-coder/calculator-memo/pull/7) のマージコミットであり、その過去の検証結果を今回の検証結果として流用しない。
-- 未解決事項: 今回の PR の CI 結果は確認待ち。旧記録の全主張・日時を再検証したわけではなく、過去の記載として保持する。main へのマージは人間が判断する。
+- 検証結果: 作成前に main `bfd0665d4cde2dd5228a9e8f5f8bea734ac2f49d` と open PR 0 件、既存の文書を確認した。旧本文 20,645 bytes の完全保持と、新規文書リンクの解決を確認した。独立レビューで 8 要件・関連運用規則の整合性を確認し、blocking 指摘はなかった。[初回 CI](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39092388598) は対象 SHA `d794f32992207588a0b72faa3fe269fbfd7dd329` で成功（単体テスト・lint・型検査・通常/Pages ビルド・1365/390px Chromium GUI）。この結果追記後の最終 SHA の CI は [PR #9 の Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/9/checks) で別途確認・報告する。ローカルでアプリテストを再実行したとは扱わない。
+- 関連 Issue・PR: [Issue #8](https://github.com/tetsujisugimori-coder/calculator-memo/issues/8)。今回の [PR #9](https://github.com/tetsujisugimori-coder/calculator-memo/pull/9)。基点は [PR #7](https://github.com/tetsujisugimori-coder/calculator-memo/pull/7) のマージコミットであり、その過去の検証結果を今回の検証結果として流用しない。
+- 未解決事項: 結果追記コミットの CI 結果は、追記時点では未確認であり PR の Checks と最終報告で確認する。旧記録の全主張・日時を再検証したわけではなく、過去の記載として保持する。main へのマージは人間が判断する。
 - 従来の方針: 既存 `Log.md` に日付・目的・変更内容・検証・関連コミットを追記する説明があった。root `AGENTS.md` は存在しなかった。
 - 変更理由と新しい方針: 上記依頼に従い、証跡は `LOG.md`、行動規則は `AGENTS.md` 等に分離し、以後の記録を最新順に管理する。
 - 第一希望: 日付と判断根拠を確認できる履歴を最新順に追えること。
