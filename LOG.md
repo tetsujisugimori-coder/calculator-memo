@@ -8,8 +8,8 @@
 - 変更理由: main `53a36d5beda76ad04395091a93c1e982c69dcdf9`（PR #11反映済み）では編集後にafterEqualsが残り、数字再入力や表示と内部状態、メモ作成可否が食い違う。
 - 仕様と判断: 従来の元式編集を維持する。12+3=15→BS/CE→4→=16、±→=9。未編集なら+2=17。数字/小数点/左括弧は新規式、再＝は同式評価。エラー後の数字等は新規開始、BS/CE/±/演算子は失敗式を訂正する。
 - 設計比較: 第一希望は既存の操作意味を保つ最小修正。boolと既存errorを維持し、純粋な遷移関数で共通化した。全面的な状態機械化は変更範囲が大きく不要、確定数値自体の編集は元式編集の意味を変えるため採用しない。状態種類が増えたとき再検討する。
-- 検証結果: 再開後のcloud Node 24.19.0で91単体テスト、lint、型検査、通常/Pagesビルド成功。最終GUI/CIは確認待ち。単体は正常/境界/異常遷移、GUI追加は両幅の編集・履歴不変・再計算メモpayload・再入力・エラー復帰を対象とする。独立レビューでGUIセレクタ2種類を実UIに合わせて訂正し、blocking指摘なし。
-- 関連 Issue・PR: [Issue #12](https://github.com/tetsujisugimori-coder/calculator-memo/issues/12)、PR未作成。[Issue #10](https://github.com/tetsujisugimori-coder/calculator-memo/issues/10)はPR #11マージ後の受入確認コメントを追記、closed維持。
+- 検証結果: 再開後のcloud Node 24.19.0で91単体テスト、lint、型検査、通常/Pagesビルド成功。初回[CI 39098914729](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39098914729)はhead `7cec8cd982419074da98712f215d65a1642b141d`で全工程成功。2026-10-18 13:59:29〜13:59:46 JST、Playwright 1.56.1 / Chromium 141.0.7390.37で1365/390pxの18検証記録・エラー0、配信SHA一致を確認。[スクリーンショット・trace・診断](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39098914729/artifacts/12126250194)は7日保持。この記録追記後の最終SHA CIは[PR #13 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/13/checks)で別途確認する。単体は正常/境界/異常遷移、GUI追加は両幅の編集・履歴不変・再計算メモpayload・再入力・エラー復帰を対象とする。独立レビューでGUIセレクタ2種類を実UIに合わせて訂正し、blocking指摘なし。
+- 関連 Issue・PR: [Issue #12](https://github.com/tetsujisugimori-coder/calculator-memo/issues/12)、[PR #13](https://github.com/tetsujisugimori-coder/calculator-memo/pull/13)。[Issue #10](https://github.com/tetsujisugimori-coder/calculator-memo/issues/10)はPR #11マージ後の受入確認コメントを追記、closed維持。
 - 未解決事項: iPhone Safari実機は未検証。指数表記結果の既存チェーン制約、既存依存警告、保護設定、負の対照CI実験は対象外。対話的Cloud Browserの接続成功とは扱わない。
 - 再開時の事実: 前回未公開のローカル作業場所が残っていなかったため、同じmainから仕様に沿って再構築・再検証した。GitHubに同目的PR/branchがないことを確認。
 
