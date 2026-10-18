@@ -7,8 +7,8 @@
 - 変更内容: 二項減算と単項符号を識別する共通の末尾数値抽出を導入し、±・CE・入力中 LCD に適用した。小数点末尾、％、括弧内数値、URL の空白付き単項負数も扱う。評価エンジン・保存形式・レイアウトは変更しない。
 - 変更理由: main `d453a9d4eb3b6f12897b3d83e6cdd5724dbba67f` の既存51テストは成功したが、追加回帰例のうち8件が失敗した。`12-34` の±が `1234`、CE が `12` となる数値結合を防ぐため。
 - 比較と判断: 四則演算・履歴・メモは既存テストを保持。入力後状態の問題や小画面の全面変更より、再現済みで小さな共通処理に限定できる末尾数値編集を優先した。従来の正規表現は減算記号を符号として扱っていたが、新処理は直前文脈で二項演算子を保持する。
-- 検証結果: cloud Node 24.19.0 のローカルで69単体テスト、lint、型検査が成功。修正途中の通常/Pagesビルドも成功。最終SHAの両ビルド・Chromium 1365/390px GUI は PR CI で確認予定であり、まだ成功と扱わない。GUI に編集/再入力/小数点/キーボード/連続計算/URL受信/履歴の検証を追加した。
-- 関連 Issue・PR: [Issue #10](https://github.com/tetsujisugimori-coder/calculator-memo/issues/10)。PR は作成後に追記する。
+- 検証結果: cloud Node 24.19.0 のローカルで69単体テスト、lint、型検査が成功。通常/Pagesビルドも成功。初回 [CI 39094065581](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39094065581) は `ef8a7047da9dae592fb70783f8f1611f75367fef` で全工程成功。Chromium 141.0.7390.37 / Playwright 1.56.1 の1365/390pxで14検証記録・エラー0、両幅のスクリーンショットとtraceを取得し、配信成果物のSHAも一致した（2026-10-18 12:34:56〜12:35:06 JST）。成果物はCI内で7日保持。この結果追記コミットのCIは [PR #11 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/11/checks) で別途確認する。GUI に編集/再入力/小数点/キーボード/連続計算/URL受信/履歴の検証を追加した。
+- 関連 Issue・PR: [Issue #10](https://github.com/tetsujisugimori-coder/calculator-memo/issues/10)。[PR #11](https://github.com/tetsujisugimori-coder/calculator-memo/pull/11)。
 - 未解決事項: 計算確定後のBS/CE/±で afterEquals が残る別問題は今回変更しない。iPhone Safari 実機操作は未実施。既存の依存警告や保護設定、負の対照CI実験も対象外。
 - 第一希望と検証環境: 修正ブランチの実ブラウザ検証を行う。既存の隔離 Actions + Chromium を採用し、対話的Cloud Browserのlocalhost到達やiPhone実機を検証したとは扱わない。
 
