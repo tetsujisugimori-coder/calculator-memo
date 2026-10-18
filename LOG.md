@@ -9,7 +9,8 @@
 - 従来の方針 / 新しい方針: Chromium両幅の回帰を共通期待値のまま維持し、従来狭幅のマウス条件も保持した上でmobile/touchとWebKitを必須追加。check名は既存の必須チェック参照を壊さないため保持。public Pagesのworkflow、アプリ、保存形式、依存lockは変更しない。
 - 第一希望 / 制約と採用策: iPhone Safari実機での確認が最終的な補完目標。今回は実端末操作環境がなく、再現可能なLinux Actions上のWebKit mobile/touchを採用する。これは実機検証の代替完了ではなく追加証拠である。
 - 検証結果: cloud Node 24.19.0で91単体テスト・lint・型検査・通常/Pagesビルド成功。GUIは実行中、最終SHAのCI結果はPRとChecksで確定後に記録する。ローカルWebKitは必要OSライブラリ不足を検出し、正規の--with-depsが利用できるActionsを最終検証環境とする。独立レビューで既存狭幅条件保持・失敗scenario状態・モーダル内部はみ出し検査を補強した。最初のローカルnpm ciは既定cache `/home/agent/.npm` が利用できず失敗し、作業可能な一時cacheへ切替えた。セキュリティ制限の解除はしていない。
-- 関連 Issue・PR: [Issue #14](https://github.com/tetsujisugimori-coder/calculator-memo/issues/14)。PR未作成。
+- 関連 Issue・PR: [Issue #14](https://github.com/tetsujisugimori-coder/calculator-memo/issues/14)。[PR #15](https://github.com/tetsujisugimori-coder/calculator-memo/pull/15)。
+- 初回CIの失敗と訂正: [39104018483](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104018483)、head `d48a8b45fb0bc905e480904c963b1401f498fa7b` は単体・lint・型・両build・ブラウザインストール・Chromium3条件が成功。WebKit26のmaxTouchPoints=0（coarsePointer=true）をテストが誤って未対応と扱い、アプリ操作前に失敗した。pinned PlaywrightはhasTouchをWebKit touch emulationへ渡していることを確認。maxTouchPointsの値はそのまま記録し、各tapのtouchstart実配信を必須にする検証へ訂正する。アプリの計算・保存期待値は変更しない。再検証はこの変更後のSHAで確認待ち。
 - 未解決事項: iPhone Safari実機、ソフトキーボード、Safari UI、セーフエリア、画面回転、長期保存/プライベートモード。既存の指数表記チェーン制約と依存警告は対象外。工程ガイドの取得失敗は記録し、リポジトリのAGENTSと関連文書は実読した。
 
 ## 2026-10-18 (JST): 計算確定後の編集・エラー復帰を統一

@@ -35,8 +35,12 @@ let currentScenario;
 let activeScenarioRecord;
 // Locator.tap emits touch input; desktop retains mouse clicks. No forced clicks.
 async function activate(locator) {
-  if (currentScenario.hasTouch) await locator.tap();
-  else await locator.click();
+  if (currentScenario.hasTouch) {
+    const before = await page.evaluate(() => window.__guiTouchStarts);
+    await locator.tap();
+    await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
+    activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
+  } else await locator.click();
 }
 async function assertHorizontalFit() {
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
@@ -120,7 +124,9 @@ async function exercise(scenario) {
   record.environment = await page.evaluate(() => ({ userAgent: navigator.userAgent, maxTouchPoints: navigator.maxTouchPoints, coarsePointer: matchMedia("(pointer: coarse)").matches, innerWidth, devicePixelRatio }));
   assert.equal(record.environment.innerWidth, width, "Viewport meta must preserve CSS width");
   if (hasTouch) {
-    assert.ok(record.environment.maxTouchPoints > 0 && record.environment.coarsePointer);
+    // Linux Playwright WebKit 26 reports maxTouchPoints=0 even with touch
+    // emulation enabled. Record it without spoofing; actual tap delivery is required.
+    assert.ok(record.environment.coarsePointer, "Mobile context must expose a coarse pointer");
     await activate(button("1"));
     await expect(page.locator(".lcd-result")).toHaveText("1");
     record.touchStarts = await page.evaluate(() => window.__guiTouchStarts);
