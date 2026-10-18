@@ -3,6 +3,28 @@
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 
+
+
+## 2026-10-18 16:51 (JST): PR17レビュー判定を訂正し可変ヘッダーとsticky位置を同期
+- 訂正する判断: 下の初回記録とPR/Issueで721px・文字200%時の重なりを受入外の残件として扱い、採用を推奨したが、基点比較が不足していた。独立再比較により今回導入した退行と確定し、採用推奨を撤回して修正を継続した。
+- 比較根拠: 同じCSS-only stressの721/800px・200%・scrollY250で、基点mainはheader下端76px/電卓上端104px（28px間隔）、初回案はheader下端154px/電卓上端104px（50px被覆）。mainのガイド/ブランド上端欠けは別の既存問題であり、新しい電卓被覆を既存扱いできない。
+- 変更内容・判断: headerのborder-box実高をResizeObserverでapp-shellのCSS変数に同期し、電卓sticky topを実高+28pxとする。縮小・幅変更・文字サイズ変更にも追従し、cleanupでobserver解除。mobileのstatic配置、計算/保存stateは変更しない。固定幅条件を増やす案やsticky機能の全面解除より、既存挙動を維持する最小限のUI測定を選んだ。
+- 回帰検証: 実アプリの721/800/1365px、文字200%→100%、scrollY250と上端復帰をChromium/WebKitハーネスへ追加。テスト専用workspace高2000pxでsticky親終端を分離し、スクロール後の間隔28px±1を検査して縮小追従も保証する。font/fixture/viewportはfinallyで復帰。721px拡大・復帰画像とstickyGeometryを保存。ネイティブ文字ズーム/実機Safariの検証とは区別する。
+- 失敗検出: 新回帰を修正前のPages成果物へ実行すると間隔−64pxで失敗し、退行を実際に検出した。先のCSS-only比較50pxとの差は実アプリの書体/line-height等の条件差であり、期待値を緩めて解消しない。
+- 検証結果: 追加修正のcloud91単体・lint・型・通常/Pages build成功。実アプリの独立Chromium確認では721/800px・200%のheader168px/電卓top196px、100%復帰時76px/104px、1365px・200%時108px/136pxと、全て28px間隔を確認。375/390への往復でもmobile static・CSS変数の追従・横overflowなし・JSエラー0。Observerのcleanupと計算state非干渉、回帰の縮小追従検査も独立レビューし阻害指摘なし。追加修正前のCI39108553790成功を今回の成功に流用しない。最終SHAの[PR #17 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17/checks)を別途確認する。
+- 追加修正CI: head `8dbb5c935eecb5d0f0a5fef6bfd2df48bb45bacb` の[39109312309](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39109312309)は91単体・lint・型・両build・GUI全工程成功。Chromium/WebKitの6条件66検証、46画面・6trace、エラー0。WebKitでも721/800px・200%の184px/212px、100%復帰76px/104pxと28px間隔を確認。[成果物](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39109312309/artifacts/12130405002)のSHA256 `fd6c85aa15b6bd3eff15ec3df1dcf9e304337baa68536e1994a30efd090d917d` と配信SHAを照合（7日保持）。この結果記録コミット自身の最終CIはPR Checksで別途確認する。
+- 関連: [Issue #16](https://github.com/tetsujisugimori-coder/calculator-memo/issues/16)、[PR #17](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17)。計算ロジック/保存形式/本番workflowは変更なし。実機Safari、OSキーボード、native text zoom、長期保存の限界は残る。マージはしない。
+
+## 2026-10-18 (JST): 狭幅ヘッダーの数式ガイド折返し・上端欠けを修正
+- 変更内容: 固定高のヘッダーをmin-height＋内容に応じた高さへ変更し、操作グループを必要時に次行へ回す。ガイド・テーマの縮小を防ぎラベルを一行保持、実selectを含め44pxの操作高を確保する。375px専用の条件は追加しない。計算・保存ロジックと公開workflowは変更しない。
+- 変更理由・再現: PR #15は2026-10-18 16:24:27 JSTにマージ済み、main `8ca5c1031f384794c6d7dc4f4f596707e833fa43` を確認。固定64pxとflex縮小が原因。mainのChromium375pxではガイドが2行、320pxではボタン高84.5px・上端−10.75px。PR15最終[CI39104790329](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104790329)のWebKit375px画像でも縦折返し・上端欠けを再確認した。今回は旧結果を修正後の成功として流用しない。
+- 検証結果: cloud Node24.19.0で91単体・lint・型検査・通常/Pagesビルド成功。Chromium375px touchを既存5条件へ追加し、ヘッダーの文字実寸・領域包含・非重複・hit-test、ガイド検索/分類/スクロール/閉じる、テーマtap/切替/再読込を回帰化。既存計算・編集・履歴・両メモ検証を保持。ローカルChromium4条件は成功。WebKitはlibgtk-4等のOS依存不足で起動できずGUI未実施、公式--with-depsを利用するActionsで確認した。ローカルのGUIは作業snapshotに対する検証であり、remote SHAの検証と区別する。
+- 独立レビュー: ソースとハーネスを別担当が照合。テーマlabelだけでなく実selectの44px高、ヘッダー兄弟非重複を補強。通常320/375/390/721/1365pxと文字拡大150/200%の独立CSS-only補助probeではmobile375/390の横overflowなし。受入範囲の阻害指摘なし。初回CI成果物の12画像（Chromium/WebKit375/390のヘッダー・ガイド、desktop、履歴、両メモ）と全headerGeometryを独立再確認し、欠け・重なり・回帰の阻害指摘なし。最終文書SHAのCIは別途確認する。
+- 関連 Issue・PR: [Issue #16](https://github.com/tetsujisugimori-coder/calculator-memo/issues/16)。[PR #17](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17)。
+- Actions・画像: head `2a036527544d2574cffa1819c925f102126bd7bd` の[CI39108159477](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39108159477)で91単体/lint/型/通常・Pages build/全GUI成功。2026-10-18 16:35:33〜16:37:26 JST、Chromium141.0.7390.37/WebKit26.0、6条件・64検証記録・ブラウザエラー0、mobile4条件各132tapのtouchstart実配信を確認。[42枚の画面・6trace・全ログ](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39108159477/artifacts/12129093330)をダウンロードしSHA256と配信headを照合。375/390pxはheader高113pxに自然伸長し、ガイド一行・上端欠けなし、desktopは76px/3カラムを維持。証拠は7日保持。この記録とREADME補足後の最終SHAは[PR #17 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17/checks)で別途再確認し、初回成功と混同しない。
+- 未解決事項: 実機iPhone Safari、ソフトキーボード、Safari UI、safe-area、回転、長期保存は未検証。独立CSS stressで721px・文字200%時の既存desktop電卓sticky top104pxと増高headerの重なりを確認（通常375/390pxの今回受入とは別、ブラウザの実文字ズーム試験ではない）。既存指数表記チェーン制約・依存警告も対象外。
+- 環境・参照: AGENTS/関連docs/README/LOG/workflow/Issue/PRを確認。新しいcloud作業snapshotを全83blobのGit SHA照合で復元した。通常git fetchは権限審査タイムアウトのため成功扱いせず、既存のGitHubコネクタで同repoの読取・基点commitを親にする公開を利用する。認証・権限を変更しない。江戸弁ガイド/辞典本文は今回未参照、作業継続。大規模変更・破壊的操作なし。マージは利用者が判断する。
+
 ## 2026-10-18 (JST): モバイル WebKit・タッチ回帰検証を追加
 - 変更内容: 既存GUIハーネスをChromium desktop 1365px / narrow 390px / mobile 390pxとWebKit mobile 390/375pxへ拡張。mobileはisMobile/hasTouchを有効化し、ボタン・タブをtap、touchstart実配信と横はみ出しを検査。各scenarioのエンジン・実行条件・時刻・画面・traceを区別して記録する。
 - 変更理由: 従来390px検証はマウスclickのChromiumであり、WebKitとtouchを確認できていなかった。基点main `0fe78372917793ffccc755f4ac998e7ce4d62260` はPR #13の05:56:48 UTCマージをAPIで確認した。

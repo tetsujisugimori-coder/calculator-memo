@@ -4,19 +4,24 @@ Every ordinary `pull_request` runs `.github/workflows/verify-pr-gui.yml`, includ
 
 ## Coverage and identity
 
-The job checks out the exact PR head (not the synthetic merge commit), runs existing unit tests, lint, TypeScript, normal build, and Pages build. Pinned Playwright drives five fresh, synthetic-only contexts:
+The job checks out the exact PR head (not the synthetic merge commit), runs existing unit tests, lint, TypeScript, normal build, and Pages build. Pinned Playwright drives six fresh, synthetic-only contexts:
 
 | Engine | CSS viewport | Mobile / touch | DPR | Activation |
 | --- | --- | --- | --- | --- |
 | Chromium | 1365×1000 | false / false | 1 | mouse click |
 | Chromium | 390×1000 | false / false | 1 | mouse click |
 | Chromium | 390×844 | true / true | 3 | locator.tap |
+| Chromium | 375×667 | true / true | 2 | locator.tap |
 | WebKit | 390×844 | true / true | 3 | locator.tap |
 | WebKit | 375×667 | true / true | 2 | locator.tap |
 
 These are explicitly configured browser contexts, not certified device models. Runtime user agent, viewport, DPR, touch capability, engine version and scenario timestamps are recorded. The mobile scenarios assert coarse-pointer/touch support and observe an actual `touchstart` delivered by the browser for every mobile activation. `navigator.maxTouchPoints` is recorded, not used as a cross-engine acceptance gate: the pinned Linux WebKit reports 0 despite enabled touch emulation. No browser property is spoofed. Every UI button/tab activation uses `locator.tap` in mobile contexts (no forced clicks). Existing keyboard regressions still run separately; `fill` and keyboard calls do not test the iOS software keyboard.
 
 Each scenario actively exercises:
+
+- Header guide text stays on one line inside its button; wordmark/actions fit the header and viewport without overlap, with unobstructed hit-test centers
+- Guide and actual native theme select have at least 44px touch height; the guide opens after activation, with search/category/scroll/close checks; the native select receives a real click/tap before programmatic option selection and theme state/persistence checks
+- Sticky header controls remain reachable after page scrolling and guide reopen/close; Chromium desktop and WebKit 375 additionally probe 320/360/414/540/720/721px header geometry
 
 - Addition, subtraction, multiplication, division, and four history entries
 - Division-by-zero error display, no invalid history entry, clear/recovery
@@ -85,3 +90,11 @@ The existing check name `Checks and Chromium GUI` is retained to avoid silently 
 Use the recorded exact PR SHA and the downloaded screenshots/traces for review. The next complementary acceptance step is physical iPhone Safari: repeat input/edit/error recovery and both memo saves, inspect the software keyboard and portrait/landscape scrolling, close/reopen Safari and confirm persistence using only synthetic data. No external device-hosting account or public preview service is required or created by this PR.
 
 Official references: [Playwright emulation](https://playwright.dev/docs/emulation), [WebKit and Safari distinction](https://playwright.dev/docs/browsers#webkit). Version-specific behavior is constrained by the committed Playwright 1.56.1 lockfile; the online documentation may describe newer releases.
+
+## Issue #16 responsive header boundary
+
+The header wraps whole groups when their intrinsic width no longer fits, rather than squeezing Japanese action labels. Its height follows content. This is a general layout rule, not a 375px-only breakpoint. Geometry is recorded under each scenario’s `headerGeometry`; `*-header.png` and `*-guide.png` supplement the existing calculator/history/memo screenshots. Theme popup activation is a real click/tap; option selection uses Playwright selectOption, not a claimed native iOS picker gesture.
+
+The real application additionally runs 721/800/1365px header text-size stress in Chromium and WebKit, at 200% and then 100% computed font sizes. It scrolls 250px and back, checking a 28px (±1px) gap between the sticky header and calculator after growth and shrink. A temporary 2000px workspace-height fixture supplies sufficient scroll range so the sticky parent's end does not confound the offset test; the fixture, font overrides and viewport are restored afterward. The 721px expanded/restored screenshots and `stickyGeometry` preserve this evidence. This is not a claim about native browser text zoom or iPhone Safari.
+
+The first implementation left the calculator at a fixed 104px sticky offset, introducing overlap when the header grew. A matched baseline comparison exposed this regression; the header border-box height now updates a CSS custom property through a scoped ResizeObserver. Calculation/persistence state is unaffected, and the observer is disconnected on cleanup.
