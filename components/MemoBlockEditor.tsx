@@ -1,7 +1,7 @@
 "use client";
 
 import type { MemoBlock } from "../lib/types";
-import { calculateMemoBlock } from "../lib/memo-blocks";
+import { calculateMemoBlock, describeCalculationBlock, recalculateMemoBlocks } from "../lib/memo-blocks";
 import { KatexFormula, validateLatex } from "./KatexFormula";
 import { MarkdownContent } from "./MarkdownContent";
 
@@ -20,22 +20,22 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
       ? { id, type, content: "" }
       : type === "formula"
         ? { id, type, latex: "" }
-        : calculateMemoBlock(id, "");
-    onChange([...blocks, block]);
+        : calculateMemoBlock(id, "", "note-variables");
+    onChange(recalculateMemoBlocks([...blocks, block]));
   };
 
   const updateBlock = (id: string, update: (block: MemoBlock) => MemoBlock) => {
-    onChange(blocks.map((block) => block.id === id ? update(block) : block));
+    onChange(recalculateMemoBlocks(blocks.map((block) => block.id === id ? update(block) : block)));
   };
 
-  const removeBlock = (id: string) => onChange(blocks.filter((block) => block.id !== id));
+  const removeBlock = (id: string) => onChange(recalculateMemoBlocks(blocks.filter((block) => block.id !== id)));
 
   const moveBlock = (index: number, direction: -1 | 1) => {
     const nextIndex = index + direction;
     if (nextIndex < 0 || nextIndex >= blocks.length) return;
     const next = [...blocks];
     [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-    onChange(next);
+    onChange(recalculateMemoBlocks(next));
   };
 
   return (
@@ -51,8 +51,10 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
 
       {!blocks.length && <div className="empty-state block-empty"><span>＋</span><h3>最初のブロックを追加</h3><p>文章、KaTeX数式、評価できる計算式を自由な順序で混在できます。</p></div>}
 
+      <p className="block-help">変数はこのメモ内だけで有効です。計算ブロックを上から順に評価します。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。</p>
       <div className="block-editor-list">
         {blocks.map((block, index) => {
+          const calculation = block.type === "calculation" ? (block.evaluationMode === "note-variables" ? describeCalculationBlock(block.expression) : { expression: block.expression }) : null;
           const label = block.type === "text" ? "文章" : block.type === "formula" ? "数式" : "計算";
           return (
             <article className={`block-editor-card ${block.type}`} key={block.id}>
@@ -81,12 +83,18 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
               })()}
 
               {block.type === "calculation" && <>
-                <label>計算式<input className="code-input" value={block.expression} onChange={(event) => updateBlock(block.id, () => calculateMemoBlock(block.id, event.target.value))} placeholder="例：200*(5%+5%)" /></label>
+                {block.evaluationMode === undefined ? <div className="block-help">
+                  <p>従来の計算モードです。変数モードでは x/X は変数になり、掛け算は * で入力します。</p>
+                  <button type="button" onClick={() => updateBlock(block.id, (current) => current.type === "calculation" ? { ...current, evaluationMode: "note-variables" } : current)}>変数を使う</button>
+                </div> : <p className="block-help">変数モード：掛け算は * で入力します。x/X は変数名です。</p>}
+                <label>計算式<input className="code-input" value={block.expression} onChange={(event) => updateBlock(block.id, (current) => current.type === "calculation" ? { ...current, expression: event.target.value } : current)} placeholder="例：price = 1200 または price * 5" /></label>
+                {calculation?.variableName && <p className="calculation-variable"><span>変数</span> <code>{calculation.variableName}</code></p>}
+                <p className="calculation-expression"><span>計算式</span> <code>{calculation?.expression || "式未入力"}</code></p>
                 <div className={`calculation-live-result ${block.error ? "has-error" : ""}`} aria-live="polite">
-                  <span>計算結果</span>
-                  {block.error ? <p role="status">{block.error}</p> : <strong>{block.displayExpression} = {block.resultText}</strong>}
+                  <span>計算結果{calculation?.variableName && <> <code>{calculation.variableName}</code></>}</span>
+                  {block.error ? <p role="status">{block.error}</p> : <strong>= {block.resultText}</strong>}
                 </div>
-                <p className="block-help">使用可能: 数値、四則、小数、括弧、負数、累乗（<code>^</code>）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数、LaTeX、その他の関数は使用できません。</p>
+                <p className="block-help">使用可能: 数値、四則、小数、括弧、負数、累乗（<code>^</code>）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数名は英字で始め、英数字と_を使用します（例：subtotal = price * quantity）。LaTeX、その他の関数は使用できません。</p>
               </>}
             </article>
           );

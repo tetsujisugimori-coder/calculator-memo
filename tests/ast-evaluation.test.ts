@@ -9,7 +9,7 @@ vi.mock("mathjs", async (importOriginal) => {
   }]));
   return { ...math, ...wrapped };
 });
-import { calculateExpression } from "../lib/calculator";
+import { calculateExpression, calculateVariableExpression } from "../lib/calculator";
 import { Node } from "mathjs";
 
 beforeEach(() => calls.clear());
@@ -22,6 +22,14 @@ describe("validated single-pass AST evaluation", () => {
       expect(Object.fromEntries(calls)).toEqual({ unaryMinus: 1, abs: 1, sqrt: 1, pow: 1, multiply: 1, add: 1, unaryPlus: 1, divide: 1, subtract: 1 });
       expect(subtree).not.toHaveBeenCalled();
     } finally { subtree.mockRestore(); }
+  });
+  it("evaluates variable references without recursively reevaluating definitions", () => {
+    const scope = new Map([["x", 3]]);
+    expect(calculateVariableExpression("x*x+x", scope).value).toBe(12);
+    expect(Object.fromEntries(calls)).toEqual({ multiply: 1, add: 1 });
+    calls.clear();
+    expect(() => calculateVariableExpression("1/0+missing", scope)).toThrow("未定義");
+    expect(calls.size).toBe(0);
   });
   it("does not repeat operations on deep allowed trees", () => {
     expect(calculateExpression(Array(31).fill("1").join("+")).value).toBe(31);

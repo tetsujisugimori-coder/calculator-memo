@@ -1,5 +1,6 @@
 "use client";
 
+import { describeCalculationBlock } from "../lib/memo-blocks";
 import type { MemoBlock } from "../lib/types";
 import { KatexFormula } from "./KatexFormula";
 import { MarkdownContent } from "./MarkdownContent";
@@ -15,13 +16,15 @@ export function MemoBlocks({ blocks, compact = false }: { blocks: MemoBlock[]; c
         if (block.type === "formula") {
           return <section className="memo-content-block formula-block" key={block.id} aria-label="数式ブロック"><span className="block-kind-label">数式</span><KatexFormula latex={block.latex} block /></section>;
         }
+        const calculation = block.evaluationMode === "note-variables" ? describeCalculationBlock(block.expression) : { expression: block.displayExpression || block.expression };
         return (
           <section className={`memo-content-block calculation-block ${block.error ? "has-error" : ""}`} key={block.id} aria-label="計算ブロック">
             <span className="block-kind-label">計算</span>
-            <code>{block.displayExpression || block.expression || "式未入力"}</code>
+            {calculation.variableName && <p className="calculation-variable"><span>変数</span> <code>{calculation.variableName}</code></p>}
+            <p className="calculation-expression"><span>計算式</span> <code>{calculation.expression || "式未入力"}</code></p>
             {block.error
               ? <p className="block-error" role="status">{block.error}</p>
-              : <strong>= {block.resultText}</strong>}
+              : <div className="calculation-saved-result"><span>計算結果{calculation.variableName && <> <code>{calculation.variableName}</code></>}</span><strong>= {block.resultText}</strong></div>}
           </section>
         );
       })}

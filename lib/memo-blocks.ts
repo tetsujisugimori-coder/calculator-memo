@@ -1,4 +1,4 @@
-import { calculateExpression } from "./calculator";
+import { assertVariableName, calculateExpression, calculateVariableExpression, EXPRESSION_LIMITS } from "./calculator";
 import type { CalculationMemoBlock, MemoBlock, PlainCalculationNote } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -10,7 +10,8 @@ export function isMemoBlock(value: unknown): value is MemoBlock {
   if (value.type === "text") return typeof value.content === "string";
   if (value.type === "formula") return typeof value.latex === "string";
   if (value.type === "calculation") {
-    return typeof value.expression === "string"
+    return (value.evaluationMode === undefined || typeof value.evaluationMode === "string")
+      && typeof value.expression === "string"
       && typeof value.displayExpression === "string"
       && (value.result === null || typeof value.result === "number")
       && typeof value.resultText === "string"
@@ -25,20 +26,36 @@ export function sanitizeMemoBlocks(value: unknown): MemoBlock[] | undefined {
   return value.map((block) => ({ ...block }));
 }
 
-export function calculateMemoBlock(id: string, expression: string): CalculationMemoBlock {
+export function describeCalculationBlock(expression: string): { variableName?: string; expression: string } {
+  const match = expression.match(/^\s*([A-Za-z][A-Za-z0-9_]*)\s*=([^=]*)$/);
+  return match ? { variableName: match[1], expression: match[2].trim() } : { expression };
+}
+
+export function calculateMemoBlock(id: string, expression: string, evaluationMode?: string, scope = new Map<string, number>()): CalculationMemoBlock {
+  const mode = evaluationMode === undefined ? {} : { evaluationMode };
   try {
-    const calculated = calculateExpression(expression);
+    if (expression.length > EXPRESSION_LIMITS.length) throw new Error("式は2000文字以内で入力してください");
+    if (evaluationMode !== undefined && evaluationMode !== "note-variables") throw new Error("未対応の計算モードです");
+    const statement = evaluationMode === "note-variables" ? describeCalculationBlock(expression) : { expression };
+    if (statement.variableName) assertVariableName(statement.variableName);
+    const calculated = evaluationMode === "note-variables"
+      ? calculateVariableExpression(statement.expression, scope)
+      : calculateExpression(expression);
+    // Commit only after all syntax, numerical and result limits succeeded.
+    if (statement.variableName) scope.set(statement.variableName, calculated.value);
     return {
+      ...mode,
       id,
       type: "calculation",
       expression,
-      displayExpression: calculated.displayExpression,
+      displayExpression: statement.variableName ? expression : calculated.displayExpression,
       result: calculated.value,
       resultText: calculated.resultText,
       error: null,
     };
   } catch (cause) {
     return {
+      ...mode,
       id,
       type: "calculation",
       expression,
@@ -51,7 +68,8 @@ export function calculateMemoBlock(id: string, expression: string): CalculationM
 }
 
 export function recalculateMemoBlocks(blocks: MemoBlock[]): MemoBlock[] {
-  return blocks.map((block) => block.type === "calculation" ? calculateMemoBlock(block.id, block.expression) : { ...block });
+  const scope = new Map<string, number>();
+  return blocks.map((block) => block.type === "calculation" ? calculateMemoBlock(block.id, block.expression, block.evaluationMode, scope) : { ...block });
 }
 
 export function resolveMemoBlocks(note: Pick<PlainCalculationNote, "id" | "content" | "blocks">): MemoBlock[] {

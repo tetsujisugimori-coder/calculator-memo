@@ -289,3 +289,22 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .expression-entry label { display: grid; gap: 6px; }
 .expression-entry input { width: 100%; min-width: 0; min-height: 44px; font-size: 16px; }
 .expression-entry small { display: block; margin-top: 6px; overflow-wrap: anywhere; }
+
+/* Calculation roles use labels as well as color; no evaluation logic lives here. */
+.calculation-variable, .calculation-expression, .calculation-saved-result {
+  margin: 0; min-width: 0; padding: 8px 10px; border-radius: 5px;
+  overflow-wrap: anywhere; color: var(--ink); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline;
+}
+.calculation-variable { background: #e6f1ff; }
+.calculation-expression { background: #fff4cc; }
+.calculation-saved-result, .calculation-live-result:not(.has-error) { background: #e6f3e8; }
+[data-theme="dark"] .calculation-variable { background: #20394f; }
+[data-theme="dark"] .calculation-expression { background: #433c23; }
+[data-theme="dark"] .calculation-saved-result,
+[data-theme="dark"] .calculation-live-result:not(.has-error) { background: #253e30; }
+.calculation-variable > span, .calculation-expression > span, .calculation-saved-result > span { font-size: 11px; }
+.calculation-variable code, .calculation-expression code, .calculation-saved-result code, .calculation-live-result code { overflow-wrap: anywhere; min-width: 0; }
+.memo-content-block.calculation-block, .memo-blocks-compact .memo-content-block.calculation-block { grid-template-columns: minmax(0, 1fr); }
+.calculation-saved-result strong { white-space: normal !important; overflow-wrap: anywhere; }
+.memo-content-block.calculation-block .block-error { grid-column: 1; }
+.block-help > button { min-height: 44px; padding: 6px 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
