@@ -12,6 +12,7 @@
 - 回帰検証: 実アプリの721/800/1365px、文字200%→100%、scrollY250と上端復帰をChromium/WebKitハーネスへ追加。テスト専用workspace高2000pxでsticky親終端を分離し、スクロール後の間隔28px±1を検査して縮小追従も保証する。font/fixture/viewportはfinallyで復帰。721px拡大・復帰画像とstickyGeometryを保存。ネイティブ文字ズーム/実機Safariの検証とは区別する。
 - 失敗検出: 新回帰を修正前のPages成果物へ実行すると間隔−64pxで失敗し、退行を実際に検出した。先のCSS-only比較50pxとの差は実アプリの書体/line-height等の条件差であり、期待値を緩めて解消しない。
 - 検証結果: 追加修正のcloud91単体・lint・型・通常/Pages build成功。実アプリの独立Chromium確認では721/800px・200%のheader168px/電卓top196px、100%復帰時76px/104px、1365px・200%時108px/136pxと、全て28px間隔を確認。375/390への往復でもmobile static・CSS変数の追従・横overflowなし・JSエラー0。Observerのcleanupと計算state非干渉、回帰の縮小追従検査も独立レビューし阻害指摘なし。追加修正前のCI39108553790成功を今回の成功に流用しない。最終SHAの[PR #17 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17/checks)を別途確認する。
+- 追加修正CI: head `8dbb5c935eecb5d0f0a5fef6bfd2df48bb45bacb` の[39109312309](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39109312309)は91単体・lint・型・両build・GUI全工程成功。Chromium/WebKitの6条件66検証、46画面・6trace、エラー0。WebKitでも721/800px・200%の184px/212px、100%復帰76px/104pxと28px間隔を確認。[成果物](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39109312309/artifacts/12130405002)のSHA256 `fd6c85aa15b6bd3eff15ec3df1dcf9e304337baa68536e1994a30efd090d917d` と配信SHAを照合（7日保持）。この結果記録コミット自身の最終CIはPR Checksで別途確認する。
 - 関連: [Issue #16](https://github.com/tetsujisugimori-coder/calculator-memo/issues/16)、[PR #17](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17)。計算ロジック/保存形式/本番workflowは変更なし。実機Safari、OSキーボード、native text zoom、長期保存の限界は残る。マージはしない。
 
 ## 2026-10-18 (JST): 狭幅ヘッダーの数式ガイド折返し・上端欠けを修正
