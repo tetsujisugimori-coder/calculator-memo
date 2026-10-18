@@ -57,6 +57,99 @@ async function assertHorizontalFit() {
     }
   }
 }
+async function assertHeaderFit(label) {
+  const geometry = await page.evaluate(() => {
+    const rect = (element) => {
+      const { x, y, width, height, top, right, bottom, left } = element.getBoundingClientRect();
+      return { x, y, width, height, top, right, bottom, left };
+    };
+    const header = document.querySelector(".topbar");
+    const guide = document.querySelector(".header-actions > button");
+    const range = document.createRange(); range.selectNodeContents(guide);
+    return {
+      viewport: innerWidth, header: rect(header), documentWidth: document.documentElement.scrollWidth,
+      guideLines: [...range.getClientRects()].map((item) => ({ top: item.top, bottom: item.bottom, left: item.left, right: item.right })),
+      controls: [".wordmark", ".header-actions > button", ".theme-select"].map((selector) => {
+        const element = document.querySelector(selector), bounds = rect(element);
+        const target = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+        return { selector, ...bounds, hit: element === target || element.contains(target) };
+      }),
+      select: rect(document.querySelector(".theme-select select")),
+    };
+  });
+  assert.ok(Math.abs(geometry.header.top) <= 1, label + ": sticky header stays at viewport top");
+  assert.ok(geometry.documentWidth <= geometry.viewport + 1, label + ": no document overflow");
+  for (const control of geometry.controls) {
+    assert.ok(control.left >= 0 && control.right <= geometry.viewport + 1 && control.top >= geometry.header.top && control.bottom <= geometry.header.bottom + 1,
+      label + ": header contains " + JSON.stringify(control));
+    assert.ok(control.hit, label + ": control center is not covered: " + control.selector);
+    if (control.selector !== ".wordmark") assert.ok(control.height >= 44, label + ": header actions have 44px touch height");
+  }
+  assert.ok(geometry.select.height >= 44, label + ": native theme select has 44px touch height");
+  for (let i = 0; i < geometry.controls.length; i += 1) {
+    for (const other of geometry.controls.slice(i + 1)) {
+      const control = geometry.controls[i];
+      assert.ok(control.right <= other.left || other.right <= control.left || control.bottom <= other.top || other.bottom <= control.top,
+        label + ": header controls must not overlap");
+    }
+  }
+  assert.equal(geometry.guideLines.length, 1, label + ": 数式ガイド remains a single line");
+  const line = geometry.guideLines[0], guide = geometry.controls[1];
+  assert.ok(line.top >= guide.top && line.bottom <= guide.bottom && line.left >= guide.left && line.right <= guide.right,
+    label + ": guide text is fully contained");
+  activeScenarioRecord.headerGeometry ||= [];
+  activeScenarioRecord.headerGeometry.push({ label, ...geometry });
+}
+async function exerciseHeader(prefix) {
+  await stage(prefix + ": responsive-header-guide-theme-scroll");
+  await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  await assertHeaderFit("initial");
+  await screenshot(prefix + "-header");
+  const guideButton = page.locator(".header-actions > button");
+  await activate(guideButton);
+  const guide = page.getByRole("dialog", { name: "KaTeX 数式ガイド", exact: true });
+  await expect(guide).toBeVisible();
+  await expect(guide.getByRole("heading", { name: "数式ブロック", exact: true })).toBeVisible();
+  await screenshot(prefix + "-guide");
+  await guide.getByRole("textbox").fill("分数");
+  await expect(guide.getByRole("heading", { name: "分数", exact: true })).toBeVisible();
+  await activate(guide.getByRole("button", { name: "よく使う公式", exact: true }));
+  await expect(guide.locator(".guide-card")).not.toHaveCount(0);
+  const content = guide.locator(".modal-content");
+  await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await expect(guide.getByRole("button", { name: "閉じる", exact: true })).toBeInViewport();
+  await activate(guide.getByRole("button", { name: "閉じる", exact: true }));
+  await expect(guide).toHaveCount(0);
+  const theme = page.getByRole("combobox", { name: "テーマ", exact: true });
+  await activate(theme);
+  await theme.selectOption("dark");
+  await page.keyboard.press("Escape"); // dismiss a native select popup where present
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect.poll(storage).toMatchObject({ settings: { theme: "dark" } });
+  await page.reload();
+  await expect(theme).toHaveValue("dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await assertHeaderFit("dark-theme");
+  await theme.selectOption("system");
+  await expect.poll(storage).toMatchObject({ settings: { theme: "system" } });
+  await theme.selectOption("light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+  await assertHeaderFit("page-scrolled");
+  await activate(guideButton);
+  await expect(guide).toBeVisible();
+  await activate(guide.getByRole("button", { name: "閉じる", exact: true }));
+  await assertHeaderFit("closed-after-scroll");
+  await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  if (currentScenario.id === "chromium-desktop-1365px" || currentScenario.id === "webkit-mobile-375px") {
+    for (const width of [320, 360, 414, 540, 720, 721]) {
+      await page.setViewportSize({ width, height: currentScenario.height });
+      await assertHeaderFit("width-" + width);
+    }
+    await page.setViewportSize({ width: currentScenario.width, height: currentScenario.height });
+  }
+  await passed(prefix + ": header text/targets contained, guide open/category/scroll/close, theme change, sticky reopen");
+}
 async function stage(name) { metadata.stage = name; await persist(); }
 async function passed(name) { metadata.checks.push(name); console.log("PASS:", name); await persist(); }
 async function screenshot(name) {
@@ -133,6 +226,7 @@ async function exercise(scenario) {
     assert.ok(record.touchStarts > 0, "Mobile activation must deliver real browser touch events");
     await passed(prefix + ": mobile viewport/coarse pointer and touch event delivery confirmed");
   }
+  await exerciseHeader(prefix);
   await stage(prefix + ": arithmetic-history-error-recovery");
   const cases = [
     { keys: ["1", "2", "足す", "3", "4"], expression: "12 ＋ 34", result: "46" },
@@ -395,6 +489,7 @@ try {
     { id: "chromium-desktop-1365px", engine: "chromium", width: 1365, height: 1000, isMobile: false, hasTouch: false, deviceScaleFactor: 1 },
     { id: "chromium-narrow-390px", engine: "chromium", width: 390, height: 1000, isMobile: false, hasTouch: false, deviceScaleFactor: 1 },
     { id: "chromium-mobile-390px", engine: "chromium", width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },
+    { id: "chromium-mobile-375px", engine: "chromium", width: 375, height: 667, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
     { id: "webkit-mobile-390px", engine: "webkit", width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },
     { id: "webkit-mobile-375px", engine: "webkit", width: 375, height: 667, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
   ];

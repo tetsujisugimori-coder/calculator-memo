@@ -3,6 +3,16 @@
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 
+
+## 2026-10-18 (JST): 狭幅ヘッダーの数式ガイド折返し・上端欠けを修正
+- 変更内容: 固定高のヘッダーをmin-height＋内容に応じた高さへ変更し、操作グループを必要時に次行へ回す。ガイド・テーマの縮小を防ぎラベルを一行保持、実selectを含め44pxの操作高を確保する。375px専用の条件は追加しない。計算・保存ロジックと公開workflowは変更しない。
+- 変更理由・再現: PR #15は2026-10-18 16:24:27 JSTにマージ済み、main `8ca5c1031f384794c6d7dc4f4f596707e833fa43` を確認。固定64pxとflex縮小が原因。mainのChromium375pxではガイドが2行、320pxではボタン高84.5px・上端−10.75px。PR15最終[CI39104790329](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104790329)のWebKit375px画像でも縦折返し・上端欠けを再確認した。今回は旧結果を修正後の成功として流用しない。
+- 検証結果: cloud Node24.19.0で91単体・lint・型検査・通常/Pagesビルド成功。Chromium375px touchを既存5条件へ追加し、ヘッダーの文字実寸・領域包含・非重複・hit-test、ガイド検索/分類/スクロール/閉じる、テーマtap/切替/再読込を回帰化。既存計算・編集・履歴・両メモ検証を保持。最終SHAのActions・スクリーンショットは確認後に追記する。ローカルのGUIは作業snapshotに対する検証であり、remote SHAの検証と区別する。
+- 独立レビュー: ソースとハーネスを別担当が照合。テーマlabelだけでなく実selectの44px高、ヘッダー兄弟非重複を補強。通常320/375/390/721/1365pxと文字拡大150/200%の独立CSS-only補助probeではmobile375/390の横overflowなし。受入範囲の阻害指摘なし。最終CI成果物の照合は確認待ち。
+- 関連 Issue・PR: [Issue #16](https://github.com/tetsujisugimori-coder/calculator-memo/issues/16)。PRは未作成。
+- 未解決事項: 実機iPhone Safari、ソフトキーボード、Safari UI、safe-area、回転、長期保存は未検証。独立CSS stressで721px・文字200%時の既存desktop電卓sticky top104pxと増高headerの重なりを確認（通常375/390pxの今回受入とは別、ブラウザの実文字ズーム試験ではない）。既存指数表記チェーン制約・依存警告も対象外。
+- 環境・参照: AGENTS/関連docs/README/LOG/workflow/Issue/PRを確認。新しいcloud作業snapshotを全83blobのGit SHA照合で復元した。通常git fetchは権限審査タイムアウトのため成功扱いせず、既存のGitHubコネクタで同repoの読取・基点commitを親にする公開を利用する。認証・権限を変更しない。江戸弁ガイド/辞典本文は今回未参照、作業継続。大規模変更・破壊的操作なし。マージは利用者が判断する。
+
 ## 2026-10-18 (JST): モバイル WebKit・タッチ回帰検証を追加
 - 変更内容: 既存GUIハーネスをChromium desktop 1365px / narrow 390px / mobile 390pxとWebKit mobile 390/375pxへ拡張。mobileはisMobile/hasTouchを有効化し、ボタン・タブをtap、touchstart実配信と横はみ出しを検査。各scenarioのエンジン・実行条件・時刻・画面・traceを区別して記録する。
 - 変更理由: 従来390px検証はマウスclickのChromiumであり、WebKitとtouchを確認できていなかった。基点main `0fe78372917793ffccc755f4ac998e7ce4d62260` はPR #13の05:56:48 UTCマージをAPIで確認した。
