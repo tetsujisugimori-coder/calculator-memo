@@ -438,7 +438,10 @@ async function exerciseVariables(prefix) {
       const size = await role.evaluate((element) => ({ scroll: element.scrollWidth, client: element.clientWidth }));
       assert.ok(size.scroll <= size.client + 1, "Calculation roles must wrap rather than clip horizontally: " + JSON.stringify(size));
     }
+    await dialog.locator(".block-editor-card.calculation").last().locator(".calculation-variable").scrollIntoViewIfNeeded();
     await screenshot(prefix + "-variables-" + mode + "-text-stress");
+    await dialog.locator(".block-editor-card.calculation").last().locator(".calculation-live-result").scrollIntoViewIfNeeded();
+    await screenshot(prefix + "-variables-" + mode + "-result-stress");
     await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
   }
   assert.deepEqual((await storage()).notes, before, "Cancelled styling probes do not alter notes");

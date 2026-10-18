@@ -7,9 +7,11 @@
 - 従来方針 / 変更理由 / 新方針: x/Xを乗算にする旧式と合法変数名ex2が衝突するため、推測的な式判別を不採用。optional evaluationModeを持つ新ブロックと明示切替のみ変数評価し、欠落した旧ブロックは旧解釈のまま。保存version1は維持、未知modeは実行エラー。旧版アプリで新modeの再編集・再計算は非対応。
 - 第一希望 / 採用策: ノート単位scopeと旧データ保全を小さい加算変更で実現。共有scope、依存graph、大規模schema移行は採用しない。失敗再代入は以前の有効値を保持し、以降を継続。設計詳細・次表示設定への引継ぎは [note-variables.md](docs/agent/note-variables.md)。
 - 表示判断: 変数/式/結果を淡青/黄/緑と文字ラベルで分離。新modeの非zero整数近傍だけ2*EPSILON*abs(value)以内の丸めノイズを表示で整える。total例は表示6,600、内部6600.000000000001を保持。広い有効桁丸めは大整数を変えるため不採用。旧表示は変更しない。
-- 検証結果: cloud Node24.19.0で286単体・lint・型検査成功。通常/Pages build成功。main c02861c4a5e30df2095a0bc4180407050bfe173dとの2029式（旧1000式含む）比較で内部値・表示・エラー文差分0。GUIは既存6条件へ変数・旧mode・保存・順序・scope・両theme/拡大/折返しを追加し実行中。最終commitのActionsとGUIはPR Checksで別途確認する。
-- 独立レビュー: 初稿でmathjsの非十進数tokenが通過する指摘を受け、変数modeで明示拒否と回帰追加。最終レビューは進行中。
-- 関連: [Issue #25](https://github.com/tetsujisugimori-coder/calculator-memo/issues/25)、基点mainでPR #24のmergeを確認。実採番のPR URLは作成後に追記する。
+- 検証結果: cloud Node24.19.0で286単体・lint・型検査成功。通常/Pages build成功。main c02861c4a5e30df2095a0bc4180407050bfe173dとの2029式（旧1000式含む）比較で内部値・表示・エラー文差分0。GUIは既存6条件へ変数・旧mode・保存・順序・scope・両theme/拡大/折返しを追加。下記初回Actionsで成功し、最終commitはPR Checksで別途確認する。
+- 独立レビュー: 初稿でmathjsの非十進数tokenが通過する指摘を受け、変数modeで明示拒否と回帰追加。独立286単体成功、旧新8,008式差分0、逐次scope500ケース確認、blocking指摘なし。最終追加は未知mode保存回帰と画像撮影位置の補強のみ。
+- Actions確認: [run 39175545041](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39175545041)、対象 `ebacc41324f57299c985d7347bf59ef4bdd542d1`。Node22.13.0で286単体・lint・型・両build・GUI全工程成功。2026-10-19 08:14:12〜08:20:26 JST、Chromium/WebKit既存6条件120検証・エラー0。[106画面・6trace・診断](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39175545041/artifacts/12154676326)のZIP SHA256をAPI digestと照合、provenanceのexpected/配信SHA・branch/runを確認。7日保持。最終追記では長い変数名/結果が画面内へ入る撮影位置を追加し、最終SHAは[PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/26/checks)で再確認する。
+- local GUI補足: Chromium4条件79検証成功、WebKitはOSライブラリ不足で起動失敗。ActionsをWebKit検証の根拠とする。git CLI認証なしのため公式connectorで同一treeを照合して作業branchを公開した。
+- 関連: [Issue #25](https://github.com/tetsujisugimori-coder/calculator-memo/issues/25)、基点mainでPR #24のmergeを確認。[PR #26](https://github.com/tetsujisugimori-coder/calculator-memo/pull/26)。依頼でPR #25と呼んだ機能は実採番ではIssue #25 / PR #26。予定の表示設定は次工程（番号未確定）で今回未実装。
 - 未解決事項: Issue #19、変数等と%混在、科学記数法、他アプリへのscope交換は対象外。iPhone Safari実機は未検証。既存chunkサイズ警告は残る。ローカル/tmp容量不足は余裕ある作業領域で依存導入をやり直し解消。江戸弁ガイドは参照済み、辞典の直接参照は256KiB上限で失敗したため2026-10-18更新ローカル写し冒頭を参照（最新同一性は未確認）。
 
 

@@ -89,5 +89,8 @@ describe("explicit note-local variables", () => {
     expect(restored).toEqual([old,...current]);
     expect(recalculateMemoBlocks(restored)).toEqual(restored);
     expect(sanitizeMemoBlocks([{...old,evaluationMode:3}])).toBeUndefined();
+    const unknown = sanitizeMemoBlocks(JSON.parse(JSON.stringify([{...old,evaluationMode:"future-mode"}])))!;
+    expect(unknown[0]).toMatchObject({evaluationMode:"future-mode",expression:"ex2"});
+    expect((recalculateMemoBlocks(unknown)[0] as CalculationMemoBlock).error).toContain("未対応");
   });
 });
