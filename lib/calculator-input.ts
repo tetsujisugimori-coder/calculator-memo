@@ -1,7 +1,7 @@
 import { appendInput, clearEntry, toggleSign } from "./calculator";
 
 export type InputState = { expression: string; afterEquals: boolean; error: string; resultValue: number };
-export type InputAction = { type: "input"; value: string } | { type: "backspace" | "clear-entry" | "sign" | "clear" };
+export type InputAction = { type: "input"; value: string } | { type: "replace"; value: string } | { type: "backspace" | "clear-entry" | "sign" | "clear" };
 
 // Number#toString switches small results to e-notation, which the expression
 // grammar and trailing-number editor do not accept. Expand that exact numeric
@@ -23,14 +23,19 @@ function resultOperand(value: number): string {
 // Editing reopens the original expression and invalidates its confirmed result.
 export function transitionInput(state: InputState, action: InputAction) {
   let expression = state.expression;
-  if (action.type === "clear") expression = "";
+  if (action.type === "replace") expression = action.value;
+  else if (action.type === "clear") expression = "";
   else if (action.type === "backspace") expression = expression.slice(0, -1);
   else if (action.type === "clear-entry") expression = clearEntry(expression);
   else if (action.type === "sign") expression = toggleSign(expression);
   else if (action.type === "input") {
     const fresh = (state.afterEquals || Boolean(state.error)) && /^[0-9.(]$/.test(action.value);
     if (fresh) expression = "";
-    else if (state.afterEquals && /^[+\-*/]$/.test(action.value)) expression = resultOperand(state.resultValue);
+    else if (state.afterEquals && /^[+\-*/^]$/.test(action.value)) {
+      expression = resultOperand(state.resultValue);
+      // A continued power applies to the result itself, including its sign.
+      if (action.value === "^" && state.resultValue < 0) expression = `(${expression})`;
+    }
     expression = appendInput(expression, action.value);
   }
   return { expression, afterEquals: false as const, error: "" };

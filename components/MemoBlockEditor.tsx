@@ -86,7 +86,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
                   <span>計算結果</span>
                   {block.error ? <p role="status">{block.error}</p> : <strong>{block.displayExpression} = {block.resultText}</strong>}
                 </div>
-                <p className="block-help">使用可能: 数値、＋ − × ÷（<code>+ - * /</code>）、小数、括弧、負数、%。変数、LaTeX、累乗記号 <code>^</code>、関数は使用できません。</p>
+                <p className="block-help">使用可能: 数値、四則、小数、括弧、負数、累乗（<code>^</code>）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数、LaTeX、その他の関数は使用できません。</p>
               </>}
             </article>
           );

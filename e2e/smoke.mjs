@@ -217,6 +217,136 @@ async function selectPanel(panel) {
   await expect(page.locator("#" + panel + "-panel")).toBeVisible();
 }
 async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }
+// Run after the existing regressions so their fixed history/memo counts remain unchanged.
+async function exerciseBasicMath(prefix) {
+  const input = page.getByRole("textbox", { name: "計算式を入力", exact: true });
+  const result = page.locator(".lcd-result");
+  const dialog = page.getByRole("dialog");
+  const near = (actual, expected, label) => assert.ok(
+    typeof actual === "number" && Number.isFinite(actual) && Math.abs(actual - expected) <= 4 * Number.EPSILON * Math.max(1, Math.abs(expected)),
+    `${label}: expected internal numeric value ${expected}, received ${actual}`,
+  );
+  async function calculate(expression, text, value) {
+    const before = (await storage()).history;
+    await input.fill(expression);
+    await expect(button("単独計算メモを作成")).toBeDisabled();
+    assert.deepEqual((await storage()).history, before, "Typing does not create history");
+    await activate(button("計算する"));
+    await expect(result).toHaveText(text);
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression, resultText: text });
+    near((await storage()).history[0].result, value, expression);
+    await expect(button("単独計算メモを作成")).toBeEnabled();
+  }
+  await stage(prefix + ": basic-math-expression-input-and-history");
+  await activate(page.locator("details.expression-entry > summary"));
+  await expect(input).toBeVisible();
+  for (const [expression, text, value] of [
+    ["2^3^2", "512", 512], ["-2^2", "-4", -4], ["(-2)^2", "4", 4],
+    ["sqrt(2)", "1.414213562373", Math.sqrt(2)],
+    ["2*pi", "6.28318530718", 2 * Math.PI],
+    ["e", "2.718281828459", Math.E],
+    ["sqrt(81)+abs(-7)+2^3+pi-pi+e-e", "24", 24],
+  ]) await calculate(expression, text, value);
+  await selectPanel("history");
+  await expect(page.locator(".history-item").first()).toContainText("= 24");
+  const historyBeforeRestore = (await storage()).history;
+  await activate(page.locator(".history-item").first().getByRole("button", { name: "戻す", exact: true }));
+  await expect(input).toHaveValue("sqrt(81)+abs(-7)+2^3+pi-pi+e-e");
+  await expect(button("単独計算メモを作成")).toBeDisabled();
+  assert.deepEqual((await storage()).history, historyBeforeRestore);
+  await activate(button("計算する"));
+  await expect(result).toHaveText("24");
+  await screenshot(prefix + "-basic-math-history");
+  // '^' outside the expression textbox must chain from the confirmed result.
+  await activate(button("すべて消去"));
+  await page.keyboard.type("2+1=");
+  await expect(result).toHaveText("3");
+  await page.keyboard.type("^");
+  await expect(input).toHaveValue("3^");
+  await expect(button("単独計算メモを作成")).toBeDisabled();
+  await page.keyboard.type("2=");
+  await expect(result).toHaveText("9");
+  await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: "3^2", result: 9 });
+  await passed(prefix + ": power precedence, sqrt/abs/pi/e, full-precision history, editable restore and power continuation");
+
+  await stage(prefix + ": basic-math-errors-and-recovery");
+  for (const invalid of ["sin(0)", "sqrt(-1)", "sqrt(1,2)", "pi(2)", "2^53", "sqrt(100)%"]) {
+    const before = await storage();
+    await input.fill(invalid);
+    await activate(button("計算する"));
+    await expect(result).toHaveText("Error");
+    await expect(button("単独計算メモを作成")).toBeDisabled();
+    assert.deepEqual((await storage()).history, before.history);
+    assert.deepEqual((await storage()).notes, before.notes);
+    if (invalid === "sqrt(-1)") await screenshot(prefix + "-basic-math-domain-error");
+    await calculate("sqrt(16)+abs(-2)", "6", 6);
+  }
+  await passed(prefix + ": disallowed function/arity/constant-call, negative sqrt, unsafe magnitude and unsupported math-percent mixing reject without stored side effects; corrected input recovers");
+
+  await stage(prefix + ": basic-math-single-memo-edit");
+  await calculate("sqrt(2)", "1.414213562373", Math.sqrt(2));
+  await activate(button("単独計算メモを作成"));
+  await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic math single");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  await selectPanel("notes");
+  const single = page.locator(".note-card").filter({ hasText: "Synthetic math single" });
+  await expect(single.locator(".note-formula strong")).toHaveText("= 1.414213562373");
+  near((await storage()).notes.find((note) => note.title === "Synthetic math single").result, Math.sqrt(2), "saved sqrt memo");
+  await activate(single.getByRole("button", { name: "編集", exact: true }));
+  await dialog.getByLabel("計算式", { exact: true }).fill("2*pi");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  await expect(single.locator(".note-formula strong")).toHaveText("= 6.28318530718");
+  await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic math single")).toMatchObject({ expression: "2*pi", resultText: "6.28318530718" });
+  near((await storage()).notes.find((note) => note.title === "Synthetic math single").result, 2 * Math.PI, "edited pi memo");
+
+  await stage(prefix + ": basic-math-block-save-and-recalculate");
+  await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
+  await activate(dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }));
+  await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic math blocks");
+  await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+  await dialog.getByLabel("計算式", { exact: true }).fill("sqrt(2)");
+  await expect(dialog.locator(".calculation-live-result strong")).toContainText("= 1.414213562373");
+  await screenshot(prefix + "-basic-math-block-editor");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  const block = page.locator(".note-card").filter({ hasText: "Synthetic math blocks" });
+  await expect(block.locator(".calculation-block strong")).toHaveText("= 1.414213562373");
+  near((await storage()).notes.find((note) => note.title === "Synthetic math blocks").blocks[0].result, Math.sqrt(2), "saved sqrt block");
+  await activate(block.getByRole("button", { name: "編集", exact: true }));
+  await dialog.getByLabel("計算式", { exact: true }).fill("abs(-3)^2+sqrt(16)");
+  await expect(dialog.locator(".calculation-live-result strong")).toContainText("= 13");
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  await expect(block.locator(".calculation-block strong")).toHaveText("= 13");
+  await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic math blocks").blocks[0]).toMatchObject({ expression: "abs(-3)^2+sqrt(16)", result: 13, resultText: "13", error: null });
+  await passed(prefix + ": single memo retains internal precision and recalculates on edit; math block live preview/save/edit recalculates");
+
+  await stage(prefix + ": basic-math-url-and-reload");
+  const beforeUrl = await storage();
+  const imported = "sqrt(81)+abs(-7)+2^3+pi-pi+e-e";
+  await page.goto(base + "?expr=" + encodeURIComponent(imported));
+  await activate(page.locator("details.expression-entry > summary"));
+  await expect(input).toHaveValue(imported);
+  await expect(button("単独計算メモを作成")).toBeDisabled();
+  assert.deepEqual((await storage()).history, beforeUrl.history);
+  assert.deepEqual((await storage()).notes, beforeUrl.notes);
+  await activate(button("計算する"));
+  await expect(result).toHaveText("24");
+  await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression: imported, result: 24, resultText: "24" });
+  const beforeReload = await storage();
+  await page.reload();
+  await activate(page.locator("details.expression-entry > summary"));
+  await expect(input).toHaveValue(imported);
+  await expect(button("単独計算メモを作成")).toBeDisabled();
+  assert.deepEqual((await storage()).history, beforeReload.history);
+  assert.deepEqual((await storage()).notes, beforeReload.notes);
+  await selectPanel("notes");
+  await expect(single.locator(".note-formula strong")).toHaveText("= 6.28318530718");
+  await expect(block.locator(".calculation-block strong")).toHaveText("= 13");
+  await screenshot(prefix + "-basic-math-persisted-memos");
+  await selectPanel("history");
+  await expect(page.locator(".history-item").first()).toContainText("= 24");
+  await screenshot(prefix + "-basic-math-url-history");
+  await passed(prefix + ": URL math remains editable until equals, and exact history/memo payloads plus rendered results survive reload");
+}
 async function exercise(scenario) {
   assertOwnedServer();
   currentScenario = scenario;
@@ -588,6 +718,7 @@ async function exercise(scenario) {
   assert.deepEqual((await storage()).history, beforeFinalReload.history);
   assert.deepEqual((await storage()).notes, beforeFinalReload.notes);
   await passed(prefix + ": failed expressions corrected without history side effects, fresh parentheses, postfix percent and final persistence");
+  await exerciseBasicMath(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

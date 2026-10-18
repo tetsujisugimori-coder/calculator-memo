@@ -9,6 +9,7 @@ type Props = {
   resultText: string;
   error: string;
   onInput: (value: string) => void;
+  onReplace: (value: string) => void;
   onCalculate: () => void;
   onClear: () => void;
   onClearEntry: () => void;
@@ -56,6 +57,11 @@ export function CalculatorPad(props: Props) {
           return <button key={label} className={`calc-key ${kind} ${action === "backspace" ? "backspace-key" : ""}`} onClick={() => run(action)} aria-label={aria}>{label}</button>;
         })}
       </div>
+      <details className="expression-entry">
+        <summary>式を入力（累乗・sqrt・abs・pi・e）</summary>
+        <label>計算式を入力<input aria-label="計算式を入力" className="code-input" value={props.expression} onChange={(event) => props.onReplace(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.nativeEvent.isComposing) { event.preventDefault(); props.onCalculate(); } }} autoCapitalize="none" autoCorrect="off" spellCheck={false} /></label>
+        <small>例: sqrt(144)+2^3。入力後は「=」またはEnter。%との組合せは未対応。</small>
+      </details>
       <div className="calculator-foot"><span>12 DIGIT</span><span>LOCAL MEMORY</span></div>
     </section>
   );
