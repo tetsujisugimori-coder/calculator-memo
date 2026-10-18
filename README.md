@@ -107,6 +107,6 @@ npm run build
 
 ### モバイル GUI 自動検証
 
-PR の GUI 検証は Chromium の1365px・390pxマウス条件および390px mobile/touch、WebKit の390px・375px mobile/touchを対象にします。数字・編集・連続計算・異常系復帰・履歴・両メモの保存と再読込を同じ期待値で確認し、タッチイベントと横方向のはみ出しも検査します。結果と画像・trace・対象SHAは [GUI手順](e2e/README.md) を参照してください。
+PR の GUI 検証は Chromium の1365px・390pxマウス条件および390px・375px mobile/touch、WebKit の390px・375px mobile/touchを対象にします。数字・編集・連続計算・異常系復帰・履歴・両メモの保存と再読込を同じ期待値で確認し、タッチイベントと横方向のはみ出しも検査します。ヘッダーの一行ラベル・上端・非重複・操作領域、数式ガイドの検索/分類/開閉、テーマの切替/再読込も確認します。結果と画像・trace・対象SHAは [GUI手順](e2e/README.md) を参照してください。
 
 WebKit自動操作はiPhone Safari実機の成功を意味しません。実機のソフトキーボード、Safari UI、セーフエリア、画面回転、長期保存などは別途確認が必要です。
