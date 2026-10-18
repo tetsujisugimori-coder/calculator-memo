@@ -3,6 +3,16 @@
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 
+## 2026-10-18 (JST): 計算確定後の編集・エラー復帰を統一
+- 変更内容: BS/CE/±とキーボード編集を共通の入力遷移へ接続し、編集後のafterEquals・エラー・旧結果を無効化する。両メモ入口は再計算まで無効。保存形式・評価エンジン・Memo-Nexus連携は変更しない。
+- 変更理由: main `53a36d5beda76ad04395091a93c1e982c69dcdf9`（PR #11反映済み）では編集後にafterEqualsが残り、数字再入力や表示と内部状態、メモ作成可否が食い違う。
+- 仕様と判断: 従来の元式編集を維持する。12+3=15→BS/CE→4→=16、±→=9。未編集なら+2=17。数字/小数点/左括弧は新規式、再＝は同式評価。エラー後の数字等は新規開始、BS/CE/±/演算子は失敗式を訂正する。
+- 設計比較: 第一希望は既存の操作意味を保つ最小修正。boolと既存errorを維持し、純粋な遷移関数で共通化した。全面的な状態機械化は変更範囲が大きく不要、確定数値自体の編集は元式編集の意味を変えるため採用しない。状態種類が増えたとき再検討する。
+- 検証結果: 再開後のcloud Node 24.19.0で91単体テスト、lint、型検査、通常/Pagesビルド成功。初回[CI 39098914729](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39098914729)はhead `7cec8cd982419074da98712f215d65a1642b141d`で全工程成功。2026-10-18 13:59:29〜13:59:46 JST、Playwright 1.56.1 / Chromium 141.0.7390.37で1365/390pxの18検証記録・エラー0、配信SHA一致を確認。[スクリーンショット・trace・診断](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39098914729/artifacts/12126250194)は7日保持。この記録追記後の最終SHA CIは[PR #13 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/13/checks)で別途確認する。単体は正常/境界/異常遷移、GUI追加は両幅の編集・履歴不変・再計算メモpayload・再入力・エラー復帰を対象とする。独立レビューでGUIセレクタ2種類を実UIに合わせて訂正し、blocking指摘なし。
+- 関連 Issue・PR: [Issue #12](https://github.com/tetsujisugimori-coder/calculator-memo/issues/12)、[PR #13](https://github.com/tetsujisugimori-coder/calculator-memo/pull/13)。[Issue #10](https://github.com/tetsujisugimori-coder/calculator-memo/issues/10)はPR #11マージ後の受入確認コメントを追記、closed維持。
+- 未解決事項: iPhone Safari実機は未検証。指数表記結果の既存チェーン制約、既存依存警告、保護設定、負の対照CI実験は対象外。対話的Cloud Browserの接続成功とは扱わない。
+- 再開時の事実: 前回未公開のローカル作業場所が残っていなかったため、同じmainから仕様に沿って再構築・再検証した。GitHubに同目的PR/branchがないことを確認。
+
 ## 2026-10-18 (JST): 末尾数値の符号反転・CE・入力中表示を修正
 - 変更内容: 二項減算と単項符号を識別する共通の末尾数値抽出を導入し、±・CE・入力中 LCD に適用した。小数点末尾、％、括弧内数値、URL の空白付き単項負数も扱う。評価エンジン・保存形式・レイアウトは変更しない。
 - 変更理由: main `d453a9d4eb3b6f12897b3d83e6cdd5724dbba67f` の既存51テストは成功したが、追加回帰例のうち8件が失敗した。`12-34` の±が `1234`、CE が `12` となる数値結合を防ぐため。
