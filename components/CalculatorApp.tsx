@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { trailingNumber } from "../lib/calculator";
 import { transitionInput, type InputAction } from "../lib/calculator-input";
 import { formatExpression, formatNumber } from "../lib/format";
@@ -38,6 +38,7 @@ function noteDraftFromCalculation(expression: string, displayExpression: string,
 }
 
 export function CalculatorApp() {
+  const headerRef = useRef<HTMLElement>(null);
   const [data, setData] = useState<StoredData>(defaultData);
   const [storageStatus, setStorageStatus] = useState<"loading" | "ready" | "error">("loading");
   const [storageIssue, setStorageIssue] = useState<StorageIssue | null>(null);
@@ -54,6 +55,19 @@ export function CalculatorApp() {
   const [viewNote, setViewNote] = useState<Memo | null>(null);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
   const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    const header = headerRef.current;
+    const shell = header?.parentElement;
+    if (!header || !shell) return;
+    // Wrapping and text resizing change the sticky header's actual height.
+    // Keep the calculator below it without coupling this to calculation state.
+    const updateOffset = () => shell.style.setProperty("--topbar-height", `${header.getBoundingClientRect().height}px`);
+    updateOffset();
+    const observer = new ResizeObserver(updateOffset);
+    observer.observe(header, { box: "border-box" });
+    return () => { observer.disconnect(); shell.style.removeProperty("--topbar-height"); };
+  }, []);
 
   const showToast = useCallback((message: string) => {
     setToast(message);
@@ -217,7 +231,7 @@ export function CalculatorApp() {
 
   return (
     <main className="app-shell">
-      <header className="topbar">
+      <header className="topbar" ref={headerRef}>
         <a className="wordmark" href="#calculator" aria-label="Calculation Memo ホーム"><span className="wordmark-mark">CM</span><span><strong>Calculation Memo</strong><small>計算を、意味のある記録へ。</small></span></a>
         <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
       </header>

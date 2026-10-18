@@ -4,6 +4,16 @@
 
 
 
+
+## 2026-10-18 16:51 (JST): PR17レビュー判定を訂正し可変ヘッダーとsticky位置を同期
+- 訂正する判断: 下の初回記録とPR/Issueで721px・文字200%時の重なりを受入外の残件として扱い、採用を推奨したが、基点比較が不足していた。独立再比較により今回導入した退行と確定し、採用推奨を撤回して修正を継続した。
+- 比較根拠: 同じCSS-only stressの721/800px・200%・scrollY250で、基点mainはheader下端76px/電卓上端104px（28px間隔）、初回案はheader下端154px/電卓上端104px（50px被覆）。mainのガイド/ブランド上端欠けは別の既存問題であり、新しい電卓被覆を既存扱いできない。
+- 変更内容・判断: headerのborder-box実高をResizeObserverでapp-shellのCSS変数に同期し、電卓sticky topを実高+28pxとする。縮小・幅変更・文字サイズ変更にも追従し、cleanupでobserver解除。mobileのstatic配置、計算/保存stateは変更しない。固定幅条件を増やす案やsticky機能の全面解除より、既存挙動を維持する最小限のUI測定を選んだ。
+- 回帰検証: 実アプリの721/800/1365px、文字200%→100%、scrollY250と上端復帰をChromium/WebKitハーネスへ追加。テスト専用workspace高2000pxでsticky親終端を分離し、スクロール後の間隔28px±1を検査して縮小追従も保証する。font/fixture/viewportはfinallyで復帰。721px拡大・復帰画像とstickyGeometryを保存。ネイティブ文字ズーム/実機Safariの検証とは区別する。
+- 失敗検出: 新回帰を修正前のPages成果物へ実行すると間隔−64pxで失敗し、退行を実際に検出した。先のCSS-only比較50pxとの差は実アプリの書体/line-height等の条件差であり、期待値を緩めて解消しない。
+- 検証結果: 追加修正のcloud91単体・lint・型・通常/Pages build成功。実アプリの独立Chromium確認では721/800px・200%のheader168px/電卓top196px、100%復帰時76px/104px、1365px・200%時108px/136pxと、全て28px間隔を確認。375/390への往復でもmobile static・CSS変数の追従・横overflowなし・JSエラー0。Observerのcleanupと計算state非干渉、回帰の縮小追従検査も独立レビューし阻害指摘なし。追加修正前のCI39108553790成功を今回の成功に流用しない。最終SHAの[PR #17 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17/checks)を別途確認する。
+- 関連: [Issue #16](https://github.com/tetsujisugimori-coder/calculator-memo/issues/16)、[PR #17](https://github.com/tetsujisugimori-coder/calculator-memo/pull/17)。計算ロジック/保存形式/本番workflowは変更なし。実機Safari、OSキーボード、native text zoom、長期保存の限界は残る。マージはしない。
+
 ## 2026-10-18 (JST): 狭幅ヘッダーの数式ガイド折返し・上端欠けを修正
 - 変更内容: 固定高のヘッダーをmin-height＋内容に応じた高さへ変更し、操作グループを必要時に次行へ回す。ガイド・テーマの縮小を防ぎラベルを一行保持、実selectを含め44pxの操作高を確保する。375px専用の条件は追加しない。計算・保存ロジックと公開workflowは変更しない。
 - 変更理由・再現: PR #15は2026-10-18 16:24:27 JSTにマージ済み、main `8ca5c1031f384794c6d7dc4f4f596707e833fa43` を確認。固定64pxとflex縮小が原因。mainのChromium375pxではガイドが2行、320pxではボタン高84.5px・上端−10.75px。PR15最終[CI39104790329](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104790329)のWebKit375px画像でも縦折返し・上端欠けを再確認した。今回は旧結果を修正後の成功として流用しない。

@@ -42,14 +42,14 @@ async function activate(locator) {
     activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
   } else await locator.click();
 }
-async function assertHorizontalFit() {
+async function assertHorizontalFit(expectedWidth = currentScenario.width) {
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
-  assert.equal(dimensions.viewport, currentScenario.width, "CSS viewport must remain configured width");
+  assert.equal(dimensions.viewport, expectedWidth, "CSS viewport must remain configured width");
   assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.body <= dimensions.viewport + 1, JSON.stringify(dimensions));
   for (const modal of await page.getByRole("dialog").all()) {
     if (!(await modal.isVisible())) continue;
     const bounds = await modal.boundingBox();
-    assert.ok(bounds && bounds.x >= -1 && bounds.x + bounds.width <= currentScenario.width + 1, "Dialog must fit horizontal viewport");
+    assert.ok(bounds && bounds.x >= -1 && bounds.x + bounds.width <= expectedWidth + 1, "Dialog must fit horizontal viewport");
     const content = modal.locator(".modal-content");
     for (const scrollArea of await content.all()) {
       const size = await scrollArea.evaluate((element) => ({ scroll: element.scrollWidth, client: element.clientWidth }));
@@ -147,13 +147,55 @@ async function exerciseHeader(prefix) {
       await assertHeaderFit("width-" + width);
     }
     await page.setViewportSize({ width: currentScenario.width, height: currentScenario.height });
+    await exerciseStickyOffset(prefix);
   }
   await passed(prefix + ": header text/targets contained, guide open/category/scroll/close, theme change, sticky reopen");
 }
+async function exerciseStickyOffset(prefix) {
+  // Text-size stress on the real app, not a claim about native browser text zoom.
+  // Give the sticky element enough parent scroll range without changing app data.
+  const fixture = await page.addStyleTag({ content: ".workspace { min-height: 2000px; }" });
+  activeScenarioRecord.stickyGeometry = [];
+  try {
+    for (const width of [721, 800, 1365]) {
+      await page.setViewportSize({ width, height: 667 });
+      for (const scale of [2, 1]) {
+        await page.locator(".topbar").evaluate((header, factor) => {
+          const elements = [...header.querySelectorAll("*")];
+          // Capture all original sizes before setting any parent styles.
+          const sizes = elements.map((element) => {
+            element.style.removeProperty("font-size");
+            return element;
+          }).map((element) => parseFloat(getComputedStyle(element).fontSize) * factor);
+          elements.forEach((element, index) => { element.style.fontSize = sizes[index] + "px"; });
+        }, scale);
+        await page.evaluate(() => scrollTo({ top: 250, behavior: "instant" }));
+        const measure = () => page.evaluate(() => {
+          const header = document.querySelector(".topbar").getBoundingClientRect();
+          const calculator = document.querySelector(".calculator-column").getBoundingClientRect();
+          return { width: innerWidth, scrollY, headerBottom: header.bottom, calculatorTop: calculator.top, gap: calculator.top - header.bottom };
+        });
+        await expect.poll(async () => Math.abs((await measure()).gap - 28), { message: "Sticky gap must track both header growth and shrink" }).toBeLessThanOrEqual(1);
+        const geometry = await measure();
+        assert.equal(geometry.scrollY, 250, "Stress fixture must actually scroll");
+        activeScenarioRecord.stickyGeometry.push({ scale, ...geometry });
+        if (width === 721) await screenshot(prefix + "-sticky-721px-text-" + scale * 100 + "pct", width, false);
+        await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+        assert.ok((await measure()).gap >= 27, "Calculator must also clear header before scrolling");
+      }
+    }
+  } finally {
+    await page.locator(".topbar *").evaluateAll((elements) => elements.forEach((element) => element.style.removeProperty("font-size")));
+    await fixture.evaluate((element) => element.remove());
+    await page.setViewportSize({ width: currentScenario.width, height: currentScenario.height });
+    await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  }
+  await passed(prefix + ": real-app sticky offset follows header growth/shrink at 721/800/1365px and 200/100% text sizes");
+}
 async function stage(name) { metadata.stage = name; await persist(); }
 async function passed(name) { metadata.checks.push(name); console.log("PASS:", name); await persist(); }
-async function screenshot(name) {
-  await assertHorizontalFit();
+async function screenshot(name, expectedWidth = currentScenario.width, fullPage = true) {
+  await assertHorizontalFit(expectedWidth);
   // Test-only visual label, removed immediately after capture; not an app feature.
   await page.evaluate((identity) => {
     const banner = document.createElement("div");
@@ -161,8 +203,8 @@ async function screenshot(name) {
     banner.textContent = "TEST OVERLAY | " + identity;
     banner.style.cssText = "position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#101820;color:#fff;font:11px monospace;padding:8px;overflow-wrap:anywhere;pointer-events:none";
     document.body.append(banner);
-  }, currentScenario.id + " | " + metadata.branch + " | SHA " + metadata.sha + " | run " + metadata.run + "/" + metadata.attempt);
-  try { await page.screenshot({ path: output + "/" + name + ".png", fullPage: true }); }
+  }, currentScenario.id + " | capture " + expectedWidth + "px | " + metadata.branch + " | SHA " + metadata.sha + " | run " + metadata.run + "/" + metadata.attempt);
+  try { await page.screenshot({ path: output + "/" + name + ".png", fullPage }); }
   finally { await page.locator("#gui-test-overlay").evaluate((element) => element.remove()); }
 }
 const button = (name) => page.getByRole("button", { name, exact: true });
