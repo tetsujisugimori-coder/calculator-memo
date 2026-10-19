@@ -1,5 +1,6 @@
 "use client";
 
+import { VariableIdentification } from "./Identification";
 import type { MemoBlock } from "../lib/types";
 import { calculateMemoBlock, describeCalculationBlock, recalculateMemoBlocks } from "../lib/memo-blocks";
 import { KatexFormula, validateLatex } from "./KatexFormula";
@@ -88,7 +89,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
                   <button type="button" onClick={() => updateBlock(block.id, (current) => current.type === "calculation" ? { ...current, evaluationMode: "note-variables" } : current)}>変数を使う</button>
                 </div> : <p className="block-help">変数モード：掛け算は * で入力します。x/X は変数名です。</p>}
                 <label>計算式<input className="code-input" value={block.expression} onChange={(event) => updateBlock(block.id, (current) => current.type === "calculation" ? { ...current, expression: event.target.value } : current)} placeholder="例：price = 1200 または price * 5" /></label>
-                {calculation?.variableName && <p className="calculation-variable"><span>変数</span> <code>{calculation.variableName}</code></p>}
+                {block.evaluationMode === "note-variables" && <VariableIdentification expression={block.expression} assignment />}
                 <p className="calculation-expression"><span>計算式</span> <code>{calculation?.expression || "式未入力"}</code></p>
                 <div className={`calculation-live-result ${block.error ? "has-error" : ""}`} aria-live="polite">
                   <span>計算結果{calculation?.variableName && <> <code>{calculation.variableName}</code></>}</span>

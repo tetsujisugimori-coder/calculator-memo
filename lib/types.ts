@@ -83,7 +83,7 @@ export type StoredData = {
   version: 1;
   history: HistoryEntry[];
   notes: Memo[];
-  settings: { theme: Theme; activePanel: Panel };
+  settings: { theme: Theme; activePanel: Panel; identificationMode?: import("./identification").IdentificationMode };
 };
 
 export type NoteDraft = Omit<CalculationNote, "id" | "schemaVersion" | "type" | "createdAt" | "updatedAt">;

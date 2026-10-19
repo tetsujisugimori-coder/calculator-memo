@@ -1,5 +1,6 @@
 "use client";
 
+import { VariableIdentification } from "./Identification";
 import { describeCalculationBlock } from "../lib/memo-blocks";
 import type { MemoBlock } from "../lib/types";
 import { KatexFormula } from "./KatexFormula";
@@ -20,7 +21,7 @@ export function MemoBlocks({ blocks, compact = false }: { blocks: MemoBlock[]; c
         return (
           <section className={`memo-content-block calculation-block ${block.error ? "has-error" : ""}`} key={block.id} aria-label="計算ブロック">
             <span className="block-kind-label">計算</span>
-            {calculation.variableName && <p className="calculation-variable"><span>変数</span> <code>{calculation.variableName}</code></p>}
+            {block.evaluationMode === "note-variables" && <VariableIdentification expression={block.expression} assignment />}
             <p className="calculation-expression"><span>計算式</span> <code>{calculation.expression || "式未入力"}</code></p>
             {block.error
               ? <p className="block-error" role="status">{block.error}</p>

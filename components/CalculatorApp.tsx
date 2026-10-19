@@ -8,6 +8,7 @@ import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
 import { defaultData, loadData, saveData, type StorageLoadResult } from "../lib/storage";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
+import { IdentificationSettings } from "./Identification";
 import { FormulaLibraryModal } from "./FormulaLibraryModal";
 import { emptyFormulaLibrary } from "../lib/formula-library";
 import { CalculatorPad } from "./CalculatorPad";
@@ -222,7 +223,7 @@ export function CalculatorApp() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm || libraryOpen) return;
+      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm || libraryOpen) return;
       if (/^[0-9+\-*/^.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
       else if (event.key === "Backspace") { event.preventDefault(); editInput({ type: "backspace" }); }
@@ -233,7 +234,7 @@ export function CalculatorApp() {
   }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm, libraryOpen]);
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" data-identification={data.settings.identificationMode ?? "auto"}>
       <header className="topbar" ref={headerRef}>
         <a className="wordmark" href="#calculator" aria-label="Calculation Memo ホーム"><span className="wordmark-mark">CM</span><span><strong>Calculation Memo</strong><small>計算を、意味のある記録へ。</small></span></a>
         <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
@@ -250,6 +251,7 @@ export function CalculatorApp() {
           <div className="mobile-tabs" role="tablist" aria-label="表示切り替え"><button id="history-tab" role="tab" aria-selected={data.settings.activePanel === "history"} aria-controls="history-panel" tabIndex={data.settings.activePanel === "history" ? 0 : -1} className={data.settings.activePanel === "history" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "history")} onClick={() => setPanel("history")}>履歴 <span>{data.history.length}</span></button><button id="notes-tab" role="tab" aria-selected={data.settings.activePanel === "notes"} aria-controls="notes-panel" tabIndex={data.settings.activePanel === "notes" ? 0 : -1} className={data.settings.activePanel === "notes" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "notes")} onClick={() => setPanel("notes")}>メモ <span>{data.notes.length}</span></button></div>
           <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onReplace={(value) => editInput({ type: "replace", value })} onCalculate={calculate} onClear={() => { editInput({ type: "clear" }); }} onClearEntry={() => { editInput({ type: "clear-entry" }); }} onBackspace={() => { editInput({ type: "backspace" }); }} onToggleSign={() => { editInput({ type: "sign" }); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
           <button className="button-secondary" onClick={() => setLibraryOpen(true)}>登録式ライブラリ</button>
+          <IdentificationSettings mode={data.settings.identificationMode} onChange={(identificationMode) => setData((current) => ({ ...current, settings: { ...current.settings, identificationMode } }))} />
           <p className="keyboard-hint"><kbd>Enter</kbd> 計算　<kbd>Esc</kbd> クリア　数字・演算子はそのまま入力</p>
         </div>
 
