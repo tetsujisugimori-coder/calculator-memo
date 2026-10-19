@@ -80,9 +80,12 @@ async function exerciseFormulaLibrary(prefix) {
   await activate(dialog().getByRole("button", { name: "編集をキャンセル", exact: true }));
   assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")).formulaLibrary.entries[0]), original);
   await activate(dialog().getByRole("button", { name: "登録式を編集", exact: true }));
+  await dialog().getByLabel("登録名", { exact: true }).fill("Synthetic renamed formula");
   await dialog().getByLabel("登録する計算式", { exact: true }).fill("price * quantity + tax");
   await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
   await expect(dialog()).toContainText("price、quantity、tax");
+  await expect(dialog().getByRole("button", { name: "Synthetic formula", exact: true })).toHaveCount(0);
+  await expect(dialog().locator("h3.identity-registered")).toContainText("Synthetic renamed formula");
   await activate(dialog().getByRole("button", { name: "計算式を登録", exact: true }));
   await dialog().getByLabel("登録名", { exact: true }).fill("長い登録名".repeat(20));
   await dialog().getByLabel("登録する計算式", { exact: true }).fill("variable_with_a_very_long_name_123456789 * quantity");
@@ -94,13 +97,13 @@ async function exerciseFormulaLibrary(prefix) {
   await expect(dialog().getByRole("button", { name: "登録式を削除", exact: true })).toBeInViewport();
   await assertHorizontalFit();
   await screenshot(prefix + "-formula-library-controls", currentScenario.width, false, true);
-  await activate(dialog().getByRole("button", { name: "Synthetic formula", exact: true }));
+  await activate(dialog().getByRole("button", { name: "Synthetic renamed formula", exact: true }));
   await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
   await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true }));
   await expect(dialog()).toContainText("price * quantity + tax");
   await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
   await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "削除する", exact: true }));
-  await expect(dialog().getByRole("button", { name: "Synthetic formula", exact: true })).toHaveCount(0);
+  await expect(dialog().getByRole("button", { name: "Synthetic renamed formula", exact: true })).toHaveCount(0);
   await activate(dialog().getByRole("button", { name: "直前の削除を取り消す", exact: true }));
   await expect(dialog()).toContainText("price * quantity + tax");
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
@@ -131,6 +134,73 @@ async function exerciseFormulaLibrary(prefix) {
   }
   await passed(prefix + ": formula registration, syntax rejection, cancel, selection, edit, delete/undo, reload and unchanged notes/history");
 }
+async function exerciseIdentification(prefix) {
+  await stage(prefix + ": identification-modes-and-native-input");
+  const shell = page.locator("main.app-shell");
+  const settings = page.getByRole("combobox", { name: "識別表示", exact: true });
+  const open = () => activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+  const dialog = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  await expect(shell).toHaveAttribute("data-identification", "auto");
+  const before = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")));
+  assert.equal(before.settings.identificationMode, undefined);
+  await open();
+  const labelPosition = () => dialog().locator(".identity-label").first().evaluate((el) => getComputedStyle(el).position);
+  assert.equal(await labelPosition(), currentScenario.width <= 720 ? "absolute" : "static");
+  await page.setViewportSize({width: currentScenario.width <= 720 ? 1000 : 375, height: currentScenario.height});
+  assert.equal(await labelPosition(), currentScenario.width <= 720 ? "static" : "absolute");
+  await page.setViewportSize({width: currentScenario.width, height: currentScenario.height});
+  await activate(dialog().getByRole("button", { name: "登録式を編集", exact: true }));
+  const input = dialog().getByLabel("登録する計算式", {exact:true});
+  await input.fill("price * quantity + 12 + pi");
+  await expect(dialog().locator(".variable-identification")).toContainText("price、quantity");
+  await input.press("Home"); await input.press("ArrowRight");
+  assert.equal(await input.evaluate((el) => el.selectionStart), 1);
+  await input.fill("price +");
+  await expect(dialog().locator(".variable-identification")).toContainText("識別保留");
+  await expect(dialog().locator(".variable-identification .identity-variable")).toHaveCount(0);
+  await input.fill("unregistered + 2");
+  await expect(dialog().locator(".variable-identification")).toContainText("unregistered");
+  // It is a syntactic variable, never a registered-formula call.
+  await expect(dialog().locator(".variable-identification .identity-registered")).toHaveCount(0);
+  await activate(dialog().getByRole("button", { name: "編集をキャンセル", exact: true }));
+  await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
+  for (const mode of ["labels", "color", "none"]) {
+    await activate(settings); await settings.selectOption(mode);
+    await expect(shell).toHaveAttribute("data-identification", mode);
+    await page.setViewportSize({width: currentScenario.width <= 720 ? 1000 : 375, height: currentScenario.height});
+    await expect(shell).toHaveAttribute("data-identification", mode);
+    await page.setViewportSize({width: currentScenario.width, height: currentScenario.height});
+    await page.reload(); await expect(shell).toHaveAttribute("data-identification", mode);
+    const variableColor = await page.locator(".calculation-variable").first().evaluate((el) => getComputedStyle(el).backgroundColor);
+    assert.equal(variableColor === "rgba(0, 0, 0, 0)", mode === "none");
+    for (const theme of ["light", "dark"]) {
+      await page.getByRole("combobox", {name:"テーマ",exact:true}).selectOption(theme);
+      await open();
+      assert.equal(await labelPosition(), mode === "labels" ? "static" : "absolute");
+      const color = await dialog().locator(".identity-registered").first().evaluate((el) => getComputedStyle(el).backgroundColor);
+      assert.equal(color === "rgba(0, 0, 0, 0)", mode === "none");
+      await assertHorizontalFit();
+      await screenshot(prefix + "-identification-" + mode + "-" + theme);
+      await activate(dialog().getByRole("button", {name:"閉じる",exact:true}));
+    }
+  }
+  const expressionBefore = await page.locator(".lcd-expression").textContent();
+  const resultBefore = await page.locator(".lcd-result").textContent();
+  const info = page.getByRole("button", {name:"識別表示の説明",exact:true});
+  await activate(info);
+  const help = page.getByRole("dialog", {name:"変数・登録式の識別表示",exact:true});
+  await expect(help).toContainText("登録名を式に書いても呼び出せません");
+  await page.keyboard.type("123"); await page.keyboard.press("Backspace");
+  assert.equal(await page.locator(".lcd-expression").textContent(), expressionBefore);
+  assert.equal(await page.locator(".lcd-result").textContent(), resultBefore);
+  await page.keyboard.press("Escape"); await expect(help).toHaveCount(0); await expect(info).toBeFocused();
+  await activate(info); await page.keyboard.press("Enter"); await expect(help).toHaveCount(0);
+  assert.equal(await page.locator(".lcd-result").textContent(), resultBefore);
+  const after = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")));
+  assert.deepEqual(after.formulaLibrary,before.formulaLibrary); assert.deepEqual(after.notes,before.notes); assert.deepEqual(after.history,before.history);
+  await passed(prefix + ": three display modes, responsive default/manual persistence, light/dark, safe input, syntax identification and help keyboard isolation");
+}
+
 async function assertHeaderFit(label) {
   const geometry = await page.evaluate(() => {
     const rect = (element) => {
@@ -918,6 +988,7 @@ async function exercise(scenario) {
   await exerciseBasicMath(prefix);
   await exerciseVariables(prefix);
   await exerciseFormulaLibrary(prefix);
+  await exerciseIdentification(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

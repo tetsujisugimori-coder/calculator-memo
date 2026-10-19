@@ -1,3 +1,4 @@
+import { identificationMode } from "./identification";
 import type { StoredData } from "./types";
 import { readFormulaLibrary } from "./formula-library";
 import { sanitizeMemoBlocks } from "./memo-blocks";
@@ -96,7 +97,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       ...(formulaLibrary ? { formulaLibrary } : {}),
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
       notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredMemo).filter((item): item is StoredData["notes"][number] => item !== null) : [],
-      settings: { theme, activePanel },
+      settings: { theme, activePanel, ...(identificationMode(parsed.settings.identificationMode) ? { identificationMode: identificationMode(parsed.settings.identificationMode) } : {}) },
     } };
   } catch (error) {
     console.error("ローカル保存領域へアクセスできませんでした", error);

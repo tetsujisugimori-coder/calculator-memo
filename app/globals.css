@@ -321,3 +321,29 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .library-variables { background: rgba(65, 143, 225, .14); }
 .library-expression pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
 .formula-library button { min-height: 44px; }
+
+/* Identification is presentation-only. Native inputs and error messages are untouched. */
+.identification-settings { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+.identification-settings label { display: grid; gap: 4px; flex: 1; min-width: 0; }
+.identification-settings select { min-width: 0; width: 100%; min-height: 44px; background: var(--surface); color: var(--ink); }
+.identification-settings > button { min-width: 44px; min-height: 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); }
+.identity-item { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 8px 10px; border-radius: 5px; overflow-wrap: anywhere; color: var(--ink); }
+.identity-label { font-size: .72rem; font-weight: 400; }
+.identity-variable { background: rgba(65, 143, 225, .18); }
+.identity-registered { background: rgba(170, 100, 230, .18); }
+.variable-identification { display: grid; gap: 6px; min-width: 0; }
+.variable-identification:empty { display: none; }
+.variable-identification code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.calculation-expression, .calculation-saved-result, .calculation-live-result { flex-direction: column; align-items: stretch; }
+.calculation-expression, .library-expression { background: rgba(235, 183, 44, .16) !important; }
+.calculation-saved-result, .calculation-live-result:not(.has-error) { background: rgba(75, 180, 100, .16) !important; }
+[data-identification="none"] :is(.identity-item,.calculation-expression,.calculation-saved-result,.calculation-live-result:not(.has-error),.library-expression,.library-variables) { background: transparent !important; }
+[data-identification="color"] :is(.identity-label,.calculation-expression > span,.calculation-saved-result > span,.calculation-live-result > span,.library-expression > strong,.library-variables > strong),
+[data-identification="none"] :is(.identity-label,.calculation-expression > span,.calculation-saved-result > span,.calculation-live-result > span,.library-expression > strong,.library-variables > strong) {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+@media (max-width: 720px) {
+  [data-identification="auto"] :is(.identity-label,.calculation-expression > span,.calculation-saved-result > span,.calculation-live-result > span,.library-expression > strong,.library-variables > strong) {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
