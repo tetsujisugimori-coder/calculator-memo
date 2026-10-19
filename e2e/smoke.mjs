@@ -57,6 +57,59 @@ async function assertHorizontalFit(expectedWidth = currentScenario.width) {
     }
   }
 }
+async function exerciseFormulaLibrary(prefix) {
+  await stage(prefix + ": formula-library-crud");
+  const before = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")));
+  const open = () => activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+  const dialog = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  await open();
+  await activate(dialog().getByRole("button", { name: "計算式を登録", exact: true }));
+  await dialog().getByLabel("登録名", { exact: true }).fill("Synthetic formula");
+  await dialog().getByLabel("登録する計算式", { exact: true }).fill("price * quantity");
+  await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
+  await expect(dialog().getByRole("alert")).toContainText("編集中");
+  await expect(dialog().getByLabel("登録する計算式", { exact: true })).toHaveValue("price * quantity");
+  await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
+  await expect(dialog().getByRole("region", { name: "選択した登録式" })).toContainText("price、quantity");
+  await expect(dialog()).toContainText("計算結果：未計算");
+  const original = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")).formulaLibrary.entries[0]);
+  await activate(dialog().getByRole("button", { name: "登録式を編集", exact: true }));
+  await dialog().getByLabel("登録する計算式", { exact: true }).fill("x=2");
+  await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
+  await expect(dialog().getByRole("alert")).toBeVisible();
+  await activate(dialog().getByRole("button", { name: "編集をキャンセル", exact: true }));
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")).formulaLibrary.entries[0]), original);
+  await activate(dialog().getByRole("button", { name: "登録式を編集", exact: true }));
+  await dialog().getByLabel("登録する計算式", { exact: true }).fill("price * quantity + tax");
+  await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
+  await expect(dialog()).toContainText("price、quantity、tax");
+  await activate(dialog().getByRole("button", { name: "計算式を登録", exact: true }));
+  await dialog().getByLabel("登録名", { exact: true }).fill("長い登録名".repeat(20));
+  await dialog().getByLabel("登録する計算式", { exact: true }).fill("variable_with_a_very_long_name_123456789 * quantity");
+  await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
+  await assertHorizontalFit();
+  await page.screenshot({ path: output + "/" + prefix + "-formula-library.png", fullPage: true });
+  await activate(dialog().getByRole("button", { name: "Synthetic formula", exact: true }));
+  await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
+  await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true }));
+  await expect(dialog()).toContainText("price * quantity + tax");
+  await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
+  await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "削除する", exact: true }));
+  await expect(dialog().getByRole("button", { name: "Synthetic formula", exact: true })).toHaveCount(0);
+  await activate(dialog().getByRole("button", { name: "直前の削除を取り消す", exact: true }));
+  await expect(dialog()).toContainText("price * quantity + tax");
+  await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
+  await page.reload();
+  await open();
+  await expect(dialog()).toContainText("price * quantity + tax");
+  const after = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")));
+  assert.deepEqual(after.notes, before.notes); assert.deepEqual(after.history, before.history);
+  assert.equal(after.formulaLibrary.entries.length, 2);
+  assert.equal(after.formulaLibrary.selectedId, original.id);
+  await assertHorizontalFit();
+  await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
+  await passed(prefix + ": formula registration, syntax rejection, cancel, selection, edit, delete/undo, reload and unchanged notes/history");
+}
 async function assertHeaderFit(label) {
   const geometry = await page.evaluate(() => {
     const rect = (element) => {
@@ -842,6 +895,7 @@ async function exercise(scenario) {
   await passed(prefix + ": failed expressions corrected without history side effects, fresh parentheses, postfix percent and final persistence");
   await exerciseBasicMath(prefix);
   await exerciseVariables(prefix);
+  await exerciseFormulaLibrary(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

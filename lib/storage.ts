@@ -1,4 +1,5 @@
 import type { StoredData } from "./types";
+import { readFormulaLibrary } from "./formula-library";
 import { sanitizeMemoBlocks } from "./memo-blocks";
 
 export const STORAGE_KEY = "calculation-memo:data";
@@ -79,6 +80,11 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       return { status: "error", reason: "invalid-data", raw, message: "保存データの必須項目が壊れています。" };
     }
 
+    let formulaLibrary: StoredData["formulaLibrary"];
+    if (parsed.formulaLibrary !== undefined) {
+      try { formulaLibrary = readFormulaLibrary(parsed.formulaLibrary); }
+      catch { return { status: "error", reason: "invalid-data", raw, message: "登録式ライブラリを読み取れませんでした。元データを保護するため自動保存を停止しました。" }; }
+    }
     const theme = ["light", "dark", "system"].includes(String(parsed.settings.theme))
       ? parsed.settings.theme as StoredData["settings"]["theme"]
       : defaultData.settings.theme;
@@ -87,6 +93,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       : defaultData.settings.activePanel;
     return { status: "ok", raw, data: {
       version: 1,
+      ...(formulaLibrary ? { formulaLibrary } : {}),
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
       notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredMemo).filter((item): item is StoredData["notes"][number] => item !== null) : [],
       settings: { theme, activePanel },
