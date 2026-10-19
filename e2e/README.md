@@ -131,3 +131,7 @@ After the prior regressions, every existing context runs four execution checks w
 The six contexts additionally check unknown/mixed/duplicate/malformed blocks, exact raw storage retention after setting/keyboard attempts and reload, raw recovery-copy argument with a synthetic clipboard sink (not system clipboard), cancelled and explicit confirmed reset, and normal editing/saving after synthetic repair. All fixtures are synthetic. A protected sibling blocks the whole single-key dataset; this is not partial editing.
 
 PR #34追加レビュー: 既知計算ブロックのproofRef/sourceId/入れ子metadataを合成保存データへ付け、legacy/変数双方の無変更編集保存、別文章の編集、追加・削除、下/上移動、式エラーと復帰、再読込で保持を検査する。計算結果assertionと付随情報assertionを分離。付随情報は画面表示せず保存値で比較し、意味的有効性は評価しない。
+
+
+## 保護理由と原本エクスポート（Issue #35）
+既存6条件それぞれで未知type、既知/未知混在、重複ID、不正blocks、未知evaluationMode、必須項目欠落、複数異常を検証。キャプションの原因分類、元JSONファイルのUTF-8バイト完全一致、コピー、reset取消、再読み込み、ヘッダー/全体キー経由の保存拒否を確認する。混在データでは詳細説明を開きライト/ダーク、CSS文字拡大でスクリーンショットと横あふれを確認する。ダウンロードはPlaywrightの保存ファイル検査でありiPhone SafariのダウンロードUI実機検証ではない。OS文字拡大、実clipboard、実データは扱わない。

@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): 保護理由キャプションと原本JSONエクスポート
+- 基点: PR #34マージ済みmain b81d27ce15709e1f599888b78d884f8a6f6b902f。Issue #35。既存読込/保存保護を再利用し、全データ保護の説明、未対応type/mode・構造異常・重複IDの理由、既存復旧UIの詳細と原本ダウンロードを追加。
+- 保存形式/計算規則変更なし。原本文字列をUTF-8へ欠落なく往復できる場合のみファイル化。空文字原本も扱い、取得不能/孤立サロゲートは成功扱いしない。単一キーのため正常兄弟メモもロックする既存制約を画面と文書に明記。
+- 予防対策であり実ユーザーデータ損失は未確認。修正前8失敗は診断コード未実装の期待値であり、既存保護のデータ損失再現ではない。
+- ローカルNode24.19.0で434単体、lint（既存warning1）、型検査成功。両ビルドとGUI、独立レビューの確定結果は後続記録を参照。
+- 江戸弁運用ガイド現行本文と保存済み辞典の冒頭を参照。最新辞典全体は未取得。iPhone Safari実機、OS文字拡大/clipboard/ダウンロードUIは未検証。
+- 正式検証: SHA `41e5af14efef64dc50971ae25bc2e9c54aeec5d4` の[Actions 39291019054](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39291019054)でNode22.13.0、434単体、lint/型/通常・Pages build全成功。GUIは2026-10-20 02:06:23〜02:19:31 JST、Chromium4/WebKit2の既存6条件、234チェック、browser/runtime/network error 0。原本エクスポートは7種の異常についてUTF-8バイト完全一致。
+- [成果物256画像・6trace](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39291019054/artifacts/12206467085)のSHA256 `264066e0d53fb5d1c7ffad6113b0558a8cabab6ff9abfcd67e48afefcbe7574c` をAPI digestと照合し、checkout/配信SHA一致を確認。独立レビューがソースと成果物を別途確認し阻害指摘なし。WebKit375/390、両テーマ、拡大文字で保護理由と操作の折返し/可読性を確認。7日保持。
+- ローカルChromium4条件155チェック成功。ローカルWebKitはOS共有ライブラリ不足で起動不可、正式6条件は上記Actionsで検証。公開はCLI認証不足のため公式GitHub接続を使用し、ローカル/公開tree一致を確認。
+- この証跡追記は文書のみ。最終コミット自身のCIを[PR #36 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/36/checks)で別途確認し、PR本文へ最終SHAと結果を記録する。マージは利用者判断。
+
+
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 

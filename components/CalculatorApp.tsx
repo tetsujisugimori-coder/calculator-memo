@@ -6,6 +6,7 @@ import { transitionInput, type InputAction } from "../lib/calculator-input";
 import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
+import { downloadOriginalJson } from "../lib/storage-export";
 import { defaultData, loadData, saveData, resetStoredData, type StorageLoadResult } from "../lib/storage";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
 import { IdentificationSettings } from "./Identification";
@@ -210,6 +211,16 @@ export function CalculatorApp() {
     document.getElementById(`${nextPanel}-tab`)?.focus();
   };
 
+  const exportOriginal = () => {
+    if (!storageIssue) return;
+    try {
+      downloadOriginalJson(storageIssue.raw);
+      showToast("原本JSONのダウンロードを開始しました。保存先を確認してください");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "原本JSONをエクスポートできませんでした。元データは変更していません");
+    }
+  };
+
   const confirmStorageReset = () => setConfirm({
     title: "保存データを初期化しますか？",
     message: "読み込めなかった元データを削除し、空の履歴と計算メモで開始します。この操作は取り消せません。必要であれば先に元データをコピーしてください。",
@@ -250,7 +261,7 @@ export function CalculatorApp() {
         <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
       </header>
 
-      {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
+      {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} protectionReason={storageIssue.protectionReason} onExport={exportOriginal} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw !== null && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
       <section className="workspace" id="calculator" inert={storageStatus !== "ready"}>
         <aside id="history-panel" role="tabpanel" aria-labelledby="history-tab" className={`side-panel history-panel ${data.settings.activePanel === "history" ? "mobile-active" : ""}`}>

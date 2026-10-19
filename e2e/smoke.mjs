@@ -822,6 +822,9 @@ async function exerciseStorageProtection(prefix) {
     ["mixed", { ...good, id: "bad", blocks: [...good.blocks, { id: "future", type: "graph", points: [1, 2] }] }],
     ["duplicate", { ...good, id: "bad", blocks: [...good.blocks, ...good.blocks] }],
     ["malformed", { ...good, id: "bad", blocks: { source: "keep me" } }],
+    ["mode", { ...good, id: "bad", blocks: [{ id: "c", type: "calculation", expression: "2+3", evaluationMode: "future" }] }],
+    ["missing", { ...good, id: "bad", blocks: [{ id: "t", type: "text" }] }],
+    ["multiple", { ...good, id: "bad", blocks: [{ id: "f", type: "geometry" }, { id: "t", type: "text" }, { id: "t", type: "text" }] }],
   ];
   const readRaw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
   for (const [name, bad] of variants) {
@@ -829,9 +832,11 @@ async function exerciseStorageProtection(prefix) {
     await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), raw);
     await page.reload();
     const banner = page.getByRole("alert");
-    await expect(banner).toContainText("保存データを読み込めませんでした");
+    await expect(banner.getByRole("heading")).toHaveText("このメモは保護されています");
     await expect(page.locator("#calculator")).toHaveAttribute("inert", "");
     await expect(banner).toContainText("保存とメモの編集を停止");
+    const expectedReason = name === "duplicate" ? "メモまたはブロックIDの重複" : name === "mode" ? "対応していない計算モード" : ["malformed", "missing"].includes(name) ? "保存データの構造異常" : "対応していないブロック形式";
+    await expect(banner.locator(".protection-caption")).toHaveText(expectedReason);
     // Header setting changes and keyboard input used to reach save effects.
     await page.getByLabel("テーマ", { exact: true }).selectOption("dark");
     await page.keyboard.type("12+3");
@@ -842,15 +847,31 @@ async function exerciseStorageProtection(prefix) {
     });
     await activate(banner.getByRole("button", { name: "元データをコピー", exact: true }));
     assert.equal(await page.evaluate(() => window.__recoveryCopy), raw, "Recovery copy passes exact raw bytes (test clipboard sink, not OS clipboard)");
+    const downloaded = page.waitForEvent("download");
+    await activate(banner.getByRole("button", { name: "原本JSONをエクスポート", exact: true }));
+    const download = await downloaded;
+    assert.equal(download.suggestedFilename(), "calculator-memo-original.json");
+    assert.deepEqual(await readFile(await download.path()), Buffer.from(raw, "utf8"), "Downloaded original JSON must match captured UTF-8 bytes");
+    assert.equal(await readRaw(), raw, "Export cannot change storage");
     await activate(banner.getByRole("button", { name: "保存データを初期化", exact: true }));
     await expect(page.getByRole("dialog")).toContainText("この操作は取り消せません");
     await activate(page.getByRole("dialog").getByRole("button", { name: "キャンセル", exact: true }));
     assert.equal(await readRaw(), raw, "Cancel reset cannot overwrite");
-    if (name === "mixed") await screenshot(prefix + "-protected-mixed-blocks");
+    if (name === "mixed") {
+      await activate(banner.locator("summary"));
+      for (const theme of ["light", "dark"]) {
+        await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+        await screenshot(prefix + "-protected-" + theme);
+        const stress = await page.addStyleTag({ content: ".storage-recovery h2 { font-size: 36px !important; } .storage-recovery p, .storage-recovery summary, .storage-recovery button { font-size: 24px !important; }" });
+        await screenshot(prefix + "-protected-" + theme + "-large-text");
+        await stress.evaluate((element) => element.remove());
+      }
+      assert.equal(await readRaw(), raw, "Theme and enlarged-text checks cannot persist unsafe data");
+    }
     await page.reload();
     await expect(banner).toBeVisible();
     assert.equal(await readRaw(), raw, "Reload cannot normalize/drop original blocks");
-    await passed(prefix + ": " + name + " blocks protected across header/keyboard/reset-cancel/copy/reload");
+    await passed(prefix + ": " + name + " blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload");
   }
   // Synthetic repair, not an app import feature or partial editing of an unsafe dataset.
   await page.evaluate((data) => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [good, { ...good, id: "safe-2", title: "Synthetic second safe memo" }] });
