@@ -6,8 +6,8 @@ import { inspectFormulaDefinition } from "../lib/calculator";
 import { removeFormula, saveFormula, validateFormula } from "../lib/formula-library";
 import type { FormulaLibrary, RegisteredFormula } from "../lib/types";
 
-type Props = { library: FormulaLibrary; onChange: (library: FormulaLibrary) => void; onClose: () => void; writable: boolean };
-export function FormulaLibraryModal({ library, onChange, onClose, writable }: Props) {
+type Props = { library: FormulaLibrary; onChange: (library: FormulaLibrary) => void; onClose: () => void; writable: boolean; onExecute: (id: string) => void };
+export function FormulaLibraryModal({ library, onChange, onClose, writable, onExecute }: Props) {
   const [draft, setDraft] = useState<{ id?: string; title: string; expression: string } | null>(null);
   const [error, setError] = useState("");
   const [pendingDelete, setPendingDelete] = useState<RegisteredFormula | null>(null);
@@ -27,7 +27,7 @@ export function FormulaLibraryModal({ library, onChange, onClose, writable }: Pr
   };
   return <Modal title="登録式ライブラリ" onClose={close} wide>
     <div className="formula-library">
-      <p>計算方法を保存する場所です。選択すると詳細を表示します。実行・変数値の入力は次の段階です。</p>
+      <p>計算方法を保存する場所です。選択すると詳細を表示します。「登録式を実行」から変数の値を入力して計算できます。</p>
       <p>構文だけを確認します。0除算・負数の平方根・指数や結果の範囲など、計算時の成立は未検証です。</p>
       {!writable && <p role="alert">保存領域を確認できないため変更できません。</p>}
       {error && <p className="field-error" role="alert">{error}</p>}
@@ -47,7 +47,7 @@ export function FormulaLibraryModal({ library, onChange, onClose, writable }: Pr
           <div className="library-expression"><strong>計算式</strong><pre>{selected.expression}</pre></div>
           <div className="library-variables"><strong>参照する変数（値は未設定）</strong><p>{inspectFormulaDefinition(selected.expression).join("、") || "なし"}</p></div>
           <p>計算結果：未計算</p>
-          <div className="modal-actions"><button disabled={!writable} onClick={() => { setDraft({ id: selected.id, title: selected.title, expression: selected.expression }); setError(""); }}>登録式を編集</button><button disabled={!writable} onClick={() => setPendingDelete(selected)}>登録式を削除</button></div>
+          <div className="modal-actions"><button className="button-primary" onClick={() => onExecute(selected.id)}>登録式を実行</button><button disabled={!writable} onClick={() => { setDraft({ id: selected.id, title: selected.title, expression: selected.expression }); setError(""); }}>登録式を編集</button><button disabled={!writable} onClick={() => setPendingDelete(selected)}>登録式を削除</button></div>
         </section>}
       </>}
       {removed && !draft && <div role="status">「{removed.title}」を削除しました。<button disabled={!writable} onClick={() => { try { onChange(saveFormula(library, removed)); setRemoved(null); setError(""); } catch (cause) { setError(String(cause)); } }}>直前の削除を取り消す</button><p>取り消しはこの画面を閉じるまで有効です。</p></div>}

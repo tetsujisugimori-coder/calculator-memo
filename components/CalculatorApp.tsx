@@ -9,6 +9,8 @@ import { createHistoryEntry } from "../lib/history";
 import { defaultData, loadData, saveData, type StorageLoadResult } from "../lib/storage";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
 import { IdentificationSettings } from "./Identification";
+import { FormulaExecutionModal } from "./FormulaExecutionModal";
+import { executionHistory, executionMemo } from "../lib/formula-execution";
 import { FormulaLibraryModal } from "./FormulaLibraryModal";
 import { emptyFormulaLibrary } from "../lib/formula-library";
 import { CalculatorPad } from "./CalculatorPad";
@@ -53,6 +55,7 @@ export function CalculatorApp() {
   const [plainNoteEditor, setPlainNoteEditor] = useState<PlainNoteEditor>(null);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [executionId, setExecutionId] = useState<string | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
   const [guideInsert, setGuideInsert] = useState<((latex: string) => void) | undefined>();
   const [copyNote, setCopyNote] = useState<CalculationNote | null>(null);
@@ -223,7 +226,7 @@ export function CalculatorApp() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm || libraryOpen) return;
+      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm || libraryOpen || executionId) return;
       if (/^[0-9+\-*/^.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
       else if (event.key === "Backspace") { event.preventDefault(); editInput({ type: "backspace" }); }
@@ -231,7 +234,7 @@ export function CalculatorApp() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm, libraryOpen]);
+  }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm, libraryOpen, executionId]);
 
   return (
     <main className="app-shell" data-identification={data.settings.identificationMode ?? "auto"}>
@@ -268,7 +271,8 @@ export function CalculatorApp() {
         </aside>
       </section>
 
-      {libraryOpen && <FormulaLibraryModal library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} />}
+      {libraryOpen && <FormulaLibraryModal library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
+      {executionId && <FormulaExecutionModal key={executionId} formula={data.formulaLibrary?.entries.find((entry) => entry.id === executionId)} draft={data.formulaExecutions?.find((draft) => draft.formulaId === executionId)} notes={data.notes} writable={storageStatus === "ready"} onClose={() => setExecutionId(null)} onDraftChange={(draft) => setData((current) => ({ ...current, formulaExecutions: [draft, ...(current.formulaExecutions ?? []).filter((entry) => entry.formulaId !== draft.formulaId && current.formulaLibrary?.entries.some((formula) => formula.id === entry.formulaId))].slice(0, 200) }))} onHistory={(snapshot) => { const item = executionHistory(snapshot, makeId("history"), new Date().toISOString()); setData((current) => ({ ...current, history: [item, ...current.history].slice(0, 200) })); }} onMemo={(snapshot) => setNoteEditor({ draft: executionMemo(snapshot) })} />}
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal initial={plainNoteEditor.draft} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}

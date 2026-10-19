@@ -1,3 +1,4 @@
+import { readExecutionDrafts } from "./formula-execution";
 import { identificationMode } from "./identification";
 import type { StoredData } from "./types";
 import { readFormulaLibrary } from "./formula-library";
@@ -86,6 +87,11 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       try { formulaLibrary = readFormulaLibrary(parsed.formulaLibrary); }
       catch { return { status: "error", reason: "invalid-data", raw, message: "登録式ライブラリを読み取れませんでした。元データを保護するため自動保存を停止しました。" }; }
     }
+    let formulaExecutions: StoredData["formulaExecutions"];
+    if (parsed.formulaExecutions !== undefined) {
+      try { formulaExecutions = readExecutionDrafts(parsed.formulaExecutions); }
+      catch { return { status: "error", reason: "invalid-data", raw, message: "登録式の実行入力を読み取れませんでした。元データを保護するため自動保存を停止しました。" }; }
+    }
     const theme = ["light", "dark", "system"].includes(String(parsed.settings.theme))
       ? parsed.settings.theme as StoredData["settings"]["theme"]
       : defaultData.settings.theme;
@@ -95,6 +101,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
     return { status: "ok", raw, data: {
       version: 1,
       ...(formulaLibrary ? { formulaLibrary } : {}),
+      ...(formulaExecutions ? { formulaExecutions } : {}),
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
       notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredMemo).filter((item): item is StoredData["notes"][number] => item !== null) : [],
       settings: { theme, activePanel, ...(identificationMode(parsed.settings.identificationMode) ? { identificationMode: identificationMode(parsed.settings.identificationMode) } : {}) },
