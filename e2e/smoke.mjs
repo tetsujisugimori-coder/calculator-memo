@@ -492,6 +492,149 @@ async function exerciseBasicMath(prefix) {
   await screenshot(prefix + "-basic-math-url-history");
   await passed(prefix + ": URL math remains editable until equals, and exact history/memo payloads plus rendered results survive reload");
 }
+async function exerciseFormulaExecution(prefix) {
+  await stage(prefix + ": formula-execution-inputs-and-snapshots");
+  // Synthetic fixture, after all existing regressions. Expected arithmetic uses
+  // independent JavaScript arithmetic/Math, never the application's evaluator.
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
+    const at = "2026-01-01T00:00:00.000Z";
+    data.formulaLibrary = { version: 1, selectedId: "exec-product", entries: [
+      ["exec-product", "price", "price * quantity"],
+      ["exec-division", "Synthetic division", "amount / divisor"],
+      ["exec-root", "Synthetic root", "sqrt(value)"],
+      ["exec-power", "Synthetic power", "base ^ exponent"],
+      ["exec-constant", "Synthetic constant", "2^8 + abs(-15)"],
+    ].map(([id, title, expression]) => ({id, title, expression, createdAt: at, updatedAt: at})) };
+    data.formulaExecutions = [];
+    data.settings.identificationMode = "labels";
+    data.notes.push({id:"exec-scope", type:"plain-calculation", title:"Synthetic execution scope", content:"", createdAt:at, updatedAt:at, blocks:[
+      {id:"exec-p",type:"calculation",expression:"price = 1200",evaluationMode:"note-variables",displayExpression:"price = 1200",result:1200,resultText:"1,200",error:null},
+      {id:"exec-q",type:"calculation",expression:"quantity = 9",evaluationMode:"note-variables",displayExpression:"quantity = 9",result:9,resultText:"9",error:null},
+    ]});
+    localStorage.setItem("calculation-memo:data", JSON.stringify(data));
+  });
+  await page.reload();
+  const library = () => page.getByRole("dialog", {name:"登録式ライブラリ",exact:true});
+  const execution = () => page.getByRole("dialog", {name:"登録式の実行",exact:true});
+  const result = () => execution().getByRole("region", {name:"確定した計算結果",exact:true});
+  const input = (name) => execution().getByRole("textbox", {name:`変数 ${name} の値`,exact:true});
+  const closeExecution = () => activate(execution().getByRole("button", {name:"閉じる",exact:true}));
+  const run = () => activate(execution().getByRole("button", {name:"計算する",exact:true}));
+  async function open(name) {
+    if (!(await library().count())) await activate(page.getByRole("button", {name:"登録式ライブラリ",exact:true}));
+    await activate(library().getByRole("button", {name,exact:true}));
+    await activate(library().getByRole("button", {name:"登録式を実行",exact:true}));
+  }
+  await open("price");
+  const definition = (await storage()).formulaLibrary.entries[0];
+  await expect(execution().getByRole("textbox")).toHaveCount(2);
+  await expect(input("price")).toHaveValue("");
+  await run(); await expect(execution().getByRole("alert")).toContainText("未入力");
+  await input("price").fill("12oops"); await input("quantity").fill("5");
+  await run(); await expect(execution().getByRole("alert")).toContainText("数値を入力");
+  await input("price").fill("");
+  await execution().getByLabel("初期値の取得元ノート", {exact:true}).selectOption("exec-scope");
+  await activate(execution().getByRole("button", {name:"ノートの変数を取り込む",exact:true}));
+  await expect(input("price")).toHaveValue("1200"); await expect(input("quantity")).toHaveValue("5");
+  await run(); await expect(result().locator("strong")).toHaveText("6,000");
+  await expect(result()).toContainText("price * quantity");
+  await input("quantity").fill("6"); await expect(result()).toHaveCount(0);
+  await run(); await expect(result().locator("strong")).toHaveText("7,200");
+  await activate(execution().getByRole("button", {name:"履歴に追加",exact:true}));
+  await expect.poll(async () => (await storage()).history[0].result).toBe(1200 * 6);
+  const snapshot = (await storage()).history[0];
+  assert.deepEqual(snapshot.formulaExecution, {formulaId:"exec-product",title:"price",expression:"price * quantity",inputs:{price:"1200",quantity:"6"}});
+  assert.deepEqual((await storage()).formulaLibrary.entries[0], definition);
+  await activate(execution().getByRole("button", {name:"単独計算メモを作成",exact:true}));
+  const memo = page.getByRole("dialog", {name:"単独計算メモを編集",exact:true});
+  await expect(memo).toBeVisible();
+  await activate(memo.getByRole("button", {name:"保存する",exact:true}));
+  await expect.poll(async () => (await storage()).notes.some((note) => note.type === "calculation" && note.result === 7200 && note.note.includes("exec-product"))).toBe(true);
+  await screenshot(prefix + "-execution-confirmed");
+  await closeExecution(); await activate(library().getByRole("button", {name:"閉じる",exact:true}));
+  await selectPanel("history");
+  await activate(page.locator(".history-item").first().getByRole("button", {name:"戻す",exact:true}));
+  await activate(page.locator(".calculator-shell").getByRole("button", {name:"計算する",exact:true})); await expect(page.locator(".lcd-result")).toHaveText("7,200");
+  await passed(prefix + ": execution AST inputs, explicit note scope, snapshot invalidation, definition isolation and safe history/memo transfer");
+
+  await stage(prefix + ": formula-execution-errors-and-reload");
+  await open("Synthetic division");
+  await input("amount").fill("12"); await input("divisor").fill("0");
+  await run(); await expect(execution().getByRole("alert")).toContainText("0では割れません");
+  await input("divisor").fill("3"); await run(); await expect(result().locator("strong")).toHaveText("4");
+  await input("amount").fill("9007199254740992"); await run();
+  await expect(execution().getByRole("alert")).toContainText("桁数");
+  await input("amount").fill("-"); await page.reload(); await open("Synthetic division");
+  await expect(input("amount")).toHaveValue("-"); await expect(input("divisor")).toHaveValue("3");
+  await expect(result()).toHaveCount(0); await expect(execution()).toContainText("未確定");
+  await input("amount").fill("15"); await run(); await expect(result().locator("strong")).toHaveText("5");
+  await closeExecution(); await open("Synthetic root"); await input("value").fill("-1");
+  await run(); await expect(execution().getByRole("alert")).toBeVisible();
+  await expect(result()).toHaveCount(0); await input("value").fill("144");
+  await run(); await expect(result().locator("strong")).toHaveText(String(Math.sqrt(144)));
+  await closeExecution(); await open("Synthetic power");
+  await input("base").fill("10"); await input("exponent").fill("400"); await run();
+  await expect(execution().getByRole("alert")).toBeVisible(); await expect(result()).toHaveCount(0);
+  await input("base").fill("2"); await input("exponent").fill("8"); await run();
+  await expect(result().locator("strong")).toHaveText(String(2 ** 8));
+  await closeExecution(); await open("Synthetic constant");
+  await expect(execution().getByRole("textbox")).toHaveCount(0); await run();
+  await expect(result().locator("strong")).toHaveText(String(2 ** 8 + Math.abs(-15)));
+  await closeExecution();
+  await passed(prefix + ": missing/invalid/range/zero-division/non-real/non-finite errors recover; unfinished drafts restore without stale result");
+
+  await stage(prefix + ": formula-execution-definition-lifecycle");
+  await activate(library().getByRole("button", {name:"price",exact:true}));
+  await activate(library().getByRole("button", {name:"登録式を編集",exact:true}));
+  await library().getByLabel("登録名", {exact:true}).fill("Synthetic renamed execution");
+  await library().getByLabel("登録する計算式", {exact:true}).fill("price * quantity + 1");
+  await activate(library().getByRole("button", {name:"登録する",exact:true}));
+  await open("Synthetic renamed execution");
+  await expect(execution()).toContainText("保存時から式の定義が変わっています");
+  await expect(result()).toHaveCount(0); await run(); await expect(result().locator("strong")).toHaveText("7,201");
+  assert.deepEqual((await storage()).history.find((entry) => entry.id === snapshot.id), snapshot);
+  await closeExecution();
+  await activate(library().getByRole("button", {name:"登録式を削除",exact:true}));
+  await activate(page.getByRole("dialog", {name:"登録式を削除しますか？",exact:true}).getByRole("button", {name:"削除する",exact:true}));
+  await expect(library().getByRole("button", {name:"Synthetic renamed execution",exact:true})).toHaveCount(0);
+  assert.deepEqual((await storage()).history.find((entry) => entry.id === snapshot.id), snapshot);
+  await passed(prefix + ": renamed/changed definition requires fresh result and deletion leaves completed history immutable");
+
+  await stage(prefix + ": formula-execution-help-and-layout");
+  await activate(library().getByRole("button", {name:"閉じる",exact:true}));
+  for (const theme of ["light", "dark"]) {
+    await page.getByRole("combobox", {name:"テーマ",exact:true}).selectOption(theme);
+    await open("Synthetic division");
+    await input("amount").fill("15"); await input("divisor").fill("3"); await run();
+    await activate(execution().getByRole("button", {name:"登録式の実行の説明",exact:true}));
+    const help = page.getByRole("dialog", {name:"登録式の実行について",exact:true});
+    await expect(help).toBeVisible(); await page.keyboard.press("Escape"); await expect(help).toHaveCount(0);
+    await expect(execution()).toBeVisible(); await expect(input("amount")).toHaveValue("15");
+    await execution().locator(".execution-heading, .execution-heading *, .execution-inputs label, .execution-inputs label *, .execution-confirmed, .execution-confirmed *").evaluateAll((elements) => {
+      const sizes = elements.map((element) => parseFloat(getComputedStyle(element).fontSize) * 2);
+      elements.forEach((element, index) => { element.style.fontSize = sizes[index] + "px"; });
+    });
+    await assertHorizontalFit(); await input("amount").scrollIntoViewIfNeeded();
+    await screenshot(prefix + "-execution-" + theme + "-inputs");
+    await result().scrollIntoViewIfNeeded(); await assertHorizontalFit();
+    await screenshot(prefix + "-execution-" + theme + "-result");
+    const memoButton = execution().getByRole("button", {name:"単独計算メモを作成",exact:true});
+    await memoButton.scrollIntoViewIfNeeded(); await expect(memoButton).toBeInViewport();
+    await assertHorizontalFit();
+    await screenshot(prefix + "-execution-" + theme + "-controls", currentScenario.width, true, true);
+    const historyCount = (await storage()).history.length;
+    await activate(execution().getByRole("button", {name:"履歴に追加",exact:true}));
+    await expect.poll(async () => (await storage()).history.length).toBe(historyCount + 1);
+    const expandedTransfer = (await storage()).history[0];
+    assert.equal(expandedTransfer.result, 15 / 3);
+    assert.equal(expandedTransfer.resultText, "5");
+    assert.deepEqual(expandedTransfer.formulaExecution, {formulaId:"exec-division",title:"Synthetic division",expression:"amount / divisor",inputs:{amount:"15",divisor:"3"}});
+    await closeExecution(); await activate(library().getByRole("button", {name:"閉じる",exact:true}));
+  }
+  await passed(prefix + ": execution help preserves input; light/dark expanded text and touch controls fit each existing viewport");
+}
+
 async function exerciseVariables(prefix) {
   await stage(prefix + ": note-scoped-variables-order-and-editing");
   await selectPanel("notes");
@@ -989,6 +1132,7 @@ async function exercise(scenario) {
   await exerciseVariables(prefix);
   await exerciseFormulaLibrary(prefix);
   await exerciseIdentification(prefix);
+  await exerciseFormulaExecution(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });

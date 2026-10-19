@@ -1,6 +1,7 @@
 export type DisplayMode = "plain" | "katex";
 
 export type HistoryEntry = {
+  formulaExecution?: { formulaId: string; title: string; expression: string; inputs: Record<string, string> };
   id: string;
   expression: string;
   displayExpression: string;
@@ -79,6 +80,7 @@ export type RegisteredFormula = {
 export type FormulaLibrary = { version: 1; entries: RegisteredFormula[]; selectedId: string | null };
 
 export type StoredData = {
+  formulaExecutions?: import("./formula-execution").ExecutionDraft[];
   formulaLibrary?: FormulaLibrary;
   version: 1;
   history: HistoryEntry[];
