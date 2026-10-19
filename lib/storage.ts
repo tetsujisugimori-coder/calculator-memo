@@ -49,6 +49,7 @@ function readStoredNotes(value: unknown): StoredData["notes"] {
     ids.add(item.id);
     if (!["title", "createdAt", "updatedAt"].every((key) => typeof item[key] === "string")) throw new Error("メモの必須項目が不正です。");
     if (item.type === "plain-calculation") {
+      if (item.calculationPolicy !== undefined && (!isRecord(item.calculationPolicy) || item.calculationPolicy.version !== 1 || item.calculationPolicy.mode !== "manual")) throw new Error("未対応の再計算方式です。");
       if (item.schemaVersion !== undefined && item.schemaVersion !== 1) throw new Error("未対応のメモ形式です。");
       if (typeof item.content !== "string") throw new Error("メモ本文が不正です。");
       // Diagnostics only; the existing sanitizer remains the acceptance gate.
@@ -58,7 +59,7 @@ function readStoredNotes(value: unknown): StoredData["notes"] {
           if (!isRecord(block)) continue;
           if (typeof block.type === "string" && !["text", "formula", "calculation"].includes(block.type))
             throw new NoteStructureError("対応していないブロック形式が含まれています。", "unsupported-block");
-          if (block.type === "calculation" && typeof block.evaluationMode === "string" && block.evaluationMode !== "note-variables")
+          if (block.type === "calculation" && typeof block.evaluationMode === "string" && !["note-variables", "block-references"].includes(block.evaluationMode))
             throw new NoteStructureError("対応していない計算モードが含まれています。", "unsupported-mode");
           if (typeof block.id === "string" && block.id.trim()) {
             if (blockIds.has(block.id)) throw new NoteStructureError("ブロックIDが重複しています。", "duplicate-id");
@@ -68,7 +69,7 @@ function readStoredNotes(value: unknown): StoredData["notes"] {
       }
       const blocks = sanitizeMemoBlocks(item.blocks);
       if (item.blocks !== undefined && blocks === undefined) throw new Error("未対応または不正なブロック、空または重複したブロックIDがあります。");
-      if (blocks?.some((block) => block.type === "calculation" && block.evaluationMode !== undefined && block.evaluationMode !== "note-variables")) throw new Error("未対応のブロック計算モードです。");
+      if (blocks?.some((block) => block.type === "calculation" && block.evaluationMode !== undefined && !["note-variables", "block-references"].includes(block.evaluationMode))) throw new Error("未対応のブロック計算モードです。");
       // Preserve extra fields; never reconstruct a lossy Markdown-only fallback.
       return { ...item, ...(blocks !== undefined ? { blocks } : {}) } as StoredData["notes"][number];
     }

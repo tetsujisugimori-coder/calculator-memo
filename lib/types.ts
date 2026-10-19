@@ -42,6 +42,8 @@ export type FormulaMemoBlock = {
 };
 
 export type CalculationMemoBlock = {
+  references?: { version: 1; entries: { slot: number; blockId: string }[] };
+  evaluationState?: { version: 1; status: "stale" | "current"; signature?: string; attemptError?: string };
   /** Missing means legacy; unknown string values must fail closed. */
   evaluationMode?: string;
   id: string;
@@ -56,6 +58,7 @@ export type CalculationMemoBlock = {
 export type MemoBlock = TextMemoBlock | FormulaMemoBlock | CalculationMemoBlock;
 
 export type PlainCalculationNote = {
+  calculationPolicy?: { version: 1; mode: "manual" };
   id: string;
   type: "plain-calculation";
   title: string;
@@ -89,4 +92,4 @@ export type StoredData = {
 };
 
 export type NoteDraft = Omit<CalculationNote, "id" | "schemaVersion" | "type" | "createdAt" | "updatedAt">;
-export type PlainNoteDraft = Pick<PlainCalculationNote, "title" | "content" | "blocks">;
+export type PlainNoteDraft = Pick<PlainCalculationNote, "title" | "content" | "blocks" | "calculationPolicy">;

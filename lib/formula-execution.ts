@@ -1,6 +1,7 @@
+import { isManualMemo, staleBlockIds } from "./block-references";
 import { parse, type MathNode } from "mathjs";
 import { assertVariableName, calculateExpression, calculateVariableExpression, inspectFormulaDefinition, EXPRESSION_LIMITS } from "./calculator";
-import { calculateMemoBlock, resolveMemoBlocks } from "./memo-blocks";
+import { calculateMemoBlock, describeCalculationBlock, resolveMemoBlocks } from "./memo-blocks";
 import { createHistoryEntry } from "./history";
 import type { HistoryEntry, NoteDraft, PlainCalculationNote, RegisteredFormula } from "./types";
 
@@ -69,7 +70,16 @@ export function executeFormula(formula: RegisteredFormula, inputs: Record<string
 /** Explicitly chosen note only. Recompute in order rather than trusting cached results. */
 export function noteVariableInputs(note: PlainCalculationNote): Record<string, string> {
   const scope = new Map<string, number>();
-  for (const block of resolveMemoBlocks(note)) {
+  const blocks = resolveMemoBlocks(note);
+  if (note.calculationPolicy?.mode === "manual" || isManualMemo(blocks)) {
+    if (staleBlockIds(blocks).size) throw new Error("このメモは再計算待ちです。メモ全体を再計算してから変数を取り込んでください。");
+    for (const block of blocks) if (block.type === "calculation" && block.evaluationMode === "note-variables") {
+      const { variableName } = describeCalculationBlock(block.expression);
+      if (variableName && !block.error && block.result !== null) scope.set(variableName, block.result);
+    }
+    return Object.fromEntries([...scope].map(([name, value]) => [name, executionNumber(value)]));
+  }
+  for (const block of blocks) {
     if (block.type === "calculation") calculateMemoBlock(block.id, block.expression, block.evaluationMode, scope);
   }
   return Object.fromEntries([...scope].map(([name, value]) => [name, executionNumber(value)]));
