@@ -8,9 +8,12 @@
 - 変更: 登録式選択→実行画面、構文から変数入力生成、明示選択したノートの有効値を空欄に取込、既存エンジンで確定計算。入力変更で結果を無効化し、定義と実行値・結果を分離。識別表示設定/native入力/i説明を踏襲。
 - 保存: version1のoptional formulaExecutionsに未完入力をIDごと保存。再読込時は入力のみ復元、結果は再計算。不正追加データは元raw保持し自動保存停止。定義ID/既存データは不変。
 - 判断: 履歴・単独メモはAST内の変数に丸め前数値を束縛した自己完結式と実行時記録を受渡し。通常エンジンでObject.is一致を確認し、展開による既存上限超過は結果を残して受渡だけ停止。表示は各既存formatterを維持するため整数近傍の文字列差はあり得る。代入失敗時の初期値は既存ノートと同じく以前の有効値を使う。詳細は[設計](docs/agent/formula-execution.md)。
-- 検証: 全376単体（追加39）、型検査、lint（既存aria-description warning 1）、通常/Pages build成功。追加500式の独立JS比較。独立レビューでも376単体と別の6000式/6000履歴受渡が内部値完全一致、阻害指摘なし。GUIと最終CIは検証中、確定証跡を追記する。
+- 検証: 全376単体（追加39）、型検査、lint（既存aria-description warning 1）、通常/Pages build成功。追加500式の独立JS比較。独立レビューでも376単体と別の6000式/6000履歴受渡が内部値完全一致、阻害指摘なし。初回CIも同一項目すべて成功。
+- GUI: 初回HEAD `b306037bce2e8b7c712be0c0f6b8d41a5214accf`の[run 39200045405](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39200045405)で既存6条件・156検証成功、実行時/通信エラー0。2026-10-19 13:34:35〜13:42:44 JST。[208画像・6trace](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39200045405/artifacts/12163372883)を取得しZIP SHA256/API digestとcheckout/配信SHAを照合。7日保持。画像確認後、200%文字で下部操作をスクロール撮影し実tap受渡を確認する検証を追加。最終コミットも[PR #32 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/32/checks)で別途確認する。
+- ローカル補足: 全体GUIは既存識別表示の撮影で10秒timeout、新規部分未到達。期待値/timeoutを緩めず記録。先行ビルドの新規限定診断はChromium desktop/375touchの8検証成功。正式な全6条件・SHA証跡は上記Actionsを使用。
+- 独立比較の再現条件: i=1..1000、a=(i-501)/16、b=(i%23)/8、c=i%19+1。a+b*c、(a+b)/c、-a^2+b、sqrt(abs(a))+b/c、a*(1+b)、abs(a-b)^2をJS算術/Mathで直接評価し、生値と履歴転送値をObject.is比較。
 - 関連: [Issue #31](https://github.com/tetsujisugimori-coder/calculator-memo/issues/31)。登録式間参照・関連レポート・科学記数法・単位換算は対象外、Issue #19維持。
-- 未検証: iPhone Safari実機、OSソフトキーボード/IME/支援技術、長期保存。江戸弁運用ガイド現行箇所・辞典v19冒頭を参照。通常git pushの認証可否と最終公開経路は実行結果に基づき追記する。
+- 未検証: iPhone Safari実機、OSソフトキーボード/IME/支援技術、長期保存。江戸弁運用ガイド現行箇所・辞典v19冒頭を参照。通常git pushは認証なしで失敗。公式connectorで同一tree SHAを照合して作業branchへ公開した。
 
 
 ## 2026-10-19 (JST): 変数・登録式の識別表示基盤

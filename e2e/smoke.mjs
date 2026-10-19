@@ -619,6 +619,17 @@ async function exerciseFormulaExecution(prefix) {
     await screenshot(prefix + "-execution-" + theme + "-inputs");
     await result().scrollIntoViewIfNeeded(); await assertHorizontalFit();
     await screenshot(prefix + "-execution-" + theme + "-result");
+    const memoButton = execution().getByRole("button", {name:"単独計算メモを作成",exact:true});
+    await memoButton.scrollIntoViewIfNeeded(); await expect(memoButton).toBeInViewport();
+    await assertHorizontalFit();
+    await screenshot(prefix + "-execution-" + theme + "-controls", currentScenario.width, true, true);
+    const historyCount = (await storage()).history.length;
+    await activate(execution().getByRole("button", {name:"履歴に追加",exact:true}));
+    await expect.poll(async () => (await storage()).history.length).toBe(historyCount + 1);
+    const expandedTransfer = (await storage()).history[0];
+    assert.equal(expandedTransfer.result, 15 / 3);
+    assert.equal(expandedTransfer.resultText, "5");
+    assert.deepEqual(expandedTransfer.formulaExecution, {formulaId:"exec-division",title:"Synthetic division",expression:"amount / divisor",inputs:{amount:"15",divisor:"3"}});
     await closeExecution(); await activate(library().getByRole("button", {name:"閉じる",exact:true}));
   }
   await passed(prefix + ": execution help preserves input; light/dark expanded text and touch controls fit each existing viewport");
