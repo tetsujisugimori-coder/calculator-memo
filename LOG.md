@@ -8,8 +8,9 @@
 - 変更内容: 3表示モード、720px以下初期色のみ、手動値は保存固定。変数青/登録式紫/式黄/結果緑と上側の小ラベル、i説明本文を独立ファイル化。
 - 第一希望/採用判断: 入力文字への直接装飾よりnative入力の安定性を優先し、別表示の代入先/参照一覧を既存AST構文検査で生成。計算評価器・丸め変更なし。登録式はID付き項目だけを識別し、式内の同名変数を登録式参照と扱わない。登録式実行/関連レポートは後続。
 - 保存: 既存version1 settingsへoptional identificationMode。欠落/不正値は幅連動初期値、手動noneを含む有効値は固定。旧数値/メモ/ライブラリ不変。
-- 検証結果: 追加単体/既存単体・lint・型を実施中。両build/GUI/CI・独立レビューは確認中。成功未確定の工程は記録を後で補う。
-- 関連: [Issue #29](https://github.com/tetsujisugimori-coder/calculator-memo/issues/29)、PR未作成。
+- 検証結果: 337単体（追加20件）・lint・型検査・通常/Pages build成功。独立レビューのヘルプ中の背面キー操作抑制、代入式全体の入力長検査の2指摘を修正し、追加阻害指摘なし。GUI/CIの最終結果と証跡はPR Checksへ記録する。
+- GUI追加: 既存6条件を維持し、3モード/自動初期値の幅跨ぎ/手動固定/保存復元/両テーマ/構文エラー時の識別解除/未知変数/改名削除/nativeカーソル/ヘルプ中キー操作とfocus復帰を検証。色のみは視覚ラベルを隠し支援技術向け文字を残す。
+- 関連: [Issue #29](https://github.com/tetsujisugimori-coder/calculator-memo/issues/29)、[PR #30](https://github.com/tetsujisugimori-coder/calculator-memo/pull/30)。
 - 未検証: 実機iPhone Safari・実OS IME/キーボード・支援技術の実機操作。cloud skillは提供状態変動のため未参照、repo規則を優先。江戸弁ガイドの最新原文参照は本作業では未確認。
 
 
