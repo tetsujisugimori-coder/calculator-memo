@@ -367,9 +367,9 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .execution-confirmed dd { margin: 0; }
 
 /* Reference controls remain native inputs; no cursor/IME overlay or rich editing. */
-.block-reference-controls { display: grid; gap: .6rem; margin: .75rem 0; padding: .75rem; border: 1px solid var(--border); border-radius: .6rem; overflow-wrap: anywhere; }
-.block-reference-controls select { max-width: 100%; min-width: 0; width: 100%; min-height: 44px; }
-.block-reference-controls button, .block-editor-card > button { min-height: 44px; white-space: normal; }
+.block-reference-controls { display: grid; gap: .6rem; margin: .75rem 0; padding: .75rem; border: 1px solid var(--line); border-radius: .6rem; overflow-wrap: anywhere; }
+.block-reference-controls select { background: var(--surface); color: var(--ink); border: 1px solid var(--line); max-width: 100%; min-width: 0; width: 100%; min-height: 44px; }
+.block-reference-controls button, .block-editor-card > button { background: var(--surface); color: var(--ink); border: 1px solid var(--line); min-height: 44px; white-space: normal; }
 .block-reference-controls p, .block-reference-controls ul { margin: 0; }
 .block-reference-controls details { min-width: 0; }
 .block-reference-controls summary { cursor: pointer; min-height: 44px; }

@@ -860,7 +860,10 @@ async function exerciseBlockReferences(prefix) {
     await page.reload(); await selectPanel("notes"); dialog=await open();
     await page.evaluate(()=>document.documentElement.style.fontSize="200%");
     await screenshot(prefix+"-reference-"+theme+"-enlarged");
-    await dialog.getByLabel("参照先を選んで式に挿入").scrollIntoViewIfNeeded();
+    const themedPicker = dialog.getByLabel("参照先を選んで式に挿入");
+    await expect(themedPicker).toHaveCSS("background-color", theme === "dark" ? "rgb(35, 38, 35)" : "rgb(251, 250, 246)");
+    await expect(themedPicker).toHaveCSS("color", theme === "dark" ? "rgb(240, 239, 233)" : "rgb(32, 35, 31)");
+    await themedPicker.scrollIntoViewIfNeeded();
     await screenshot(prefix+"-reference-"+theme+"-enlarged-picker");
     await dialog.locator(".calculation-live-result").last().scrollIntoViewIfNeeded();
     await screenshot(prefix+"-reference-"+theme+"-enlarged-result");

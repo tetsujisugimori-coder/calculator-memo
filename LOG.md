@@ -9,6 +9,7 @@
 - GUI診断: ローカルChromium既存4条件で179チェック成功、各条件のbrowser/runtime/network error 0。WebKitはOS共有ライブラリ不足で起動不可。作業差分のローカル画像はbase SHA overlayのため、公開候補SHAの正式証跡として扱わない。
 - 正式検証: [PR #37 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37/checks)で最終head自身のNode22.13.0、両build、Chromium/WebKit6条件を確認し、SHA・実測結果・artifactをPR本文へ記録する。200%文字拡大は上部だけでなくpicker/結果までスクロールした画像も追加。
 - 関連: [PR #37](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37)。CLI push認証不足のため公式GitHub接続で公開、local/remote tree一致を検査。新Issueは作成しない。
+- 独立画像レビュー: 初回候補CI 39336687992 は472単体/GUI6条件270チェック成功したが、WebKit375px dark拡大画像で新参照selectの白背景/淡色文字を確認。新参照selectとbuttonのテーマ背景・文字・枠色を明示し、両テーマCSS期待値をGUIへ追加。テスト成功と視認性を分けて判断し、修正後の最終CIを再確認する。
 - 未検証: iPhone Safari実機、OS入力/VoiceOver/長期保存。実ユーザーデータ損失を確認したものではない。
 
 ## 2026-10-20 (JST): 保護理由キャプションと原本JSONエクスポート
