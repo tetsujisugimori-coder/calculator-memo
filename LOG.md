@@ -9,7 +9,7 @@
 - 判断変更: 従来は不正ブロックを落としてMarkdown本文へ縮退、不正メモは除外。成功読込後の自動保存により構造を失う経路があるため、全体fail-closedへ変更。実ユーザーデータ損失は未確認。正常version1/旧本文/空blocksを維持、式評価・丸め変更なし。
 - 採用理由: 保存は単一キーの一括更新。ノート単位部分編集は安全なマージ契約を要するため今回採用せず全体保護を選択。将来の部分編集は別設計。詳細は[設計・検証](docs/agent/nondestructive-storage.md)。
 - 検証結果: cloud Node24.19.0で全400単体、lint（既存warning1）、型、通常/Pages build成功。既存6条件GUI・独立レビューの最終結果は後続追記。既存失敗期待を無根拠に変更せず、旧縮退方針から新保護方針への変更として回帰を追加。
-- 関連: [Issue #33](https://github.com/tetsujisugimori-coder/calculator-memo/issues/33)。PR未作成。
+- 関連: [Issue #33](https://github.com/tetsujisugimori-coder/calculator-memo/issues/33)。[PR #34](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34) 検証中。
 - 未解決/対象外: 多タブ完全な原子的競合解決、未知データの部分編集、iPhone Safari実機/OS入力/長期保存、Issue #19。江戸弁ガイド現行箇所と辞典v19冒頭を参照。初回npm既定cacheは書込不可、workspace cacheを使って成功。
 
 

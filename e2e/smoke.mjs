@@ -759,7 +759,7 @@ async function exerciseVariables(prefix) {
 async function exerciseStorageProtection(prefix) {
   await stage(prefix + ": nondestructive-storage-protection");
   const original = await storage();
-  const good = { id: "safe", type: "plain-calculation", title: "Synthetic safe memo", content: "fallback", createdAt: "", updatedAt: "", blocks: [{ id: "t", type: "text", content: "Safe text" }] };
+  const good = { id: "safe", type: "plain-calculation", title: "Synthetic safe memo", content: "fallback", createdAt: "2026-10-19T00:00:00Z", updatedAt: "2026-10-19T00:00:00Z", blocks: [{ id: "t", type: "text", content: "Safe text" }] };
   const variants = [
     ["unknown", { ...good, id: "bad", blocks: [{ id: "future", type: "geometry", payload: { untouched: [1, 2, 3] } }] }],
     ["mixed", { ...good, id: "bad", blocks: [...good.blocks, { id: "future", type: "graph", points: [1, 2] }] }],
