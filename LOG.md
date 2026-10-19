@@ -8,7 +8,10 @@
 - 再現: production修正前に回帰20件を追加し、付随情報保持12件が失敗、計算結果/不正拒否8件が成功。proofRef/sourceId/入れ子metadata等の消失経路を確認。実ユーザーデータの損失確認ではない。
 - 修正: 元ブロックをcopyしてから計算エンジンの完全なsnapshotを重ね、付随情報を保持しつつ既知の結果/error/displayを更新。原オブジェクトや入れ子を変更しない。新たな型/保存形式/評価規則は追加しない。
 - 契約訂正: 追加キーは意味を解釈しない記述的付随情報。保持は変更後の式への証明/出典の適合性を認定しない。計算意味の変更はversion/type/mode等の明示的互換境界が必要。未知type/mode/不正構造は従来通り保護停止。詳細は[非破壊保存契約](docs/agent/nondestructive-storage.md)。
-- ローカル: 420単体・lint（既存warning1）・型・通常/Pages build成功。Chromium375touchの新規GUI診断で無変更編集保存、他ブロック編集/追加削除/上下移動、式error→復帰、JSON再読込と付随情報保持を確認。正式6条件・最終SHA CIは[PR #34 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34/checks)へ記録する。独立レビュー中。
+- ローカル: 420単体・lint（既存warning1）・型・通常/Pages build成功。Chromium375touchの新規GUI診断で無変更編集保存、他ブロック編集/追加削除/上下移動、式error→復帰、JSON再読込と付随情報保持を確認。正式6条件・最終SHA CIは[PR #34 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34/checks)へ記録する。独立再レビュー結果と正式GUI証跡は下記。
+- 正式GUI: SHA `0f257312a97d6a5b55dda92b2386ae1909ef2890` の[CI39247191200](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39247191200)全工程成功。2026-10-19 20:48:48〜20:57:47 JST、Chromium/WebKit既存6条件、216チェック、browser/runtime/network error0。追加情報は保存JSONで直接比較し、画面だけで保持を推測しない。
+- [238画像・6trace](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39247191200/artifacts/12184980090)を取得、ZIP SHA256 `0109ff32c618baec579a12ce3801e7f83ddbb128fa53e31495a93be07168feb3`とAPI digest一致。checkout/配信SHA一致、WebKit375画像確認。7日保持。最終文書SHAの結果はPR Checksへ記録する。
+- 独立再レビュー: 420単体と追加10ライフサイクルを別途実行。完全な既知field更新、入れ子不変、未知mode拒否、編集経路と保存JSON保持を確認し、ソース阻害指摘なし。
 - 残存制約: iPhone Safari実機、OS入力/clipboard/支援技術/長期保存未検証。付随情報のdeep cloneは不要と判断し、入れ子は不変参照共有。江戸弁ガイド現行箇所と保存済み辞典v19冒頭を参照。
 
 ## 2026-10-19 (JST): メモ・ブロックの非破壊読込・保存保護
