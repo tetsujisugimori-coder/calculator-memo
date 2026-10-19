@@ -59,7 +59,7 @@ function expandPercent(expression: string): string {
 // Validate the complete tree before evaluating any subtree. No assignments,
 // accessors, arrays, units, user variables or arbitrary calls. Legacy numeric
 // implicit products remain compatible; new mathematics requires explicit *.
-function allowedTree(root: MathNode, allowLegacyImplicit: boolean, scope?: ReadonlyMap<string, number>): MathNode[] {
+function allowedTree(root: MathNode, allowLegacyImplicit: boolean, scope?: ReadonlyMap<string, number>, definitions?: Set<string>): MathNode[] {
   const postorder: MathNode[] = [];
   let count = 0;
   const visit = (node: MathNode, depth: number) => {
@@ -72,9 +72,10 @@ function allowedTree(root: MathNode, allowLegacyImplicit: boolean, scope?: Reado
     } else if (node.type === "SymbolNode") {
       const name = (node as import("mathjs").SymbolNode).name;
       if (!["pi", "e"].includes(name)) {
-        if (!scope) throw new Error("使用できない定数です");
+        if (!scope && !definitions) throw new Error("使用できない定数です");
         assertVariableName(name);
-        if (!scope.has(name)) throw new Error(`未定義の変数です: ${name}`);
+        if (definitions) definitions.add(name);
+        else if (!scope!.has(name)) throw new Error(`未定義の変数です: ${name}`);
       }
     } else if (node.type === "ParenthesisNode") {
       visit((node as import("mathjs").ParenthesisNode).content, depth + 1);
@@ -169,7 +170,7 @@ export function assertVariableName(name: string): void {
   }
 }
 
-export function calculateVariableExpression(expression: string, scope: ReadonlyMap<string, number>): CalculationResult {
+function parseVariableExpression(expression: string): { normalized: string; root: MathNode } {
   if (expression.length > EXPRESSION_LIMITS.length) throw new Error("式は2000文字以内で入力してください");
   const normalized = expression.replace(/＋/g, "+").replace(/[−–—]/g, "-").replace(/×/g, "*").replace(/÷/g, "/").trim();
   if (!normalized) throw new Error("式を入力してください");
@@ -187,6 +188,19 @@ export function calculateVariableExpression(expression: string, scope: ReadonlyM
   let root: MathNode;
   try { root = parse(expandPercent(normalized)); }
   catch { throw new Error("式が不完全か、計算できない内容です"); }
+  return { normalized, root };
+}
+
+/** Validate a definition without binding variables or performing numerical evaluation. */
+export function inspectFormulaDefinition(expression: string): string[] {
+  const { root } = parseVariableExpression(expression);
+  const names = new Set<string>();
+  allowedTree(root, false, undefined, names);
+  return [...names];
+}
+
+export function calculateVariableExpression(expression: string, scope: ReadonlyMap<string, number>): CalculationResult {
+  const { normalized, root } = parseVariableExpression(expression);
   const value = evaluateTree(allowedTree(root, false, scope), scope);
   if (Math.abs(value) > Number.MAX_SAFE_INTEGER) throw new Error("扱える桁数を超えました");
   // Presentation only: suppress at most two relative machine-epsilon units

@@ -8,6 +8,8 @@ import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
 import { defaultData, loadData, saveData, type StorageLoadResult } from "../lib/storage";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
+import { FormulaLibraryModal } from "./FormulaLibraryModal";
+import { emptyFormulaLibrary } from "../lib/formula-library";
 import { CalculatorPad } from "./CalculatorPad";
 import { HistoryPanel } from "./HistoryPanel";
 import { NotesPanel } from "./NotesPanel";
@@ -49,6 +51,7 @@ export function CalculatorApp() {
   const [noteEditor, setNoteEditor] = useState<NoteEditor>(null);
   const [plainNoteEditor, setPlainNoteEditor] = useState<PlainNoteEditor>(null);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [guideInsert, setGuideInsert] = useState<((latex: string) => void) | undefined>();
   const [copyNote, setCopyNote] = useState<CalculationNote | null>(null);
@@ -219,7 +222,7 @@ export function CalculatorApp() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm) return;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm || libraryOpen) return;
       if (/^[0-9+\-*/^.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
       else if (event.key === "Backspace") { event.preventDefault(); editInput({ type: "backspace" }); }
@@ -227,7 +230,7 @@ export function CalculatorApp() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm]);
+  }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm, libraryOpen]);
 
   return (
     <main className="app-shell">
@@ -246,6 +249,7 @@ export function CalculatorApp() {
         <div className="calculator-column">
           <div className="mobile-tabs" role="tablist" aria-label="表示切り替え"><button id="history-tab" role="tab" aria-selected={data.settings.activePanel === "history"} aria-controls="history-panel" tabIndex={data.settings.activePanel === "history" ? 0 : -1} className={data.settings.activePanel === "history" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "history")} onClick={() => setPanel("history")}>履歴 <span>{data.history.length}</span></button><button id="notes-tab" role="tab" aria-selected={data.settings.activePanel === "notes"} aria-controls="notes-panel" tabIndex={data.settings.activePanel === "notes" ? 0 : -1} className={data.settings.activePanel === "notes" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "notes")} onClick={() => setPanel("notes")}>メモ <span>{data.notes.length}</span></button></div>
           <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onReplace={(value) => editInput({ type: "replace", value })} onCalculate={calculate} onClear={() => { editInput({ type: "clear" }); }} onClearEntry={() => { editInput({ type: "clear-entry" }); }} onBackspace={() => { editInput({ type: "backspace" }); }} onToggleSign={() => { editInput({ type: "sign" }); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
+          <button className="button-secondary" onClick={() => setLibraryOpen(true)}>登録式ライブラリ</button>
           <p className="keyboard-hint"><kbd>Enter</kbd> 計算　<kbd>Esc</kbd> クリア　数字・演算子はそのまま入力</p>
         </div>
 
@@ -262,6 +266,7 @@ export function CalculatorApp() {
         </aside>
       </section>
 
+      {libraryOpen && <FormulaLibraryModal library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} />}
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal initial={plainNoteEditor.draft} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}

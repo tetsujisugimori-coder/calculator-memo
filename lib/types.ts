@@ -69,7 +69,17 @@ export type Memo = CalculationNote | PlainCalculationNote;
 export type Theme = "light" | "dark" | "system";
 export type Panel = "history" | "notes";
 
+export type RegisteredFormula = {
+  id: string;
+  title: string;
+  expression: string;
+  createdAt: string;
+  updatedAt: string;
+};
+export type FormulaLibrary = { version: 1; entries: RegisteredFormula[]; selectedId: string | null };
+
 export type StoredData = {
+  formulaLibrary?: FormulaLibrary;
   version: 1;
   history: HistoryEntry[];
   notes: Memo[];

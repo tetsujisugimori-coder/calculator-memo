@@ -110,3 +110,9 @@ The first implementation left the calculator at a fixed 104px sticky offset, int
 The new math checks run in every existing six-context scenario after the prior regressions, preserving their fixed entry-count assertions. Named `*-basic-math-history`, `*-basic-math-domain-error`, `*-basic-math-block-editor`, `*-basic-math-persisted-memos`, and `*-basic-math-url-history` screenshots complement each scenario's trace. Expression text is entered with `fill`; equals, restore, save, edit and tabs still use the shared mouse/touch activation helper. This does not verify a physical iOS keyboard.
 
 These checks do not change or resolve the known nested-postfix-percent issue (#19); the existing simple-percent regressions remain intact.
+
+## Formula-library evidence
+
+Each of the existing six contexts additionally exercises definition registration, invalid syntax rejection, edit cancellation, detail selection, editing, delete confirmation/cancellation/undo, reload persistence, and unchanged notes/history. The six contexts remain Chromium desktop 1365px, Chromium non-touch narrow 390px, Chromium touch 390px/375px, and WebKit touch 390px/375px; WebKit desktop and physical iPhone Safari are not covered.
+
+`*-formula-library` and `*-formula-library-controls` capture the long-title/long-expression layout and the scrolled lower controls separately. `*-formula-library-{dark,light}-text-stress` uses the actual theme selector and temporary 200% computed font sizes in the detail section to check wrapping and reachable controls. This is layout stress, not native iOS text zoom. Numeric evaluation is deliberately absent: saved definitions may contain unbound variables or numerically invalid expressions, and the result label remains uncomputed.

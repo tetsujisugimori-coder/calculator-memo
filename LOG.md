@@ -2,6 +2,19 @@
 
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
+## 2026-10-19 (JST): 登録式ライブラリの基礎
+- 前提確認: main `693277454e13202a1aa8d9368e40768036b68a36` はPR #26変数機能まで。利用者が登録式/表示設定もマージ済みとの前提を訂正し、登録ライブラリ基礎を明示承認したため再利用実行は含めない。
+- 変更内容: 名前/式の登録・一覧・選択（詳細確認）・編集・確認付き削除/直前undo。未束縛変数は構文から抽出し数値結果を作らない。定義と将来の実行入力を混ぜない。
+- 判断: 既存parser/AST許可検証を共有するvalidate-only経路を追加。評価器は不変、1/0等の数値成立は検査しない旨をUI/READMEで明示。代入、任意関数、暗黙乗算を禁止し入力/深度/ノード制限を維持。%既存問題#19は別件。
+- 保存: top-level version1のoptional formulaLibrary（内側version1）。旧データ欠落は空、未知version/壊れた定義/選択は元raw保持し自動保存停止。対応versionの追加metadataは保持。旧アプリによる新フィールド喪失は制約として明記。
+- 第一希望/採用: 既存変数と共通の構文規則・小さい追加領域を採用。仮の変数値で計算検査する案や、実行/表示設定の先回りは不採用。未確定編集はmodal内に保持するがreload後draft復元は次段階。
+- 検証: 317単体・lint・型検査・通常/Pages build成功。基点mainとの2029式比較（旧1000式含む）で値/表示/エラー差分0。独立レビューでも317単体・型検査成功、5760評価の値(Object.is含む)/表示/エラー差分0、阻害指摘なし。フォームlabelを明示関連付けに修正し、下部操作/両theme/文字2倍の追加画像を補強した。
+- Actions: [run 39184182970](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39184182970)、初回HEAD `07e8609ff22bbf7f42cac53a1563dac0d660d7b2`で全工程成功。2026-10-19 10:13:00〜10:20:09 JST、Chromium4条件（1365px、非touch390px、touch390/375px）とWebKit touch390/375pxの計6条件126検証、ブラウザエラー0。[124画面・6trace・診断](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39184182970/artifacts/12157458309)を取得、ZIP SHA256をAPI digestと照合し、checkout/配信SHA・branch/runを確認。7日保持。証拠補強/本記録の最終コミットは[PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/28/checks)で別途確認する。
+- ローカルGUI: Chromium4条件83検証成功、WebKitはOS依存不足で起動不可。初回375pxの既存メモ開始tap後dialog不在、別診断ではscrollY=0期待に15が残る失敗を観測。traceにsmoothscroll中の不安定/ヘッダー遮蔽があり、同一アプリ再確認/上記Actionsでは成功。期待値やアプリ挙動を変更せず記録する。追加したlibrary限定375px診断で両theme/2倍文字/下部操作の表示は成功（OS文字拡大・実機検証ではない）。通常git push認証なしのため公式connectorで同一treeを照合し作業branchへ公開。
+- 関連: [Issue #27](https://github.com/tetsujisugimori-coder/calculator-memo/issues/27)。[PR #28](https://github.com/tetsujisugimori-coder/calculator-memo/pull/28)。
+- 未検証/制約: 実機iPhone Safari、OSキーボード、長期保存は未検証。ライブラリ200件・タイトル120文字。江戸弁ガイド現行箇所/辞典v19冒頭参照済み。クラウドengineering skill読取は利用不能で未参照、repo運用規則を確認した。
+
+
 ## 2026-10-19 (JST): ノート単位の明示的な変数モード
 - 変更内容: 計算ブロックへ変数定義・参照・再代入を追加。既存AST全検証→一回評価を再利用し、ノートごと空のMapで上から評価。編集・移動・削除・追加は全体再計算。本文/KaTeX/通常電卓/単独メモ/URLへscopeを流さない。
 - 従来方針 / 変更理由 / 新方針: x/Xを乗算にする旧式と合法変数名ex2が衝突するため、推測的な式判別を不採用。optional evaluationModeを持つ新ブロックと明示切替のみ変数評価し、欠落した旧ブロックは旧解釈のまま。保存version1は維持、未知modeは実行エラー。旧版アプリで新modeの再編集・再計算は非対応。

@@ -308,3 +308,16 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .calculation-saved-result strong { white-space: normal !important; overflow-wrap: anywhere; }
 .memo-content-block.calculation-block .block-error { grid-column: 1; }
 .block-help > button { min-height: 44px; padding: 6px 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+
+/* Definitions remain distinct from unbound variables; no result is fabricated. */
+.formula-library { display: grid; gap: 14px; min-width: 0; }
+.formula-library p, .formula-library h3 { overflow-wrap: anywhere; }
+.formula-library-list { list-style: none; padding: 0; display: grid; gap: 8px; }
+.formula-library-list button { width: 100%; text-align: left; min-height: 44px; white-space: normal; overflow-wrap: anywhere; }
+.formula-library-list button[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 1px; }
+.formula-library-detail { display: grid; gap: 10px; min-width: 0; }
+.library-expression, .library-variables { padding: 12px; border: 1px solid currentColor; border-radius: 8px; }
+.library-expression { background: rgba(235, 183, 44, .14); }
+.library-variables { background: rgba(65, 143, 225, .14); }
+.library-expression pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+.formula-library button { min-height: 44px; }
