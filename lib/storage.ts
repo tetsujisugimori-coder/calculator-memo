@@ -18,10 +18,16 @@ export type StorageLoadFailureReason =
   | "invalid-data"
   | "storage-unavailable";
 
+export type StorageProtectionReason = "unsupported-block" | "unsupported-mode" | "invalid-structure" | "duplicate-id";
+
+class NoteStructureError extends Error {
+  constructor(message: string, readonly protectionReason: StorageProtectionReason) { super(message); }
+}
+
 export type StorageLoadResult =
   | { status: "empty"; data: StoredData }
   | { status: "ok"; data: StoredData; raw: string }
-  | { status: "error"; reason: StorageLoadFailureReason; raw: string | null; message: string };
+  | { status: "error"; reason: StorageLoadFailureReason; raw: string | null; message: string; protectionReason?: StorageProtectionReason };
 
 type ReadableStorage = Pick<Storage, "getItem">;
 
@@ -39,12 +45,27 @@ function readStoredNotes(value: unknown): StoredData["notes"] {
   const ids = new Set<string>();
   return value.map((item) => {
     if (!isRecord(item) || typeof item.id !== "string" || !item.id.trim()) throw new Error("メモIDが不正です。");
-    if (ids.has(item.id)) throw new Error("メモIDが重複しています。");
+    if (ids.has(item.id)) throw new NoteStructureError("メモIDが重複しています。", "duplicate-id");
     ids.add(item.id);
     if (!["title", "createdAt", "updatedAt"].every((key) => typeof item[key] === "string")) throw new Error("メモの必須項目が不正です。");
     if (item.type === "plain-calculation") {
       if (item.schemaVersion !== undefined && item.schemaVersion !== 1) throw new Error("未対応のメモ形式です。");
       if (typeof item.content !== "string") throw new Error("メモ本文が不正です。");
+      // Diagnostics only; the existing sanitizer remains the acceptance gate.
+      if (Array.isArray(item.blocks)) {
+        const blockIds = new Set<string>();
+        for (const block of item.blocks) {
+          if (!isRecord(block)) continue;
+          if (typeof block.type === "string" && !["text", "formula", "calculation"].includes(block.type))
+            throw new NoteStructureError("対応していないブロック形式が含まれています。", "unsupported-block");
+          if (block.type === "calculation" && typeof block.evaluationMode === "string" && block.evaluationMode !== "note-variables")
+            throw new NoteStructureError("対応していない計算モードが含まれています。", "unsupported-mode");
+          if (typeof block.id === "string" && block.id.trim()) {
+            if (blockIds.has(block.id)) throw new NoteStructureError("ブロックIDが重複しています。", "duplicate-id");
+            blockIds.add(block.id);
+          }
+        }
+      }
       const blocks = sanitizeMemoBlocks(item.blocks);
       if (item.blocks !== undefined && blocks === undefined) throw new Error("未対応または不正なブロック、空または重複したブロックIDがあります。");
       if (blocks?.some((block) => block.type === "calculation" && block.evaluationMode !== undefined && block.evaluationMode !== "note-variables")) throw new Error("未対応のブロック計算モードです。");
@@ -89,7 +110,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
 
     let notes: StoredData["notes"];
     try { notes = readStoredNotes(parsed.notes); }
-    catch (cause) { return { status: "error", reason: "invalid-data", raw, message: cause instanceof Error ? cause.message : "メモを安全に読み取れませんでした。" }; }
+    catch (cause) { return { status: "error", reason: "invalid-data", raw, protectionReason: cause instanceof NoteStructureError ? cause.protectionReason : "invalid-structure", message: cause instanceof Error ? cause.message : "メモを安全に読み取れませんでした。" }; }
 
     let formulaLibrary: StoredData["formulaLibrary"];
     if (parsed.formulaLibrary !== undefined) {

@@ -241,3 +241,32 @@ it("contains storage getter failures inside both persistence boundaries", () => 
     silence.mockRestore();
   }
 });
+
+describe("protection reason diagnostics", () => {
+  const base = { id: "memo", type: "plain-calculation", title: "", content: "", createdAt: "", updatedAt: "" };
+  const calculation = { id: "c", type: "calculation", expression: "1", displayExpression: "1", result: 1, resultText: "1", error: null };
+  it.each([
+    ["unsupported-block", [{ id: "x", type: "future", metadata: { keep: true } }]],
+    ["unsupported-mode", [{ ...calculation, evaluationMode: "future" }]],
+    ["invalid-structure", [{ ...calculation, evaluationMode: 42 }]],
+    ["invalid-structure", [{ id: "x", type: "text" }]],
+    ["invalid-structure", { unexpected: true }],
+    ["invalid-structure", [{ type: "text", content: "missing id" }]],
+    ["duplicate-id", [{ id: "x", type: "text", content: "a" }, { id: "x", type: "formula", latex: "b" }]],
+  ])("reports %s and preserves source/save lock", (protectionReason, blocks) => {
+    const raw = JSON.stringify({ ...defaultData, notes: [{ ...base, blocks }] }, null, 2) + "\n";
+    const setItem = vi.fn();
+    const storage = { getItem: () => raw, setItem };
+    expect(loadData(storage)).toMatchObject({ status: "error", reason: "invalid-data", protectionReason, raw });
+    expect(saveData(defaultData, storage)).toBe(false);
+    expect(setItem).not.toHaveBeenCalled();
+  });
+  it("reports duplicate memo IDs separately without interpreting their content", () => {
+    const raw = JSON.stringify({ ...defaultData, notes: [base, base] });
+    expect(loadData(storageWith(raw))).toMatchObject({ status: "error", protectionReason: "duplicate-id", raw });
+  });
+  it("does not mistake opaque extras for an unsupported evaluation mode", () => {
+    const note = { ...base, blocks: [{ ...calculation, metadata: { mode: "future" }, proofRef: "keep" }] };
+    expect(loadData(storageWith(JSON.stringify({ ...defaultData, notes: [note] })))).toMatchObject({ status: "ok", data: { notes: [note] } });
+  });
+});
