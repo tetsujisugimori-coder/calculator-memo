@@ -803,7 +803,7 @@ async function exerciseStorageProtection(prefix) {
   await selectPanel("notes");
   const card = page.locator(".note-card").filter({ hasText: "Synthetic safe memo" });
   await activate(card.getByRole("button", { name: "編集", exact: true }));
-  await page.getByRole("dialog").getByLabel("タイトル", { exact: true }).fill("Synthetic repaired memo");
+  await page.getByRole("dialog").getByLabel(/^タイトル/).fill("Synthetic repaired memo");
   await activate(page.getByRole("dialog").getByRole("button", { name: "保存する", exact: true }));
   await expect.poll(async () => (await storage()).notes[0].title).toBe("Synthetic repaired memo");
   await page.reload();
