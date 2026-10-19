@@ -129,3 +129,5 @@ After the prior regressions, every existing context runs four execution checks w
 
 ## Non-destructive notes/block recovery
 The six contexts additionally check unknown/mixed/duplicate/malformed blocks, exact raw storage retention after setting/keyboard attempts and reload, raw recovery-copy argument with a synthetic clipboard sink (not system clipboard), cancelled and explicit confirmed reset, and normal editing/saving after synthetic repair. All fixtures are synthetic. A protected sibling blocks the whole single-key dataset; this is not partial editing.
+
+PR #34追加レビュー: 既知計算ブロックのproofRef/sourceId/入れ子metadataを合成保存データへ付け、legacy/変数双方の無変更編集保存、別文章の編集、追加・削除、下/上移動、式エラーと復帰、再読込で保持を検査する。計算結果assertionと付随情報assertionを分離。付随情報は画面表示せず保存値で比較し、意味的有効性は評価しない。

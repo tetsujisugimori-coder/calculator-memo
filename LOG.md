@@ -3,6 +3,14 @@
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 
+## 2026-10-19 (JST): PR #34追加レビュー対応・再計算時の付随情報保持
+- 対象: [レビュー5570559182](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34#pullrequestreview-5570559182)、基点 `cd020509f26d93e188c7d8837c49a5ced32ff847`。読込境界だけでなくPlainNoteModal保存、MemoBlockEditor追加/編集/削除/上下移動の再計算経路を確認。
+- 再現: production修正前に回帰20件を追加し、付随情報保持12件が失敗、計算結果/不正拒否8件が成功。proofRef/sourceId/入れ子metadata等の消失経路を確認。実ユーザーデータの損失確認ではない。
+- 修正: 元ブロックをcopyしてから計算エンジンの完全なsnapshotを重ね、付随情報を保持しつつ既知の結果/error/displayを更新。原オブジェクトや入れ子を変更しない。新たな型/保存形式/評価規則は追加しない。
+- 契約訂正: 追加キーは意味を解釈しない記述的付随情報。保持は変更後の式への証明/出典の適合性を認定しない。計算意味の変更はversion/type/mode等の明示的互換境界が必要。未知type/mode/不正構造は従来通り保護停止。詳細は[非破壊保存契約](docs/agent/nondestructive-storage.md)。
+- ローカル: 420単体・lint（既存warning1）・型・通常/Pages build成功。Chromium375touchの新規GUI診断で無変更編集保存、他ブロック編集/追加削除/上下移動、式error→復帰、JSON再読込と付随情報保持を確認。正式6条件・最終SHA CIは[PR #34 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34/checks)へ記録する。独立レビュー中。
+- 残存制約: iPhone Safari実機、OS入力/clipboard/支援技術/長期保存未検証。付随情報のdeep cloneは不要と判断し、入れ子は不変参照共有。江戸弁ガイド現行箇所と保存済み辞典v19冒頭を参照。
+
 ## 2026-10-19 (JST): メモ・ブロックの非破壊読込・保存保護
 - 基点: main `8c861b786b2972468398b05d8732ee00740615d9`（PR #32）。AGENTS/README/関連手順/Actions/既存Issue・設計書を確認。
 - 変更内容: notesとblocksの構造・非空/一意ID・対応形式を検証。原JSONを保持して保存全体を停止。保存入口で既存データと候補を再検査し、既存の明示初期化を別経路へ分離。復旧UIを再利用し、保護中の編集と全体キー操作を停止。

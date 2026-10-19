@@ -69,7 +69,12 @@ export function calculateMemoBlock(id: string, expression: string, evaluationMod
 
 export function recalculateMemoBlocks(blocks: MemoBlock[]): MemoBlock[] {
   const scope = new Map<string, number>();
-  return blocks.map((block) => block.type === "calculation" ? calculateMemoBlock(block.id, block.expression, block.evaluationMode, scope) : { ...block });
+  // Extras are opaque descriptive data. Recalculation owns every computed field;
+  // merge its complete success/error snapshot last so stale values cannot survive.
+  // Nested extras are shared but never mutated by the evaluator/editor.
+  return blocks.map((block) => block.type === "calculation"
+    ? { ...block, ...calculateMemoBlock(block.id, block.expression, block.evaluationMode, scope) }
+    : { ...block });
 }
 
 export function resolveMemoBlocks(note: Pick<PlainCalculationNote, "id" | "content" | "blocks">): MemoBlock[] {
