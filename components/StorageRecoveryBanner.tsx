@@ -23,7 +23,7 @@ export function StorageRecoveryBanner({ reason, message, canCopy, onCopy, onRese
       <div>
         <span className="eyebrow">LOCAL DATA PROTECTION</span>
         <h2 id="storage-recovery-title">保存データを読み込めませんでした</h2>
-        <p>{reasonLabels[reason]} {message} 元データを守るため、自動保存を停止しています。</p>
+        <p>{reasonLabels[reason]} {message} 元データを守るため、保存とメモの編集を停止しています。元データを修復した後は再読み込みしてください。</p>
       </div>
       <div className="storage-recovery-actions">
         {canCopy && <button className="button-secondary" onClick={onCopy}>元データをコピー</button>}

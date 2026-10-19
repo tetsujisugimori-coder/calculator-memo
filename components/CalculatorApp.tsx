@@ -6,7 +6,7 @@ import { transitionInput, type InputAction } from "../lib/calculator-input";
 import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
-import { defaultData, loadData, saveData, type StorageLoadResult } from "../lib/storage";
+import { defaultData, loadData, saveData, resetStoredData, type StorageLoadResult } from "../lib/storage";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
 import { IdentificationSettings } from "./Identification";
 import { FormulaExecutionModal } from "./FormulaExecutionModal";
@@ -102,7 +102,11 @@ export function CalculatorApp() {
   }, []);
   useEffect(() => {
     if (storageStatus !== "ready" || saveData(data)) return;
-    const timer = window.setTimeout(() => showToast("ローカル保存に失敗しました"), 0);
+    const timer = window.setTimeout(() => {
+      const loaded = loadData();
+      if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); }
+      showToast("ローカル保存に失敗しました");
+    }, 0);
     return () => window.clearTimeout(timer);
   }, [data, storageStatus, showToast]);
   useEffect(() => {
@@ -162,6 +166,7 @@ export function CalculatorApp() {
   }, [afterEquals, error, expression, result]);
 
   const saveNote = useCallback((draft: NoteDraft) => {
+    if (storageStatus !== "ready") return;
     const now = new Date().toISOString();
     setData((current) => {
       if (noteEditor?.editingId) {
@@ -171,9 +176,10 @@ export function CalculatorApp() {
       return { ...current, notes: [note, ...current.notes] };
     });
     setNoteEditor(null); showToast(noteEditor?.editingId ? `${MEMO_LABELS.single}を更新しました` : `${MEMO_LABELS.single}を保存しました`);
-  }, [noteEditor, showToast]);
+  }, [noteEditor, showToast, storageStatus]);
 
   const savePlainNote = useCallback((draft: PlainNoteDraft) => {
+    if (storageStatus !== "ready") return;
     const now = new Date().toISOString();
     setData((current) => {
       if (plainNoteEditor?.editingId) {
@@ -184,7 +190,7 @@ export function CalculatorApp() {
     });
     setPlainNoteEditor(null);
     showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
-  }, [plainNoteEditor, showToast]);
+  }, [plainNoteEditor, showToast, storageStatus]);
 
   const requestDelete = useCallback((kind: "history" | "note", id: string) => {
     setConfirm({
@@ -210,7 +216,7 @@ export function CalculatorApp() {
     confirmLabel: "初期化する",
     action: () => {
       const cleanData: StoredData = { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
-      if (!saveData(cleanData)) {
+      if (!storageIssue || !resetStoredData(storageIssue.raw)) {
         setConfirm(null);
         showToast("保存データを初期化できませんでした");
         return;
@@ -225,6 +231,7 @@ export function CalculatorApp() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (storageStatus !== "ready") return;
       const target = event.target as HTMLElement;
       if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm || libraryOpen || executionId) return;
       if (/^[0-9+\-*/^.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
@@ -234,7 +241,7 @@ export function CalculatorApp() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm, libraryOpen, executionId]);
+  }, [storageStatus, calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, confirm, libraryOpen, executionId]);
 
   return (
     <main className="app-shell" data-identification={data.settings.identificationMode ?? "auto"}>
@@ -245,7 +252,7 @@ export function CalculatorApp() {
 
       {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
-      <section className="workspace" id="calculator">
+      <section className="workspace" id="calculator" inert={storageStatus !== "ready"}>
         <aside id="history-panel" role="tabpanel" aria-labelledby="history-tab" className={`side-panel history-panel ${data.settings.activePanel === "history" ? "mobile-active" : ""}`}>
           <HistoryPanel history={data.history} onRestore={restore} onNote={openNoteForHistory} onCopy={(item) => copy(historyText(item))} onDelete={(id) => requestDelete("history", id)} onClearAll={() => setConfirm({ title: "すべての計算履歴を削除します", message: `${data.history.length}件の履歴を削除します。計算メモは削除されません。`, confirmLabel: "すべて削除", action: () => { setData((current) => ({ ...current, history: [] })); setConfirm(null); showToast("履歴をすべて削除しました"); } })} />
         </aside>

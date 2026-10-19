@@ -756,6 +756,83 @@ async function exerciseVariables(prefix) {
   await passed(prefix + ": old x multiplication preserved until explicit mode opt-in; corrected expression and mode saved");
 }
 
+async function exerciseStorageProtection(prefix) {
+  await stage(prefix + ": nondestructive-storage-protection");
+  const original = await storage();
+  const good = { id: "safe", type: "plain-calculation", title: "Synthetic safe memo", content: "fallback", createdAt: "", updatedAt: "", blocks: [{ id: "t", type: "text", content: "Safe text" }] };
+  const variants = [
+    ["unknown", { ...good, id: "bad", blocks: [{ id: "future", type: "geometry", payload: { untouched: [1, 2, 3] } }] }],
+    ["mixed", { ...good, id: "bad", blocks: [...good.blocks, { id: "future", type: "graph", points: [1, 2] }] }],
+    ["duplicate", { ...good, id: "bad", blocks: [...good.blocks, ...good.blocks] }],
+    ["malformed", { ...good, id: "bad", blocks: { source: "keep me" } }],
+  ];
+  const readRaw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  for (const [name, bad] of variants) {
+    const raw = JSON.stringify({ ...original, notes: [good, bad] }, null, 2);
+    await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), raw);
+    await page.reload();
+    const banner = page.getByRole("alert");
+    await expect(banner).toContainText("保存データを読み込めませんでした");
+    await expect(page.locator("#calculator")).toHaveAttribute("inert", "");
+    await expect(banner).toContainText("保存とメモの編集を停止");
+    // Header setting changes and keyboard input used to reach save effects.
+    await page.getByLabel("テーマ", { exact: true }).selectOption("dark");
+    await page.keyboard.type("12+3");
+    await page.keyboard.press("Enter");
+    assert.equal(await readRaw(), raw, "Invalid sibling must protect entire original dataset");
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async (text) => { window.__recoveryCopy = text; } } });
+    });
+    await activate(banner.getByRole("button", { name: "元データをコピー", exact: true }));
+    assert.equal(await page.evaluate(() => window.__recoveryCopy), raw, "Recovery copy passes exact raw bytes (test clipboard sink, not OS clipboard)");
+    await activate(banner.getByRole("button", { name: "保存データを初期化", exact: true }));
+    await expect(page.getByRole("dialog")).toContainText("この操作は取り消せません");
+    await activate(page.getByRole("dialog").getByRole("button", { name: "キャンセル", exact: true }));
+    assert.equal(await readRaw(), raw, "Cancel reset cannot overwrite");
+    if (name === "mixed") await screenshot(prefix + "-protected-mixed-blocks");
+    await page.reload();
+    await expect(banner).toBeVisible();
+    assert.equal(await readRaw(), raw, "Reload cannot normalize/drop original blocks");
+    await passed(prefix + ": " + name + " blocks protected across header/keyboard/reset-cancel/copy/reload");
+  }
+  // Synthetic repair, not an app import feature or partial editing of an unsafe dataset.
+  await page.evaluate((data) => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [good, { ...good, id: "safe-2", title: "Synthetic second safe memo" }] });
+  await page.reload();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.locator("#calculator")).not.toHaveAttribute("inert", "");
+  await selectPanel("notes");
+  const card = page.locator(".note-card").filter({ hasText: "Synthetic safe memo" });
+  await activate(card.getByRole("button", { name: "編集", exact: true }));
+  await page.getByRole("dialog").getByLabel("タイトル", { exact: true }).fill("Synthetic repaired memo");
+  await activate(page.getByRole("dialog").getByRole("button", { name: "保存する", exact: true }));
+  await expect.poll(async () => (await storage()).notes[0].title).toBe("Synthetic repaired memo");
+  await page.reload();
+  await selectPanel("notes");
+  await expect(page.locator(".note-card").filter({ hasText: "Synthetic repaired memo" })).toBeVisible();
+  await screenshot(prefix + "-normal-memos-after-repair");
+  await passed(prefix + ": repaired normal dataset supports editing/saving/reload; sibling preserved");
+  assert.equal((await storage()).notes[1].title, "Synthetic second safe memo");
+  // Protect the save boundary if storage changes after a successful boot.
+  const changedRaw = JSON.stringify({ ...original, notes: [good, variants[0][1]] }, null, 2);
+  await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), changedRaw);
+  const theme = page.getByLabel("テーマ", { exact: true });
+  await theme.selectOption((await theme.inputValue()) === "dark" ? "light" : "dark");
+  await expect(page.getByRole("alert")).toContainText("保存データを読み込めませんでした");
+  assert.equal(await readRaw(), changedRaw);
+  await expect(page.locator("#calculator")).toHaveAttribute("inert", "");
+  await passed(prefix + ": post-ready storage corruption blocks autosave and enters protection");
+  // Confirm the separate existing reset path against synthetic data only.
+  const raw = JSON.stringify({ ...original, notes: [variants[0][1]] });
+  await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), raw);
+  await page.reload();
+  await activate(page.getByRole("button", { name: "保存データを初期化", exact: true }));
+  await activate(page.getByRole("dialog").getByRole("button", { name: "初期化する", exact: true }));
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect.poll(storage).toMatchObject({ notes: [], history: [] });
+  await expect(page.locator("#calculator")).not.toHaveAttribute("inert", "");
+  await passed(prefix + ": explicit confirmed reset alone clears protected synthetic data");
+}
+
 async function exercise(scenario) {
   assertOwnedServer();
   currentScenario = scenario;
@@ -1133,6 +1210,7 @@ async function exercise(scenario) {
   await exerciseFormulaLibrary(prefix);
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);
+  await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });
