@@ -33,27 +33,32 @@ function cloneDefaultData(): StoredData {
   return { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
 }
 
-function normalizeStoredMemo(item: unknown): StoredData["notes"][number] | null {
-  if (!isRecord(item) || typeof item.id !== "string") return null;
-  if (item.type === "plain-calculation") {
-    if (typeof item.title !== "string"
-      || typeof item.content !== "string"
-      || typeof item.createdAt !== "string"
-      || typeof item.updatedAt !== "string") return null;
-    const blocks = sanitizeMemoBlocks(item.blocks);
-    return {
-      id: item.id,
-      type: "plain-calculation",
-      title: item.title,
-      content: item.content,
-      ...(blocks !== undefined ? { blocks } : {}),
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    };
-  }
-  return item.type === "calculation" && item.schemaVersion === 1
-    ? item as StoredData["notes"][number]
-    : null;
+/** Validate structure only: expressions and stored results are not recalculated. */
+function readStoredNotes(value: unknown): StoredData["notes"] {
+  if (!Array.isArray(value)) throw new Error("メモ一覧の形式が不正です。");
+  const ids = new Set<string>();
+  return value.map((item) => {
+    if (!isRecord(item) || typeof item.id !== "string" || !item.id.trim()) throw new Error("メモIDが不正です。");
+    if (ids.has(item.id)) throw new Error("メモIDが重複しています。");
+    ids.add(item.id);
+    if (!["title", "createdAt", "updatedAt"].every((key) => typeof item[key] === "string")) throw new Error("メモの必須項目が不正です。");
+    if (item.type === "plain-calculation") {
+      if (item.schemaVersion !== undefined && item.schemaVersion !== 1) throw new Error("未対応のメモ形式です。");
+      if (typeof item.content !== "string") throw new Error("メモ本文が不正です。");
+      const blocks = sanitizeMemoBlocks(item.blocks);
+      if (item.blocks !== undefined && blocks === undefined) throw new Error("未対応または不正なブロック、空または重複したブロックIDがあります。");
+      if (blocks?.some((block) => block.type === "calculation" && block.evaluationMode !== undefined && block.evaluationMode !== "note-variables")) throw new Error("未対応のブロック計算モードです。");
+      // Preserve extra fields; never reconstruct a lossy Markdown-only fallback.
+      return { ...item, ...(blocks !== undefined ? { blocks } : {}) } as StoredData["notes"][number];
+    }
+    if (item.type !== "calculation" || item.schemaVersion !== 1) throw new Error("未対応のメモ種類または形式です。");
+    if (!["expression", "displayExpression", "resultText", "unit", "note", "relatedMemoName"].every((key) => typeof item[key] === "string")
+      || !(item.latexExpression === null || typeof item.latexExpression === "string")
+      || typeof item.result !== "number" || !Number.isFinite(item.result)
+      || !Array.isArray(item.tags) || !item.tags.every((tag) => typeof tag === "string")
+      || !["plain", "katex"].includes(String(item.displayMode))) throw new Error("単独計算メモの構造が不正です。");
+    return { ...item } as StoredData["notes"][number];
+  });
 }
 
 export function loadData(storage?: ReadableStorage): StorageLoadResult {
@@ -82,6 +87,10 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       return { status: "error", reason: "invalid-data", raw, message: "保存データの必須項目が壊れています。" };
     }
 
+    let notes: StoredData["notes"];
+    try { notes = readStoredNotes(parsed.notes); }
+    catch (cause) { return { status: "error", reason: "invalid-data", raw, message: cause instanceof Error ? cause.message : "メモを安全に読み取れませんでした。" }; }
+
     let formulaLibrary: StoredData["formulaLibrary"];
     if (parsed.formulaLibrary !== undefined) {
       try { formulaLibrary = readFormulaLibrary(parsed.formulaLibrary); }
@@ -103,7 +112,7 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       ...(formulaLibrary ? { formulaLibrary } : {}),
       ...(formulaExecutions ? { formulaExecutions } : {}),
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
-      notes: Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredMemo).filter((item): item is StoredData["notes"][number] => item !== null) : [],
+      notes,
       settings: { theme, activePanel, ...(identificationMode(parsed.settings.identificationMode) ? { identificationMode: identificationMode(parsed.settings.identificationMode) } : {}) },
     } };
   } catch (error) {
@@ -112,12 +121,32 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
   }
 }
 
-export function saveData(data: StoredData): boolean {
+type WritableStorage = Pick<Storage, "getItem" | "setItem">;
+
+/** Every ordinary save checks both destination and candidate before touching bytes. */
+export function saveData(data: StoredData, storage?: WritableStorage): boolean {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const target = storage ?? localStorage;
+    if (loadData(target).status === "error") return false;
+    readStoredNotes(data.notes);
+    const raw = JSON.stringify(data);
+    if (loadData({ getItem: () => raw }).status !== "ok") return false;
+    target.setItem(STORAGE_KEY, raw);
     return true;
   } catch (error) {
     console.error("保存データを保存できませんでした", error);
     return false;
   }
+}
+
+/** Only the existing destructive-confirmation UI uses this explicit reset boundary.
+ * Refuse if another tab changed the original bytes while confirmation was open.
+ */
+export function resetStoredData(expectedRaw: string | null, storage?: WritableStorage): boolean {
+  try {
+    const target = storage ?? localStorage;
+    if (target.getItem(STORAGE_KEY) !== expectedRaw) return false;
+    target.setItem(STORAGE_KEY, JSON.stringify(cloneDefaultData()));
+    return true;
+  } catch { return false; }
 }

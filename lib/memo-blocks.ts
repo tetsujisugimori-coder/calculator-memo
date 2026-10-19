@@ -6,14 +6,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isMemoBlock(value: unknown): value is MemoBlock {
-  if (!isRecord(value) || typeof value.id !== "string" || typeof value.type !== "string") return false;
+  if (!isRecord(value) || typeof value.id !== "string" || !value.id.trim() || typeof value.type !== "string") return false;
   if (value.type === "text") return typeof value.content === "string";
   if (value.type === "formula") return typeof value.latex === "string";
   if (value.type === "calculation") {
     return (value.evaluationMode === undefined || typeof value.evaluationMode === "string")
       && typeof value.expression === "string"
       && typeof value.displayExpression === "string"
-      && (value.result === null || typeof value.result === "number")
+      && (value.result === null || (typeof value.result === "number" && Number.isFinite(value.result)))
       && typeof value.resultText === "string"
       && (value.error === null || typeof value.error === "string");
   }
@@ -22,7 +22,7 @@ export function isMemoBlock(value: unknown): value is MemoBlock {
 
 export function sanitizeMemoBlocks(value: unknown): MemoBlock[] | undefined {
   if (value === undefined) return undefined;
-  if (!Array.isArray(value) || !value.every(isMemoBlock)) return undefined;
+  if (!Array.isArray(value) || !value.every(isMemoBlock) || new Set(value.map((block) => block.id)).size !== value.length) return undefined;
   return value.map((block) => ({ ...block }));
 }
 
@@ -69,7 +69,12 @@ export function calculateMemoBlock(id: string, expression: string, evaluationMod
 
 export function recalculateMemoBlocks(blocks: MemoBlock[]): MemoBlock[] {
   const scope = new Map<string, number>();
-  return blocks.map((block) => block.type === "calculation" ? calculateMemoBlock(block.id, block.expression, block.evaluationMode, scope) : { ...block });
+  // Extras are opaque descriptive data. Recalculation owns every computed field;
+  // merge its complete success/error snapshot last so stale values cannot survive.
+  // Nested extras are shared but never mutated by the evaluator/editor.
+  return blocks.map((block) => block.type === "calculation"
+    ? { ...block, ...calculateMemoBlock(block.id, block.expression, block.evaluationMode, scope) }
+    : { ...block });
 }
 
 export function resolveMemoBlocks(note: Pick<PlainCalculationNote, "id" | "content" | "blocks">): MemoBlock[] {

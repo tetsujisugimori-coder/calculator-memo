@@ -3,6 +3,30 @@
 このファイルは開発履歴と重要な設計判断の正本（作業の証跡）です。現在有効な行動規則は [AGENTS.md](AGENTS.md) と関連設定・運用手順を参照してください。新しい記録はこの説明の直後へ追加します。旧記録に含まれる「現在」や追記形式は当時の内容であり、現行規則ではありません。
 
 
+## 2026-10-19 (JST): PR #34追加レビュー対応・再計算時の付随情報保持
+- 対象: [レビュー5570559182](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34#pullrequestreview-5570559182)、基点 `cd020509f26d93e188c7d8837c49a5ced32ff847`。読込境界だけでなくPlainNoteModal保存、MemoBlockEditor追加/編集/削除/上下移動の再計算経路を確認。
+- 再現: production修正前に回帰20件を追加し、付随情報保持12件が失敗、計算結果/不正拒否8件が成功。proofRef/sourceId/入れ子metadata等の消失経路を確認。実ユーザーデータの損失確認ではない。
+- 修正: 元ブロックをcopyしてから計算エンジンの完全なsnapshotを重ね、付随情報を保持しつつ既知の結果/error/displayを更新。原オブジェクトや入れ子を変更しない。新たな型/保存形式/評価規則は追加しない。
+- 契約訂正: 追加キーは意味を解釈しない記述的付随情報。保持は変更後の式への証明/出典の適合性を認定しない。計算意味の変更はversion/type/mode等の明示的互換境界が必要。未知type/mode/不正構造は従来通り保護停止。詳細は[非破壊保存契約](docs/agent/nondestructive-storage.md)。
+- ローカル: 420単体・lint（既存warning1）・型・通常/Pages build成功。Chromium375touchの新規GUI診断で無変更編集保存、他ブロック編集/追加削除/上下移動、式error→復帰、JSON再読込と付随情報保持を確認。正式6条件・最終SHA CIは[PR #34 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34/checks)へ記録する。独立再レビュー結果と正式GUI証跡は下記。
+- 正式GUI: SHA `0f257312a97d6a5b55dda92b2386ae1909ef2890` の[CI39247191200](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39247191200)全工程成功。2026-10-19 20:48:48〜20:57:47 JST、Chromium/WebKit既存6条件、216チェック、browser/runtime/network error0。追加情報は保存JSONで直接比較し、画面だけで保持を推測しない。
+- [238画像・6trace](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39247191200/artifacts/12184980090)を取得、ZIP SHA256 `0109ff32c618baec579a12ce3801e7f83ddbb128fa53e31495a93be07168feb3`とAPI digest一致。checkout/配信SHA一致、WebKit375画像確認。7日保持。最終文書SHAの結果はPR Checksへ記録する。
+- 独立再レビュー: 420単体と追加10ライフサイクルを別途実行。完全な既知field更新、入れ子不変、未知mode拒否、編集経路と保存JSON保持を確認し、ソース阻害指摘なし。
+- 残存制約: iPhone Safari実機、OS入力/clipboard/支援技術/長期保存未検証。付随情報のdeep cloneは不要と判断し、入れ子は不変参照共有。江戸弁ガイド現行箇所と保存済み辞典v19冒頭を参照。
+
+## 2026-10-19 (JST): メモ・ブロックの非破壊読込・保存保護
+- 基点: main `8c861b786b2972468398b05d8732ee00740615d9`（PR #32）。AGENTS/README/関連手順/Actions/既存Issue・設計書を確認。
+- 変更内容: notesとblocksの構造・非空/一意ID・対応形式を検証。原JSONを保持して保存全体を停止。保存入口で既存データと候補を再検査し、既存の明示初期化を別経路へ分離。復旧UIを再利用し、保護中の編集と全体キー操作を停止。
+- 判断変更: 従来は不正ブロックを落としてMarkdown本文へ縮退、不正メモは除外。成功読込後の自動保存により構造を失う経路があるため、全体fail-closedへ変更。実ユーザーデータ損失は未確認。正常version1/旧本文/空blocksを維持、式評価・丸め変更なし。
+- 採用理由: 保存は単一キーの一括更新。ノート単位部分編集は安全なマージ契約を要するため今回採用せず全体保護を選択。将来の部分編集は別設計。詳細は[設計・検証](docs/agent/nondestructive-storage.md)。
+- 検証結果: cloud Node24.19.0で全400単体、lint（既存warning1）、型、通常/Pages build成功。独立レビューでlocalStorage getterがtry外になる例外漏れを修正し回帰追加、最終阻害指摘なし。既存失敗期待を無根拠に変更せず、旧縮退方針から新保護方針への変更として回帰を追加。
+- GUI証跡: SHA `8c3dde7e5d394f15f4eafd8b3b4ef49abb554ecd` の[Actions 39237123675](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39237123675)全工程成功。2026-10-19 19:25:09〜19:36:00 JST、既存6条件（Chromium desktop/390 narrow/390・375 touch、WebKit390・375 touch）、198チェック、browser/runtime/network error 0。未知/混在/重複/不正blocks、再読込、取消、原JSONコピー、修復後正常編集、起動後破損の保存拒否、明示resetを追加。
+- [232画像・6trace](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39237123675/artifacts/12180301473)のZIP SHA256 `97e60ff49cf7fc56e235b98565b5d82caf49ed1f10976fdf1d93685a56d1b615`をAPI digestと照合。checkout/配信SHA一致、画像を確認。7日保持。最終文書コミットのCIは[PR #34 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34/checks)で別途確認する。
+- 初回診断: GUI title selectorが「任意」付きlabelに不一致、次に正常fixtureの空日時が既存formatter例外を誘発。selectorとfixtureを修正し期待値を緩和せず全条件再検証。日時意味検証は既存同様対象外の制約として記録。ローカルWebKitはOS共有library不足、正式検証はActionsを使用。コピーは合成clipboard sinkを検査し実OS clipboardは未検証。
+- 関連: [Issue #33](https://github.com/tetsujisugimori-coder/calculator-memo/issues/33)。[PR #34](https://github.com/tetsujisugimori-coder/calculator-memo/pull/34) 検証中。
+- 未解決/対象外: 多タブ完全な原子的競合解決、未知データの部分編集、iPhone Safari実機/OS入力/長期保存、Issue #19。江戸弁ガイド現行箇所と辞典v19冒頭を参照。初回npm既定cacheは書込不可、workspace cacheを使って成功。
+
+
 ## 2026-10-19 (JST): 登録式の実行・変数入力
 - 基点: PR #30マージ済みmain `e5e87046c1c7671636f1a53d00c559cc4a81b4d9`。AGENTS/運用手順/README/LOG/Issueと評価器・変数・ライブラリ・保存方式を確認。
 - 変更: 登録式選択→実行画面、構文から変数入力生成、明示選択したノートの有効値を空欄に取込、既存エンジンで確定計算。入力変更で結果を無効化し、定義と実行値・結果を分離。識別表示設定/native入力/i説明を踏襲。

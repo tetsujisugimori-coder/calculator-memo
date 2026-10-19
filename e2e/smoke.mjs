@@ -756,6 +756,140 @@ async function exerciseVariables(prefix) {
   await passed(prefix + ": old x multiplication preserved until explicit mode opt-in; corrected expression and mode saved");
 }
 
+async function exerciseBlockExtraFields(prefix) {
+  await stage(prefix + ": block-extra-field-preservation");
+  const original = await storage();
+  const extras = (id) => ({ proofRef: "proof-" + id, sourceId: "source-" + id, metadata: { tags: ["synthetic", { revision: 1 }], verified: false }, futureAnnotation: { text: "opaque data" } });
+  const calc = (id, expression, mode) => ({ ...extras(id), id, type: "calculation", expression, displayExpression: expression, result: 0, resultText: "0", error: null, ...(mode ? { evaluationMode: mode } : {}) });
+  const blocks = [{ id: "text-extra", type: "text", content: "Synthetic explanatory text", ...extras("text-extra") }, calc("legacy-extra", "2+3"), calc("define-extra", "x=4", "note-variables"), calc("use-extra", "x*2", "note-variables")];
+  const note = { id: "extra-note", type: "plain-calculation", title: "Synthetic metadata memo", content: "fallback", createdAt: "2026-10-19T00:00:00Z", updatedAt: "2026-10-19T00:00:00Z", blocks };
+  await page.evaluate((data) => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload();
+  await selectPanel("notes");
+  const open = async () => {
+    await activate(page.locator(".note-card").filter({ hasText: note.title }).getByRole("button", { name: "編集", exact: true }));
+    return page.getByRole("dialog");
+  };
+  const save = async () => {
+    await activate(page.getByRole("dialog").getByRole("button", { name: "保存する", exact: true }));
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect.poll(async () => (await storage()).notes[0].blocks.length).toBe(4);
+  };
+  const checkExtras = async () => {
+    const saved = (await storage()).notes[0].blocks;
+    for (const block of saved) for (const [key, value] of Object.entries(extras(block.id))) assert.deepEqual(block[key], value, "Opaque extra field survives: " + block.id + "." + key);
+    assert.equal(Object.hasOwn(saved.find((block) => block.id === "legacy-extra"), "evaluationMode"), false);
+    assert.equal(saved.find((block) => block.id === "use-extra").evaluationMode, "note-variables");
+    return saved;
+  };
+  await open(); await save();
+  let saved = await checkExtras();
+  assert.deepEqual(saved.filter((block) => block.type === "calculation").map((block) => block.result), [5, 4, 8]);
+  await page.reload(); await selectPanel("notes"); await checkExtras();
+  await passed(prefix + ": legacy/variable calculation extras survive unchanged edit, recalculation, save and reload");
+  let dialog = await open();
+  await dialog.getByLabel("Markdown文章").fill("Changed explanatory text");
+  await activate(dialog.getByRole("button", { name: "＋ 文章", exact: true }));
+  await activate(dialog.locator(".block-editor-card").last().getByRole("button", { name: "文章ブロックを削除", exact: true }));
+  const legacy = dialog.locator(".block-editor-card.calculation").filter({ hasText: "従来の計算モード" });
+  await activate(legacy.getByRole("button", { name: "計算ブロックを下へ移動", exact: true }));
+  await activate(legacy.getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
+  await save(); saved = await checkExtras();
+  assert.deepEqual(saved.map((block) => block.id), blocks.map((block) => block.id));
+  assert.equal(saved[0].content, "Changed explanatory text");
+  assert.equal(saved[3].result, 8);
+  await passed(prefix + ": other-block edit, add/delete and move down/up preserve calculation extras and order");
+  dialog = await open();
+  await dialog.getByLabel("計算式", { exact: true }).nth(2).fill("x/0");
+  await save(); saved = await checkExtras();
+  assert.equal(saved[3].result, null); assert.equal(saved[3].resultText, ""); assert.ok(saved[3].error); assert.equal(saved[3].displayExpression, "x/0");
+  await page.reload(); await selectPanel("notes"); await checkExtras();
+  dialog = await open();
+  await dialog.getByLabel("計算式", { exact: true }).nth(2).fill("x*3");
+  await save(); saved = await checkExtras();
+  assert.equal(saved[3].result, 12); assert.equal(saved[3].error, null); assert.equal(saved[3].resultText, "12");
+  await page.reload(); await selectPanel("notes"); saved = await checkExtras(); assert.equal(saved[3].result, 12);
+  await screenshot(prefix + "-block-extra-fields-restored");
+  await passed(prefix + ": expression error/recovery refreshes engine fields while opaque extras survive JSON save/reload");
+}
+
+async function exerciseStorageProtection(prefix) {
+  await stage(prefix + ": nondestructive-storage-protection");
+  const original = await storage();
+  const good = { id: "safe", type: "plain-calculation", title: "Synthetic safe memo", content: "fallback", createdAt: "2026-10-19T00:00:00Z", updatedAt: "2026-10-19T00:00:00Z", blocks: [{ id: "t", type: "text", content: "Safe text" }] };
+  const variants = [
+    ["unknown", { ...good, id: "bad", blocks: [{ id: "future", type: "geometry", payload: { untouched: [1, 2, 3] } }] }],
+    ["mixed", { ...good, id: "bad", blocks: [...good.blocks, { id: "future", type: "graph", points: [1, 2] }] }],
+    ["duplicate", { ...good, id: "bad", blocks: [...good.blocks, ...good.blocks] }],
+    ["malformed", { ...good, id: "bad", blocks: { source: "keep me" } }],
+  ];
+  const readRaw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  for (const [name, bad] of variants) {
+    const raw = JSON.stringify({ ...original, notes: [good, bad] }, null, 2);
+    await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), raw);
+    await page.reload();
+    const banner = page.getByRole("alert");
+    await expect(banner).toContainText("保存データを読み込めませんでした");
+    await expect(page.locator("#calculator")).toHaveAttribute("inert", "");
+    await expect(banner).toContainText("保存とメモの編集を停止");
+    // Header setting changes and keyboard input used to reach save effects.
+    await page.getByLabel("テーマ", { exact: true }).selectOption("dark");
+    await page.keyboard.type("12+3");
+    await page.keyboard.press("Enter");
+    assert.equal(await readRaw(), raw, "Invalid sibling must protect entire original dataset");
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async (text) => { window.__recoveryCopy = text; } } });
+    });
+    await activate(banner.getByRole("button", { name: "元データをコピー", exact: true }));
+    assert.equal(await page.evaluate(() => window.__recoveryCopy), raw, "Recovery copy passes exact raw bytes (test clipboard sink, not OS clipboard)");
+    await activate(banner.getByRole("button", { name: "保存データを初期化", exact: true }));
+    await expect(page.getByRole("dialog")).toContainText("この操作は取り消せません");
+    await activate(page.getByRole("dialog").getByRole("button", { name: "キャンセル", exact: true }));
+    assert.equal(await readRaw(), raw, "Cancel reset cannot overwrite");
+    if (name === "mixed") await screenshot(prefix + "-protected-mixed-blocks");
+    await page.reload();
+    await expect(banner).toBeVisible();
+    assert.equal(await readRaw(), raw, "Reload cannot normalize/drop original blocks");
+    await passed(prefix + ": " + name + " blocks protected across header/keyboard/reset-cancel/copy/reload");
+  }
+  // Synthetic repair, not an app import feature or partial editing of an unsafe dataset.
+  await page.evaluate((data) => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [good, { ...good, id: "safe-2", title: "Synthetic second safe memo" }] });
+  await page.reload();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.locator("#calculator")).not.toHaveAttribute("inert", "");
+  await selectPanel("notes");
+  const card = page.locator(".note-card").filter({ hasText: "Synthetic safe memo" });
+  await activate(card.getByRole("button", { name: "編集", exact: true }));
+  await page.getByRole("dialog").getByLabel(/^タイトル/).fill("Synthetic repaired memo");
+  await activate(page.getByRole("dialog").getByRole("button", { name: "保存する", exact: true }));
+  await expect.poll(async () => (await storage()).notes[0].title).toBe("Synthetic repaired memo");
+  await page.reload();
+  await selectPanel("notes");
+  await expect(page.locator(".note-card").filter({ hasText: "Synthetic repaired memo" })).toBeVisible();
+  await screenshot(prefix + "-normal-memos-after-repair");
+  await passed(prefix + ": repaired normal dataset supports editing/saving/reload; sibling preserved");
+  assert.equal((await storage()).notes[1].title, "Synthetic second safe memo");
+  // Protect the save boundary if storage changes after a successful boot.
+  const changedRaw = JSON.stringify({ ...original, notes: [good, variants[0][1]] }, null, 2);
+  await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), changedRaw);
+  const theme = page.getByLabel("テーマ", { exact: true });
+  await theme.selectOption((await theme.inputValue()) === "dark" ? "light" : "dark");
+  await expect(page.getByRole("alert")).toContainText("保存データを読み込めませんでした");
+  assert.equal(await readRaw(), changedRaw);
+  await expect(page.locator("#calculator")).toHaveAttribute("inert", "");
+  await passed(prefix + ": post-ready storage corruption blocks autosave and enters protection");
+  // Confirm the separate existing reset path against synthetic data only.
+  const raw = JSON.stringify({ ...original, notes: [variants[0][1]] });
+  await page.evaluate((raw) => localStorage.setItem("calculation-memo:data", raw), raw);
+  await page.reload();
+  await activate(page.getByRole("button", { name: "保存データを初期化", exact: true }));
+  await activate(page.getByRole("dialog").getByRole("button", { name: "初期化する", exact: true }));
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect.poll(storage).toMatchObject({ notes: [], history: [] });
+  await expect(page.locator("#calculator")).not.toHaveAttribute("inert", "");
+  await passed(prefix + ": explicit confirmed reset alone clears protected synthetic data");
+}
+
 async function exercise(scenario) {
   assertOwnedServer();
   currentScenario = scenario;
@@ -1133,6 +1267,8 @@ async function exercise(scenario) {
   await exerciseFormulaLibrary(prefix);
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);
+  await exerciseBlockExtraFields(prefix);
+  await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
   await context.tracing.stop({ path: output + "/" + prefix + "-trace.zip" });
