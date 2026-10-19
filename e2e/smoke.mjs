@@ -860,6 +860,10 @@ async function exerciseBlockReferences(prefix) {
     await page.reload(); await selectPanel("notes"); dialog=await open();
     await page.evaluate(()=>document.documentElement.style.fontSize="200%");
     await screenshot(prefix+"-reference-"+theme+"-enlarged");
+    await dialog.getByLabel("参照先を選んで式に挿入").scrollIntoViewIfNeeded();
+    await screenshot(prefix+"-reference-"+theme+"-enlarged-picker");
+    await dialog.locator(".calculation-live-result").last().scrollIntoViewIfNeeded();
+    await screenshot(prefix+"-reference-"+theme+"-enlarged-result");
     assert.ok(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+2),"Reference dialog must not overflow horizontally");
     await page.evaluate(()=>document.documentElement.style.fontSize=""); await activate(dialog.getByRole("button",{name:"キャンセル",exact:true}));
   }
