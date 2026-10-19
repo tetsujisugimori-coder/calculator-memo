@@ -88,7 +88,12 @@ async function exerciseFormulaLibrary(prefix) {
   await dialog().getByLabel("登録する計算式", { exact: true }).fill("variable_with_a_very_long_name_123456789 * quantity");
   await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
   await assertHorizontalFit();
-  await page.screenshot({ path: output + "/" + prefix + "-formula-library.png", fullPage: true });
+  await screenshot(prefix + "-formula-library");
+  await dialog().locator(".modal-content").evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await expect(dialog().getByRole("button", { name: "登録式を編集", exact: true })).toBeInViewport();
+  await expect(dialog().getByRole("button", { name: "登録式を削除", exact: true })).toBeInViewport();
+  await assertHorizontalFit();
+  await screenshot(prefix + "-formula-library-controls", currentScenario.width, false, true);
   await activate(dialog().getByRole("button", { name: "Synthetic formula", exact: true }));
   await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
   await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true }));
@@ -108,6 +113,22 @@ async function exerciseFormulaLibrary(prefix) {
   assert.equal(after.formulaLibrary.selectedId, original.id);
   await assertHorizontalFit();
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
+  for (const mode of ["dark", "light"]) {
+    await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(mode);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
+    await open();
+    await activate(dialog().getByRole("button", { name: "長い登録名".repeat(20), exact: true }));
+    await dialog().locator(".formula-library-detail").evaluate((element) => {
+      const elements = [element, ...element.querySelectorAll("*")];
+      const sizes = elements.map((child) => parseFloat(getComputedStyle(child).fontSize) * 2);
+      elements.forEach((child, index) => { child.style.fontSize = sizes[index] + "px"; });
+    });
+    await assertHorizontalFit();
+    await dialog().locator(".modal-content").evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await expect(dialog().getByRole("button", { name: "登録式を編集", exact: true })).toBeInViewport();
+    await screenshot(prefix + "-formula-library-" + mode + "-text-stress", currentScenario.width, false, true);
+    await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
+  }
   await passed(prefix + ": formula registration, syntax rejection, cancel, selection, edit, delete/undo, reload and unchanged notes/history");
 }
 async function assertHeaderFit(label) {
@@ -247,16 +268,17 @@ async function exerciseStickyOffset(prefix) {
 }
 async function stage(name) { metadata.stage = name; await persist(); }
 async function passed(name) { metadata.checks.push(name); console.log("PASS:", name); await persist(); }
-async function screenshot(name, expectedWidth = currentScenario.width, fullPage = true) {
+async function screenshot(name, expectedWidth = currentScenario.width, fullPage = true, overlayTop = false) {
   await assertHorizontalFit(expectedWidth);
   // Test-only visual label, removed immediately after capture; not an app feature.
-  await page.evaluate((identity) => {
+  await page.evaluate(({ identity, overlayTop }) => {
     const banner = document.createElement("div");
     banner.id = "gui-test-overlay";
     banner.textContent = "TEST OVERLAY | " + identity;
     banner.style.cssText = "position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#101820;color:#fff;font:11px monospace;padding:8px;overflow-wrap:anywhere;pointer-events:none";
+    if (overlayTop) { banner.style.bottom = "auto"; banner.style.top = "0"; }
     document.body.append(banner);
-  }, currentScenario.id + " | capture " + expectedWidth + "px | " + metadata.branch + " | SHA " + metadata.sha + " | run " + metadata.run + "/" + metadata.attempt);
+  }, { overlayTop, identity: currentScenario.id + " | capture " + expectedWidth + "px | " + metadata.branch + " | SHA " + metadata.sha + " | run " + metadata.run + "/" + metadata.attempt });
   try { await page.screenshot({ path: output + "/" + name + ".png", fullPage }); }
   finally { await page.locator("#gui-test-overlay").evaluate((element) => element.remove()); }
 }
