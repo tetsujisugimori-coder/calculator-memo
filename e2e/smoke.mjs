@@ -863,7 +863,39 @@ async function exerciseBlockReferences(prefix) {
     const themedPicker = dialog.getByLabel("参照先を選んで式に挿入");
     await expect(themedPicker).toHaveCSS("background-color", theme === "dark" ? "rgb(35, 38, 35)" : "rgb(251, 250, 246)");
     await expect(themedPicker).toHaveCSS("color", theme === "dark" ? "rgb(240, 239, 233)" : "rgb(32, 35, 31)");
+    await expect(themedPicker).toHaveCSS("appearance", "none");
     await themedPicker.scrollIntoViewIfNeeded();
+    // Computed colors do not expose WebKit's native light bezel. Inspect actual
+    // rasterized pixels, without snapshots/platform-specific font expectations.
+    const pickerPng = await themedPicker.screenshot();
+    const painted = await page.evaluate(async ({ png, dark }) => {
+      const image = new Image();
+      image.src = "data:image/png;base64," + png;
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width; canvas.height = image.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0);
+      const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const background = dark ? [35, 38, 35] : [251, 250, 246];
+      const foreground = dark ? [240, 239, 233] : [32, 35, 31];
+      let backgroundPixels = 0, backgroundSamples = 0, foregroundPixels = 0;
+      const matches = (offset, rgb) => rgb.every((value, channel) => Math.abs(pixels[offset + channel] - value) <= 3);
+      for (let i = 0; i < pixels.length; i += 4) {
+        const x = (i / 4) % canvas.width, y = Math.floor(i / 4 / canvas.width);
+        // Top padding, away from the border, text, and right-hand arrow.
+        if (x > canvas.width * 0.15 && x < canvas.width * 0.75 && y > canvas.height * 0.06 && y < canvas.height * 0.12) {
+          backgroundSamples++;
+          if (matches(i, background)) backgroundPixels++;
+        }
+        if (matches(i, foreground)) foregroundPixels++;
+      }
+      return { background: backgroundPixels / backgroundSamples, foreground: foregroundPixels / (pixels.length / 4) };
+    }, { png: pickerPng.toString("base64"), dark: theme === "dark" });
+    assert.ok(painted.background > 0.9, `${prefix} ${theme}: painted select background missing: ${JSON.stringify(painted)}`);
+    assert.ok(painted.foreground > 0.005, `${prefix} ${theme}: painted select text missing: ${JSON.stringify(painted)}`);
+    activeScenarioRecord.referencePickerPixels ??= [];
+    activeScenarioRecord.referencePickerPixels.push({ theme, ...painted });
     await screenshot(prefix+"-reference-"+theme+"-enlarged-picker");
     await dialog.locator(".calculation-live-result").last().scrollIntoViewIfNeeded();
     await screenshot(prefix+"-reference-"+theme+"-enlarged-result");

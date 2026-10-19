@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): 参照selectのWebKit native描画を修正
+- 再確認: `e20216d` のCI 39339028663は6条件270チェック成功でも、375/390px WebKit dark拡大画像では参照selectが白地・淡色文字のままだった。前回のCSS色指定/computed style検証だけではnative描画を検出できなかった。
+- 修正: 参照selectに限定してappearanceを外し、既存テーマ色・CSS矢印・右余白を明示。select要素、選択肢、native選択操作、ラベル、44px以上の高さ、focus-visibleは保持。計算・保存処理は変更しない。
+- 回帰: 両テーマ200%拡大で、select screenshotの実PNGをCanvasへ読込み、文字/矢印を避けた上部内側の背景色と文字色の出現を検査。computed CSS成功だけを視認性の根拠にしない。
+- ローカル検証: Node24.19.0で472単体、lint（既存warning1）、型検査、通常/Pages build成功。Chromium375pxの分離したnative select診断で両テーマの描画画素と選択値変更を確認。実アプリ全GUI再実行とは区別する。
+- 未検証: 今回の修正後WebKit画像/6条件GUI/最終SHA CIはPR #37 Checksで確認待ち。ローカルWebKitはgtk4/graphene/woff2/harfbuzz-icu/hyphen/manette/GLESv2の共有ライブラリ不足で起動不可。iPhone Safari実機・OS picker/VoiceOverは未検証。
+- 関連: [PR #37](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37)。マージ・本番公開なし。
+
 ## 2026-10-20 (JST): 同一メモのID参照・手動一括再計算
 - 基点: main `b1a590aa74808e82c7c3dfe3e02fa13984338450`（PR #36 merge）。
 - 変更: GUIでslot→block ID参照を挿入する新mode、非再帰依存解析、循環/欠損検出、永続manual方針、旧結果/stale表示、全成功時のみ一括確定。既存engine/丸めを変更せず内部数値を参照。
