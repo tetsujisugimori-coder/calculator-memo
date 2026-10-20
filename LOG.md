@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #43 初回公開後の正式検証
+- [PR #43](https://github.com/tetsujisugimori-coder/calculator-memo/pull/43) をDraftで作成。公開HEAD `ff9d37b3bb3a2582432f8cf9c900804416bc0f87`、[CI 39462748334](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39462748334) 成功。ローカル実装commitとはmetadata差があるがtree `b336ec0bb78a6b19b450b20f20dd251627aa493a` 一致。
+- 658単体/26files、26 CI契約、lint既存warning1、型検査、通常/Pages build成功。全6条件372 GUIの本文/順序も旧証拠と一致、448横はみ出しcheckpoint、mobile各629touch、errors=[]。代表108 PNG、成功trace保存0。
+- [artifact 12284500565](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39462748334/artifacts/12284500565) は31784933 bytes、SHA256 `9a9c399a2786c485d540c63da65dd3d17c0121e6608c6bdeac27e9821ff4f5ba`、取得ZIPと全workerのexactHEAD照合済み。容量約92.6%減、GUI556.566秒、job約10分52.6秒。旧2run双方と比較しGUI54.3%/38.4%短縮。Ubuntu image差・自然変動・個別WebKit時間増加・総CPU比較不能を区別する。
+- 実画像でWebKit375 dark/文字拡大の130・差+10・状態ラベル、390のgraph-end診断を確認。実iPhone/VoiceOver等は未検証。詳細A–L時間/容量/失敗8経路の実証範囲は[CI設計記録](docs/agent/ci-optimization.md)。
+- 独立レビューの阻害指摘は修正、26契約も独立成功。localの間欠操作停滞は逐次390でも発生し原因未分離、正式CI成功で解消したと扱わない。実GitHub uploadサービス故障は未実証。記録commitの最終HEADは[PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/43/checks)で別途成功を確認してからReadyへ進め、人間承認なくmergeしない。
+
+
 ## 2026-10-21 (JST): CI 計測・証拠容量と実行時間の最適化
 - 基点: PR #42 merge済み最新main `be2d34a35bad21f8f9c17970f46a6a1ed404d44f` をcloneし確認。作業枝 `perf/ci-evidence-optimization`。PR未作成、正式CI未実行。CI専用の単一範囲でPRに受入条件を集約し、既存アプリIssueや計算仕様は変更しない。
 - 実測: 同一PR42 HEADの正式CI2回は22.71分/16.74分、GUI1217.213秒/903.859秒、artifact431903525/429598046 bytes。自然変動約26%があり古い1回だけで改善率を断定しない。WebKit390の主な差はtap安定待ち（新run158.580秒対375の53.113秒）、DPR等の因果寄与は未分離。trace連続画像が大半を占めた。[計測方法と内訳](docs/agent/ci-optimization.md)。

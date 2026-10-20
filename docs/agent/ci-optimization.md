@@ -1,4 +1,4 @@
-# CI 計測・証拠軽量化（PR #43 予定）
+# CI 計測・証拠軽量化（PR #43）
 
 ## 範囲と維持する保証
 
@@ -106,3 +106,81 @@ CI契約26件では、隔離subprocessでunit/normal build/Pages build/browser i
 隔離した実Chromium fault probeでは、GUI途中故障でexit1・failure PNG・故障前128操作/242 DOM snapshots、撮影故障でexit1・failure PNG・故障前18操作/26 snapshotsを保持。SHA不一致はbrowser起動前exit1とprovenanceを保持した。故意不具合はtemp copyだけに挿入し、通常scenario/アプリへ混入しない。
 
 これはlocal failure-path実証であり、GitHub上で実際にunit/build/installを壊した試験ではない。GitHub artifactサービスのupload障害も未実証。ローカル証拠保存失敗の非zeroと、workflowにcontinue-on-error等の成功化がないことを確認した範囲であり、サービス障害を再現したとは主張しない。
+
+## 初回最適化の正式 CI 実測（2026-10-21 JST）
+
+[PR #43](https://github.com/tetsujisugimori-coder/calculator-memo/pull/43)、公開HEAD `ff9d37b3bb3a2582432f8cf9c900804416bc0f87`、[run 39462748334](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39462748334) 成功。[artifact 12284500565](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39462748334/artifacts/12284500565) のSHA256は `9a9c399a2786c485d540c63da65dd3d17c0121e6608c6bdeac27e9821ff4f5ba`。取得ZIPのdigest、各workerのsha/expectedSha/servedIdentityを照合した。
+
+Node22.13.0、runner2.337.0、ブラウザversionは旧runと同じ。ただしUbuntu imageは旧 `20261012.334.1` に対し今回 `20261018.339.1`。同等条件の完全なA/B試験ではなく、差の全量を実装による因果効果と断定しない。npm cacheはmissでありwarm cacheの改善を実証していない。
+
+| 指標 | 旧基準 | 同一旧HEADの最新run | 最適化初回 |
+|---|---:|---:|---:|
+| jobログ範囲（分） | 22.71 | 16.74 | 10.88 |
+| GUI wall（秒） | 1217.213 | 903.859 | 556.566 |
+| 単体テスト / files | 658 / 26 | 658 / 26 | 658 / 26 |
+| CI契約テスト | なし | なし | 26 |
+| GUIチェック / 条件 | 372 / 6 | 372 / 6 | 372 / 6 |
+| 横はみ出しcheckpoint | 448 | 448 | 448 |
+| PNG / trace保存本数 | 448 / 6 | 448 / 6 | 108 / 0 |
+| artifact bytes | 431903525 | 429598046 | 31784933 |
+
+job時間は約52.1% / 35.0%、GUIは54.3% / 38.4%、artifactは92.6% / 92.6%減（順に旧基準/最新旧run比較）。目安を上回ったが、上記の自然変動・image差・並列リソース差を含む観測値である。既存372 GUIのチェック配列は本文と順序を含め完全一致。全6条件成功、mobile4条件各629touch、runtime/network errors=[]、lint既存warning1のみ。通常/Pages build、型検査も成功。
+
+### A–L 段階別（秒）
+
+旧値はstep境界、最適化値はcommand wrapper（小さなstep切替分を除く）。厳密な同一計測境界ではない。
+
+| 対象 | 旧基準 | 最新旧run | 最適化 |
+|---|---:|---:|---:|
+| A アプリ npm ci | 31.114 | 19.482 | 19.693 |
+| A GUI npm ci | 0.634 | 0.485 | 0.621 |
+| B 単体 | 14.432 | 9.370 | 9.485 |
+| C lint | 6.968 | 4.718 | 4.816 |
+| D 型 | 5.767 | 3.785 | 3.842 |
+| E 通常build | 12.867 | 8.340 | 8.402 |
+| F Pages build | 1.644 | 1.280 | 1.170 |
+| G browser/OS library | 50.216 | 35.718 | 35.662 |
+| H Chromium desktop | 111.937 | 82.475 | 87.212 |
+| H Chromium narrow390 | 94.834 | 76.195 | 87.443 |
+| H Chromium mobile390 | 170.505 | 132.518 | 119.607 |
+| H Chromium mobile375 | 144.733 | 121.666 | 116.768 |
+| I WebKit390 | 450.814 | 316.580 | 348.896 |
+| I WebKit375 | 241.692 | 172.301 | 258.211 |
+| J 撮影API累計 | 142.852 | 89.377 | 22.590 |
+| K trace API start/stop | 未計測 | 未計測 | 0.053 |
+| L artifact action合計 | 14.824 | 10.722 | 約1.748 |
+
+Jの旧値は従来screenshot呼出、新値はcaptureのみでgeometry/overlayを別記録。Kは成功時start/discardのAPI時間のみ、操作中DOM snapshot生成の負荷を分離した値ではない。Lの圧縮/通信個別時間は未分離。成功traceを保存しないことと収集中のscreencast停止は別変更である。
+
+条件別H/Iはscenario開始/終了境界。起動を含むworker合計1024.524秒に対しwall556.566秒。個別WebKit等は最新旧runより遅く、並列化が各条件を速くしたわけではない。GNU timeのuser132.58秒＋system36.12秒、maxRSS245936KiB（同時全processの総メモリpeakではない）。旧CPU実測がなく総CPU増減は不明、runner同時利用量は増える。課金総リソース削減率は未判定。
+
+### 成果物内訳と代表画像
+
+| 分類 | 最適化件数 | raw bytes | 外側ZIP内 bytes |
+|---|---:|---:|---:|
+| PNG | 108 | 30984526 | 30984526 |
+| trace | 0 | 0 | 0 |
+| log | 23 | 160476 | 160476 |
+| JSON | 19 | 609237 | 609237 |
+| 合計 | 150 | 31754239 | 31754239 |
+
+compression0のためentry容量は同じ、外側ZIP管理情報込み31784933 bytes。最大はWebKit390 basic-math-domain-error PNG1401356 bytes、Chromium390同画像1202591、WebKit390 protected-dark-large-text994508。ログ/JSONは段階計測とworker別provenance追加で増えたが、診断情報を優先した。
+
+実画像でWebKit375 dark/文字拡大の試算130・差+10・未再計算ラベル、WebKit390のgraph-end選択・参照先エラー・複数原因への案内を確認。縦scrollで読む画面であり全文が1画面へ収まる保証ではない。実iPhone Safari/OS keyboard/VoiceOverは未検証。
+
+### 失敗経路の実証範囲と残る制約
+
+| 要求された失敗 | 実施範囲 | 結果 / 未実証 |
+|---|---|---|
+| 単体失敗 | 隔離commandを実stage wrapperで非zero終了 | CI向け非zeroとログ保持。GitHub上の実単体故障は未注入 |
+| build失敗 | 同上、通常/Pages別 | 同上 |
+| browser導入失敗 | 同上 | 同上。local WebKit依存不足もharness非zero |
+| GUI途中失敗 | temp copyへ故障、実Chromium | exit1、failure PNG、故障前trace保持 |
+| 撮影失敗 | temp copyへ撮影故障、実Chromium | exit1、failure PNG、故障前trace保持 |
+| artifact保存失敗 | local証拠/log書込失敗 | 非zero。GitHub artifact uploadサービス障害は未実証 |
+| 一部scenario未実行 | aggregate/worker契約 | missing/不完全coverage拒否、成功trace破棄前検査 |
+| SHA不一致 | 契約＋実harness | browser起動前exit1、provenance保持 |
+
+local Node24環境では、初期preview port4190がFetch禁止portで失敗し4280–4285へ修正、回帰契約を追加した。他にタップ後dialog未出現、touch counter観測5秒timeout、逐次390のtap10秒timeoutを記録した。traceにはtouch到着後のevaluate6.25/40.29秒、逐次tap内の6.77/8.71秒停滞があり、2並列だけが必要条件ではない。同一commitの逐次375は成功、390は失敗。負荷・ブラウザ・hostの因果は未分離で、環境原因と断定しない。ローカル失敗を警告化したり自動retryで消したりしていない。正式CI成功はこの間欠停滞の解消や全環境での安定保証ではない。
+
+独立レビューは共有marker、trace破棄順序、時間分類、終了/ログ処理の指摘を修正後、26契約を独立再実行し成功。未解消コード阻害なし。最終HEADの正式CIとartifact一致確認、上記制約開示を条件に人間レビューへ進める判断。本文追記自体の最終HEADは[PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/43/checks)で別途検証し、この初回SHA成功で代用しない。
