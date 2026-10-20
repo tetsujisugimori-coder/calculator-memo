@@ -1,5 +1,23 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): PR #41 公開後の正式検証結果
+- 関連: [PR #41](https://github.com/tetsujisugimori-coder/calculator-memo/pull/41) を作成済み。以下の実装開始時点の「PR未作成・CI未実行」を、公開後の実測結果で補う。
+- 対象: 公開HEAD `aeaf836c76abc61ba62ffe8160b21f4537f6d598`、[CI 39408931086](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39408931086)。Node22.13.0で602単体/23files、lint（既存warning1）、型検査、通常/Pages buildが成功。Chromium4/WebKit2の全6条件・348 GUIチェック成功、runtime/network errors=[]。
+- 証拠: [artifact 12259276392](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39408931086/artifacts/12259276392) のZIP SHA256 `5da724fc69a97ce7813c965151771e2850a2b55c967541a7c825cc6b7d303879` を一致確認。provenanceのsha/expectedSha/servedIdentity.shaは対象公開HEADと一致。412 PNG/6 tracesを取得、各条件12回の移動先geometry/hit-testが成功し、touch4条件は各597activation。
+- 実画像: 同artifactのWebKit375px dark/390px light・文字200%の図と移動先、375px診断詳細、390px上限fallbackの計6枚を確認。選択ブロック3の番号・強調・明示編集操作が視認でき、図は専用領域内の横scrollとなる。大きい図全体や長い診断全文を1画面で視認したという意味ではない。実iPhone Safari、OSキーボード/VoiceOver、実OSクリップボードは未検証。
+- 独立レビュー: ローカル実装commit `5743bf40800b92bf2b48fc09a0bd4813097b55c4` と公開HEADは同tree `195f43bc1dff4ecb71dc6648b6e1695b267a8e4a`。安全性・ID対応・非同期取消・モバイル移動等の指摘を修正し、未解消の実装阻害事項なし。独立19件と大図/異常系/実描画例外の詳細は以下の記録を参照。
+- この追記は文書のみ。結果記録commit自身の最終HEADのCIは [PR #41 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/41/checks) で別途確認し、上記HEADの成功で代用しない。エージェントはmergeせず、人間レビュー待ちで停止する。
+
+## 2026-10-20 (JST): 読み取り専用の依存関係図とブロック選択
+- 基点: PR #40 merge後main `3339d978acd9518976a8954e77be4f8bcf50d6b4` をfresh clone/fetch/ff-only pull、枝 `feat/dependency-graph-navigation`。PR未作成、CI未実行。
+- 変更: PR #38/#40のgraph/status/Mermaid/i診断を再利用し、折り畳み図・scroll/zoom・安定IDノード選択・カード強調・明示編集focusを追加。計算/保存/エンジンコードを変更せず、図操作からonChangeや再計算を呼ばない。
+- 安全: strict Mermaid、固定placeholderによるlayoutとSVG textContent表示を分離、SVG要素/属性許可リスト、HTML/CSS/event/外部URL除去、完全ID対応検査、非同期取消、削除済み対象検査。128nodes/256edges/入力25万文字/SVG4MB/寸法5万上限で一覧fallback。
+- 設計判断: 非HTML Mermaidでは既存数値entityが文字として露出することを実ブラウザで再現したため描画専用projectionを追加。export原文は不変。式preview80文字＋全状態ラベル、全文は移動先・accessible名・exportで確認。辺labelは種類へ短縮するが依存辺/不確定性を変えない。直接Memo Nexus送信、自動/部分再計算、依存編集なし。
+- 参照: AGENTS/README/設計/運用/検証と、憲法v2・江戸弁ガイド・辞典v19の関連範囲を実参照。全文読了とは称さない。
+- ローカル検証: 修正後602単体/23files成功、lint既存warning1のみ、型検査、通常/Pages build成功。ローカル全GUI harnessはChromium4条件231チェック成功、runtime/network errors=[]、274PNG/4trace（以前のfailure画像/traceは除外）。各条件12回の移動先geometry/hit-test成功、touch390/375は各597activation。WebKit両条件はlibrary不足で未実行、harness全体exit1。実画像で375px/200% darkの選択番号/強調/編集操作の可視性とdiagram専用scrollを確認。実Chromiumで日本語ノードとgeometryを確認。独立adversarial19件成功、長文label枠内・drag抑止/Enter選択・実SVG描画例外fallbackの式/結果/storage不変を実測。128node/127edge鎖の実描画・末端ID選択・目印の可視性・全値/storage不変も成功（初回描画1,625msは当環境1回測定で一般性能保証ではない）。自己/2node循環/その下流/missingを含む6node図も診断共有・全値/storage不変を独立確認。
+- 環境: npm既定cache不可は/tmp cacheで解消。Node24.19.0のローカルとNode22.13.0のCIを区別。WebKit起動はOS共有library不足、公式install-depsはsuエラー、escalated実行はsandbox初期化エラーで未実行。Chromiumを先行検証しWebKitはCIで確認予定。未検証を成功と扱わない。
+- レビュー/GUIで発見した修正: SVG寸法保持、点線復元、並替え後accessible番号、引用符付きedge entity、長文W幅を修正。7node図によるmodal横溢れを再現しgrid最小幅/専用scrollへ封じ込め。focus成功だけでは移動先の視認を保証しない画像を確認し、選択UIのlayout後rAF scrollと目印の実可視位置検査へ強化。375px/200%ではカード先頭+固定余白で編集目印が画面外へ出るため、番号付き目印そのものを中央へscrollする方式に修正。旧変数fixtureの不正referencesと実線selectorの誤包含はテスト側不備として修正し、計算期待値を弱めず再検証。正式公開SHAの全6条件CI/実PR URL/最終文書commit CIは実確認後追記する。ローカルGUIは未commit作業tree基点3339d97の証拠であり、公開最終SHA成功とは称さない。
+
 ## 2026-10-20 (JST): 計算ブロックの変更状態・エラー詳細・Mermaid出力
 - 基点: PR #39 merge後main `ebb0bef872f7ef033d3529047aa94366ab2b34a0`をfresh fetch/ff-only pull、新枝`feat/calculation-state-diagnostics`。[PR #40](https://github.com/tetsujisugimori-coder/calculator-memo/pull/40)を作成済み。
 - 変更: 既存前後依存解析を再利用する純派生statusモデル、直接変更/影響候補/無関係/不明、構造確認/今回試行/保存済みerrorを分離。i詳細に日本語説明・式・原因/影響・対処・試行範囲・該当カード移動。全体rollback通知を上部へ集約し、旧結果captionと個別原因を区別。

@@ -54,7 +54,7 @@ IDの `definite` は参照先の同一性が確定という意味であり、参
 
 ノード/辺をlocale非依存順に整列し、同一source/target/certaintyの辺は集約、複数変数名を残す。確定IDは実線、不確定変数は点線。通常、変更元、影響候補、再計算待ち、保存済みエラー、解析エラー、依存不確定を文字ラベルでも区別し、重なる状態を省略しない。文字列生成だけであり、利用先での描画ポリシー/テーマ適合/ユーザー権限まで保証しない。全体エラーはコメントにも含める。
 
-Mermaid 11.12.2とjsdom 26.1.0はテスト専用devDependencies。アプリにはMermaidランタイムやHTMLレンダラーを組み込まない。実parserで図のノード数・辺数も照合し、単に文字列をsnapshot比較しただけの構文検証ではない。
+PR #38時点ではMermaid 11.12.2とjsdom 26.1.0はテスト専用devDependencies。後続の[図表示](dependency-graph-ui.md)でMermaidだけを同versionのruntime依存へ移し、HTMLレンダラーを使わず安全化したSVGを描画する。実parserで図のノード数・辺数も照合し、単に文字列をsnapshot比較しただけの構文検証ではない。
 
 ## 検証と残件
 

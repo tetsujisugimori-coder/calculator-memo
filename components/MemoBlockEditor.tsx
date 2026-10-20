@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { DependencyGraph } from "./DependencyGraph";
 import { buildCalculationStatus, type CalculationAttempt } from "../lib/calculation-status";
 import { CalculationStatusDetails, DependencyMermaidExport } from "./CalculationStatusDetails";
 import { analyzeBlockDependencies, isManualMemo, markCalculationsStale, recalculateReferenceMemo, REFERENCE_MODE, staleBlockIds } from "../lib/block-references";
@@ -23,6 +24,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
   const [attempt, setAttempt] = useState<CalculationAttempt>();
   const [baseline, setBaseline] = useState<MemoBlock[]>(blocks);
   const [baselineKnown, setBaselineKnown] = useState(() => !isManualMemo(blocks) || staleBlockIds(blocks).size === 0);
+  const [graphSelected, setGraphSelected] = useState<string>();
   const cards = useRef(new Map<string, HTMLElement>());
   const manualMode = manual || isManualMemo(blocks);
   const stale = staleBlockIds(blocks);
@@ -30,9 +32,16 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
   const statusReport = buildCalculationStatus(blocks, { baseline, baselineKnown, attempt });
   const locate = (id: string) => {
     const card = cards.current.get(id);
-    if (!card) return;
-    card.scrollIntoView({ block: "center", behavior: "auto" });
+    if (!card || !blocks.some(block => block.id === id)) return;
+    setGraphSelected(id);
     card.focus({ preventScroll: true });
+    // Selection adds explanatory UI above the cards. Scroll after that layout
+    // commit so the destination is not shifted out of view by our own update.
+    requestAnimationFrame(() => {
+      const current = cards.current.get(id);
+      if (current !== card || !current.isConnected) return;
+      (current.querySelector(".block-graph-location") ?? current).scrollIntoView({ block: "center", behavior: "auto" });
+    });
   };
   const change = (next: MemoBlock[], calculationChanged = true) => {
     setAttempt(undefined);
@@ -102,13 +111,13 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
         <details><summary>ⓘ 参照と再計算について</summary><p>参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。</p></details>
       </div>}
       <p className="block-help">「＋ 計算」はID参照方式です。数値だけの式も使え、参照先は一覧から選べます。旧方式で名前付き変数を追加する場合は「＋ 旧変数計算」を選びます。既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。</p>
-      {blocks.some(block => block.type === "calculation") && <DependencyMermaidExport text={statusReport.mermaid} />}
+      {blocks.some(block => block.type === "calculation") && <><DependencyGraph blocks={blocks} report={statusReport} onLocate={locate} /><DependencyMermaidExport text={statusReport.mermaid} /></>}
       <div className="block-editor-list">
         {blocks.map((block, index) => {
           const calculation = block.type === "calculation" ? (block.evaluationMode === "note-variables" ? describeCalculationBlock(block.expression) : { expression: block.expression }) : null;
           const label = block.type === "text" ? "文章" : block.type === "formula" ? "数式" : "計算";
           return (
-            <article className={`block-editor-card ${block.type}`} key={block.id} tabIndex={-1} ref={element => { if (element) cards.current.set(block.id, element); else cards.current.delete(block.id); }}>
+            <article className={`block-editor-card ${block.type} ${graphSelected === block.id ? "block-graph-selected" : ""}`} data-block-id={block.id} key={block.id} tabIndex={-1} ref={element => { if (element) cards.current.set(block.id, element); else cards.current.delete(block.id); }}>
               <header>
                 <div><span className="block-order">{index + 1}</span><strong>{label}ブロック</strong></div>
                 <div className="block-card-actions">
@@ -134,6 +143,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
               })()}
 
               {block.type === "calculation" && <>
+                {graphSelected === block.id && <div className="block-graph-location"><span>図・診断から移動: ブロック {index + 1}</span><button type="button" onClick={() => cards.current.get(block.id)?.querySelector<HTMLInputElement>("input.code-input")?.focus()}>選択ブロックの計算式を編集</button></div>}
                 <CalculationStatusDetails blockId={block.id} blocks={blocks} report={statusReport} onLocate={locate} />
                 {block.evaluationMode !== REFERENCE_MODE && <button type="button" onClick={() => updateBlock(block.id, current => current.type === "calculation" ? { ...current, evaluationMode: REFERENCE_MODE, references: { version: 1, entries: [] } } : current)}>参照モードに切替（メモを手動再計算にする）</button>}
                 {block.evaluationMode === REFERENCE_MODE ? <div className="block-reference-controls">
