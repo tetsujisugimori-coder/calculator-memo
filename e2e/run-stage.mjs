@@ -1,0 +1,23 @@
+// Measure the command itself and preserve its exact failure exit, including logging failures.
+import { spawn } from 'node:child_process';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createWriteStream } from 'node:fs';
+import { performance } from 'node:perf_hooks';
+import assert from 'node:assert/strict';
+const [stage, command, ...args] = process.argv.slice(2);
+assert.match(stage || '', /^[a-z][a-z0-9-]*$/); assert.ok(command);
+const output = process.env.GUI_STAGE_EVIDENCE_DIR || 'gui-evidence';
+await mkdir(output, { recursive: true });
+const started = performance.now();
+const record = { stage, command, args, startedAt: new Date().toISOString(), node: process.version };
+const log = createWriteStream(`${output}/${stage}.log`);
+let logFailure;
+log.on('error', error => { logFailure = String(error); });
+const child = spawn(command, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { if (!logFailure) log.write(chunk); process.stdout.write(chunk); });
+const result = await new Promise(resolve => { child.on('error', error => resolve({ exitCode: null, error: String(error) })); child.on('close', (exitCode, signal) => resolve({ exitCode, signal })); });
+await new Promise(resolve => { if (log.destroyed) resolve(); else { log.once('error', resolve); log.end(resolve); } });
+Object.assign(record, result, { durationMs: performance.now() - started, finishedAt: new Date().toISOString(), ...(logFailure ? { logFailure } : {}) });
+record.status = result.exitCode === 0 && !logFailure ? 'passed' : 'failed';
+await writeFile(`${output}/${stage}-timing.json`, JSON.stringify(record, null, 2) + '\n');
+process.exitCode = record.status === 'passed' ? 0 : Number.isInteger(result.exitCode) && result.exitCode > 0 ? result.exitCode : 1;

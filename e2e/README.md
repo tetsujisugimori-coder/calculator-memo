@@ -62,7 +62,7 @@ node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
 node e2e/smoke.mjs
 ```
 
-On supported Linux CI, `install --with-deps` installs the browser's official OS dependencies. Local installation may require administrative permission; do not bypass a permission denial. Test output is in ignored `gui-evidence/`. The preview listens only on `127.0.0.1:4183`, requires a free port, and is terminated by the harness. It never reuses an existing server. Do not run with real user browser profiles or storage.
+On supported Linux CI, `install --with-deps` installs the browser's official OS dependencies. Local installation may require administrative permission; do not bypass a permission denial. Test output is in ignored `gui-evidence/`. Six workers use fixed isolated loopback ports `4280`–`4285`, each requiring a free port and terminating its own preview. At most two workers run concurrently on the same runner. It never reuses an existing server. Do not run with real user browser profiles or storage.
 
 ## Reproducibility
 
@@ -74,7 +74,7 @@ Open the PR's **Checks → Checks and Chromium GUI → Summary** and follow the 
 
 - `ci-outcomes.json`: success/failure/skipped for install/check/build/browser stages, even if GUI never starts
 - `provenance.json`: exact SHA and last observed GUI phase, passed checks, browser errors, failure stack and diagnostic category when the harness starts
-- Named screenshots for each engine/mobile/width scenario, traces for completed contexts and a failure trace/screenshot when available
+- Representative screenshots for each engine/mobile/width scenario; every historical screenshot geometry checkpoint still runs. Failed contexts retain a pre-started DOM/action/network trace and failure screenshot when available; successful traces are not exported.
 - Install, unit, lint, types, both build, browser-install, GUI and preview logs
 
 Download the ZIP, inspect screenshots and provenance, and use `node e2e/node_modules/playwright/cli.js show-trace <trace.zip>` locally. No report or trace is published as a website. Artifacts inherit repository access; in this public repository any signed-in GitHub reader may download them. Keep all data synthetic. Do not put secrets, authentication state or user data in logs/screenshots/traces.
@@ -91,7 +91,7 @@ Follow the repository [AGENTS.md](../AGENTS.md). Before opening a PR, decide whe
 
 ## Mobile acceptance boundary
 
-The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a first failure stops later scenarios, which must not be reported as tested.
+The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 448 historical screenshot geometry checkpoints, and touch counts pass. Missing scenarios are never success.
 
 Use the recorded exact PR SHA and the downloaded screenshots/traces for review. The next complementary acceptance step is physical iPhone Safari: repeat input/edit/error recovery and both memo saves, inspect the software keyboard and portrait/landscape scrolling, close/reopen Safari and confirm persistence using only synthetic data. No external device-hosting account or public preview service is required or created by this PR.
 
@@ -225,3 +225,60 @@ Every one of the six existing contexts additionally creates a synthetic manual m
 - Light/dark 200% text, card/panel horizontal geometry, actual touch activations, keyboard i activation, and screenshots of success and failure.
 
 The full unit suite separately covers snapshot/generation guards and late asynchronous completion. These GUI scenarios do not pretend that the current synchronous numeric evaluator is a remote/long-running calculation, or that Linux WebKit is physical Safari.
+
+
+## CI measurement and evidence policy (PR #43)
+
+`smoke.mjs` coordinates six isolated `scenario.mjs` processes, at concurrency two.
+Each has a fresh browser/context/storage, a unique port and evidence directory.
+The coordinator writes the built-output identity once before starting workers;
+workers read and verify it. Configuration, exact SHA, all acceptance counts,
+geometry checkpoints and mobile touch counts are validated before discarding a
+successful live trace, then validated again as a complete six-condition suite.
+No app assertion, expectation, stability wait, test condition or touch action is
+removed. Browser launches remain per worker to avoid sharing mutable globals.
+
+All screenshot checkpoints run `assertHorizontalFit` before the independent
+capture policy. Eighteen representative checkpoints per condition cover the
+header/guide, formula controls, numeric/variable/reference diagnostics, rollback,
+change detail, graph navigation/error/fallback, trial success/failure/large text,
+and protected storage recovery. On aggregate failure, inspect workers and each worker/provenance.json: aggregate
+scenarios/checks are populated only after complete-suite success.
+The full list and captured/omitted status are in
+`screenshotCheckpoints`; omission is not an omitted geometry assertion. Other
+geometry and theme assertions still run. Earlier sections describe checkpoint
+names, not a promise to retain every corresponding PNG on success.
+
+Trace starts before page creation with DOM snapshots, action history, network
+and sources. Continuous screencast images are disabled; representative PNGs and
+failure PNG remain. On a test failure the live trace is exported, retaining the
+operations before the error. Starting trace only after failure is not used.
+Successful traces are stopped without export/compression. Failures during setup
+or after tracing has already ended may have no trace; provenance records that
+stage rather than inventing one. This policy intentionally trades continuous
+video-like images for DOM/action reconstruction and selected real images.
+
+`run-stage.mjs` records each command's wall time, exact exit/signal and logs;
+logging failure also fails the stage. Scenario timings separate geometry,
+PNG capture and overlay overhead, and record stage/trace start/stop API times.
+Trace API timings do not isolate ongoing snapshot overhead. The aggregate
+records wall time and sum of worker durations, not CPU time or billed VM-minutes.
+The CI GUI command additionally records GNU time process-tree user/system CPU,
+elapsed time and peak RSS in gui-resources.log; old runs lack comparable CPU data.
+`inventory.json` gives pre-upload byte counts and largest files. Upload uses
+compression level 0 because PNG and trace ZIP data are already compressed; actual
+ZIP size and upload-step duration must be obtained from the Actions artifact/log.
+Upload and compression timings are not independently observable from that step.
+
+npm download caching keys both committed lockfiles; `npm ci` still installs from
+locks. Playwright revision remains pinned and browser/system dependencies are
+installed on the runner; no browser-cache hit is assumed. App and e2e lockfiles,
+required check name, timeout 30 minutes, retention seven days, permissions and
+production deployment configuration are unchanged.
+
+Run `node --test e2e/ci-contract.node-test.mjs` for isolated failure/coverage
+contracts. After build/browser installation, `node e2e/failure-probes.mjs <output-directory>`
+executes GUI-operation, screenshot and SHA negative controls in a separate temp
+copy. It injects faults only into that copy and requires nonzero exit plus
+appropriate evidence. A real GitHub artifact-service outage is not simulated by
+these local probes. See [measured baseline and limitations](../docs/agent/ci-optimization.md).

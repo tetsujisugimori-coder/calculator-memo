@@ -33,35 +33,42 @@ jobs:
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 22.13.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            e2e/package-lock.json
       - name: Install locked app dependencies
         id: app_install
         run: |
           mkdir -p gui-evidence
-          npm ci --ignore-scripts 2>&1 | tee gui-evidence/app-install.log
+          node e2e/run-stage.mjs app-install npm ci --ignore-scripts
+      - name: CI failure and coverage contracts
+        id: ci_contract
+        run: node e2e/run-stage.mjs ci-contract node --test e2e/ci-contract.node-test.mjs
       - name: Existing unit tests
         id: unit
-        run: npm test 2>&1 | tee gui-evidence/unit.log
+        run: node e2e/run-stage.mjs unit npm test
       - name: Lint
         id: lint
-        run: npm run lint 2>&1 | tee gui-evidence/lint.log
+        run: node e2e/run-stage.mjs lint npm run lint
       - name: Type check
         id: types
-        run: npx --no-install tsc --noEmit 2>&1 | tee gui-evidence/types.log
+        run: node e2e/run-stage.mjs types npx --no-install tsc --noEmit
       - name: Normal application build
         id: normal_build
-        run: npm run build 2>&1 | tee gui-evidence/normal-build.log
+        run: node e2e/run-stage.mjs normal-build npm run build
       - name: Pages static build
         id: pages_build
-        run: npm run build:pages 2>&1 | tee gui-evidence/pages-build.log
+        run: node e2e/run-stage.mjs pages-build npm run build:pages
       - name: Install locked isolated GUI dependencies
         id: gui_install
-        run: npm ci --prefix e2e --ignore-scripts 2>&1 | tee gui-evidence/gui-install.log
+        run: node e2e/run-stage.mjs gui-install npm ci --prefix e2e --ignore-scripts
       - name: Install matching Chromium, WebKit and system libraries
         id: browser_install
-        run: node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit 2>&1 | tee gui-evidence/browser-install.log
+        run: node e2e/run-stage.mjs browser-install node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
       - name: Desktop Chromium and mobile Chromium/WebKit touch regression
         id: gui
-        run: node e2e/smoke.mjs 2>&1 | tee gui-evidence/gui.log
+        run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/smoke.mjs
       - name: Preserve outcomes even when setup or tests fail
         if: always()
         env:
@@ -88,8 +95,12 @@ jobs:
             '\n\nBranch: ' + safe(diagnostic.branch) +
             '\n\nObserved stage outcomes:\n' +
             Object.entries(outcomes).map(([key, value]) => '- ' + key + ': ' + value).join('\n') +
-            '\n\nArtifacts contain synthetic screenshots, per-browser/viewport traces, provenance, and stage logs. Assertion failures require diagnosis; they are not automatically application defects.\n');
+            '\n\nArtifacts contain representative synthetic screenshots, complete geometry checkpoint records, pre-failure DOM/action traces for failed contexts, provenance, timings and stage logs. Assertion failures require diagnosis; they are not automatically application defects.\n');
           NODE
+      - name: Inventory diagnostic evidence
+        id: inventory
+        if: always()
+        run: node e2e/evidence-inventory.mjs
       - name: Upload diagnostic evidence
         id: artifact
         if: always()
@@ -98,6 +109,7 @@ jobs:
           name: pr-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
           path: gui-evidence/
           retention-days: 7
+          compression-level: 0
           if-no-files-found: error
       - name: Link evidence from PR check summary
         if: always() && steps.artifact.outcome == 'success'
