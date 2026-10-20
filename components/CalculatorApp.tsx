@@ -27,7 +27,7 @@ import { PlainNoteModal } from "./PlainNoteModal";
 import { CreateMemoModal } from "./CreateMemoModal";
 import { MarkdownContent } from "./MarkdownContent";
 import { MemoBlocks } from "./MemoBlocks";
-import { resolveMemoBlocks } from "../lib/memo-blocks";
+import { blocksToMarkdown, resolveMemoBlocks } from "../lib/memo-blocks";
 import { MEMO_LABELS, memoTypeLabel } from "../lib/memo-labels";
 import { expressionFromSearch } from "../lib/url-expression";
 
@@ -283,7 +283,7 @@ export function CalculatorApp() {
             onView={setViewNote}
             onEdit={(note) => note.type === "calculation" ? setNoteEditor({ draft: note, editingId: note.id }) : setPlainNoteEditor({ draft: note, editingId: note.id })}
             onRestore={restore}
-            onCopy={(note) => note.type === "calculation" ? setCopyNote(note) : copy(note.content, "Markdown")}
+            onCopy={(note) => note.type === "calculation" ? setCopyNote(note) : copy(note.blocks ? blocksToMarkdown(resolveMemoBlocks(note)) : note.content, "Markdown")}
             onDelete={(id) => requestDelete("note", id)}
           />
         </aside>
@@ -296,7 +296,7 @@ export function CalculatorApp() {
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}
-      {viewNote && <Modal title={viewNote.title || (viewNote.type === "calculation" ? viewNote.displayExpression : "無題のメモ")} onClose={() => setViewNote(null)} wide={viewNote.type === "plain-calculation"}><div className="note-detail"><span className={`memo-kind detail-memo-kind ${viewNote.type === "plain-calculation" ? "plain" : ""}`}>{memoTypeLabel(viewNote.type)}</span>{viewNote.type === "calculation" ? <>{viewNote.displayMode === "katex" && viewNote.latexExpression ? <KatexFormula latex={viewNote.latexExpression} block /> : <p className="detail-expression">{viewNote.displayExpression}</p>}<strong className="detail-result">= {viewNote.resultText}{viewNote.unit}</strong>{viewNote.note && <div><span className="eyebrow">前提・補足</span><p>{viewNote.note}</p></div>}{viewNote.relatedMemoName && <div><span className="eyebrow">関連メモ名</span><p>{viewNote.relatedMemoName}</p></div>}{viewNote.tags.length > 0 && <div className="tags">{viewNote.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}</> : viewNote.blocks !== undefined ? <MemoBlocks blocks={resolveMemoBlocks(viewNote)} /> : <MarkdownContent content={viewNote.content} />}<div className="modal-actions"><button className="button-secondary" onClick={() => setViewNote(null)}>閉じる</button><button className="button-primary" onClick={() => { if (viewNote.type === "calculation") setCopyNote(viewNote); else copy(viewNote.content, "Markdown"); setViewNote(null); }}>コピー</button></div></div></Modal>}
+      {viewNote && <Modal title={viewNote.title || (viewNote.type === "calculation" ? viewNote.displayExpression : "無題のメモ")} onClose={() => setViewNote(null)} wide={viewNote.type === "plain-calculation"}><div className="note-detail"><span className={`memo-kind detail-memo-kind ${viewNote.type === "plain-calculation" ? "plain" : ""}`}>{memoTypeLabel(viewNote.type)}</span>{viewNote.type === "calculation" ? <>{viewNote.displayMode === "katex" && viewNote.latexExpression ? <KatexFormula latex={viewNote.latexExpression} block /> : <p className="detail-expression">{viewNote.displayExpression}</p>}<strong className="detail-result">= {viewNote.resultText}{viewNote.unit}</strong>{viewNote.note && <div><span className="eyebrow">前提・補足</span><p>{viewNote.note}</p></div>}{viewNote.relatedMemoName && <div><span className="eyebrow">関連メモ名</span><p>{viewNote.relatedMemoName}</p></div>}{viewNote.tags.length > 0 && <div className="tags">{viewNote.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}</> : viewNote.blocks !== undefined ? <MemoBlocks blocks={resolveMemoBlocks(viewNote)} /> : <MarkdownContent content={viewNote.content} />}<div className="modal-actions"><button className="button-secondary" onClick={() => setViewNote(null)}>閉じる</button><button className="button-primary" onClick={() => { if (viewNote.type === "calculation") setCopyNote(viewNote); else copy(viewNote.blocks ? blocksToMarkdown(resolveMemoBlocks(viewNote)) : viewNote.content, "Markdown"); setViewNote(null); }}>コピー</button></div></div></Modal>}
       {confirm && <Modal title={confirm.title} onClose={() => setConfirm(null)}><div className="confirm-body"><p>{confirm.message}</p><div className="modal-actions"><button className="button-secondary" onClick={() => setConfirm(null)}>キャンセル</button><button className="button-danger" onClick={confirm.action}>{confirm.confirmLabel}</button></div></div></Modal>}
       <div className={`toast ${toast ? "visible" : ""}`} role="status" aria-live="polite">{toast}</div>
     </main>

@@ -1,3 +1,4 @@
+import { validReferenceFields, isManualMemo, staleBlockIds, markCalculationsStale } from "./block-references";
 import { assertVariableName, calculateExpression, calculateVariableExpression, EXPRESSION_LIMITS } from "./calculator";
 import type { CalculationMemoBlock, MemoBlock, PlainCalculationNote } from "./types";
 
@@ -10,7 +11,7 @@ export function isMemoBlock(value: unknown): value is MemoBlock {
   if (value.type === "text") return typeof value.content === "string";
   if (value.type === "formula") return typeof value.latex === "string";
   if (value.type === "calculation") {
-    return (value.evaluationMode === undefined || typeof value.evaluationMode === "string")
+    return validReferenceFields(value) && (value.evaluationMode === undefined || typeof value.evaluationMode === "string")
       && typeof value.expression === "string"
       && typeof value.displayExpression === "string"
       && (value.result === null || (typeof value.result === "number" && Number.isFinite(value.result)))
@@ -68,6 +69,7 @@ export function calculateMemoBlock(id: string, expression: string, evaluationMod
 }
 
 export function recalculateMemoBlocks(blocks: MemoBlock[]): MemoBlock[] {
+  if (isManualMemo(blocks)) return blocks.map(block => ({ ...block }));
   const scope = new Map<string, number>();
   // Extras are opaque descriptive data. Recalculation owns every computed field;
   // merge its complete success/error snapshot last so stale values cannot survive.
@@ -77,16 +79,18 @@ export function recalculateMemoBlocks(blocks: MemoBlock[]): MemoBlock[] {
     : { ...block });
 }
 
-export function resolveMemoBlocks(note: Pick<PlainCalculationNote, "id" | "content" | "blocks">): MemoBlock[] {
-  if (note.blocks !== undefined) return note.blocks.map((block) => ({ ...block }));
+export function resolveMemoBlocks(note: Pick<PlainCalculationNote, "id" | "content" | "blocks" | "calculationPolicy">): MemoBlock[] {
+  if (note.blocks !== undefined) return note.calculationPolicy?.mode === "manual" && !isManualMemo(note.blocks) ? markCalculationsStale(note.blocks) : note.blocks.map((block) => ({ ...block }));
   if (!note.content) return [];
   return [{ id: `legacy-text-${note.id}`, type: "text", content: note.content }];
 }
 
 export function blocksToMarkdown(blocks: MemoBlock[]): string {
+  const stale = staleBlockIds(blocks);
   return blocks.map((block) => {
     if (block.type === "text") return block.content.trim();
     if (block.type === "formula") return `$$\n${block.latex}\n$$`;
+    if (stale.has(block.id)) return `**計算**: \`${block.expression}\`\n\n> 再計算待ち（旧結果: ${block.resultText || "なし"}）`;
     if (block.error) return `**計算**: \`${block.expression}\`\n\n> エラー: ${block.error}`;
     return `**計算**: \`${block.expression}\` = **${block.resultText}**`;
   }).filter(Boolean).join("\n\n");

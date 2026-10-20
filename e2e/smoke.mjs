@@ -813,6 +813,99 @@ async function exerciseBlockExtraFields(prefix) {
   await passed(prefix + ": expression error/recovery refreshes engine fields while opaque extras survive JSON save/reload");
 }
 
+async function exerciseBlockReferences(prefix) {
+  await stage(prefix + ": manual-block-references");
+  const original = await storage();
+  const block = (id, expression) => ({ id, type: "calculation", expression, displayExpression: expression, result: 0, resultText: "0", error: null, metadata: { proofRef: id } });
+  const note = { id: "reference-note", type: "plain-calculation", title: "Synthetic reference memo", content: "fallback", createdAt: "2026-10-19T00:00:00Z", updatedAt: "2026-10-19T00:00:00Z", blocks: [block("target", ""), block("source", "sqrt(2)")] };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload(); await selectPanel("notes");
+  const open = async () => { await activate(page.locator(".note-card").filter({hasText:note.title}).getByRole("button",{name:"編集",exact:true})); return page.getByRole("dialog"); };
+  const save = async () => { await activate(page.getByRole("dialog").getByRole("button",{name:"保存する",exact:true})); await expect(page.getByRole("dialog")).toHaveCount(0); await expect.poll(async()=>(await storage()).notes[0].calculationPolicy?.mode).toBe("manual"); };
+  const values = async()=>(await storage()).notes[0].blocks;
+  let dialog = await open();
+  await activate(dialog.locator(".block-editor-card").first().getByRole("button",{name:"参照モードに切替（メモを手動再計算にする）",exact:true}));
+  const select = dialog.getByLabel("参照先を選んで式に挿入"); await activate(select); await select.selectOption("source");
+  await expect(dialog.getByLabel("計算式",{exact:true}).first()).toHaveValue("@{1}");
+  await dialog.getByLabel("計算式",{exact:true}).first().fill("@{1} * @{1}");
+  await expect(dialog).toContainText("再計算待ち");
+  await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true}));
+  await expect(dialog.locator(".calculation-live-result").first()).toContainText("= 2");
+  await save();
+  let saved = await values(); assert.equal(saved[0].result,Math.sqrt(2)*Math.sqrt(2)); assert.equal(saved[0].resultText,"2"); assert.equal(saved[0].references.entries[0].blockId,"source");
+  await passed(prefix+": GUI selects forward reference by ID and manual evaluation preserves raw precision");
+  await page.reload(); await selectPanel("notes"); dialog = await open();
+  await dialog.getByLabel("計算式",{exact:true}).nth(1).fill("sqrt(3)");
+  await expect(dialog.locator(".calculation-live-result").first()).toContainText("旧結果");
+  await save(); saved = await values(); assert.equal(saved[0].result,Math.sqrt(2)*Math.sqrt(2)); assert.equal(saved[1].result,Math.sqrt(2));
+  await page.reload(); await selectPanel("notes"); await expect(page.locator(".note-card")).toContainText("再計算待ち");
+  await passed(prefix+": edit/save/reload do not recalculate or mislabel old results");
+  dialog=await open(); await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true}));
+  await activate(dialog.locator(".block-editor-card").first().getByRole("button",{name:"計算ブロックを下へ移動",exact:true}));
+  await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await save();
+  saved=await values(); assert.equal(saved[1].id,"target"); assert.equal(saved[1].result,Math.sqrt(3)*Math.sqrt(3)); assert.equal(saved[1].resultText,"3"); assert.deepEqual(saved[1].metadata,{proofRef:"target"});
+  await passed(prefix+": backward reference after reorder keeps ID binding and opaque metadata");
+  dialog=await open(); await dialog.getByLabel("計算式",{exact:true}).first().fill("1/0"); await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true}));
+  await expect(dialog).toContainText("一括確定を停止"); await save(); saved=await values(); assert.equal(saved[0].result,Math.sqrt(3)); assert.equal(saved[1].result,Math.sqrt(3)*Math.sqrt(3));
+  dialog=await open(); await dialog.getByLabel("計算式",{exact:true}).first().fill("4"); await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await save(); saved=await values(); assert.equal(saved[1].result,16);
+  await passed(prefix+": source error rolls back every result, then corrected input recovers");
+  dialog=await open(); const target=dialog.locator(".block-editor-card").nth(1); const picker=target.getByLabel("参照先を選んで式に挿入"); await activate(picker); await picker.selectOption("target"); await dialog.getByLabel("計算式",{exact:true}).nth(1).fill("@{2}");
+  await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await expect(dialog).toContainText("循環参照");
+  await dialog.getByLabel("計算式",{exact:true}).nth(1).fill("@{1}"); await activate(dialog.locator(".block-editor-card").first().getByRole("button",{name:"計算ブロックを削除",exact:true}));
+  await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await expect(dialog).toContainText("参照切れ"); await expect(dialog).toContainText("参照先削除済み");
+  await screenshot(prefix+"-reference-missing"); await save();
+  await passed(prefix+": cyclic and deleted references remain explicit errors, without positional rebinding");
+  for(const theme of ["light","dark"]) {
+    await page.evaluate(theme=>{const d=JSON.parse(localStorage.getItem("calculation-memo:data"));d.settings.theme=theme;localStorage.setItem("calculation-memo:data",JSON.stringify(d));},theme);
+    await page.reload(); await selectPanel("notes"); dialog=await open();
+    await page.evaluate(()=>document.documentElement.style.fontSize="200%");
+    await screenshot(prefix+"-reference-"+theme+"-enlarged");
+    const themedPicker = dialog.getByLabel("参照先を選んで式に挿入");
+    await expect(themedPicker).toHaveCSS("background-color", theme === "dark" ? "rgb(35, 38, 35)" : "rgb(251, 250, 246)");
+    await expect(themedPicker).toHaveCSS("color", theme === "dark" ? "rgb(240, 239, 233)" : "rgb(32, 35, 31)");
+    await expect(themedPicker).toHaveCSS("appearance", "none");
+    await themedPicker.scrollIntoViewIfNeeded();
+    // Computed colors do not expose WebKit's native light bezel. Inspect actual
+    // rasterized pixels, without snapshots/platform-specific font expectations.
+    const pickerPng = await themedPicker.screenshot();
+    const painted = await page.evaluate(async ({ png, dark }) => {
+      const image = new Image();
+      image.src = "data:image/png;base64," + png;
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width; canvas.height = image.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0);
+      const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const background = dark ? [35, 38, 35] : [251, 250, 246];
+      const foreground = dark ? [240, 239, 233] : [32, 35, 31];
+      let backgroundPixels = 0, backgroundSamples = 0, foregroundPixels = 0;
+      const matches = (offset, rgb) => rgb.every((value, channel) => Math.abs(pixels[offset + channel] - value) <= 3);
+      for (let i = 0; i < pixels.length; i += 4) {
+        const x = (i / 4) % canvas.width, y = Math.floor(i / 4 / canvas.width);
+        // Top padding, away from the border, text, and right-hand arrow.
+        if (x > canvas.width * 0.15 && x < canvas.width * 0.75 && y > canvas.height * 0.06 && y < canvas.height * 0.12) {
+          backgroundSamples++;
+          if (matches(i, background)) backgroundPixels++;
+        }
+        if (matches(i, foreground)) foregroundPixels++;
+      }
+      return { background: backgroundPixels / backgroundSamples, foreground: foregroundPixels / (pixels.length / 4) };
+    }, { png: pickerPng.toString("base64"), dark: theme === "dark" });
+    assert.ok(painted.background > 0.9, `${prefix} ${theme}: painted select background missing: ${JSON.stringify(painted)}`);
+    assert.ok(painted.foreground > 0.005, `${prefix} ${theme}: painted select text missing: ${JSON.stringify(painted)}`);
+    activeScenarioRecord.referencePickerPixels ??= [];
+    activeScenarioRecord.referencePickerPixels.push({ theme, ...painted });
+    await screenshot(prefix+"-reference-"+theme+"-enlarged-picker");
+    await dialog.locator(".calculation-live-result").last().scrollIntoViewIfNeeded();
+    await screenshot(prefix+"-reference-"+theme+"-enlarged-result");
+    assert.ok(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+2),"Reference dialog must not overflow horizontally");
+    await page.evaluate(()=>document.documentElement.style.fontSize=""); await activate(dialog.getByRole("button",{name:"キャンセル",exact:true}));
+  }
+  await passed(prefix+": reference controls and stale/error captions fit both enlarged themes");
+  await page.evaluate(data=>localStorage.setItem("calculation-memo:data",JSON.stringify(data)),original); await page.reload(); await selectPanel("notes");
+}
+
 async function exerciseStorageProtection(prefix) {
   await stage(prefix + ": nondestructive-storage-protection");
   const original = await storage();
@@ -1289,6 +1382,7 @@ async function exercise(scenario) {
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);
   await exerciseBlockExtraFields(prefix);
+  await exerciseBlockReferences(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

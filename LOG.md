@@ -1,5 +1,33 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): PR #37 旧評価フェーズ失敗後の参照評価を停止
+- 判定: 旧モード内の失敗後継続は、失敗再代入が従前のscopeを残す既存仕様を守る。一方、旧フェーズ終了時に全体失敗が確定した後のID参照評価は確定結果に使われない不要な処理だった。
+- 修正: 旧モードを配置順にすべて評価した後、失敗があれば参照フェーズ前で全体rollback。旧フェーズ内の評価順・scope・全成功時のみ一括確定・未知metadata保持は不変。診断は後続の間接参照エラーではなく最初の旧モードエラーを優先する。
+- 評価記録: ID参照は数値評価呼出し直前に記録し、throwした試行も含める。旧モードの記録は従来どおりcalculateMemoBlock呼出し単位であり、代入名検査などで内部数値評価に達しない失敗も含む。構造検査/参照元確認だけで停止した参照は記録しない。
+- テスト先行: 変更前に不要な参照評価3ケースとthrow記録漏れ1ケースの4失敗を確認。追加9ケースで実calculator呼出し順/回数、正常再代入、失敗再代入後のscope保持、検査段階の失敗、混在参照、旧結果全rollback、修正復帰、丸め前精度、未知metadata、JSON保存再読込、未知形式の非破壊保護を検査。
+- 検証: Node24.19.0で481単体、lint（既存warning1）、型検査、通常/Pages build成功。GUI・最終公開SHAのCIは既存PR Checksで確認待ち。今回UI変更なし。独立ソースレビューでもphase境界と記録範囲を再確認。
+- 関連: [PR #37](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37)。新規PR・マージ・本番公開なし。リモート12c6c031と同treeのローカル52304108から作業し、公開は既存PRへ同差分を反映する。
+
+## 2026-10-20 (JST): 参照selectのWebKit native描画を修正
+- 再確認: `e20216d` のCI 39339028663は6条件270チェック成功でも、375/390px WebKit dark拡大画像では参照selectが白地・淡色文字のままだった。前回のCSS色指定/computed style検証だけではnative描画を検出できなかった。
+- 修正: 参照selectに限定してappearanceを外し、既存テーマ色・CSS矢印・右余白を明示。select要素、選択肢、native選択操作、ラベル、44px以上の高さ、focus-visibleは保持。計算・保存処理は変更しない。
+- 回帰: 両テーマ200%拡大で、select screenshotの実PNGをCanvasへ読込み、文字/矢印を避けた上部内側の背景色と文字色の出現を検査。computed CSS成功だけを視認性の根拠にしない。
+- ローカル検証: Node24.19.0で472単体、lint（既存warning1）、型検査、通常/Pages build成功。Chromium375pxの分離したnative select診断で両テーマの描画画素と選択値変更を確認。実アプリ全GUI再実行とは区別する。
+- 未検証: 今回の修正後WebKit画像/6条件GUI/最終SHA CIはPR #37 Checksで確認待ち。ローカルWebKitはgtk4/graphene/woff2/harfbuzz-icu/hyphen/manette/GLESv2の共有ライブラリ不足で起動不可。iPhone Safari実機・OS picker/VoiceOverは未検証。
+- 関連: [PR #37](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37)。マージ・本番公開なし。
+
+## 2026-10-20 (JST): 同一メモのID参照・手動一括再計算
+- 基点: main `b1a590aa74808e82c7c3dfe3e02fa13984338450`（PR #36 merge）。
+- 変更: GUIでslot→block ID参照を挿入する新mode、非再帰依存解析、循環/欠損検出、永続manual方針、旧結果/stale表示、全成功時のみ一括確定。既存engine/丸めを変更せず内部数値を参照。
+- 判断: 旧検討の前方ブロックだけという制限は採用せず、任意配置のID参照へ。旧変数の逐次束縛は互換性のため別段階に維持。部分closureより全体atomicを採用し、無関係の空式も確定を止める制約を明示。詳細は [設計記録](docs/agent/block-references.md)。
+- 非破壊性: 未知形式の原本保護/保存拒否、既存付随情報保持を継続。登録式取り込みの裏再評価を止め、手動メモは確認済み値のみ取り込み可能。
+- ローカル検証: Node24.19.0で472単体、lint（既存warning1）、型検査、通常/Pages build成功。独立レビューの追加5件（2,880 DAG数値比較を含む）成功、現時点阻害指摘なし。GUI6条件と最終SHA CIはPR Checksへ追記する。
+- GUI診断: ローカルChromium既存4条件で179チェック成功、各条件のbrowser/runtime/network error 0。WebKitはOS共有ライブラリ不足で起動不可。作業差分のローカル画像はbase SHA overlayのため、公開候補SHAの正式証跡として扱わない。
+- 正式検証: [PR #37 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37/checks)で最終head自身のNode22.13.0、両build、Chromium/WebKit6条件を確認し、SHA・実測結果・artifactをPR本文へ記録する。200%文字拡大は上部だけでなくpicker/結果までスクロールした画像も追加。
+- 関連: [PR #37](https://github.com/tetsujisugimori-coder/calculator-memo/pull/37)。CLI push認証不足のため公式GitHub接続で公開、local/remote tree一致を検査。新Issueは作成しない。
+- 独立画像レビュー: 初回候補CI 39336687992 は472単体/GUI6条件270チェック成功したが、WebKit375px dark拡大画像で新参照selectの白背景/淡色文字を確認。新参照selectとbuttonのテーマ背景・文字・枠色を明示し、両テーマCSS期待値をGUIへ追加。テスト成功と視認性を分けて判断し、修正後の最終CIを再確認する。
+- 未検証: iPhone Safari実機、OS入力/VoiceOver/長期保存。実ユーザーデータ損失を確認したものではない。
+
 ## 2026-10-20 (JST): 保護理由キャプションと原本JSONエクスポート
 - 基点: PR #34マージ済みmain b81d27ce15709e1f599888b78d884f8a6f6b902f。Issue #35。既存読込/保存保護を再利用し、全データ保護の説明、未対応type/mode・構造異常・重複IDの理由、既存復旧UIの詳細と原本ダウンロードを追加。
 - 保存形式/計算規則変更なし。原本文字列をUTF-8へ欠落なく往復できる場合のみファイル化。空文字原本も扱い、取得不能/孤立サロゲートは成功扱いしない。単一キーのため正常兄弟メモもロックする既存制約を画面と文書に明記。

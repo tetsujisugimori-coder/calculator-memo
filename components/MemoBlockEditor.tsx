@@ -1,5 +1,6 @@
 "use client";
 
+import { analyzeBlockDependencies, isManualMemo, markCalculationsStale, recalculateReferenceMemo, REFERENCE_MODE, staleBlockIds } from "../lib/block-references";
 import { VariableIdentification } from "./Identification";
 import type { MemoBlock } from "../lib/types";
 import { calculateMemoBlock, describeCalculationBlock, recalculateMemoBlocks } from "../lib/memo-blocks";
@@ -8,13 +9,20 @@ import { MarkdownContent } from "./MarkdownContent";
 
 type Props = {
   blocks: MemoBlock[];
+  manual?: boolean;
   onChange: (blocks: MemoBlock[]) => void;
   onOpenGuide: (insert: (latex: string) => void) => void;
 };
 
 const makeBlockId = (kind: MemoBlock["type"]) => `${kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
+export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false }: Props) {
+  const manualMode = manual || isManualMemo(blocks);
+  const stale = staleBlockIds(blocks);
+  const graph = analyzeBlockDependencies(blocks);
+  const change = (next: MemoBlock[], calculationChanged = true) => onChange(manualMode || isManualMemo(next)
+    ? calculationChanged ? markCalculationsStale(next) : next
+    : recalculateMemoBlocks(next));
   const addBlock = (type: MemoBlock["type"]) => {
     const id = makeBlockId(type);
     const block: MemoBlock = type === "text"
@@ -22,21 +30,21 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
       : type === "formula"
         ? { id, type, latex: "" }
         : calculateMemoBlock(id, "", "note-variables");
-    onChange(recalculateMemoBlocks([...blocks, block]));
+    change([...blocks, block], type === "calculation");
   };
 
   const updateBlock = (id: string, update: (block: MemoBlock) => MemoBlock) => {
-    onChange(recalculateMemoBlocks(blocks.map((block) => block.id === id ? update(block) : block)));
+    change(blocks.map((block) => block.id === id ? update(block) : block), blocks.find(b => b.id === id)?.type === "calculation");
   };
 
-  const removeBlock = (id: string) => onChange(recalculateMemoBlocks(blocks.filter((block) => block.id !== id)));
+  const removeBlock = (id: string) => change(blocks.filter((block) => block.id !== id), blocks.find(b => b.id === id)?.type === "calculation");
 
   const moveBlock = (index: number, direction: -1 | 1) => {
     const nextIndex = index + direction;
     if (nextIndex < 0 || nextIndex >= blocks.length) return;
     const next = [...blocks];
     [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-    onChange(recalculateMemoBlocks(next));
+    change(next);
   };
 
   return (
@@ -52,7 +60,12 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
 
       {!blocks.length && <div className="empty-state block-empty"><span>＋</span><h3>最初のブロックを追加</h3><p>文章、KaTeX数式、評価できる計算式を自由な順序で混在できます。</p></div>}
 
-      <p className="block-help">変数はこのメモ内だけで有効です。計算ブロックを上から順に評価します。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。</p>
+      {manualMode && <div className="block-reference-controls">
+        <button type="button" onClick={() => onChange(recalculateReferenceMemo(blocks).blocks)}>メモ全体を再計算</button>
+        <p role="status">{stale.size ? `${stale.size}件が再計算待ちです。旧結果は未確定です。` : "計算結果は確定済みです。"}</p>
+        <details><summary>ⓘ 参照と再計算について</summary><p>参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。</p></details>
+      </div>}
+      <p className="block-help">既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。</p>
       <div className="block-editor-list">
         {blocks.map((block, index) => {
           const calculation = block.type === "calculation" ? (block.evaluationMode === "note-variables" ? describeCalculationBlock(block.expression) : { expression: block.expression }) : null;
@@ -84,7 +97,22 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
               })()}
 
               {block.type === "calculation" && <>
-                {block.evaluationMode === undefined ? <div className="block-help">
+                {block.evaluationMode !== REFERENCE_MODE && <button type="button" onClick={() => updateBlock(block.id, current => current.type === "calculation" ? { ...current, evaluationMode: REFERENCE_MODE, references: { version: 1, entries: [] } } : current)}>参照モードに切替（メモを手動再計算にする）</button>}
+                {block.evaluationMode === REFERENCE_MODE ? <div className="block-reference-controls">
+                  <label>参照先を選んで式に挿入<select value="" onChange={event => {
+                    const target = event.target.value;
+                    if (!target) return;
+                    const entries = block.references?.entries ?? [];
+                    const existing = entries.find(e => e.blockId === target);
+                    const slot = existing?.slot ?? Array.from({ length: 128 }, (_, i) => i + 1).find(n => !entries.some(e => e.slot === n));
+                    if (!slot) return;
+                    updateBlock(block.id, current => current.type === "calculation" ? { ...current, expression: `${current.expression}@{${slot}}`, references: { ...current.references!, entries: existing ? entries : [...entries, { slot, blockId: target }] } } : current);
+                  }}><option value="">計算ブロックを選択</option>{blocks.filter(b => b.type === "calculation").map(b => <option key={b.id} value={b.id} disabled={(block.references?.entries.length ?? 0) >= 128 && !block.references?.entries.some(e => e.blockId === b.id)}>ブロック {blocks.indexOf(b) + 1}: {b.type === "calculation" ? b.expression || "式未入力" : ""}</option>)}</select></label>
+                  <p className="block-help">参照モード：@&#123;番号&#125; は選択した計算結果です。掛け算は * を入力します。変数名・登録式名を呼び出す機能ではありません。</p>
+                  {(block.references?.entries.length ?? 0) >= 128 && <p role="status">参照枠の上限128件です。新しい参照先は追加できません。既に登録した参照は選択できます。</p>}
+                  <ul>{block.references?.entries.map(e => <li key={e.slot}>@{`{${e.slot}}`} → {blocks.some(b => b.id === e.blockId) ? `ブロック ${blocks.findIndex(b => b.id === e.blockId) + 1}` : "参照先削除済み"}</li>)}</ul>
+                  {graph.errors.has(block.id) && <p className="field-error" role="status">{graph.errors.get(block.id)}</p>}
+                </div> : block.evaluationMode === undefined ? <div className="block-help">
                   <p>従来の計算モードです。変数モードでは x/X は変数になり、掛け算は * で入力します。</p>
                   <button type="button" onClick={() => updateBlock(block.id, (current) => current.type === "calculation" ? { ...current, evaluationMode: "note-variables" } : current)}>変数を使う</button>
                 </div> : <p className="block-help">変数モード：掛け算は * で入力します。x/X は変数名です。</p>}
@@ -92,9 +120,10 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide }: Props) {
                 {block.evaluationMode === "note-variables" && <VariableIdentification expression={block.expression} assignment />}
                 <p className="calculation-expression"><span>計算式</span> <code>{calculation?.expression || "式未入力"}</code></p>
                 <div className={`calculation-live-result ${block.error ? "has-error" : ""}`} aria-live="polite">
-                  <span>計算結果{calculation?.variableName && <> <code>{calculation.variableName}</code></>}</span>
+                  <span>{stale.has(block.id) ? "再計算待ち・旧結果" : "計算結果"}{calculation?.variableName && <> <code>{calculation.variableName}</code></>}</span>
                   {block.error ? <p role="status">{block.error}</p> : <strong>= {block.resultText}</strong>}
                 </div>
+                {block.evaluationState?.attemptError && <p role="status" className="field-error">一括確定を停止: {block.evaluationState.attemptError}</p>}
                 <p className="block-help">使用可能: 数値、四則、小数、括弧、負数、累乗（<code>^</code>）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数名は英字で始め、英数字と_を使用します（例：subtotal = price * quantity）。LaTeX、その他の関数は使用できません。</p>
               </>}
             </article>
