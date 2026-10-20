@@ -10,12 +10,13 @@ import { Modal } from "./Modal";
 
 type Props = {
   initial: PlainNoteDraft | PlainCalculationNote;
+  sourceRevision?: string;
   onSave: (draft: PlainNoteDraft) => void;
   onClose: () => void;
   onOpenGuide: (insert: (latex: string) => void) => void;
 };
 
-export function PlainNoteModal({ initial, onSave, onClose, onOpenGuide }: Props) {
+export function PlainNoteModal({ initial, onSave, onClose, onOpenGuide, sourceRevision = "" }: Props) {
   const [draft, setDraft] = useState<PlainNoteDraft>({
     title: initial.title,
     calculationPolicy: initial.calculationPolicy,
@@ -31,7 +32,7 @@ export function PlainNoteModal({ initial, onSave, onClose, onOpenGuide }: Props)
     <Modal title={`${MEMO_LABELS.blocks}を編集`} onClose={onClose} wide>
       <form className="note-form" onSubmit={submit}>
         <label>タイトル <small>任意</small><input value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} placeholder="例：平方完成による解の導出" /></label>
-        <MemoBlockEditor manual={draft.calculationPolicy?.mode === "manual"} blocks={draft.blocks ?? []} onChange={(blocks) => setDraft((current) => ({ ...current, blocks, calculationPolicy: isManualMemo(blocks) ? { ...current.calculationPolicy, version: 1, mode: "manual" } : current.calculationPolicy }))} onOpenGuide={onOpenGuide} />
+        <MemoBlockEditor memoKey={"id" in initial ? initial.id : "new-memo"} sourceRevision={JSON.stringify([initial, draft.title, sourceRevision])} manual={draft.calculationPolicy?.mode === "manual"} blocks={draft.blocks ?? []} onChange={(blocks) => setDraft((current) => ({ ...current, blocks, calculationPolicy: isManualMemo(blocks) ? { ...current.calculationPolicy, version: 1, mode: "manual" } : current.calculationPolicy }))} onOpenGuide={onOpenGuide} />
         <div className="modal-actions"><button type="button" className="button-secondary" onClick={onClose}>キャンセル</button><button type="submit" className="button-primary" disabled={!draft.title.trim() && !(draft.blocks?.length)}>保存する</button></div>
       </form>
     </Modal>

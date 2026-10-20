@@ -212,3 +212,16 @@ Named `*-graph-selected-card`, `*-graph-error-detail`,
 `*-graph-{light,dark}-enlarged`, `*-graph-{light,dark}-enlarged-selection`
 and `*-graph-limit-fallback` screenshots accompany the existing exact-head
 provenance and traces.
+
+## Trial / difference preview regression
+
+Every one of the six existing contexts additionally creates a synthetic manual memo with a three-stage ID chain, an unrelated block, an internal-precision probe, and a legacy variable block. It checks:
+
+- Trial leaves rendered held results and serialized storage unchanged, with a `Storage.prototype.setItem` spy establishing zero data-key writes (not merely unchanged values).
+- Direct / affected / unrelated labels and independent expected `+20`, `+20`, `+40` differences; a small nonzero internal-value difference is not hidden by display rounding.
+- Edit, reorder, block addition and deletion disable old Apply. Shared i diagnostics navigate by ID without changing values.
+- Apply changes the editor draft only. Separate Save persists full internal values and unknown block metadata; reload removes transient trial state.
+- Legacy-phase failure makes ID numeric work unattempted; ID failure and its downstream remain distinguishable, cannot apply, and preserve old results.
+- Light/dark 200% text, card/panel horizontal geometry, actual touch activations, keyboard i activation, and screenshots of success and failure.
+
+The full unit suite separately covers snapshot/generation guards and late asynchronous completion. These GUI scenarios do not pretend that the current synchronous numeric evaluator is a remote/long-running calculation, or that Linux WebKit is physical Safari.

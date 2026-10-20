@@ -1443,6 +1443,154 @@ async function exerciseDependencyGraphNavigation(prefix) {
   await page.reload(); await selectPanel("notes");
 }
 
+async function exerciseCalculationTrials(prefix) {
+  await stage(prefix + ": calculation-trial-preview");
+  const original = await storage();
+  const calculation = (id, expression, references = []) => ({
+    id, type: "calculation", expression, displayExpression: expression, result: null, resultText: "", error: null,
+    evaluationMode: "block-references", references: { version: 1, entries: references.map((blockId, index) => ({ slot: index + 1, blockId })) },
+    syntheticExtra: { preserved: [id, 42] },
+  });
+  const note = {
+    id: "trial-preview-note", type: "plain-calculation", title: "Synthetic trial preview", content: "Synthetic trial preview",
+    createdAt: "2026-10-20T00:00:00Z", updatedAt: "2026-10-20T00:00:00Z", calculationPolicy: { version: 1, mode: "manual" },
+    blocks: [calculation("a", "100"), calculation("b", "@{1}+50", ["a"]), calculation("c", "@{1}*2", ["b"]),
+      calculation("u", "99"), calculation("tiny", "sqrt(2)"),
+      { ...calculation("legacy", "x=2"), evaluationMode: "note-variables", references: undefined }],
+  };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload(); await selectPanel("notes");
+  let dialog;
+  const open = async () => {
+    await activate(page.locator(".note-card").filter({ hasText: note.title }).getByRole("button", { name: "編集", exact: true }));
+    dialog = page.getByRole("dialog");
+  };
+  const card = id => dialog.locator(`.block-editor-card[data-block-id=${JSON.stringify(id)}]`);
+  const input = id => card(id).getByLabel("計算式", { exact: true });
+  const panel = () => dialog.getByRole("region", { name: "試算・差分プレビュー", exact: true });
+  const row = id => panel().locator(`[data-trial-block-id=${JSON.stringify(id)}]`);
+  const trial = async () => {
+    await activate(dialog.getByRole("button", { name: "試算する", exact: true }));
+    await expect(panel()).toContainText("試算は未反映です");
+  };
+  const apply = () => panel().getByRole("button", { name: "結果を反映", exact: true });
+  const save = async () => {
+    await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  };
+  const read = async () => (await storage()).notes.find(value => value.id === note.id);
+  const visibleResults = () => dialog.locator(".block-editor-card.calculation .calculation-live-result").allTextContents();
+  await open();
+  await activate(dialog.getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await save();
+  await expect.poll(async () => (await read()).blocks.map(block => block.result)).toEqual([100, 150, 300, 99, Math.sqrt(2), 2]);
+  const confirmed = await read();
+  await open(); await input("a").fill("120"); await input("tiny").fill("sqrt(2)+0.00000000000001");
+  const held = await visibleResults();
+  const storedBefore = await storage();
+  await page.evaluate(() => {
+    const originalSet = Storage.prototype.setItem;
+    window.__trialOriginalSetItem = originalSet;
+    window.__trialStorageWrites = 0;
+    Storage.prototype.setItem = function(key, value) { if (key === "calculation-memo:data") window.__trialStorageWrites++; return originalSet.call(this, key, value); };
+  });
+  await trial();
+  assert.deepEqual(await visibleResults(), held, "Trial must not change retained draft results");
+  assert.deepEqual(await storage(), storedBefore, "Trial must not modify persistent data");
+  assert.equal(await page.evaluate(() => window.__trialStorageWrites), 0, "Trial must not even invoke the data save write");
+  await expect(row("a")).toContainText("+20"); await expect(row("b")).toContainText("+20"); await expect(row("c")).toContainText("+40");
+  await expect(row("u")).toContainText("0（内部値が同じ）");
+  await expect(row("a").locator(".block-status")).toHaveAttribute("data-state-kind", "changed");
+  await expect(row("b").locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
+  await expect(row("c").locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
+  await expect(row("u").locator(".block-status")).toHaveAttribute("data-state-kind", "normal");
+  const tinyDelta = (Math.sqrt(2) + 0.00000000000001) - Math.sqrt(2);
+  assert.ok(tinyDelta > 0);
+  await expect(row("tiny")).toContainText("+" + String(tinyDelta));
+  await expect(row("tiny")).toContainText(String(Math.sqrt(2) + 0.00000000000001));
+  await expect(apply()).toBeEnabled();
+  await row("a").scrollIntoViewIfNeeded();
+  await screenshot(prefix + "-trial-success", currentScenario.width, false);
+  await passed(prefix + ": trial preserves held results and makes zero storage writes; internal-value deltas and direct/affected/unrelated states stay distinct");
+
+  await activate(row("b").getByRole("button", { name: "ブロック 2 の状態とエラー詳細", exact: true }));
+  await expect(row("b").locator(".block-diagnostic-details")).toContainText("未反映");
+  await activate(row("b").locator(".block-diagnostic-details").getByRole("button", { name: /^ブロック 1:.*へ移動$/ }).first());
+  await expect(card("a")).toBeFocused();
+  await expect(card("a")).toHaveClass(/block-graph-selected/);
+  await input("a").fill("121");
+  await expect(panel()).toContainText("失効"); await expect(apply()).toBeDisabled();
+  await input("a").fill("120"); await trial();
+  await activate(card("u").getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
+  await expect(apply()).toBeDisabled();
+  await activate(card("u").getByRole("button", { name: "計算ブロックを下へ移動", exact: true })); await trial();
+  await activate(dialog.getByRole("button", { name: "＋ 文章", exact: true }));
+  await expect(apply()).toBeDisabled();
+  await activate(dialog.locator(".block-editor-card.text").getByRole("button", { name: "文章ブロックを削除", exact: true }));
+  await expect(apply()).toBeDisabled(); await trial();
+  assert.deepEqual(await visibleResults(), held);
+  assert.equal(await page.evaluate(() => window.__trialStorageWrites), 0);
+  await activate(apply());
+  await expect(panel()).toHaveCount(0);
+  await expect(dialog.getByRole("button", { name: "試算する", exact: true })).toBeFocused();
+  await expect(card("a").locator(".calculation-live-result")).toContainText("120");
+  await expect(card("b").locator(".calculation-live-result")).toContainText("170");
+  await expect(card("c").locator(".calculation-live-result")).toContainText("340");
+  assert.deepEqual(await storage(), storedBefore, "Explicit result apply affects only the editor draft until Save");
+  assert.equal(await page.evaluate(() => window.__trialStorageWrites), 0);
+  await save();
+  await expect.poll(async () => (await read()).blocks[0].result).toBe(120);
+  const saved = await read();
+  assert.deepEqual(saved.blocks.map(block => block.result), [120, 170, 340, 99, Math.sqrt(2) + 0.00000000000001, 2]);
+  assert.deepEqual(saved.blocks.map(block => block.syntheticExtra), confirmed.blocks.map(block => block.syntheticExtra));
+  assert.ok(await page.evaluate(() => window.__trialStorageWrites) > 0, "The separate Save operation writes data");
+  await page.evaluate(() => { Storage.prototype.setItem = window.__trialOriginalSetItem; delete window.__trialOriginalSetItem; });
+  await page.reload(); await selectPanel("notes"); await open();
+  await expect(panel()).toHaveCount(0);
+  assert.deepEqual((await read()).blocks, saved.blocks);
+  await passed(prefix + ": edit/reorder/add/delete invalidate trial; shared i navigation is safe; explicit apply and later save preserve precision/extras and reload discards trial state");
+
+  // A failed legacy phase still runs its remaining scope statements, but prevents
+  // all ID numeric attempts. A separate ID failure must not become a success.
+  await input("legacy").fill("x=1/0"); const beforeFailure = await visibleResults();
+  await trial(); await expect(apply()).toBeDisabled();
+  await expect(row("legacy")).toContainText("試算失敗");
+  for (const id of ["a", "b", "c", "u", "tiny"]) await expect(row(id)).toContainText("数値評価は未試行");
+  assert.deepEqual(await visibleResults(), beforeFailure); assert.deepEqual((await read()).blocks, saved.blocks);
+  await input("legacy").fill("x=2"); await input("a").fill("1/0"); await trial();
+  await expect(apply()).toBeDisabled(); await expect(row("a")).toContainText("試算失敗");
+  await expect(row("b")).toContainText("数値評価は未試行"); await expect(row("c")).toContainText("数値評価は未試行");
+  await activate(row("a").getByRole("button", { name: "ブロック 1 の状態とエラー詳細", exact: true }));
+  await expect(row("a").locator(".block-diagnostic-details")).toContainText("今回の試算で確認（未反映）");
+  await row("a").locator(".block-diagnostic-details h4").evaluate(element => element.scrollIntoView({ block: "center" }));
+  await screenshot(prefix + "-trial-failure", currentScenario.width, false);
+  assert.deepEqual((await read()).blocks, saved.blocks);
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  await passed(prefix + ": legacy and ID numeric failure keep all existing values and distinguish failed versus unattempted work with shared trial diagnostics");
+
+  for (const theme of ["light", "dark"]) {
+    await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await open(); await input("a").fill("130"); await trial();
+    await page.evaluate(() => document.documentElement.style.fontSize = "200%");
+    await row("a").scrollIntoViewIfNeeded();
+    await assertHorizontalFit();
+    const geometry = await panel().evaluate(element => ({ width: element.clientWidth, scroll: element.scrollWidth, cards: [...element.querySelectorAll("[data-trial-block-id]")].map(card => ({ width: card.clientWidth, scroll: card.scrollWidth })) }));
+    assert.ok(geometry.scroll <= geometry.width + 1, "Trial panel must not overflow horizontally");
+    assert.ok(geometry.cards.every(card => card.scroll <= card.width + 1), "Trial comparison cards must wrap long values/text");
+    await screenshot(prefix + "-trial-" + theme + "-enlarged", currentScenario.width, false);
+    await row("a").getByText("数値差分", { exact: true }).evaluate(element => element.scrollIntoView({ block: "center" }));
+    await screenshot(prefix + "-trial-" + theme + "-enlarged-delta", currentScenario.width, false);
+    const info = row("a").getByRole("button", { name: "ブロック 1 の状態とエラー詳細", exact: true });
+    await activate(info); await expect(info).toHaveAttribute("aria-expanded", "true");
+    await info.focus(); await page.keyboard.press("Enter"); await expect(info).toHaveAttribute("aria-expanded", "false");
+    await page.evaluate(() => document.documentElement.style.fontSize = "");
+    await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  }
+  await passed(prefix + ": trial cards fit light/dark at 200% text with mobile touch and keyboard-accessible diagnostics");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
 async function exerciseStorageProtection(prefix) {
   await stage(prefix + ": nondestructive-storage-protection");
   const original = await storage();
@@ -1923,6 +2071,7 @@ async function exercise(scenario) {
   await exerciseDefaultIdCalculations(prefix);
   await exerciseCalculationDiagnostics(prefix);
   await exerciseDependencyGraphNavigation(prefix);
+  await exerciseCalculationTrials(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
