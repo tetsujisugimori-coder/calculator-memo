@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): ID参照標準導線と共有依存グラフによる実行計画
+- 基点: PR #38 merge後のmain `7fd8934ff3a04a3f43cd50ef5cbe77286ff55014`をfetch/ff-only pullして確認。新規作業枝 `feat/id-reference-execution-plan`。PRは未作成、番号未確定。
+- 変更: 「＋ 計算」を既存ID参照形式の未評価ブロックへ、「＋ 旧変数計算」を明示互換導線へ分ける。内部ID入力は不要。PR #38の構造解析を共有coreへ分離し、実行計画・依存解析・Mermaidが同じ確定ID辺を使用する。
+- 実行: 旧モードは従来の配置順で全件評価し失敗再代入のscopeを保持。旧フェーズ失敗時はID評価へ進まない。IDは依存元優先、ready集合内のcanonical ID順で決定的に評価。変数候補辺と逐次/フェーズ制約を分離し、不確定候補や保存エラーをpreflight失敗へしない。
+- 判断変更: 従来のID独立ノードtie順は表示順由来。今回、表示順非依存の実行計画を保証するためID順へ変更。複数独立IDブロックが数値失敗する場合の先頭エラーもID計画順となる。旧変数・構造preflightの優先順位、成功時の数値意味論は維持する。旧変数とID文法の逆向き混合依存は現行文法で成立せず、不正な式を黙って変換しない。
+- 異常系: 自己/循環成分/循環下流、参照切れ/参照形式/解析失敗を区別。今回の原因・確定ID下流だけを派生diagnosticsで返し、editorに局所表示。既存attemptErrorは全体rollback通知として維持し、無関係ブロック自身のerrorへ波及させない。編集・再読込では今回診断を引き継がない。
+- 互換性: 全成功時のみ一括確定、旧結果rollback、未知metadata、JSON version1、非破壊保護、raw精度、登録式/履歴/メモを維持。保存移行・新依存なし。自動/部分再計算、キャッシュ、Mermaid描画拡張は対象外。
+- ローカル検証: Node24.19.0で551単体/20files成功（追加34）。lintは既存aria-description warning1のみ、型、通常/Pages build成功。既存単体の期待値変更なし。既存GUIの旧変数シナリオは新しい明示ボタンへselectorだけ変更し、数値期待値を維持。自己参照の表示検証は区別された診断語へ変更。
+- 独立レビュー: 55検証成功。旧mainと同treeの基準で40DAG比較、24表示順の実行順一致、旧scope/rollback、今回診断の局所性を確認し阻害指摘なし。計画のコメント位置を修正。最終CI/GUIは別途確認する。
+- GUI: ローカル実アプリChromium4条件で195検証成功（新規16）、218PNG/4trace。新規導線・局所エラー・無関係rollbackの実PNGも確認。全harnessはWebKit起動時のOS共有ライブラリ不足でexit1となり、WebKit2条件は未実施。画面証拠をviewport/該当captionへ絞るハーネス変更後の最終SHAは既存隔離CIで6条件を再検証する。ローカルは未commit作業treeの探索検証であり最終公開SHA成功とは扱わない。iPhone Safari実機・OSキーボード/VoiceOver・長期保存は未検証。
+- 詳細: [実行計画・優先順位・図との違い](docs/agent/execution-plan.md)。単独PRで受入条件を追跡し別Issueは作らない。公開後のPR本文に最終SHA/CIを記載する。戻す場合は本PRをrevert、保存移行不要。マージ・本番公開は行わない。
+
 ## 2026-10-20 (JST): 読み取り専用依存解析・変更影響・Mermaid文字列
 - 基点: PR #37 merge後のmain `83ae24cc4b921b67a785c2e0160e7b8f63a2972c`。新規作業枝 `feat/dependency-analysis-mermaid`。[Draft PR #38](https://github.com/tetsujisugimori-coder/calculator-memo/pull/38)を作成済み。
 - 変更: ID参照と旧変数を実際の構文検査経路で解析し、directed graph・診断・変更前後の影響閉包を返す内部API。Mermaid文字列はブロックIDの衝突しない符号化、全ラベルentity化、安定順/重複排除、状態文字を含む。画面描画/コピーUIは追加しない。
