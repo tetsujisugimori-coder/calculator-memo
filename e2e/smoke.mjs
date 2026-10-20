@@ -986,7 +986,7 @@ async function exerciseDefaultIdCalculations(prefix) {
   for (const index of [2, 3, 4]) await expect(cards().nth(index).locator(".block-attempt-diagnostic")).toHaveCount(0);
   await cards().nth(1).locator(".block-attempt-diagnostic").scrollIntoViewIfNeeded();
   await screenshot(prefix + "-default-id-own-error", currentScenario.width, false);
-  await cards().nth(4).getByText(/^一括確定を停止:/).scrollIntoViewIfNeeded();
+  await dialog.getByText(/^一括確定を停止:/).scrollIntoViewIfNeeded();
   await screenshot(prefix + "-default-id-unrelated-rollback", currentScenario.width, false);
   await save();
   saved = (await read()).blocks;
@@ -1014,6 +1014,157 @@ async function exerciseDefaultIdCalculations(prefix) {
     await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
   }
   await passed(prefix + ": standard/legacy add controls fit both themes with expanded text in each existing browser viewport");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
+// State/diagnostic display is derived from snapshots; this scenario separately
+// asserts retained numerical results and the UI's claims about their validity.
+async function exerciseCalculationDiagnostics(prefix) {
+  await stage(prefix + ": calculation-state-diagnostics");
+  const original = await storage();
+  const title = "Synthetic state diagnostics";
+  await selectPanel("notes");
+  await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
+  let dialog = page.getByRole("dialog");
+  await activate(dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }));
+  await dialog.getByLabel("タイトル", { exact: false }).fill(title);
+  const cards = () => dialog.locator(".block-editor-card.calculation");
+  const expression = index => cards().nth(index).getByLabel("計算式", { exact: true });
+  const state = index => cards().nth(index).locator(".block-status");
+  const recalculate = async () => activate(dialog.getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  const add = async text => {
+    await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+    await cards().last().getByLabel("計算式", { exact: true }).fill(text);
+  };
+  const reference = async (index, label, suffix) => {
+    const picker = cards().nth(index).getByLabel("参照先を選んで式に挿入");
+    await activate(picker); await picker.selectOption({ label });
+    await expression(index).fill("@{1}" + suffix);
+  };
+  const save = async () => {
+    await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect.poll(async () => (await storage()).notes.some(n => n.title === title)).toBe(true);
+  };
+  const open = async () => {
+    await activate(page.locator(".note-card").filter({ hasText: title }).getByRole("button", { name: "編集", exact: true }));
+    dialog = page.getByRole("dialog");
+  };
+  const read = async () => (await storage()).notes.find(n => n.title === title);
+  const detailButton = index => cards().nth(index).getByRole("button", { name: `ブロック ${index + 1} の状態とエラー詳細`, exact: true });
+  await add("3"); await add(""); await reference(1, "ブロック 1: 3", "*2");
+  await add(""); await reference(2, "ブロック 2: @{1}*2", "+1"); await add("99");
+  await recalculate(); await save();
+  const confirmed = (await read()).blocks;
+  assert.deepEqual(confirmed.map(b => b.result), [3, 6, 7, 99]);
+  await open();
+  await expression(0).fill("4");
+  await expect(state(0)).toHaveAttribute("data-state-kind", "changed");
+  await expect(state(1)).toHaveAttribute("data-state-kind", "affected");
+  await expect(state(2)).toHaveAttribute("data-state-kind", "affected");
+  await expect(state(3)).toHaveAttribute("data-state-kind", "normal");
+  await expect(cards().nth(0).locator(".calculation-live-result")).toContainText("3");
+  await expect(cards().nth(1).locator(".calculation-live-result")).toContainText("6");
+  await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await activate(detailButton(0));
+  await expect(detailButton(0)).toHaveAttribute("aria-expanded", "true");
+  await expect(cards().nth(0).locator(".block-diagnostic-details")).toBeVisible();
+  await assertHorizontalFit(); await screenshot(prefix + "-diagnostics-change-detail", currentScenario.width, false);
+  await activate(detailButton(0));
+  await expect(detailButton(0)).toHaveAttribute("aria-expanded", "false");
+  await passed(prefix + ": direct edits and multistage dependents are distinct from unrelated blocks, retained old values and unexecuted numeric errors");
+
+  // The parser can know this structure is invalid before execution, but must not
+  // claim that an untried numeric calculation has already failed.
+  await expression(0).fill("(");
+  await expect(state(0)).toHaveAttribute("data-state-kind", "error");
+  await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await activate(detailButton(0));
+  await expect(cards().nth(0).locator(".block-diagnostic-details")).toContainText("未");
+  await cards().nth(0).locator(".block-diagnostic-details h4").evaluate(element => element.scrollIntoView({ block: "center" }));
+  await screenshot(prefix + "-diagnostics-structural-before", currentScenario.width, false);
+  await activate(detailButton(0));
+  await expression(0).fill("1/0");
+  await expect(state(0)).toHaveAttribute("data-state-kind", "changed");
+  await recalculate();
+  await expect(state(0)).toHaveAttribute("data-state-kind", "error");
+  await expect(state(1)).toHaveAttribute("data-state-kind", "blocked");
+  await expect(state(2)).toHaveAttribute("data-state-kind", "blocked");
+  await expect(state(3)).toHaveAttribute("data-state-kind", "normal");
+  await expect(cards().nth(3).locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await expect(dialog.getByText(/^一括確定を停止:/)).toHaveCount(1);
+  await activate(detailButton(1));
+  await expect(cards().nth(1).locator(".block-diagnostic-details")).toBeVisible();
+  await cards().nth(1).locator(".block-diagnostic-details h4").evaluate(element => element.scrollIntoView({ block: "center" }));
+  await screenshot(prefix + "-diagnostics-blocked-detail", currentScenario.width, false);
+  await activate(cards().nth(1).locator(".block-diagnostic-details").getByRole("button", { name: /^ブロック 1:.*へ移動$/ }).first());
+  await expect(cards().nth(0)).toBeFocused();
+  await activate(detailButton(1));
+  await activate(dialog.getByText("依存関係をMermaidで取り出す", { exact: true }));
+  const mermaid = dialog.getByLabel("Mermaid依存関係図", { exact: true });
+  await expect(mermaid).toHaveAttribute("readonly", "");
+  const graphText = await mermaid.inputValue();
+  assert.ok(graphText.startsWith("flowchart TD\n"));
+  assert.ok(graphText.includes("classDef") && graphText.includes("-->"));
+  const rawBeforeExport = await read();
+  await activate(dialog.getByRole("button", { name: "Mermaid文字列をコピー", exact: true }));
+  assert.deepEqual(await read(), rawBeforeExport, "Export/copy must not commit or recalculate the draft");
+  await mermaid.scrollIntoViewIfNeeded();
+  await screenshot(prefix + "-diagnostics-mermaid", currentScenario.width, false);
+  await activate(dialog.getByText("依存関係をMermaidで取り出す", { exact: true }));
+  await passed(prefix + ": static syntax errors are distinguished from actual numeric failure and downstream blockage without unrelated error propagation");
+
+  await save(); const failed = (await read()).blocks;
+  assert.deepEqual(failed.map(b => [b.result, b.resultText, b.error]), confirmed.map(b => [b.result, b.resultText, b.error]));
+  await page.reload(); await selectPanel("notes"); await open();
+  await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await expect(state(0)).toHaveAttribute("data-state-kind", "unknown");
+  await expect(state(3)).toHaveAttribute("data-state-kind", "unknown");
+  await activate(detailButton(0));
+  await expect(cards().nth(0).locator(".block-diagnostic-details")).toContainText("不明");
+  await activate(detailButton(0));
+  await expression(0).fill("4"); await recalculate();
+  for (let index = 0; index < 4; index++) await expect(state(index)).toHaveAttribute("data-state-kind", "normal");
+  await expect(dialog.getByText(/^一括確定を停止:/)).toHaveCount(0);
+  await save(); assert.deepEqual((await read()).blocks.map(b => b.result), [4, 8, 9, 99]);
+  await passed(prefix + ": failed recalculation preserves every saved result; reload reports missing change evidence, and successful correction clears pending state");
+
+  await open();
+  // Reordering only ID calculations does not change reference meaning or warn
+  // an unrelated source. The previous/next graph comparison is exercised here.
+  await activate(cards().nth(3).getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
+  for (let index = 0; index < 4; index++) await expect(state(index)).toHaveAttribute("data-state-kind", "normal");
+  await activate(cards().nth(2).getByRole("button", { name: "計算ブロックを下へ移動", exact: true }));
+  // Independent structural causes must both remain visible, rather than being
+  // folded into the transaction's first-error summary.
+  await expression(0).fill("("); await expression(3).fill("@{127}");
+  await expect(state(0)).toHaveAttribute("data-state-kind", "error");
+  await expect(state(3)).toHaveAttribute("data-state-kind", "error");
+  await activate(detailButton(3));
+  await expect(cards().nth(3).locator(".block-diagnostic-details")).toContainText("参照先");
+  await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await cards().nth(3).locator(".block-diagnostic-details h4").evaluate(element => element.scrollIntoView({ block: "center" }));
+  await screenshot(prefix + "-diagnostics-independent-causes", currentScenario.width, false);
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  assert.deepEqual((await read()).blocks.map(b => b.result), [4, 8, 9, 99]);
+  await passed(prefix + ": ID-only reorder does not invent impact; independent parser and missing-reference causes remain separately inspectable without committing edits");
+
+  for (const theme of ["light", "dark"]) {
+    await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await open(); await expression(0).fill("5");
+    await activate(detailButton(0));
+    await page.evaluate(() => document.documentElement.style.fontSize = "200%");
+    await detailButton(0).scrollIntoViewIfNeeded();
+    await expect(detailButton(0)).toBeInViewport();
+    const size = await detailButton(0).boundingBox();
+    assert.ok(size && size.height >= 44 && size.width >= 44, "State detail i control retains accessible touch size");
+    await assertHorizontalFit();
+    await screenshot(prefix + "-diagnostics-" + theme + "-enlarged", currentScenario.width, false);
+    await page.evaluate(() => document.documentElement.style.fontSize = "");
+    await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  }
+  await passed(prefix + ": state labels and accessible detail controls fit both enlarged themes across each browser viewport");
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload(); await selectPanel("notes");
 }
@@ -1496,6 +1647,7 @@ async function exercise(scenario) {
   await exerciseBlockExtraFields(prefix);
   await exerciseBlockReferences(prefix);
   await exerciseDefaultIdCalculations(prefix);
+  await exerciseCalculationDiagnostics(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

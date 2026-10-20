@@ -375,3 +375,37 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .block-reference-controls p, .block-reference-controls ul { margin: 0; }
 .block-reference-controls details { min-width: 0; }
 .block-reference-controls summary { cursor: pointer; min-height: 44px; }
+
+/* Derived calculation state: text labels remain meaningful without color. */
+.block-status { min-width: 0; }
+.block-status-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.block-state-badge { display: inline-block; max-width: 100%; padding: 5px 9px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); background: var(--surface); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.block-state-badge.state-changed { color: var(--ink); border-style: dashed; border-color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, var(--surface)); }
+.block-state-badge.state-affected { color: var(--ink); border-style: dashed; border-color: var(--green); background: color-mix(in srgb, var(--green) 9%, var(--surface)); }
+.block-state-badge.state-error, .block-state-badge.state-blocked { color: var(--brand); border-color: var(--brand); font-weight: 700; }
+.block-state-badge.state-unknown { border-style: dotted; }
+.block-info-button { flex: 0 0 44px; width: 44px; min-height: 44px; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: var(--surface); font-family: serif; font-weight: 700; cursor: pointer; }
+.block-diagnostic-details { margin-top: 8px; padding: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.block-diagnostic-details h4, .block-diagnostic-details h5 { margin: 0 0 7px; font-size: 13px; }
+.block-diagnostic-details p { margin: 6px 0; }
+.block-diagnostic-item { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
+.block-diagnostic-phase { color: var(--muted); font-size: 11px; }
+.block-diagnostic-details dl { display: grid; gap: 8px; margin: 0; }
+.block-diagnostic-details dt { font-weight: 700; }
+.block-diagnostic-details dd { margin: 2px 0 0; }
+.block-diagnostic-details code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.block-diagnostic-links { display: grid; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.block-diagnostic-links button { max-width: 100%; min-height: 44px; padding: 6px 9px; border: 1px solid var(--line); color: var(--ink); background: var(--surface-strong); text-align: left; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
+.block-diagnostic-links small { display: block; color: var(--muted); overflow-wrap: anywhere; }
+.block-transaction-notice { color: var(--ink); border-left: 3px solid var(--brand); padding-left: 8px; font-size: 12px; }
+.block-mermaid-export { min-width: 0; padding: 12px; border: 1px solid var(--line); background: var(--surface); }
+.block-mermaid-export summary { min-height: 44px; cursor: pointer; font-size: 12px; line-height: 1.7; }
+.block-mermaid-export textarea { display: block; width: 100%; min-width: 0; margin-block: 10px; resize: vertical; padding: 10px; color: var(--ink); background: var(--surface-strong); border: 1px solid var(--line); font: 11px/1.6 var(--font-geist-mono), monospace; }
+.block-mermaid-export button { min-height: 44px; max-width: 100%; padding: 7px 12px; color: var(--ink); background: var(--surface-strong); border: 1px solid var(--line); cursor: pointer; white-space: normal; }
+.block-mermaid-export p[role="status"] { font-size: 12px; overflow-wrap: anywhere; }
+.block-editor-card:focus { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 420px) {
+  .block-diagnostic-details { padding: 9px; }
+  .calculation-live-result { grid-template-columns: minmax(0, 1fr); }
+  .calculation-live-result strong { text-align: left; }
+}

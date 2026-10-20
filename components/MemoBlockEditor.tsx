@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import type { DependencyDiagnostic } from "../lib/dependency-analysis";
+import { useRef, useState } from "react";
+import { buildCalculationStatus, type CalculationAttempt } from "../lib/calculation-status";
+import { CalculationStatusDetails, DependencyMermaidExport } from "./CalculationStatusDetails";
 import { analyzeBlockDependencies, isManualMemo, markCalculationsStale, recalculateReferenceMemo, REFERENCE_MODE, staleBlockIds } from "../lib/block-references";
 import { VariableIdentification } from "./Identification";
 import type { MemoBlock } from "../lib/types";
@@ -19,20 +20,39 @@ type Props = {
 const makeBlockId = (kind: MemoBlock["type"]) => `${kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
 export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false }: Props) {
-  const [attemptDiagnostics, setAttemptDiagnostics] = useState<DependencyDiagnostic[]>([]);
+  const [attempt, setAttempt] = useState<CalculationAttempt>();
+  const [baseline, setBaseline] = useState<MemoBlock[]>(blocks);
+  const [baselineKnown, setBaselineKnown] = useState(() => !isManualMemo(blocks) || staleBlockIds(blocks).size === 0);
+  const cards = useRef(new Map<string, HTMLElement>());
   const manualMode = manual || isManualMemo(blocks);
   const stale = staleBlockIds(blocks);
   const graph = analyzeBlockDependencies(blocks);
+  const statusReport = buildCalculationStatus(blocks, { baseline, baselineKnown, attempt });
+  const locate = (id: string) => {
+    const card = cards.current.get(id);
+    if (!card) return;
+    card.scrollIntoView({ block: "center", behavior: "auto" });
+    card.focus({ preventScroll: true });
+  };
   const change = (next: MemoBlock[], calculationChanged = true) => {
-    setAttemptDiagnostics([]);
-    onChange(manualMode || isManualMemo(next)
+    setAttempt(undefined);
+    const result = manualMode || isManualMemo(next)
       ? calculationChanged ? markCalculationsStale(next) : next
-      : recalculateMemoBlocks(next));
+      : recalculateMemoBlocks(next);
+    if (!manualMode && !isManualMemo(next)) {
+      setBaseline(result);
+      setBaselineKnown(true);
+    }
+    onChange(result);
   };
   const recalculate = () => {
     const result = recalculateReferenceMemo(blocks);
     onChange(result.blocks);
-    setAttemptDiagnostics(result.diagnostics);
+    setAttempt({ ...result });
+    if (result.success) {
+      setBaseline(result.blocks);
+      setBaselineKnown(true);
+    }
   };
   const addBlock = (type: MemoBlock["type"], legacyVariables = false) => {
     const id = makeBlockId(type);
@@ -77,16 +97,18 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
 
       {manualMode && <div className="block-reference-controls">
         <button type="button" onClick={recalculate}>メモ全体を再計算</button>
-        <p role="status">{stale.size ? `${stale.size}件が再計算待ちです。旧結果は未確定です。` : "計算結果は確定済みです。"}</p>
+        <p role="status">{stale.size ? "メモ全体は再計算待ちです。表示中の結果は保持されています。変更・影響の内訳は各ブロックで確認できます。" : "計算結果は確定済みです。"}</p>
+        {statusReport.globalMessages.map((message, index) => <p className={message.startsWith("一括確定を停止:") ? "block-transaction-notice" : "block-help"} role="status" key={index}>{message}</p>)}
         <details><summary>ⓘ 参照と再計算について</summary><p>参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。</p></details>
       </div>}
       <p className="block-help">「＋ 計算」はID参照方式です。数値だけの式も使え、参照先は一覧から選べます。旧方式で名前付き変数を追加する場合は「＋ 旧変数計算」を選びます。既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。</p>
+      {blocks.some(block => block.type === "calculation") && <DependencyMermaidExport text={statusReport.mermaid} />}
       <div className="block-editor-list">
         {blocks.map((block, index) => {
           const calculation = block.type === "calculation" ? (block.evaluationMode === "note-variables" ? describeCalculationBlock(block.expression) : { expression: block.expression }) : null;
           const label = block.type === "text" ? "文章" : block.type === "formula" ? "数式" : "計算";
           return (
-            <article className={`block-editor-card ${block.type}`} key={block.id}>
+            <article className={`block-editor-card ${block.type}`} key={block.id} tabIndex={-1} ref={element => { if (element) cards.current.set(block.id, element); else cards.current.delete(block.id); }}>
               <header>
                 <div><span className="block-order">{index + 1}</span><strong>{label}ブロック</strong></div>
                 <div className="block-card-actions">
@@ -112,6 +134,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
               })()}
 
               {block.type === "calculation" && <>
+                <CalculationStatusDetails blockId={block.id} blocks={blocks} report={statusReport} onLocate={locate} />
                 {block.evaluationMode !== REFERENCE_MODE && <button type="button" onClick={() => updateBlock(block.id, current => current.type === "calculation" ? { ...current, evaluationMode: REFERENCE_MODE, references: { version: 1, entries: [] } } : current)}>参照モードに切替（メモを手動再計算にする）</button>}
                 {block.evaluationMode === REFERENCE_MODE ? <div className="block-reference-controls">
                   <label>参照先を選んで式に挿入<select value="" onChange={event => {
@@ -126,7 +149,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
                   <p className="block-help">参照モード：@&#123;番号&#125; は選択した計算結果です。掛け算は * を入力します。変数名・登録式名を呼び出す機能ではありません。</p>
                   {(block.references?.entries.length ?? 0) >= 128 && <p role="status">参照枠の上限128件です。新しい参照先は追加できません。既に登録した参照は選択できます。</p>}
                   <ul>{block.references?.entries.map(e => <li key={e.slot}>@{`{${e.slot}}`} → {blocks.some(b => b.id === e.blockId) ? `ブロック ${blocks.findIndex(b => b.id === e.blockId) + 1}` : "参照先削除済み"}</li>)}</ul>
-                  {graph.errors.has(block.id) && <p className="field-error" role="status">{graph.errors.get(block.id)}</p>}
+                  {graph.errors.has(block.id) && <p className="field-error" role="status">再計算前の解析: {graph.errors.get(block.id)}</p>}
                 </div> : block.evaluationMode === undefined ? <div className="block-help">
                   <p>従来の計算モードです。変数モードでは x/X は変数になり、掛け算は * で入力します。</p>
                   <button type="button" onClick={() => updateBlock(block.id, (current) => current.type === "calculation" ? { ...current, evaluationMode: "note-variables" } : current)}>変数を使う</button>
@@ -135,12 +158,11 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
                 {block.evaluationMode === "note-variables" && <VariableIdentification expression={block.expression} assignment />}
                 <p className="calculation-expression"><span>計算式</span> <code>{calculation?.expression || "式未入力"}</code></p>
                 <div className={`calculation-live-result ${block.error ? "has-error" : ""}`} aria-live="polite">
-                  <span>{stale.has(block.id) ? "再計算待ち・旧結果" : "計算結果"}{calculation?.variableName && <> <code>{calculation.variableName}</code></>}</span>
+                  <span>{statusReport.states.get(block.id)?.oldResult ? "旧結果（保持中・未確定）" : "計算結果"}{calculation?.variableName && <> <code>{calculation.variableName}</code></>}</span>
                   {block.error ? <p role="status">{block.error}</p> : <strong>= {block.resultText}</strong>}
                 </div>
-                {attemptDiagnostics.filter(d => d.blockId === block.id && !graph.errors.has(block.id)).map((diagnostic, i) =>
+                {(attempt?.blocks === blocks ? attempt.diagnostics : []).filter(d => d.blockId === block.id && !graph.errors.has(block.id)).map((diagnostic, i) =>
                   <p key={i} role="status" className="field-error block-attempt-diagnostic">{diagnostic.code === "blocked-reference" ? "今回の依存エラー" : "今回の計算エラー"}: {diagnostic.message}</p>)}
-                {block.evaluationState?.attemptError && <p role="status" className="field-error">一括確定を停止: {block.evaluationState.attemptError}</p>}
                 <p className="block-help">使用可能: 数値、四則、小数、括弧、負数、累乗（<code>^</code>）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数名は英字で始め、英数字と_を使用します（例：subtotal = price * quantity）。LaTeX、その他の関数は使用できません。</p>
               </>}
             </article>

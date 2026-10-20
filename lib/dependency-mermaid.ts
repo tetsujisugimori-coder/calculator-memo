@@ -1,6 +1,10 @@
 import type { DependencyGraph } from './dependency-analysis';
 
+export type MermaidNodeState = { labels: string[]; classes: ('normal' | 'changed' | 'affected' | 'unknown' | 'error' | 'blocked')[] };
+
 export interface MermaidOptions {
+  /** Explicit evidence-aware presentation; omitted keeps the original export. */
+  nodeStates?: ReadonlyMap<string, MermaidNodeState>;
   /** Changed sources, including those explicitly selected by a caller. */
   changedIds?: ReadonlySet<string>;
   /** Potential transitive dependents. This does not mark stored results stale. */
@@ -33,6 +37,9 @@ export function toMermaid(graph: DependencyGraph, options: MermaidOptions = {}):
   for (const node of nodes) {
     const states: string[] = [];
     const classes: string[] = [];
+    const explicit = options.nodeStates?.get(node.id);
+    if (explicit) { states.push(...explicit.labels); classes.push(...explicit.classes); }
+    if (!explicit) {
     if (options.changedIds?.has(node.id)) { states.push('変更元'); classes.push('changed'); }
     if (options.affectedIds?.has(node.id)) { states.push('影響候補'); classes.push('affected'); }
     if (node.pending) { states.push('再計算待ち'); classes.push('pending'); }
@@ -44,6 +51,7 @@ export function toMermaid(graph: DependencyGraph, options: MermaidOptions = {}):
       states.push('依存不確定'); classes.push('uncertain');
     }
     if (!states.length) { states.push('通常'); classes.push('normal'); }
+    }
     const id = mermaidBlockId(node.id);
     lines.push(`  ${id}["${label(`${node.expression} [${states.join('・')}]`)}"]`);
     lines.push(`  class ${id} ${[...new Set(classes)].join(',')};`);
@@ -71,5 +79,6 @@ export function toMermaid(graph: DependencyGraph, options: MermaidOptions = {}):
     '  classDef uncertain stroke:#7c3aed,stroke-dasharray:2 3;',
     '  classDef error fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:3px;',
   );
+  if (options.nodeStates) lines.push('  classDef unknown fill:#f1f5f9,stroke:#64748b,color:#0f172a,stroke-dasharray:3 3;', '  classDef blocked fill:#ffedd5,stroke:#c2410c,color:#431407;');
   return lines.join('\n') + '\n';
 }
