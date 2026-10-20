@@ -1,7 +1,7 @@
 # Calculator Memo 開発履歴・設計判断
 
 ## 2026-10-20 (JST): 計算ブロックの変更状態・エラー詳細・Mermaid出力
-- 基点: PR #39 merge後main `ebb0bef872f7ef033d3529047aa94366ab2b34a0`をfresh fetch/ff-only pull、新枝`feat/calculation-state-diagnostics`。PRは未作成、番号未確定。
+- 基点: PR #39 merge後main `ebb0bef872f7ef033d3529047aa94366ab2b34a0`をfresh fetch/ff-only pull、新枝`feat/calculation-state-diagnostics`。[PR #40](https://github.com/tetsujisugimori-coder/calculator-memo/pull/40)を作成済み。
 - 変更: 既存前後依存解析を再利用する純派生statusモデル、直接変更/影響候補/無関係/不明、構造確認/今回試行/保存済みerrorを分離。i詳細に日本語説明・式・原因/影響・対処・試行範囲・該当カード移動。全体rollback通知を上部へ集約し、旧結果captionと個別原因を区別。
 - 判断: 従来の全件staleは一括確定の互換性上維持するが、個別警告には流用しない。編集開始/成功時snapshotで前後比較し、stale保存を開き直したときは過去baselineがないため不明を明示。比較元・詳細試行は非保存、既存JSON変更なし。旧自動変数計算は互換動作を維持し、新しい自動再計算は追加しない。
 - Mermaid: 既存生成の通常出力は維持し、任意nodeStatesで変更/影響/原因/下流/不明を表現。安定ID/順序/escapingを保持。readonly文字列とcopy操作、失敗時手動選択案内。Memo Nexus送信はしない。
@@ -10,6 +10,8 @@
 - ローカル検証: Node24.19.0、588単体/21files成功（既存551期待値不変、新37）、lint既存aria-description warning1のみ、types成功、通常build成功。最終ソース通常/Pages buildも成功。詳細設計は[calculation-status.md](docs/agent/calculation-status.md)。
 - 初回GUI: 旧結果保持は正しいがcaptionから『旧結果』語がなく既存assert失敗。ユーザーの旧結果明示要件に合わせ『旧結果（保持中・未確定）』へ修正し、数値期待値は変えず再検証で解消。初回setupはe2e依存リンク/browserpath不足で未開始、既存隔離依存と既存browserpath指定で開始。
 - ローカルGUI: Chromium4条件で215チェック成功（新20）、errors[]、246PNG/4trace。実画像4枚で原因/下流/旧値、狭幅dark/light200%詳細、Mermaidを確認。WebKitはOS共有ライブラリ不足で両条件未実行、全harnessはexit1。最後の撮影位置調整後を含む最終公開SHAはCI全6条件で正式確認し、ローカル作業treeの証跡を最終SHA成功と称さない。
+- 正式検証: 公開HEAD `e9f1513adbf5cd5d565ba456aba1b545405fa772` の [CI 39368747494](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39368747494)で588単体/21files、lint、型、通常/Pages build、Chromium4/WebKit2の324 GUIチェックが成功、errors=[]。artifact 12241505818のZIP digest一致、provenanceのsha/expectedSha/servedIdentity.shaを公開HEADと照合。370 PNG/6 traces、実PNG8枚でWebKit375px dark/390px lightの200%表示、原因/下流/旧値/i詳細/Mermaid等を確認。長い詳細は縦scrollであり画面外全文を視認済みとはしない。
+- 検証時間の調整: 上記jobは19分40秒で既存20分上限へ接近したため、追加GUIシナリオ分の余裕としてtimeout-minutesだけ30へ延長。検査項目/期待値/通常の実行量は不変。結果追記と設定調整を含む最終commit自身のCIは [PR #40 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/40/checks)で別途確認し、上記HEAD成功で代用しない。
 - 未解決・対象外: 過去baseline復元/永続診断履歴、数値未試行原因の網羅、実iPhone Safari・OSキーボード/VoiceOver・長期保存・全幅は未検証。部分再計算/部分確定/エンジン全面改修なし。PR作成・正式CI後に結果を追記し、最終文書commitのCIも確認して未mergeで停止する。
 
 ## 2026-10-20 (JST): PR #39 後日補記（記録のみ）
