@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): 読み取り専用依存解析・変更影響・Mermaid文字列
+- 基点: PR #37 merge後のmain `83ae24cc4b921b67a785c2e0160e7b8f63a2972c`。新規作業枝 `feat/dependency-analysis-mermaid`。関連PRは作成前で番号未確定。
+- 変更: ID参照と旧変数を実際の構文検査経路で解析し、directed graph・診断・変更前後の影響閉包を返す内部API。Mermaid文字列はブロックIDの衝突しない符号化、全ラベルentity化、安定順/重複排除、状態文字を含む。画面描画/コピーUIは追加しない。
+- 判断: 数値評価をしないため、`x=2`も成功を特例認定せず、成功しうる先行代入と未定義の可能性を不確定として保持。失敗再代入が残す旧scopeを推測で落とさない。配置変更自体と、配置による変数束縛変更を別報告。未知metadata/未使用slot/表示だけの変更は数値影響にしない。
+- 互換性: 新解析は既存preflightと分離。手動全体stale、一括確定、rollback、旧エラー優先、raw精度、version1/未知metadata/非破壊保護は不変。既存parserを共有するため構文専用入口だけ抽出し、計算順・演算を変更しない。保存済みエラーは現在式の評価と区別する。
+- レビュー: 独立レビューでmetadataだけの変更の過大包含、保存エラー表示、壊れた参照entries/current状態の例外、無効→有効構造修復の影響漏れを検出し修正。45対象テストを独立再実行して成功、未解決の正当性指摘なし。
+- 検証: Node24.19.0で517単体（実Mermaid11.12.2 parserを使う8テスト含む）成功。lintは既存aria-description warning1のみ、型検査・通常/Pages build成功。Mermaid/jsdomはdev依存だけで、既存784依存entryのversion/integrity等は不変。最終commit自身のCIとGUI結果はPR Checksで確認待ち。
+- GUI実施状況: 初回ローカル実行のChromium desktopシナリオ通過後、並行Pages rebuildがtest-only provenanceを消し次contextでJSON parse失敗。アプリassertion不良ではなく検証実行の干渉と切り分け。残りの5条件と最終SHAはPRの隔離CIで再検証する。ローカルWebKitは今回未到達（過去にOS共有ライブラリ不足）、Safari実機も未検証であり成功扱いしない。
+- 詳細/残件: [設計/API/静的解析の限界](docs/agent/dependency-analysis.md)。全ての旧変数候補を残す保守的過大包含は意図的。自動/部分再計算、グラフUI、外部送信、Excelエンジンは対象外。PRはDraftで作成し、マージ/公開せず人間レビュー待ち。戻す場合は本PRをrevert、保存移行は不要。
+
 ## 2026-10-20 (JST): PR #37 旧評価フェーズ失敗後の参照評価を停止
 - 判定: 旧モード内の失敗後継続は、失敗再代入が従前のscopeを残す既存仕様を守る。一方、旧フェーズ終了時に全体失敗が確定した後のID参照評価は確定結果に使われない不要な処理だった。
 - 修正: 旧モードを配置順にすべて評価した後、失敗があれば参照フェーズ前で全体rollback。旧フェーズ内の評価順・scope・全成功時のみ一括確定・未知metadata保持は不変。診断は後続の間接参照エラーではなく最初の旧モードエラーを優先する。

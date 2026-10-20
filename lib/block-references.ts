@@ -23,7 +23,7 @@ export function validReferenceFields(b: Record<string, unknown>): boolean {
     slots.add(x.slot as number); return true;
   });
 }
-function translated(block: CalculationMemoBlock) {
+export function inspectBlockReferenceExpression(block: CalculationMemoBlock) {
   if (block.expression.length > EXPRESSION_LIMITS.length) throw new Error('式は2000文字以内で入力してください');
   // Only lexical reference tokens are replaced. All remaining syntax is validated
   // by the existing AST allowlist; internal binding names cannot be typed directly.
@@ -48,7 +48,7 @@ export function analyzeBlockDependencies(blocks: MemoBlock[]) {
     if (b.evaluationMode !== REFERENCE_MODE) continue;
     try {
       if (!validReferenceFields(b as unknown as Record<string, unknown>)) throw new Error('未対応または不正な参照形式です');
-      const { slots } = translated(b);
+      const { slots } = inspectBlockReferenceExpression(b);
       const ids = slots.map(slot => {
         const entry = b.references!.entries.find(e => e.slot === slot);
         if (!entry || !byId.has(entry.blockId)) throw new Error(`参照切れ: @{${slot}} の計算ブロックがありません`);
@@ -121,7 +121,7 @@ export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlo
     const b = blocks.find(b => b.id === id)!;
     if (b.type !== 'calculation' || b.evaluationMode !== REFERENCE_MODE) continue;
     try {
-      const { expression, slots } = translated(b);
+      const { expression, slots } = inspectBlockReferenceExpression(b);
       const bindings = new Map<string, number>();
       for (const slot of slots) {
         const target = b.references!.entries.find(e => e.slot === slot)!.blockId;
