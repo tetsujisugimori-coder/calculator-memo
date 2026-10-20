@@ -36,10 +36,14 @@ export function staleBlockIds(blocks: MemoBlock[]): Set<string> {
 export function markCalculationsStale(blocks: MemoBlock[]): MemoBlock[] {
   return blocks.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'stale', attemptError: undefined } } : { ...b });
 }
-export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[]; success: boolean; evaluated: string[]; diagnostics: DependencyDiagnostic[] } {
+export type CalculationObservation = { blockId: string; result: number | null; resultText: string; error: string | null };
+/** Pure evaluation, including transient observations from a failed transaction.
+ * observations are evidence only; blocks retains the historical atomic contract. */
+export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[]; success: boolean; evaluated: string[]; observations: CalculationObservation[]; diagnostics: DependencyDiagnostic[] } {
   const graph = createMemoExecutionPlan(blocks);
   const evaluated: string[] = [];
-  const fail = (message: string, failures: DependencyDiagnostic[]) => ({ blocks: markCalculationsStale(blocks).map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState!, attemptError: message } } : b), success: false, evaluated, diagnostics: blockedReferenceDiagnostics(graph, failures) });
+  const observations: CalculationObservation[] = [];
+  const fail = (message: string, failures: DependencyDiagnostic[]) => ({ blocks: markCalculationsStale(blocks).map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState!, attemptError: message } } : b), success: false, evaluated, observations, diagnostics: blockedReferenceDiagnostics(graph, failures) });
   if (graph.errors.size) {
     const [id, message] = [...graph.errors][0];
     return fail(id === '*' ? message : `ブロック ${blocks.findIndex(b => b.id === id) + 1}: ${message}`, graph.diagnostics);
@@ -52,6 +56,7 @@ export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlo
     const b = blocks.find(b => b.id === id) as CalculationMemoBlock;
     const result = { ...b, ...calculateMemoBlock(b.id, b.expression, b.evaluationMode, scope) };
     results.set(b.id, result); evaluated.push(b.id);
+    observations.push({ blockId: b.id, result: result.result, resultText: result.resultText, error: result.error });
   }
   // Finish the legacy scope first (failed reassignment keeps its previous value),
   // then stop an already-failed transaction before any reference evaluation.
@@ -74,12 +79,20 @@ export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlo
       // missing-source failures above do not invoke the numeric evaluator.
       evaluated.push(id);
       const value = calculateVariableExpression(expression, bindings);
+      observations.push({ blockId: id, result: value.value, resultText: value.resultText, error: null });
       results.set(id, { ...b, displayExpression: b.expression, result: value.value, resultText: value.resultText, error: null });
     } catch (e) {
       const message = e instanceof Error ? e.message : '計算できません';
+      if (evaluated.includes(id)) observations.push({ blockId: id, result: null, resultText: "", error: message });
       return fail(`ブロック ${blocks.indexOf(b) + 1} (${b.expression}): ${message}`, [{ blockId: id, code: 'reference-evaluation', severity: 'error', message }]);
     }
   }
   const next = blocks.map(b => b.type === 'calculation' ? results.get(b.id)! : { ...b });
-  return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated, diagnostics: [] };
+  return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated, observations, diagnostics: [] };
+}
+
+/** Existing callers see exactly the original result shape and rollback behavior. */
+export function recalculateReferenceMemo(blocks: MemoBlock[]) {
+  const { blocks: next, success, evaluated, diagnostics } = evaluateReferenceMemo(blocks);
+  return { blocks: next, success, evaluated, diagnostics };
 }

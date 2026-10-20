@@ -5,6 +5,7 @@ import type { CalculationStatusReport } from "../lib/calculation-status";
 import type { MemoBlock } from "../lib/types";
 
 type Props = {
+  context?: "trial";
   blockId: string;
   blocks: MemoBlock[];
   report: CalculationStatusReport;
@@ -12,7 +13,7 @@ type Props = {
 };
 
 /** Presentation only: every diagnosis comes from the read-only status report. */
-export function CalculationStatusDetails({ blockId, blocks, report, onLocate }: Props) {
+export function CalculationStatusDetails({ blockId, blocks, report, onLocate, context }: Props) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const state = report.states.get(blockId);
@@ -54,7 +55,7 @@ export function CalculationStatusDetails({ blockId, blocks, report, onLocate }: 
       {!state.details.length && <p>{state.oldResult ? "表示している値は保持中の結果です。今回の編集内容でメモ全体の確定はまだ完了していません。" : "このブロックについて確認できた問題はありません。"}</p>}
       {state.details.map((detail, index) => <section className="block-diagnostic-item" key={`${detail.category}-${detail.phase}-${index}`}>
         <h5>{detail.title}</h5>
-        <p className="block-diagnostic-phase">{detail.phase === "before" ? "再計算前の解析" : detail.phase === "attempt" ? "今回の再計算で確認" : "保存・保持している結果の記録"}</p>
+        <p className="block-diagnostic-phase">{detail.phase === "before" ? "再計算前の解析" : detail.phase === "attempt" ? context === "trial" ? "今回の試算で確認（未反映）" : "今回の再計算で確認" : "保存・保持している結果の記録"}</p>
         <dl>
           {detail.phase === "saved"
             ? <div><dt>過去の式・影響範囲</dt><dd>過去の失敗時の式・影響範囲は、この記録だけでは確定できません。</dd></div>

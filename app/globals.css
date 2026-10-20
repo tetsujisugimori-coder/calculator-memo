@@ -441,3 +441,12 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .dependency-graph-panel, .dependency-graph-panel > section, .dependency-graph-scroll { min-width: 0; width: 100%; box-sizing: border-box; }
 .memo-block-editor { min-width: 0; }
 .memo-block-editor { grid-template-columns: minmax(0, 1fr); }
+
+/* Trial data is transient, separate from editable calculation cards. */
+.calculation-trial { min-width: 0; border: 1px solid var(--line); border-radius: 12px; padding: .8rem; }
+.calculation-trial-cards { display: grid; gap: .75rem; min-width: 0; }
+.calculation-trial-cards > article { min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: .75rem; }
+.calculation-trial h4, .calculation-trial code, .calculation-trial small, .calculation-trial dd { overflow-wrap: anywhere; white-space: normal; }
+.calculation-trial dl { display: grid; gap: .5rem; }
+.calculation-trial dd { margin: .2rem 0 0; }
+.calculation-trial dt { font-weight: 600; }

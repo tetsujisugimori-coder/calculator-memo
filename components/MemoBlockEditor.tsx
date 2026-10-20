@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { CalculationTrialPreview } from "./CalculationTrialPreview";
+import { useCalculationTrial } from "./useCalculationTrial";
 import { DependencyGraph } from "./DependencyGraph";
 import { buildCalculationStatus, type CalculationAttempt } from "../lib/calculation-status";
 import { CalculationStatusDetails, DependencyMermaidExport } from "./CalculationStatusDetails";
@@ -12,6 +14,8 @@ import { KatexFormula, validateLatex } from "./KatexFormula";
 import { MarkdownContent } from "./MarkdownContent";
 
 type Props = {
+  memoKey?: string;
+  sourceRevision?: string;
   blocks: MemoBlock[];
   manual?: boolean;
   onChange: (blocks: MemoBlock[]) => void;
@@ -20,16 +24,21 @@ type Props = {
 
 const makeBlockId = (kind: MemoBlock["type"]) => `${kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false }: Props) {
+export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false, memoKey = "editor", sourceRevision = "" }: Props) {
   const [attempt, setAttempt] = useState<CalculationAttempt>();
   const [baseline, setBaseline] = useState<MemoBlock[]>(blocks);
   const [baselineKnown, setBaselineKnown] = useState(() => !isManualMemo(blocks) || staleBlockIds(blocks).size === 0);
   const [graphSelected, setGraphSelected] = useState<string>();
+  const trialButton = useRef<HTMLButtonElement>(null);
   const cards = useRef(new Map<string, HTMLElement>());
   const manualMode = manual || isManualMemo(blocks);
   const stale = staleBlockIds(blocks);
   const graph = analyzeBlockDependencies(blocks);
   const statusReport = buildCalculationStatus(blocks, { baseline, baselineKnown, attempt });
+  const { trial, trialMessage, validTrial, pendingTrial, preview, applyTrial, invalidateTrial, clearTrial } = useCalculationTrial({
+    blocks, memoKey, sourceRevision, baseline, baselineKnown,
+    onApply: result => { onChange(result.blocks); setAttempt(result); setBaseline(result.blocks); setBaselineKnown(true); trialButton.current?.focus(); },
+  });
   const locate = (id: string) => {
     const card = cards.current.get(id);
     if (!card || !blocks.some(block => block.id === id)) return;
@@ -44,6 +53,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
     });
   };
   const change = (next: MemoBlock[], calculationChanged = true) => {
+    invalidateTrial();
     setAttempt(undefined);
     const result = manualMode || isManualMemo(next)
       ? calculationChanged ? markCalculationsStale(next) : next
@@ -55,6 +65,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
     onChange(result);
   };
   const recalculate = () => {
+    clearTrial();
     const result = recalculateReferenceMemo(blocks);
     onChange(result.blocks);
     setAttempt({ ...result });
@@ -106,6 +117,11 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false 
 
       {manualMode && <div className="block-reference-controls">
         <button type="button" onClick={recalculate}>メモ全体を再計算</button>
+        <button ref={trialButton} type="button" onClick={preview} disabled={pendingTrial}>試算する</button>
+        <p className="block-help">再計算は成功時に編集内容へ即時反映します。試算は結果を変えずに比較し、「結果を反映」で一括反映します。どちらも永続保存は「保存する」です。</p>
+        {pendingTrial && <p role="status">試算中です。結果はまだ反映していません。</p>}
+        {trialMessage && <p role="status">{trialMessage}</p>}
+        {trial && <CalculationTrialPreview trial={trial} blocks={blocks} valid={validTrial} onApply={applyTrial} onLocate={locate} />}
         <p role="status">{stale.size ? "メモ全体は再計算待ちです。表示中の結果は保持されています。変更・影響の内訳は各ブロックで確認できます。" : "計算結果は確定済みです。"}</p>
         {statusReport.globalMessages.map((message, index) => <p className={message.startsWith("一括確定を停止:") ? "block-transaction-notice" : "block-help"} role="status" key={index}>{message}</p>)}
         <details><summary>ⓘ 参照と再計算について</summary><p>参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。</p></details>
