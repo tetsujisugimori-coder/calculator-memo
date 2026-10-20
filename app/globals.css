@@ -440,7 +440,9 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .dependency-graph-svg .edge-pattern-dotted { stroke-dasharray: 3 3; }
 .dependency-graph-svg .edge-pattern-dashed { stroke-dasharray: 6 3; }
 .dependency-graph-panel, .dependency-graph-panel > section, .dependency-graph-scroll { min-width: 0; width: 100%; box-sizing: border-box; }
-.memo-block-editor { min-width: 0; }
+/* Trial rows change height above the graph. Native scroll anchoring can move
+   the summary between touch focus and click; keep this editor out of anchoring. */
+.memo-block-editor { min-width: 0; overflow-anchor: none; }
 .memo-block-editor { grid-template-columns: minmax(0, 1fr); }
 
 /* Trial data is transient, separate from editable calculation cards. */

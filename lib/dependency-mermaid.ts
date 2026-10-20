@@ -61,7 +61,9 @@ export function toMermaid(graph: DependencyGraph, options: MermaidOptions = {}):
     }
     const id = mermaidBlockId(node.id);
     lines.push(`  ${id}["${label(`${node.expression} [${states.join('・')}]`)}"]`);
-    lines.push(`  class ${id} ${[...new Set(classes)].join(',')};`);
+    // Mermaid treats a comma-separated class list as one literal class name.
+    // Separate statements preserve every state through SVG sanitization.
+    for (const name of new Set(classes)) lines.push(`  class ${id} ${name};`);
   }
   // Coalesce repeated dependencies while preserving distinct definite/potential
   // paths and all variable names. Sort without locale-sensitive collation.

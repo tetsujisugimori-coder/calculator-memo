@@ -62,7 +62,7 @@ describe('dependency Mermaid export', () => {
     const input = graph([a, node('b')]);
     const output = toMermaid(input, { changedIds: new Set(['a']), affectedIds: new Set(['a']) });
     for (const state of ['変更元', '影響候補', '再計算待ち', '解析エラー', '依存不確定', '通常']) expect(output).toContain(encoded(state));
-    expect(output).toContain(`class ${mermaidBlockId('a')} changed,affected,pending,error,uncertain;`);
+    for (const name of ['changed', 'affected', 'pending', 'error', 'uncertain']) expect(output).toContain(`class ${mermaidBlockId('a')} ${name};`);
     expect(await mermaid.parse(output)).toBeTruthy();
   });
 
@@ -139,4 +139,11 @@ it('parses added, removed and unknown edges without merging distinct change evid
   expect(await mermaid.parse(output)).toBeTruthy();
   expect(toMermaid({ ...input, edges: [...input.edges].reverse() }, { edgeChanges: changes })).toBe(output);
   expect(toMermaid(input, { edgeChanges: new Map() })).toBe(toMermaid(input));
+});
+
+it('assigns combined states as separate Mermaid classes, not one comma-containing class', async () => {
+  const output = toMermaid(graph([node('a')]), { nodeStates: new Map([['a', { labels: ['変更元', '計算エラー'], classes: ['changed', 'error', 'affected'] }]]) });
+  const parsed = await mermaid.mermaidAPI.getDiagramFromText(output);
+  const db = parsed.db as { getVertices: () => Map<string, { classes: string[] }> };
+  expect(db.getVertices().get(mermaidBlockId('a'))?.classes).toEqual(['changed', 'error', 'affected']);
 });

@@ -1503,6 +1503,7 @@ async function exerciseCalculationTrials(prefix) {
   const comparisonRow = id => graph().locator(`[data-comparison-block-id=${JSON.stringify(id)}]`);
   const openComparison = async () => {
     await activate(dialog.getByText("依存関係の図を開く", { exact: true }));
+    await expect(dialog.locator(".dependency-graph-panel")).toHaveAttribute("open", "");
     await activate(graph().getByRole("button", { name: "変更前後・試算", exact: true }));
     await expect(graphNode("a")).toBeVisible();
   };
@@ -1655,6 +1656,11 @@ async function exerciseCalculationTrials(prefix) {
   await expect(apply()).toBeDisabled(); await expect(row("a")).toContainText("試算失敗");
   await expect(row("b")).toContainText("数値評価は未試行"); await expect(row("c")).toContainText("数値評価は未試行");
   await openComparison();
+  // Combined impact + failure classes must survive Mermaid rendering and SVG sanitization.
+  await expect(graphNode("a")).toHaveClass(/(?:^|\s)changed(?:\s|$)/);
+  await expect(graphNode("a")).toHaveClass(/(?:^|\s)error(?:\s|$)/);
+  await expect(graphNode("b")).toHaveClass(/(?:^|\s)affected(?:\s|$)/);
+  await expect(graphNode("b")).toHaveClass(/(?:^|\s)blocked(?:\s|$)/);
   for (const id of ["a", "b", "c", "same"]) await expect(comparisonRow(id)).toContainText("数値比較不可");
   assert.deepEqual(await visibleResults(), beforeFailure);
   await activate(row("a").getByRole("button", { name: "ブロック 1 の状態とエラー詳細", exact: true }));
