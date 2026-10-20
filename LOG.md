@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): PR #42 公開後の正式検証結果
+- 関連: [PR #42](https://github.com/tetsujisugimori-coder/calculator-memo/pull/42) を作成済み。公開HEAD `01b92131964928babe384cd22688c0e145d98d95`、[CI 39425183509](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39425183509) が成功。
+- 正式検証: Node22.13.0、658単体/26files、lint既存warning1、型検査、通常/Pages build成功。Chromium4/WebKit2の全6条件372 GUIチェック成功、runtime/network errors=[]、touch4条件各629activation。ローカルWebKit未実行を、このCI実行で補完した。
+- 証拠: [artifact 12266194107](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39425183509/artifacts/12266194107)、ZIP SHA256 `74f924e289dc1464385bad863326ce4bb3f92db3853d863d18763a4bb3e7727e` を照合。provenanceのsha/expectedSha/servedIdentityが公開HEADと一致、448 PNG/6 tracesを取得。
+- 実画像: WebKit375px dark/文字200%で試算130・差+10・状態ラベルと枠を確認、390px成功画面で保持100・試算120・差+20・未反映/別途保存の説明を確認。縦scrollで閲覧するカードであり、全文や全カードの1画面表示を保証しない。実iPhone Safari/OSキーボード/VoiceOverは未検証。
+- 公開tree `dd48ab114fcbf3da531b871877db8c783ec655b6` はローカル実装commit `f9eac2a0a35dab306fbd61d736508c0e71a67a18` と一致。独立レビューの阻害3件は修正・再検証済み、未解消阻害なし。旧main比較600ケースも差分なし。
+- この追記は文書のみ。結果記録commit自身の最終HEADは [PR #42 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/42/checks) で別途検証し、上記SHAの成功で代用しない。mergeせずレビュー待ちで停止する。
+
 ## 2026-10-20 (JST): 計算メモの試算・差分プレビュー
 - 基点: PR #41 merge済みmain `1d43eccb49bdc81177d4d6c122290d455d174b71` をfetch/ff-only pullして確認。作業枝 `feat/calculation-trial-preview`。PR未作成、正式CI未実行。単一機能の範囲・受入条件・残件をPRで管理し、既存Issue #19（%）等は対象外として変更しない。
 - 変更: 既存評価本体を純粋な `evaluateReferenceMemo` として共有し、実数値評価の観測だけを一時結果へ追加。旧 `recalculateReferenceMemo` は戻り値の形・順序・停止・優先error・rollbackを維持する。試算モデル、未反映カード、内部値差分、既存i診断と移動、明示的全件反映を追加。
