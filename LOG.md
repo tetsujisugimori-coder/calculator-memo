@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): PR #41 公開後の正式検証結果
+- 関連: [PR #41](https://github.com/tetsujisugimori-coder/calculator-memo/pull/41) を作成済み。以下の実装開始時点の「PR未作成・CI未実行」を、公開後の実測結果で補う。
+- 対象: 公開HEAD `aeaf836c76abc61ba62ffe8160b21f4537f6d598`、[CI 39408931086](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39408931086)。Node22.13.0で602単体/23files、lint（既存warning1）、型検査、通常/Pages buildが成功。Chromium4/WebKit2の全6条件・348 GUIチェック成功、runtime/network errors=[]。
+- 証拠: [artifact 12259276392](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39408931086/artifacts/12259276392) のZIP SHA256 `5da724fc69a97ce7813c965151771e2850a2b55c967541a7c825cc6b7d303879` を一致確認。provenanceのsha/expectedSha/servedIdentity.shaは対象公開HEADと一致。412 PNG/6 tracesを取得、各条件12回の移動先geometry/hit-testが成功し、touch4条件は各597activation。
+- 実画像: 同artifactのWebKit375px dark/390px light・文字200%の図と移動先、375px診断詳細、390px上限fallbackの計6枚を確認。選択ブロック3の番号・強調・明示編集操作が視認でき、図は専用領域内の横scrollとなる。大きい図全体や長い診断全文を1画面で視認したという意味ではない。実iPhone Safari、OSキーボード/VoiceOver、実OSクリップボードは未検証。
+- 独立レビュー: ローカル実装commit `5743bf40800b92bf2b48fc09a0bd4813097b55c4` と公開HEADは同tree `195f43bc1dff4ecb71dc6648b6e1695b267a8e4a`。安全性・ID対応・非同期取消・モバイル移動等の指摘を修正し、未解消の実装阻害事項なし。独立19件と大図/異常系/実描画例外の詳細は以下の記録を参照。
+- この追記は文書のみ。結果記録commit自身の最終HEADのCIは [PR #41 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/41/checks) で別途確認し、上記HEADの成功で代用しない。エージェントはmergeせず、人間レビュー待ちで停止する。
+
 ## 2026-10-20 (JST): 読み取り専用の依存関係図とブロック選択
 - 基点: PR #40 merge後main `3339d978acd9518976a8954e77be4f8bcf50d6b4` をfresh clone/fetch/ff-only pull、枝 `feat/dependency-graph-navigation`。PR未作成、CI未実行。
 - 変更: PR #38/#40のgraph/status/Mermaid/i診断を再利用し、折り畳み図・scroll/zoom・安定IDノード選択・カード強調・明示編集focusを追加。計算/保存/エンジンコードを変更せず、図操作からonChangeや再計算を呼ばない。
