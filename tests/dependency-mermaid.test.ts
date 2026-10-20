@@ -107,3 +107,14 @@ describe('dependency Mermaid export', () => {
     expect([...affectedIds]).toEqual(['b']);
   });
 });
+
+
+it('parses evidence-aware states while escaping labels and retaining stable nodes', async () => {
+  const input = graph([node('a'), node('b'), node('c')], [edge('a','b')]);
+  const nodeStates = new Map([['a', { labels: ['原因 " ] --> unsafe[日本語'], classes: ['error' as const] }], ['b', { labels: ['参照先エラー'], classes: ['blocked' as const] }], ['c', { labels: ['状態不明'], classes: ['unknown' as const] }]]);
+  const result = toMermaid(input, { nodeStates });
+  expect(await mermaid.parse(result)).toBeTruthy();
+  expect(result).not.toContain('unsafe[');
+  expect(toMermaid({ ...input, nodes: [...input.nodes].reverse() }, { nodeStates })).toBe(result);
+  expect(result).toContain(`class ${mermaidBlockId('b')} blocked;`);
+});

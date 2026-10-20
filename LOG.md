@@ -1,5 +1,22 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-20 (JST): 計算ブロックの変更状態・エラー詳細・Mermaid出力
+- 基点: PR #39 merge後main `ebb0bef872f7ef033d3529047aa94366ab2b34a0`をfresh fetch/ff-only pull、新枝`feat/calculation-state-diagnostics`。PRは未作成、番号未確定。
+- 変更: 既存前後依存解析を再利用する純派生statusモデル、直接変更/影響候補/無関係/不明、構造確認/今回試行/保存済みerrorを分離。i詳細に日本語説明・式・原因/影響・対処・試行範囲・該当カード移動。全体rollback通知を上部へ集約し、旧結果captionと個別原因を区別。
+- 判断: 従来の全件staleは一括確定の互換性上維持するが、個別警告には流用しない。編集開始/成功時snapshotで前後比較し、stale保存を開き直したときは過去baselineがないため不明を明示。比較元・詳細試行は非保存、既存JSON変更なし。旧自動変数計算は互換動作を維持し、新しい自動再計算は追加しない。
+- Mermaid: 既存生成の通常出力は維持し、任意nodeStatesで変更/影響/原因/下流/不明を表現。安定ID/順序/escapingを保持。readonly文字列とcopy操作、失敗時手動選択案内。Memo Nexus送信はしない。
+- 互換性: エンジン・評価順・停止条件・全成功一括確定・rollback・未知field・内部精度・安全制限・非破壊読込・登録式/履歴の処理コード変更なし。
+- 独立レビュー: 保存旧errorを修正後式へ誤帰属する表示と、旧自動計算の確定errorを未実行と呼ぶlabelを再現し修正。失敗時式/範囲は不明と明示、保存済みerror優先labelへ。回帰テストを追加。追加で循環＋参照切れが合流する下流の既知原因欠落を再現し、全構造原因の確定到達を統合するよう修正。自分自身の別原因がある場合も上流原因を残す回帰を追加。最終独立25件成功、未解消阻害なし。正式CIは確認後追記する。
+- ローカル検証: Node24.19.0、588単体/21files成功（既存551期待値不変、新37）、lint既存aria-description warning1のみ、types成功、通常build成功。最終ソース通常/Pages buildも成功。詳細設計は[calculation-status.md](docs/agent/calculation-status.md)。
+- 初回GUI: 旧結果保持は正しいがcaptionから『旧結果』語がなく既存assert失敗。ユーザーの旧結果明示要件に合わせ『旧結果（保持中・未確定）』へ修正し、数値期待値は変えず再検証で解消。初回setupはe2e依存リンク/browserpath不足で未開始、既存隔離依存と既存browserpath指定で開始。
+- ローカルGUI: Chromium4条件で215チェック成功（新20）、errors[]、246PNG/4trace。実画像4枚で原因/下流/旧値、狭幅dark/light200%詳細、Mermaidを確認。WebKitはOS共有ライブラリ不足で両条件未実行、全harnessはexit1。最後の撮影位置調整後を含む最終公開SHAはCI全6条件で正式確認し、ローカル作業treeの証跡を最終SHA成功と称さない。
+- 未解決・対象外: 過去baseline復元/永続診断履歴、数値未試行原因の網羅、実iPhone Safari・OSキーボード/VoiceOver・長期保存・全幅は未検証。部分再計算/部分確定/エンジン全面改修なし。PR作成・正式CI後に結果を追記し、最終文書commitのCIも確認して未mergeで停止する。
+
+## 2026-10-20 (JST): PR #39 後日補記（記録のみ）
+- 訂正対象: 以下のID実行計画節は公開前の『PR未作成・正式CI確認待ち』が残っていた。公開・検証済みの記録追記が完了処理で漏れていたため、過去本文を保持して事実を補う。PR #39のコード/過去branchは変更しない。
+- [PR #39](https://github.com/tetsujisugimori-coder/calculator-memo/pull/39)、最終HEAD `ce22e800e3ba08d54cccfee633c9ccd01adcf274`、[CI 39364179508](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39364179508)成功。551単体、lint、types、通常/Pages build、Chromium4/WebKit2の294 GUIチェック、独立55検証成功。実画像確認と証跡HEAD照合済み。
+- PR #39は人間によるmergeを今回の最新mainで確認。既知制約と意図的な独立IDエラー選択順差分は元設計どおり。今回の追記は2026-10-20の記録訂正であり、新たなPR #39検証実行や再mergeではない。
+
 ## 2026-10-20 (JST): ID参照標準導線と共有依存グラフによる実行計画
 - 基点: PR #38 merge後のmain `7fd8934ff3a04a3f43cd50ef5cbe77286ff55014`をfetch/ff-only pullして確認。新規作業枝 `feat/id-reference-execution-plan`。PRは未作成、番号未確定。
 - 変更: 「＋ 計算」を既存ID参照形式の未評価ブロックへ、「＋ 旧変数計算」を明示互換導線へ分ける。内部ID入力は不要。PR #38の構造解析を共有coreへ分離し、実行計画・依存解析・Mermaidが同じ確定ID辺を使用する。

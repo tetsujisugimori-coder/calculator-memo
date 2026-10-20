@@ -148,3 +148,24 @@ A new `default-id-calculations` stage runs in all existing six Chromium/WebKit c
 The earlier reference GUI case selects its own block ID, so its diagnostic expectation is now **自己参照** rather than the old generic **循環参照**. This follows the requested separate self/cycle diagnosis; its rollback assertions are unchanged.
 
 The failed-attempt UI additionally distinguishes the source’s **今回の計算エラー** and its ID consumer’s **今回の依存エラー** from the memo-wide rollback notice. Unrelated blocks have no local diagnostic. `*-default-id-own-error` and `*-default-id-unrelated-rollback` capture the distinction. Attempt diagnostics are transient, clear on editing and are absent after dialog reopen; saved JSON remains unchanged in shape.
+
+## Calculation state and diagnostic detail evidence
+
+Each existing browser context exercises a three-level ID chain and an unrelated
+calculation through the real editor. It checks direct-change versus potential
+impact badges, retained old results, static syntax diagnostics before execution,
+actual numeric failure and definite ID-downstream errors after an explicit
+recalculation, and a single memo-wide rollback notice without labeling the
+unrelated block as failed. Saving and reloading a stale memo must report unknown
+change provenance rather than reconstructing an invented edit history; correcting
+and successfully recalculating clears the derived pending state.
+
+The accessible i button is opened and closed, a diagnostic source link focuses the
+actual source card, and Mermaid output is exposed as a read-only string with a
+copy action. Export must not save or calculate the draft. Both themes at 200% root
+font size cover label/detail wrapping and a minimum 44px i-button hit area.
+`*-diagnostics-*` screenshots distinguish the inspected states. These are
+synthetic fixtures, not real user data, and do not claim native iOS text zoom or
+VoiceOver acceptance. The prior per-card rollback assertion is intentionally
+moved to the single memo-wide notice; its arithmetic and rollback expectations
+are unchanged.
