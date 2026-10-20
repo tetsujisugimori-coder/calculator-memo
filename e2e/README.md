@@ -91,7 +91,7 @@ Follow the repository [AGENTS.md](../AGENTS.md). Before opening a PR, decide whe
 
 ## Mobile acceptance boundary
 
-The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 448 historical screenshot geometry checkpoints, and touch counts pass. Missing scenarios are never success.
+The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 454 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
 
 Use the recorded exact PR SHA and the downloaded screenshots/traces for review. The next complementary acceptance step is physical iPhone Safari: repeat input/edit/error recovery and both memo saves, inspect the software keyboard and portrait/landscape scrolling, close/reopen Safari and confirm persistence using only synthetic data. No external device-hosting account or public preview service is required or created by this PR.
 
@@ -282,3 +282,25 @@ executes GUI-operation, screenshot and SHA negative controls in a separate temp
 copy. It injects faults only into that copy and requires nonzero exit plus
 appropriate evidence. A real GitHub artifact-service outage is not simulated by
 these local probes. See [measured baseline and limitations](../docs/agent/ci-optimization.md).
+
+
+## Graph comparison and trial integration (PR #44)
+
+The existing graph-navigation and trial-preview fixtures now also verify the
+comparison mode in all six contexts. Their original acceptance assertions remain.
+The trial fixture adds one dependent zero-multiply block to distinguish structural
+influence with an unchanged value from an unrelated block. The new checks cover
+changed and indirectly affected values, stable-ID added/removed edges, comparison
+Mermaid copy and rendered labels/edges, trial invalidation before another explicit
+trial, and failed/unattempted numerical comparisons. Selection cannot apply or
+save results. Deleted historical nodes cannot navigate, and oversized comparisons
+retain the existing safe fallback. Both themes at 200% text retain horizontal-fit
+checks.
+
+The complete contract is 384 named acceptance checks and 454 screenshot geometry
+checkpoints across six contexts. One new representative `*-graph-trial-comparison`
+PNG per context supplements the prior 18, for 114 success PNGs total. All old
+geometry checkpoints still execute; success trace export remains disabled and
+pre-failure tracing is unchanged. The exact touch count is enforced by the same
+fail-closed coverage contract. These browser-emulated conditions still do not
+claim physical iPhone Safari or native OS text zoom coverage.

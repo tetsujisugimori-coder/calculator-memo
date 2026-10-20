@@ -70,7 +70,7 @@ export function CalculationStatusDetails({ blockId, blocks, report, onLocate, co
   </section>;
 }
 
-export function DependencyMermaidExport({ text }: { text: string }) {
+export function DependencyMermaidExport({ text, comparison = false }: { text: string; comparison?: boolean }) {
   const [copyResult, setCopyResult] = useState<{ text: string; message: string }>();
   const copyMessage = copyResult?.text === text ? copyResult.message : "";
   const copy = async () => {
@@ -83,9 +83,9 @@ export function DependencyMermaidExport({ text }: { text: string }) {
     }
   };
   return <details className="block-mermaid-export" onToggle={() => setCopyResult(undefined)}>
-    <summary>依存関係をMermaidで取り出す</summary>
-    <p className="block-help">図は現在の式・参照と、ここで確認できた状態を表します。点線は未確定の依存候補です。数値計算やMemo Nexusへの送信は行いません。</p>
-    <textarea aria-label="Mermaid依存関係図" readOnly rows={7} value={text} spellCheck={false} />
+    <summary>{comparison ? '比較図をMermaidで取り出す' : '依存関係をMermaidで取り出す'}</summary>
+    <p className="block-help">{comparison && '比較図には変更前の削除線・ノードも含みます。＋追加・−削除のラベルと数値比較の状態を確認してください。'}図は現在の式・参照と、ここで確認できた状態を表します。点線は未確定の依存候補です。数値計算やMemo Nexusへの送信は行いません。</p>
+    <textarea aria-label={comparison ? "Mermaid変更比較図" : "Mermaid依存関係図"} readOnly rows={7} value={text} spellCheck={false} />
     <button type="button" onClick={copy}>Mermaid文字列をコピー</button>
     {copyMessage && <p role="status">{copyMessage}</p>}
   </details>;

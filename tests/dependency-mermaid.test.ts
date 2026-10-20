@@ -118,3 +118,25 @@ it('parses evidence-aware states while escaping labels and retaining stable node
   expect(toMermaid({ ...input, nodes: [...input.nodes].reverse() }, { nodeStates })).toBe(result);
   expect(result).toContain(`class ${mermaidBlockId('b')} blocked;`);
 });
+
+it('parses added, removed and unknown edges without merging distinct change evidence', async () => {
+  const a = edge('a', 'b');
+  const old = { ...a, kind: 'variable' as const, certainty: 'uncertain' as const, variable: '旧"名前' };
+  const uncertain = edge('b', 'a');
+  const input = graph([node('a', '日本語 " ] --> text'), node('b')], [a, old, a, uncertain]);
+  const { dependencyEdgeKey } = await import('../lib/dependency-mermaid');
+  const changes = new Map([
+    [dependencyEdgeKey(a), 'added' as const],
+    [dependencyEdgeKey(old), 'removed' as const],
+    [dependencyEdgeKey(uncertain), 'unknown' as const],
+  ]);
+  const output = toMermaid(input, { edgeChanges: changes });
+  expect(output).toContain(encoded('＋追加 ID参照'));
+  expect(output).toContain(encoded('−削除 変数 旧"名前（不確定）'));
+  expect(output).toContain(encoded('変更不明 ID参照'));
+  expect(output.match(/ ==>/g)).toHaveLength(1);
+  expect(output.match(/ -\.->/g)).toHaveLength(2);
+  expect(await mermaid.parse(output)).toBeTruthy();
+  expect(toMermaid({ ...input, edges: [...input.edges].reverse() }, { edgeChanges: changes })).toBe(output);
+  expect(toMermaid(input, { edgeChanges: new Map() })).toBe(toMermaid(input));
+});

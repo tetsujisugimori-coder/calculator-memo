@@ -1,8 +1,15 @@
-import type { DependencyGraph } from './dependency-analysis';
+import type { DependencyEdge, DependencyGraph } from './dependency-analysis';
 
 export type MermaidNodeState = { labels: string[]; classes: ('normal' | 'changed' | 'affected' | 'unknown' | 'error' | 'blocked')[] };
 
+export type DependencyEdgeChange = 'added' | 'removed' | 'unknown';
+/** Semantic identity, independent of display order and coalesced drawing labels. */
+export function dependencyEdgeKey(edge: DependencyEdge): string {
+  return JSON.stringify([edge.source, edge.target, edge.kind, edge.certainty, edge.variable ?? null]);
+}
+
 export interface MermaidOptions {
+  edgeChanges?: ReadonlyMap<string, DependencyEdgeChange>;
   /** Explicit evidence-aware presentation; omitted keeps the original export. */
   nodeStates?: ReadonlyMap<string, MermaidNodeState>;
   /** Changed sources, including those explicitly selected by a caller. */
@@ -58,17 +65,18 @@ export function toMermaid(graph: DependencyGraph, options: MermaidOptions = {}):
   }
   // Coalesce repeated dependencies while preserving distinct definite/potential
   // paths and all variable names. Sort without locale-sensitive collation.
-  const edges = new Map<string, { source: string; target: string; certainty: string; labels: Set<string> }>();
+  const edges = new Map<string, { source: string; target: string; certainty: string; change?: DependencyEdgeChange; labels: Set<string> }>();
   for (const edge of graph.edges) {
     if (!ids.has(edge.source) || !ids.has(edge.target)) continue;
-    const key = JSON.stringify([edge.source, edge.target, edge.certainty]);
-    const existing = edges.get(key) ?? { source: edge.source, target: edge.target, certainty: edge.certainty, labels: new Set<string>() };
+    const change = options.edgeChanges?.get(dependencyEdgeKey(edge));
+    const key = JSON.stringify([edge.source, edge.target, edge.certainty, ...(change ? [change] : [])]);
+    const existing = edges.get(key) ?? { source: edge.source, target: edge.target, certainty: edge.certainty, change, labels: new Set<string>() };
     existing.labels.add(edge.kind === 'reference' ? 'ID参照' : `変数 ${edge.variable ?? ''}`.trim());
     edges.set(key, existing);
   }
   for (const [, edge] of [...edges].sort(([a], [b]) => compare(a, b))) {
-    const text = [...edge.labels].sort(compare).join(' / ') + (edge.certainty === 'uncertain' ? '（不確定）' : '');
-    const arrow = edge.certainty === 'uncertain' ? '-.->' : '-->';
+    const text = (edge.change === 'added' ? '＋追加 ' : edge.change === 'removed' ? '−削除 ' : edge.change === 'unknown' ? '変更不明 ' : '') + [...edge.labels].sort(compare).join(' / ') + (edge.certainty === 'uncertain' ? '（不確定）' : '');
+    const arrow = edge.change === 'removed' || edge.change === 'unknown' || edge.certainty === 'uncertain' ? '-.->' : edge.change === 'added' ? '==>' : '-->';
     lines.push(`  ${mermaidBlockId(edge.source)} ${arrow}|"${label(text)}"| ${mermaidBlockId(edge.target)}`);
   }
   lines.push(

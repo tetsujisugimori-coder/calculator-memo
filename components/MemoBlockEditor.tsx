@@ -127,7 +127,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false,
         <details><summary>ⓘ 参照と再計算について</summary><p>参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。</p></details>
       </div>}
       <p className="block-help">「＋ 計算」はID参照方式です。数値だけの式も使え、参照先は一覧から選べます。旧方式で名前付き変数を追加する場合は「＋ 旧変数計算」を選びます。既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。</p>
-      {blocks.some(block => block.type === "calculation") && <><DependencyGraph blocks={blocks} report={statusReport} onLocate={locate} /><DependencyMermaidExport text={statusReport.mermaid} /></>}
+      {blocks.some(block => block.type === "calculation") && <><DependencyGraph blocks={blocks} report={statusReport} baselineKnown={baselineKnown} trial={validTrial ? trial : undefined} onLocate={locate} /><DependencyMermaidExport text={statusReport.mermaid} /></>}
       <div className="block-editor-list">
         {blocks.map((block, index) => {
           const calculation = block.type === "calculation" ? (block.evaluationMode === "note-variables" ? describeCalculationBlock(block.expression) : { expression: block.expression }) : null;

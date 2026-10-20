@@ -352,7 +352,7 @@ async function screenshot(name, expectedWidth = currentScenario.width, fullPage 
   await assertHorizontalFit(expectedWidth);
   const geometryMs = performance.now() - checkpointStarted;
   const suffix = name.slice(currentScenario.id.length);
-  const retained = /^(?:-header|-guide|-formula-library-controls|-basic-math-domain-error|-variables-dark-result-stress|-reference-dark-enlarged-picker|-default-id-unrelated-rollback|-diagnostics-independent-causes|-diagnostics-dark-enlarged|-graph-selected-card|-graph-error-detail|-graph-dark-enlarged-selection|-graph-limit-fallback|-trial-success|-trial-failure|-trial-dark-enlarged-delta|-protected-dark-large-text|-normal-memos-after-repair)$/.test(suffix);
+  const retained = /^(?:-header|-guide|-formula-library-controls|-basic-math-domain-error|-variables-dark-result-stress|-reference-dark-enlarged-picker|-default-id-unrelated-rollback|-diagnostics-independent-causes|-diagnostics-dark-enlarged|-graph-selected-card|-graph-error-detail|-graph-dark-enlarged-selection|-graph-limit-fallback|-graph-trial-comparison|-trial-success|-trial-failure|-trial-dark-enlarged-delta|-protected-dark-large-text|-normal-memos-after-repair)$/.test(suffix);
   metadata.screenshotCheckpoints.push({ name, horizontalFit: "passed", retained });
   if (!retained) { metadata.timings.screenshots.push({ name, captured: false, geometryMs, captureMs: 0, durationMs: performance.now() - checkpointStarted }); return; }
   // Test-only visual label, removed immediately after capture; not an app feature.
@@ -1354,9 +1354,9 @@ async function exerciseDependencyGraphNavigation(prefix) {
   await expect(card(ids[3]).locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
   const beforeNavigation = await snapshot();
   await activate(panel().getByRole("button", { name: "図を拡大", exact: true }));
-  await expect(panel().locator(".dependency-graph-tools")).toContainText("125%");
+  await expect(panel().locator(".dependency-graph-tools").filter({ has: page.getByRole("button", { name: "図を拡大", exact: true }) })).toContainText("125%");
   await activate(panel().getByRole("button", { name: "図を縮小", exact: true }));
-  await expect(panel().locator(".dependency-graph-tools")).toContainText("100%");
+  await expect(panel().locator(".dependency-graph-tools").filter({ has: page.getByRole("button", { name: "図を拡大", exact: true }) })).toContainText("100%");
   await activate(graphToggle()); await expect(panel()).toHaveCount(0);
   await activate(graphToggle()); await assertNodeIds(ids);
   await selectNode(ids[3]); await activate(detailButton(panel(), 4));
@@ -1399,6 +1399,14 @@ async function exerciseDependencyGraphNavigation(prefix) {
   await expect(panel().getByText("選択したブロックは削除されています。", { exact: true })).toBeVisible();
   await expect(panel().locator(".dependency-graph-selection")).toHaveCount(0);
   await expect(dialog.locator(".block-graph-selected")).toHaveCount(0);
+  await activate(panel().getByRole("button", { name: "変更前後・試算", exact: true }));
+  const deletedRow = panel().locator(`[data-comparison-block-id=${JSON.stringify(ids[1])}]`);
+  await expect(deletedRow).toContainText("削除済みのため移動・編集できません。");
+  await expect(deletedRow.getByRole("button")).toHaveCount(0);
+  await activate(node(ids[1]));
+  await expect(dialog.locator(".block-graph-selected")).toHaveCount(0);
+  await expect(panel()).toContainText("対象ブロックは削除されています");
+  await activate(panel().getByRole("button", { name: "現在の依存関係", exact: true }));
   await selectNode(ids[0]); await expect(card(ids[0]).getByLabel("計算式", { exact: true })).toHaveValue("3");
   await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
   assert.deepEqual(await storage(), storedBaseline);
@@ -1451,6 +1459,10 @@ async function exerciseDependencyGraphNavigation(prefix) {
   await activate(exportToggle()); await expect(source()).toHaveAttribute("readonly", "");
   assert.equal((await source().inputValue()).split("\n").filter(line => line.includes(" -->")).length, 276);
   await copySource();
+  await activate(panel().getByRole("button", { name: "変更前後・試算", exact: true }));
+  await expect(panel()).toContainText("図の表示上限");
+  await expect(panel().locator("svg")).toHaveCount(0);
+  await expect(panel().locator("[data-comparison-block-id]")).toHaveCount(24);
   assert.deepEqual(await snapshot(), beforeFallback, "Drawing fallback/list/copy cannot evaluate or save an oversized graph");
   await panel().getByText(/図の表示上限/).scrollIntoViewIfNeeded();
   await assertHorizontalFit(); await screenshot(prefix + "-graph-limit-fallback", currentScenario.width, false);
@@ -1473,7 +1485,7 @@ async function exerciseCalculationTrials(prefix) {
     createdAt: "2026-10-20T00:00:00Z", updatedAt: "2026-10-20T00:00:00Z", calculationPolicy: { version: 1, mode: "manual" },
     blocks: [calculation("a", "100"), calculation("b", "@{1}+50", ["a"]), calculation("c", "@{1}*2", ["b"]),
       calculation("u", "99"), calculation("tiny", "sqrt(2)"),
-      { ...calculation("legacy", "x=2"), evaluationMode: "note-variables", references: undefined }],
+      { ...calculation("legacy", "x=2"), evaluationMode: "note-variables", references: undefined }, calculation("same", "@{1}*0", ["a"])],
   };
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
   await page.reload(); await selectPanel("notes");
@@ -1486,6 +1498,14 @@ async function exerciseCalculationTrials(prefix) {
   const input = id => card(id).getByLabel("計算式", { exact: true });
   const panel = () => dialog.getByRole("region", { name: "試算・差分プレビュー", exact: true });
   const row = id => panel().locator(`[data-trial-block-id=${JSON.stringify(id)}]`);
+  const graph = () => dialog.getByRole("region", { name: "依存関係図パネル", exact: true });
+  const graphNode = id => graph().locator(`svg g.node[data-block-id=${JSON.stringify(id)}]`);
+  const comparisonRow = id => graph().locator(`[data-comparison-block-id=${JSON.stringify(id)}]`);
+  const openComparison = async () => {
+    await activate(dialog.getByText("依存関係の図を開く", { exact: true }));
+    await activate(graph().getByRole("button", { name: "変更前後・試算", exact: true }));
+    await expect(graphNode("a")).toBeVisible();
+  };
   const trial = async () => {
     await activate(dialog.getByRole("button", { name: "試算する", exact: true }));
     await expect(panel()).toContainText("試算は未反映です");
@@ -1500,7 +1520,7 @@ async function exerciseCalculationTrials(prefix) {
   await open();
   await activate(dialog.getByRole("button", { name: "メモ全体を再計算", exact: true }));
   await save();
-  await expect.poll(async () => (await read()).blocks.map(block => block.result)).toEqual([100, 150, 300, 99, Math.sqrt(2), 2]);
+  await expect.poll(async () => (await read()).blocks.map(block => block.result)).toEqual([100, 150, 300, 99, Math.sqrt(2), 2, 0]);
   const confirmed = await read();
   await open(); await input("a").fill("120"); await input("tiny").fill("sqrt(2)+0.00000000000001");
   const held = await visibleResults();
@@ -1517,6 +1537,8 @@ async function exerciseCalculationTrials(prefix) {
   assert.equal(await page.evaluate(() => window.__trialStorageWrites), 0, "Trial must not even invoke the data save write");
   await expect(row("a")).toContainText("+20"); await expect(row("b")).toContainText("+20"); await expect(row("c")).toContainText("+40");
   await expect(row("u")).toContainText("0（内部値が同じ）");
+  await expect(row("same")).toContainText("0（内部値が同じ）");
+  await expect(row("same").locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
   await expect(row("a").locator(".block-status")).toHaveAttribute("data-state-kind", "changed");
   await expect(row("b").locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
   await expect(row("c").locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
@@ -1530,6 +1552,38 @@ async function exerciseCalculationTrials(prefix) {
   await screenshot(prefix + "-trial-success", currentScenario.width, false);
   await passed(prefix + ": trial preserves held results and makes zero storage writes; internal-value deltas and direct/affected/unrelated states stay distinct");
 
+  await openComparison();
+  for (const id of ["a", "b", "c"]) await expect(comparisonRow(id)).toContainText("数値変化あり");
+  await expect(comparisonRow("same")).toContainText("数値変化なし");
+  await expect(comparisonRow("same")).toContainText("変更の影響対象");
+  await expect(comparisonRow("u")).toContainText("依存関係上の影響なし");
+  await expect(comparisonRow("b")).toContainText("170");
+  await expect(comparisonRow("c")).toContainText("340");
+  await expect(graph().locator("[data-comparison-trial]")).toHaveAttribute("data-comparison-trial", "valid");
+  await activate(graph().getByText("比較図をMermaidで取り出す", { exact: true }));
+  const comparisonSource = graph().getByLabel("Mermaid変更比較図", { exact: true });
+  await expect(comparisonSource).toHaveAttribute("readonly", "");
+  await page.evaluate(() => { window.__comparisonCopied = ""; Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__comparisonCopied = text; } } }); });
+  await activate(graph().getByRole("button", { name: "Mermaid文字列をコピー", exact: true }));
+  assert.equal(await page.evaluate(() => window.__comparisonCopied), await comparisonSource.inputValue());
+  const encodedId = id => "block_" + Array.from({ length: id.length }, (_, index) => id.charCodeAt(index).toString(16).padStart(4, "0")).join("");
+  for (const id of ["a", "b", "c", "u", "same"]) {
+    const line = (await comparisonSource.inputValue()).split("\n").find(value => value.startsWith(`  ${encodedId(id)}["`));
+    assert.ok(line, "Comparison export preserves the stable ID " + id);
+    const label = line.slice(line.indexOf('["') + 2, -2).replace(/#(\d+);/g, (_, code) => String.fromCodePoint(Number(code))).replace(/\s+/g, " ").trim();
+    await expect.poll(async () => (await graphNode(id).textContent()).replace(/\s+/g, " ").trim()).toBe(label);
+  }
+  await activate(graphNode("c"));
+  await expect(card("c")).toBeFocused();
+  await expect(card("c")).toHaveClass(/block-graph-selected/);
+  await expect(input("c")).not.toBeFocused();
+  assert.deepEqual(await visibleResults(), held, "Comparison selection cannot apply the trial");
+  assert.deepEqual(await storage(), storedBefore);
+  assert.equal(await page.evaluate(() => window.__trialStorageWrites), 0);
+  await graph().locator(".dependency-graph-scroll").scrollIntoViewIfNeeded();
+  await screenshot(prefix + "-graph-trial-comparison", currentScenario.width, false);
+  await passed(prefix + ": graph trial comparison distinguishes direct/indirect influence, unchanged dependent value and unrelated block without applying or saving");
+
   await activate(row("b").getByRole("button", { name: "ブロック 2 の状態とエラー詳細", exact: true }));
   await expect(row("b").locator(".block-diagnostic-details")).toContainText("未反映");
   await activate(row("b").locator(".block-diagnostic-details").getByRole("button", { name: /^ブロック 1:.*へ移動$/ }).first());
@@ -1537,7 +1591,30 @@ async function exerciseCalculationTrials(prefix) {
   await expect(card("a")).toHaveClass(/block-graph-selected/);
   await input("a").fill("121");
   await expect(panel()).toContainText("失効"); await expect(apply()).toBeDisabled();
+  await expect(graph().locator("[data-comparison-trial]")).toHaveAttribute("data-comparison-trial", "none");
+  await expect(comparisonRow("a")).not.toContainText("数値変化あり");
+  await expect(comparisonRow("same")).not.toContainText("数値変化なし");
+  // Editing edges compares the same stable IDs against the original baseline.
+  await input("b").fill("50");
+  const picker = card("u").getByLabel("参照先を選んで式に挿入");
+  await activate(picker); await picker.selectOption("a");
+  await input("u").fill("@{1}");
+  await expect(graph()).toContainText("＋追加 1件、−削除 1件。");
+  await expect(graphNode("a")).toHaveCount(1);
+  await expect(graphNode("b")).toHaveCount(1);
+  const edgeSource = await comparisonSource.inputValue();
+  assert.ok(edgeSource.includes(`  ${encodedId("a")} ==>`), "Added dependency uses a heavy arrow, not color alone");
+  assert.ok(edgeSource.split("\n").some(line => line.startsWith(`  ${encodedId("a")} -.->`) && line.endsWith(encodedId("b"))), "Removed dependency retains its old endpoints and a dashed arrow");
+  await expect(graph().locator("svg")).toContainText("＋追加");
+  await expect(graph().locator("svg")).toContainText("−削除");
+  await expect(graph().locator("svg .flowchart-link.edge-thickness-thick")).toHaveCSS("stroke-width", "4px");
+  assert.equal(await graph().locator("svg .flowchart-link").count(), edgeSource.split("\n").filter(line => / -->| -\.->| ==>/.test(line)).length, "Comparison SVG and export have the same union edges");
+  assert.deepEqual(await visibleResults(), held);
+  assert.deepEqual(await storage(), storedBefore);
+  await input("b").fill("@{1}+50"); await input("u").fill("99");
   await input("a").fill("120"); await trial();
+  await expect(comparisonRow("b")).toContainText("数値変化あり");
+  await passed(prefix + ": graph edge addition/removal uses stable IDs and invalidated trial numbers disappear until an explicit new trial");
   await activate(card("u").getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
   await expect(apply()).toBeDisabled();
   await activate(card("u").getByRole("button", { name: "計算ブロックを下へ移動", exact: true })); await trial();
@@ -1558,7 +1635,7 @@ async function exerciseCalculationTrials(prefix) {
   await save();
   await expect.poll(async () => (await read()).blocks[0].result).toBe(120);
   const saved = await read();
-  assert.deepEqual(saved.blocks.map(block => block.result), [120, 170, 340, 99, Math.sqrt(2) + 0.00000000000001, 2]);
+  assert.deepEqual(saved.blocks.map(block => block.result), [120, 170, 340, 99, Math.sqrt(2) + 0.00000000000001, 2, 0]);
   assert.deepEqual(saved.blocks.map(block => block.syntheticExtra), confirmed.blocks.map(block => block.syntheticExtra));
   assert.ok(await page.evaluate(() => window.__trialStorageWrites) > 0, "The separate Save operation writes data");
   await page.evaluate(() => { Storage.prototype.setItem = window.__trialOriginalSetItem; delete window.__trialOriginalSetItem; });
@@ -1572,11 +1649,14 @@ async function exerciseCalculationTrials(prefix) {
   await input("legacy").fill("x=1/0"); const beforeFailure = await visibleResults();
   await trial(); await expect(apply()).toBeDisabled();
   await expect(row("legacy")).toContainText("試算失敗");
-  for (const id of ["a", "b", "c", "u", "tiny"]) await expect(row(id)).toContainText("数値評価は未試行");
+  for (const id of ["a", "b", "c", "u", "tiny", "same"]) await expect(row(id)).toContainText("数値評価は未試行");
   assert.deepEqual(await visibleResults(), beforeFailure); assert.deepEqual((await read()).blocks, saved.blocks);
   await input("legacy").fill("x=2"); await input("a").fill("1/0"); await trial();
   await expect(apply()).toBeDisabled(); await expect(row("a")).toContainText("試算失敗");
   await expect(row("b")).toContainText("数値評価は未試行"); await expect(row("c")).toContainText("数値評価は未試行");
+  await openComparison();
+  for (const id of ["a", "b", "c", "same"]) await expect(comparisonRow(id)).toContainText("数値比較不可");
+  assert.deepEqual(await visibleResults(), beforeFailure);
   await activate(row("a").getByRole("button", { name: "ブロック 1 の状態とエラー詳細", exact: true }));
   await expect(row("a").locator(".block-diagnostic-details")).toContainText("今回の試算で確認（未反映）");
   await row("a").locator(".block-diagnostic-details h4").evaluate(element => element.scrollIntoView({ block: "center" }));
@@ -1600,6 +1680,11 @@ async function exerciseCalculationTrials(prefix) {
     const info = row("a").getByRole("button", { name: "ブロック 1 の状態とエラー詳細", exact: true });
     await activate(info); await expect(info).toHaveAttribute("aria-expanded", "true");
     await info.focus(); await page.keyboard.press("Enter"); await expect(info).toHaveAttribute("aria-expanded", "false");
+    await openComparison();
+    await expect(comparisonRow("same")).toContainText("数値変化なし");
+    await assertHorizontalFit();
+    const graphGeometry = await graph().evaluate(element => ({ width: element.clientWidth, scroll: element.scrollWidth }));
+    assert.ok(graphGeometry.scroll <= graphGeometry.width + 1, "Comparison controls and value descriptions wrap at 200% text");
     await page.evaluate(() => document.documentElement.style.fontSize = "");
     await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
   }

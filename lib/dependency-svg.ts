@@ -82,7 +82,9 @@ export function prepareDependencyLayout(source: string): { text: string; labels:
   }).replace(/\|"((?:#\d+;)*)"\|/g, (_, encoded: string) => {
     // Edge labels are generated kind/name descriptions, but keep their user text
     // out of layout too. Their full meaning remains in the export and legend.
-    return decode(encoded).includes('ID参照') ? '|ID参照|' : '|旧変数候補|';
+    const text = decode(encoded);
+    const change = text.includes('＋追加') ? '＋追加 ' : text.includes('−削除') ? '−削除 ' : text.includes('変更不明') ? '変更不明 ' : '';
+    return `|${change}${text.includes('ID参照') ? 'ID参照' : '旧変数候補'}|`;
   });
   return { text, labels };
 }
