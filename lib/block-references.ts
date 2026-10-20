@@ -113,6 +113,10 @@ export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlo
     const result = { ...b, ...calculateMemoBlock(b.id, b.expression, b.evaluationMode, scope) };
     results.set(b.id, result); evaluated.push(b.id);
   }
+  // Finish the legacy scope first (failed reassignment keeps its previous value),
+  // then stop an already-failed transaction before any reference evaluation.
+  const failed = [...results.values()].find(b => b.error);
+  if (failed) return fail(`ブロック ${blocks.findIndex(b => b.id === failed.id) + 1} (${failed.expression}): ${failed.error}`);
   for (const id of graph.order) {
     const b = blocks.find(b => b.id === id)!;
     if (b.type !== 'calculation' || b.evaluationMode !== REFERENCE_MODE) continue;
@@ -125,12 +129,13 @@ export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlo
         if (!source || source.error || source.result === null) throw new Error(`参照元 @{${slot}} を計算できません`);
         bindings.set(`ReferenceValue${slot}`, source.result);
       }
-      const value = calculateVariableExpression(expression, bindings); evaluated.push(id);
+      // Record actual numeric attempts, including calls that throw. Preflight and
+      // missing-source failures above do not invoke the numeric evaluator.
+      evaluated.push(id);
+      const value = calculateVariableExpression(expression, bindings);
       results.set(id, { ...b, displayExpression: b.expression, result: value.value, resultText: value.resultText, error: null });
     } catch (e) { return fail(`ブロック ${blocks.indexOf(b) + 1} (${b.expression}): ${e instanceof Error ? e.message : '計算できません'}`); }
   }
-  const failed = [...results.values()].find(b => b.error);
-  if (failed) return fail(`ブロック ${blocks.findIndex(b => b.id === failed.id) + 1} (${failed.expression}): ${failed.error}`);
   const next = blocks.map(b => b.type === 'calculation' ? results.get(b.id)! : { ...b });
   return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated };
 }
