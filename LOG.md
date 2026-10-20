@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #44 修正HEADの正式検証成功
+- 修正HEAD `3395ded953e574a674b637becb637c64eda025fe` の [CI 39511725875](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39511725875) は全工程成功。676単体/27files、26 CI契約、lintエラー0・既存warning1、型、通常/Pages build、Chromium4/WebKit2の384 GUI検査を確認。全6workerのexpected/served/actual SHAを照合、errors=[]、454横幅checkpoint、mobile4条件各645touch。
+- [artifact 12306482730](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39511725875/artifacts/12306482730): ZIP32,938,421 bytes、SHA256 `771dcb04f566bc7ea5f30e175e72a91986727dbc1db30272d442e6435b167f17`。代表PNG114枚32,127,801 bytes、成功trace保存0。GUI561.172秒。PR43の代表画像/失敗前trace/全geometry方針を維持し、追加は各条件1画像。自然変動があるため単一runの速度から最適化効果を主張しない。
+- 本番distのChromium375最小診断でも、CSS注入なしの実tapでsummary open、changed/error・affected/blockedクラス、storage不変を確認。これは全GUIの代用とせず、上記正式6条件で回帰を確認。初回失敗と原因/修正記録は残す。
+- WebKit390とdesktopの実画像で、影響対象/数値変化あり/数値変化なし、保持旧結果→未反映試算を確認。図は既存の有界スクロール領域で一部分を表示する方式であり、一画面に全ノードが収まるとはしない。実iPhone Safari/VoiceOver/実OS clipboardは未検証。
+- 独立再レビューの阻害指摘なし。[PR #44](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44) は未マージ。この成功記録だけの最終文書commitについても [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44/checks) を別途確認してからレビュー可能化する。記録commit自身の未確認成功を先取りしない。
+
 ## 2026-10-21 (JST): PR #44 初回正式CIで複合状態の描画不備を検出
 - [PR #44](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44) をDraftで公開。HEAD `c807b78f663af2fc50373e02249e9b9e65513723` の [CI 39508607943](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39508607943) は675単体・26 CI契約・lint・型・両build成功、GUIは6条件とも試算失敗後の比較図で停止。前段の比較値/不変/無関係、辺追加削除、保存再読込検査は通過。全GUI成功とは扱わない。
 - 原因の一つ: Mermaid 11.12.2は `class A changed,error;` を2クラスでなく単一名 `changed,error` と解釈し、既存SVG安全境界がclass属性を除去していた。実parserのDB検査を先に失敗させ、状態ごとのclass文へ訂正。通常図/比較図とも複合状態を維持し、単一状態の出力、ID、辺、ラベル、計算・保存は不変。安全フィルタを緩めず、GUIの `g.node` 期待も維持する。
