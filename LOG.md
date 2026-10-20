@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): CI 計測・証拠容量と実行時間の最適化
+- 基点: PR #42 merge済み最新main `be2d34a35bad21f8f9c17970f46a6a1ed404d44f` をcloneし確認。作業枝 `perf/ci-evidence-optimization`。PR未作成、正式CI未実行。CI専用の単一範囲でPRに受入条件を集約し、既存アプリIssueや計算仕様は変更しない。
+- 実測: 同一PR42 HEADの正式CI2回は22.71分/16.74分、GUI1217.213秒/903.859秒、artifact431903525/429598046 bytes。自然変動約26%があり古い1回だけで改善率を断定しない。WebKit390の主な差はtap安定待ち（新run158.580秒対375の53.113秒）、DPR等の因果寄与は未分離。trace連続画像が大半を占めた。[計測方法と内訳](docs/agent/ci-optimization.md)。
+- 変更: 全658単体・全6条件372GUI・448撮影時geometry・touch629×4を維持し、検査と撮影を分離。成功PNGは各18代表画像、操作前からDOM/action/network/source traceを収集し失敗時export、成功時exportと連続screencastを省く。2worker限定並列、port/context/storage/証拠分離、共有served marker一度生成、全件coverage/SHA照合。工程/撮影/trace API計測、resource記録、inventory、npm cache、upload無再圧縮。アプリ/lockfile/required check/30分timeout/7日保持/権限/本番を維持。
+- 判断変更: 従来は成功時も全PNG/6trace保存。今回は解析で容量主因を確認し、全検査と失敗前診断を維持しつつ成功証拠を選別する。連続画像がなくなる制約、setup/trace終了後の失敗ではtraceがない場合を明記。
+- ローカル: Node24.19.0、658単体/26files、lint既存aria-description warning1、型検査、通常/Pages build成功。CI制御契約26件成功（アプリ件数と別）。隔離実Chromium故障3例でGUI途中/撮影失敗のexit1・故障前trace・failurePNG、SHA不一致の起動前停止を実証。GitHub上の故意unit/build/install失敗とartifactサービス実障害は未実証、ローカル伝播とworkflow failclosed確認を区別する。
+- 失敗記録: 初回全量のdesktop preview timeoutはFetch禁止port4190が原因と追加診断で確定し4280〜4285へ訂正、全portのtransport前許可を契約test追加。初回375tap後dialog未表示も検出、traceでheader遮蔽待ち/tap後19.5秒の空白を確認、追加診断の同時負荷との因果は未確定。期待値/timeout/操作は弱めず初回証拠を保持して追加診断なしで確認中。単独desktop62checks/76geometry/18PNG成功。ローカルWebKitはOS libraries不足で起動不可、正式CIで補完予定。
+- 独立レビュー: 共有marker競合、coverage確認前の成功trace破棄、PNG計測にgeometry混在を修正。stream失敗終了待ち/allSettled/checkpoint重複も修正。既存検査本体/期待値を独立照合しコード上の未解消阻害なし、正式最終HEADの全量検証は確認待ち。
+- 参照: AGENTS/README/LOG/検証/GitHub運用/e2e/workflow/両packageとlockfiles確認。software-engineeringは子側で参照成功、pull-main skillは当時cloud skills利用不可。親で江戸弁運用guide関連範囲参照成功、今回の憲法/辞典Library読込はtimeoutで未確認。以前の参照を今回全文読了と扱わない。
+- 残件: PR作成後の正式CIとZIP比較、実PR結果のLOG追記、最後の文書commitのCI確認。実iPhone Safariは対象外、マージしない。戻す場合はCI専用差分をrevert、データ移行不要。
+
+
 ## 2026-10-20 (JST): PR #42 公開後の正式検証結果
 - 関連: [PR #42](https://github.com/tetsujisugimori-coder/calculator-memo/pull/42) を作成済み。公開HEAD `01b92131964928babe384cd22688c0e145d98d95`、[CI 39425183509](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39425183509) が成功。
 - 正式検証: Node22.13.0、658単体/26files、lint既存warning1、型検査、通常/Pages build成功。Chromium4/WebKit2の全6条件372 GUIチェック成功、runtime/network errors=[]、touch4条件各629activation。ローカルWebKit未実行を、このCI実行で補完した。
