@@ -146,7 +146,7 @@ function evaluateTree(nodes: MathNode[], scope?: ReadonlyMap<string, number>): n
   return values.get(nodes[nodes.length - 1])!;
 }
 
-export function calculateExpression(expression: string): CalculationResult {
+function parseCalculatorExpression(expression: string): { normalized: string; nodes: MathNode[] } {
   const normalized = validateExpression(expression);
   let root: MathNode;
   try {
@@ -156,7 +156,17 @@ export function calculateExpression(expression: string): CalculationResult {
   }
   // Complete syntax validation precedes every numerical operation, preserving
   // validation-error precedence. Postorder keeps left-to-right runtime errors.
-  const value = evaluateTree(allowedTree(root, !/[a-z^]/.test(normalized)));
+  return { normalized, nodes: allowedTree(root, !/[a-z^]/.test(normalized)) };
+}
+
+/** Syntax-only inspection using the exact legacy calculator allowlist. */
+export function inspectCalculatorExpression(expression: string): void {
+  parseCalculatorExpression(expression);
+}
+
+export function calculateExpression(expression: string): CalculationResult {
+  const { normalized, nodes } = parseCalculatorExpression(expression);
+  const value = evaluateTree(nodes);
   if (Math.abs(value) > Number.MAX_SAFE_INTEGER) throw new Error("扱える桁数を超えました");
   return { value, resultText: formatNumber(value), displayExpression: formatExpression(normalized) };
 }

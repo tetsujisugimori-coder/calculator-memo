@@ -36,7 +36,7 @@
 ネイティブinput/selectのまま。IME/cursorを置換するリッチ入力は導入しない。参照slotと現在の表示位置を一覧し、削除先は明示。ラベル/色の既存識別設定は旧変数表示で維持し、参照の関係/状態は色に依存しない必須説明として表示。状態はeditor、保存カード/詳細、Markdown contentに反映し旧結果の誤認を防ぐ。手動方針・全体確定の説明はdetailsから参照できる。
 
 ## 将来と対象外
-別メモ参照にはmemoId+blockId、読み取り権限、削除/世代管理、スナップショットの境界を追加する。今のslot対応は同一メモに限定。構造化graphはMermaid生成へ再利用可能だが、表示順や名称をIDにしない。Excel的な一覧、Mermaid描画/エクスポート、Memo Nexus送信、ブロック関数呼出し、自動再計算は実装しない。既存エディタやアプリ間保存形式は統一しない。
+別メモ参照にはmemoId+blockId、読み取り権限、削除/世代管理、スナップショットの境界を追加する。今のslot対応は同一メモに限定。後続の[読み取り専用依存解析](dependency-analysis.md)でID/旧変数の構造化graphとMermaid文字列出力を追加した。表示順や名称をIDにしない。Excel的な一覧、Mermaid描画UI、Memo Nexus送信、ブロック関数呼出し、自動再計算は実装しない。既存エディタやアプリ間保存形式は統一しない。
 
 ## 検証
 `tests/block-references.test.ts`: 前後/複数/多段/diamond、各1回、rawとdisplay別期待値、旧変数束縛/並替え、編集/失敗rollback/復帰、循環/削除、保存/JSON/未知metadata、未知形式の原本保護、登録式取り込み境界、graph/式上限。
