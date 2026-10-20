@@ -135,3 +135,16 @@ PR #34追加レビュー: 既知計算ブロックのproofRef/sourceId/入れ子
 
 ## 保護理由と原本エクスポート（Issue #35）
 既存6条件それぞれで未知type、既知/未知混在、重複ID、不正blocks、未知evaluationMode、必須項目欠落、複数異常を検証。キャプションの原因分類、元JSONファイルのUTF-8バイト完全一致、コピー、reset取消、再読み込み、ヘッダー/全体キー経由の保存拒否を確認する。混在データでは詳細説明を開きライト/ダーク、CSS文字拡大でスクリーンショットと横あふれを確認する。ダウンロードはPlaywrightの保存ファイル検査でありiPhone SafariのダウンロードUI実機検証ではない。OS文字拡大、実clipboard、実データは扱わない。
+
+
+## ID-reference default and execution-plan evidence
+
+The existing legacy GUI regressions now explicitly press **＋ 旧変数計算**. Their numerical, reassignment, live-edit and save assertions are unchanged: they still test the compatibility mode rather than assuming the standard add action remains legacy.
+
+A new `default-id-calculations` stage runs in all existing six Chromium/WebKit contexts. It creates standard **＋ 計算** blocks, selects a source by its visible label (not internal-ID entry), and verifies save/reload before any manual evaluation leaves null results. Manual evaluation checks `sqrt(2)` raw precision, edited old-result retention, forward reference after reorder, and stable saved target IDs. Explicit legacy additions test ordered `x=3`, `x=x+1` and a new ID consumer. An ID divide-by-zero rolls back all results without turning unrelated blocks' own error fields into errors; correction and reload recover the same values. Both themes at 200% computed text size check the expanded add toolbar for horizontal fit.
+
+`*-default-id-editor` and `*-default-id-{light,dark}-toolbar` screenshots supplement the trace and exact-head provenance. These are synthetic browser checks, not physical iPhone Safari or native text zoom. Execution-plan ordering and diagnostic-code equivalence are separately covered by unit tests; this GUI stage does not infer those internals from displayed values.
+
+The earlier reference GUI case selects its own block ID, so its diagnostic expectation is now **自己参照** rather than the old generic **循環参照**. This follows the requested separate self/cycle diagnosis; its rollback assertions are unchanged.
+
+The failed-attempt UI additionally distinguishes the source’s **今回の計算エラー** and its ID consumer’s **今回の依存エラー** from the memo-wide rollback notice. Unrelated blocks have no local diagnostic. `*-default-id-own-error` and `*-default-id-unrelated-rollback` capture the distinction. Attempt diagnostics are transient, clear on editing and are absent after dialog reopen; saved JSON remains unchanged in shape.

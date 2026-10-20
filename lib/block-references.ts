@@ -1,75 +1,14 @@
-import { calculateVariableExpression, EXPRESSION_LIMITS, inspectFormulaDefinition } from './calculator';
+import { calculateVariableExpression } from './calculator';
 import { calculateMemoBlock } from './memo-blocks';
+import { inspectBlockReferenceExpression, REFERENCE_MODE } from './reference-syntax';
+import { createMemoExecutionPlan, analyzeBlockDependencies, blockedReferenceDiagnostics } from './execution-plan';
+import type { DependencyDiagnostic } from './dependency-structure';
 import type { CalculationMemoBlock, MemoBlock } from './types';
+export { inspectBlockReferenceExpression, REFERENCE_MODE, MAX_GRAPH_BLOCKS, validReferenceFields } from './reference-syntax';
+export { analyzeBlockDependencies } from './execution-plan';
 
-export const REFERENCE_MODE = 'block-references';
-export const MAX_GRAPH_BLOCKS = 128;
 export function isManualMemo(blocks: MemoBlock[]): boolean {
   return blocks.some(b => b.type === 'calculation' && (b.evaluationMode === REFERENCE_MODE || b.evaluationState !== undefined));
-}
-export function validReferenceFields(b: Record<string, unknown>): boolean {
-  if (b.evaluationState !== undefined) {
-    const s = b.evaluationState as Record<string, unknown> | null;
-    if (!s || typeof s !== 'object' || Array.isArray(s) || s.version !== 1 || (typeof s.status !== 'string' || !['stale', 'current'].includes(s.status)) || (s.signature !== undefined && typeof s.signature !== 'string') || (s.attemptError !== undefined && typeof s.attemptError !== 'string')) return false;
-  }
-  if (b.evaluationMode !== REFERENCE_MODE) return b.references === undefined;
-  const r = b.references as Record<string, unknown> | null;
-  if (!r || typeof r !== 'object' || Array.isArray(r) || r.version !== 1 || !Array.isArray(r.entries) || r.entries.length > MAX_GRAPH_BLOCKS) return false;
-  const slots = new Set<number>();
-  return r.entries.every((e: unknown) => {
-    if (!e || typeof e !== 'object' || Array.isArray(e)) return false;
-    const x = e as Record<string, unknown>;
-    if (!Number.isSafeInteger(x.slot) || (x.slot as number) < 1 || (x.slot as number) > MAX_GRAPH_BLOCKS || typeof x.blockId !== 'string' || !x.blockId.trim() || slots.has(x.slot as number)) return false;
-    slots.add(x.slot as number); return true;
-  });
-}
-export function inspectBlockReferenceExpression(block: CalculationMemoBlock) {
-  if (block.expression.length > EXPRESSION_LIMITS.length) throw new Error('式は2000文字以内で入力してください');
-  // Only lexical reference tokens are replaced. All remaining syntax is validated
-  // by the existing AST allowlist; internal binding names cannot be typed directly.
-  if (/ReferenceValue\d+/.test(block.expression)) throw new Error('内部参照名は使用できません');
-  const slots = new Set<number>();
-  const expression = block.expression.replace(/@\{([1-9][0-9]*)\}/g, (_, digits) => {
-    const slot = Number(digits); slots.add(slot); return `ReferenceValue${slot}`;
-  });
-  const names = inspectFormulaDefinition(expression);
-  if (names.some(name => !/^ReferenceValue[1-9][0-9]*$/.test(name))) throw new Error('参照モードでは変数名を直接使わず、変数を計算したブロックを選択してください');
-  return { expression, slots: [...slots] };
-}
-export function analyzeBlockDependencies(blocks: MemoBlock[]) {
-  const calculations = blocks.filter((b): b is CalculationMemoBlock => b.type === 'calculation');
-  const byId = new Map(calculations.map(b => [b.id, b]));
-  const dependencies = new Map<string, string[]>();
-  const errors = new Map<string, string>();
-  if (calculations.length > MAX_GRAPH_BLOCKS) { errors.set('*', `手動再計算は${MAX_GRAPH_BLOCKS}計算ブロック以内です`); return { dependencies, errors, order: [] as string[] }; }
-  if (new Set(blocks.map(b => b.id)).size !== blocks.length) errors.set('*', 'ブロックIDが重複しています');
-  for (const b of calculations) {
-    dependencies.set(b.id, []);
-    if (b.evaluationMode !== REFERENCE_MODE) continue;
-    try {
-      if (!validReferenceFields(b as unknown as Record<string, unknown>)) throw new Error('未対応または不正な参照形式です');
-      const { slots } = inspectBlockReferenceExpression(b);
-      const ids = slots.map(slot => {
-        const entry = b.references!.entries.find(e => e.slot === slot);
-        if (!entry || !byId.has(entry.blockId)) throw new Error(`参照切れ: @{${slot}} の計算ブロックがありません`);
-        return entry.blockId;
-      });
-      dependencies.set(b.id, [...new Set(ids)]);
-    } catch (e) { errors.set(b.id, e instanceof Error ? e.message : '参照式を確認してください'); }
-  }
-  // Kahn's algorithm avoids recursive stack growth. Ordering ties do not affect values.
-  const remaining = new Map([...dependencies].map(([id, deps]) => [id, deps.length]));
-  const order: string[] = [];
-  const queue = [...remaining].filter(([, n]) => n === 0).map(([id]) => id);
-  for (let i = 0; i < queue.length; i++) {
-    const id = queue[i]; order.push(id);
-    for (const [child, deps] of dependencies) if (deps.includes(id)) {
-      const count = remaining.get(child)! - 1; remaining.set(child, count);
-      if (count === 0) queue.push(child);
-    }
-  }
-  for (const [id, n] of remaining) if (n > 0) errors.set(id, '循環参照、または循環参照に依存しています');
-  return { dependencies, errors, order };
 }
 function spec(b: CalculationMemoBlock) { return [b.id, b.evaluationMode ?? null, b.expression, b.references ?? null]; }
 function signature(block: CalculationMemoBlock, blocks: MemoBlock[]): string {
@@ -97,27 +36,29 @@ export function staleBlockIds(blocks: MemoBlock[]): Set<string> {
 export function markCalculationsStale(blocks: MemoBlock[]): MemoBlock[] {
   return blocks.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'stale', attemptError: undefined } } : { ...b });
 }
-export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[]; success: boolean; evaluated: string[] } {
-  const graph = analyzeBlockDependencies(blocks);
+export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[]; success: boolean; evaluated: string[]; diagnostics: DependencyDiagnostic[] } {
+  const graph = createMemoExecutionPlan(blocks);
   const evaluated: string[] = [];
-  const fail = (message: string) => ({ blocks: markCalculationsStale(blocks).map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState!, attemptError: message } } : b), success: false, evaluated });
+  const fail = (message: string, failures: DependencyDiagnostic[]) => ({ blocks: markCalculationsStale(blocks).map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState!, attemptError: message } } : b), success: false, evaluated, diagnostics: blockedReferenceDiagnostics(graph, failures) });
   if (graph.errors.size) {
     const [id, message] = [...graph.errors][0];
-    return fail(id === '*' ? message : `ブロック ${blocks.findIndex(b => b.id === id) + 1}: ${message}`);
+    return fail(id === '*' ? message : `ブロック ${blocks.findIndex(b => b.id === id) + 1}: ${message}`, graph.diagnostics);
   }
   const results = new Map<string, CalculationMemoBlock>();
   const scope = new Map<string, number>();
   // Preserve old assignment/reassignment semantics. This stage runs once and does
   // not commit any partial result. Reference blocks cannot define scoped variables.
-  for (const b of blocks) if (b.type === 'calculation' && b.evaluationMode !== REFERENCE_MODE) {
+  for (const id of graph.legacyOrder) {
+    const b = blocks.find(b => b.id === id) as CalculationMemoBlock;
     const result = { ...b, ...calculateMemoBlock(b.id, b.expression, b.evaluationMode, scope) };
     results.set(b.id, result); evaluated.push(b.id);
   }
   // Finish the legacy scope first (failed reassignment keeps its previous value),
   // then stop an already-failed transaction before any reference evaluation.
   const failed = [...results.values()].find(b => b.error);
-  if (failed) return fail(`ブロック ${blocks.findIndex(b => b.id === failed.id) + 1} (${failed.expression}): ${failed.error}`);
-  for (const id of graph.order) {
+  if (failed) return fail(`ブロック ${blocks.findIndex(b => b.id === failed.id) + 1} (${failed.expression}): ${failed.error}`,
+    [...results.values()].filter(b => b.error).map(b => ({ blockId: b.id, code: 'legacy-evaluation', severity: 'error', message: b.error! })));
+  for (const id of graph.referenceOrder) {
     const b = blocks.find(b => b.id === id)!;
     if (b.type !== 'calculation' || b.evaluationMode !== REFERENCE_MODE) continue;
     try {
@@ -134,8 +75,11 @@ export function recalculateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlo
       evaluated.push(id);
       const value = calculateVariableExpression(expression, bindings);
       results.set(id, { ...b, displayExpression: b.expression, result: value.value, resultText: value.resultText, error: null });
-    } catch (e) { return fail(`ブロック ${blocks.indexOf(b) + 1} (${b.expression}): ${e instanceof Error ? e.message : '計算できません'}`); }
+    } catch (e) {
+      const message = e instanceof Error ? e.message : '計算できません';
+      return fail(`ブロック ${blocks.indexOf(b) + 1} (${b.expression}): ${message}`, [{ blockId: id, code: 'reference-evaluation', severity: 'error', message }]);
+    }
   }
   const next = blocks.map(b => b.type === 'calculation' ? results.get(b.id)! : { ...b });
-  return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated };
+  return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated, diagnostics: [] };
 }

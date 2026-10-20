@@ -6,7 +6,7 @@
 
 今回追加したのは内部APIとMermaid文字列生成である。画面への依存グラフ描画、コピーボタン、自動/部分再計算、Excel式エンジン、Memo Nexusへの送信は追加しない。保存形式/version/metadataを変更しない。解析は入力を変更せず、計算結果を書き換えず、数値評価も実行しない。
 
-既存 `analyzeBlockDependencies` は手動再計算のpreflightに残す。新しい解析結果をその代わりに差し込まない。既存の全体stale化、全成功時だけ一括確定、失敗rollback、旧評価フェーズのエラー優先順位、丸め前精度、未知形式の非破壊保護はそのままである。新解析の細かい影響範囲で既存staleを解除してはいけない。
+ID参照標準化の実行計画では、構造部分を `analyzeMemoDependencyStructure` として共有する。`analyzeBlockDependencies` はその互換wrapperになり、確定ID辺と参照構造エラーだけを実行へ使う。保存エラーと不確定変数候補をpreflight失敗へ変換しない。既存の全体stale化、全成功時だけ一括確定、失敗rollback、旧評価フェーズのエラー優先順位、丸め前精度、未知形式の非破壊保護はそのままである。新解析の細かい影響範囲で既存staleを解除してはいけない。
 
 ## API
 
@@ -61,3 +61,5 @@ Mermaid 11.12.2とjsdom 26.1.0はテスト専用devDependencies。アプリに�
 `tests/dependency-analysis.test.ts`: 単方向/前後、複数入力、多段、fork/join、再代入/失敗候補、混在、未定義/不正、循環/自己/子孫、変更/追加/削除/並替え、無関係ノード除外、metadata除外、JSON往復、raw精度、旧エラー優先/全rollback、凍結入力と評価spyによる無変更を検査。
 
 `tests/dependency-mermaid.test.ts`: 実Mermaid parser、エスケープ/注入風入力、日本語、ID安定/衝突、重複辺、状態併記、自己/循環、純粋性を検査。既存全単体・lint・型・両build・GUI回帰の実行結果はLOG/PRを参照。UIは変更しないが既存計算/保存動作のGUI回帰は継続する。Safari実機と外部サービスへのMermaid取込は今回未検証。
+
+実行順序の制約、ID順tie-break、今回診断と保存状態の区別は[実行計画設計](execution-plan.md)を参照。

@@ -448,7 +448,7 @@ async function exerciseBasicMath(prefix) {
   await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
   await activate(dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }));
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic math blocks");
-  await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+  await activate(dialog.getByRole("button", { name: "＋ 旧変数計算", exact: true }));
   await dialog.getByLabel("計算式", { exact: true }).fill("sqrt(2)");
   await expect(dialog.locator(".calculation-live-result strong")).toContainText("= 1.414213562373");
   await screenshot(prefix + "-basic-math-block-editor");
@@ -646,7 +646,7 @@ async function exerciseVariables(prefix) {
     await dialog.getByLabel("タイトル", { exact: false }).fill(name);
   }
   async function add(expression, expected) {
-    await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+    await activate(dialog.getByRole("button", { name: "＋ 旧変数計算", exact: true }));
     const card = dialog.locator(".block-editor-card.calculation").last();
     await card.getByLabel("計算式", { exact: true }).fill(expression);
     if (expected !== null) await expect(card.locator(".calculation-live-result strong")).toHaveText("= " + expected);
@@ -850,11 +850,11 @@ async function exerciseBlockReferences(prefix) {
   dialog=await open(); await dialog.getByLabel("計算式",{exact:true}).first().fill("4"); await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await save(); saved=await values(); assert.equal(saved[1].result,16);
   await passed(prefix+": source error rolls back every result, then corrected input recovers");
   dialog=await open(); const target=dialog.locator(".block-editor-card").nth(1); const picker=target.getByLabel("参照先を選んで式に挿入"); await activate(picker); await picker.selectOption("target"); await dialog.getByLabel("計算式",{exact:true}).nth(1).fill("@{2}");
-  await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await expect(dialog).toContainText("循環参照");
+  await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await expect(dialog).toContainText("自己参照");
   await dialog.getByLabel("計算式",{exact:true}).nth(1).fill("@{1}"); await activate(dialog.locator(".block-editor-card").first().getByRole("button",{name:"計算ブロックを削除",exact:true}));
   await activate(dialog.getByRole("button",{name:"メモ全体を再計算",exact:true})); await expect(dialog).toContainText("参照切れ"); await expect(dialog).toContainText("参照先削除済み");
   await screenshot(prefix+"-reference-missing"); await save();
-  await passed(prefix+": cyclic and deleted references remain explicit errors, without positional rebinding");
+  await passed(prefix+": self and deleted references remain explicit errors, without positional rebinding");
   for(const theme of ["light","dark"]) {
     await page.evaluate(theme=>{const d=JSON.parse(localStorage.getItem("calculation-memo:data"));d.settings.theme=theme;localStorage.setItem("calculation-memo:data",JSON.stringify(d));},theme);
     await page.reload(); await selectPanel("notes"); dialog=await open();
@@ -904,6 +904,118 @@ async function exerciseBlockReferences(prefix) {
   }
   await passed(prefix+": reference controls and stale/error captions fit both enlarged themes");
   await page.evaluate(data=>localStorage.setItem("calculation-memo:data",JSON.stringify(data)),original); await page.reload(); await selectPanel("notes");
+}
+
+// The standard add action is ID-based; legacy regression above explicitly uses
+// the compatibility action, retaining its original arithmetic expectations.
+async function exerciseDefaultIdCalculations(prefix) {
+  await stage(prefix + ": default-id-calculations");
+  const original = await storage();
+  await selectPanel("notes");
+  await activate(page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true }));
+  let dialog = page.getByRole("dialog");
+  await activate(dialog.getByRole("button").filter({ hasText: "BLOCKS / MARKDOWN" }));
+  const title = "Synthetic default ID calculations";
+  await dialog.getByLabel("タイトル", { exact: false }).fill(title);
+  const cards = () => dialog.locator(".block-editor-card.calculation");
+  const add = async (expression, legacy = false) => {
+    await activate(dialog.getByRole("button", { name: legacy ? "＋ 旧変数計算" : "＋ 計算", exact: true }));
+    const card = cards().last();
+    await card.getByLabel("計算式", { exact: true }).fill(expression);
+    return card;
+  };
+  const save = async () => {
+    await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect.poll(async () => (await storage()).notes.find(n => n.title === title)?.calculationPolicy?.mode).toBe("manual");
+  };
+  const read = async () => (await storage()).notes.find(n => n.title === title);
+  const open = async () => {
+    await activate(page.locator(".note-card").filter({ hasText: title }).getByRole("button", { name: "編集", exact: true }));
+    dialog = page.getByRole("dialog");
+  };
+  const recalculate = async () => activate(dialog.getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await add("sqrt(2)");
+  const target = await add("");
+  // Selection uses the displayed label, never a typed/internal block ID.
+  const picker = target.getByLabel("参照先を選んで式に挿入");
+  await activate(picker); await picker.selectOption({ label: "ブロック 1: sqrt(2)" });
+  await expect(target.getByLabel("計算式", { exact: true })).toHaveValue("@{1}");
+  await target.getByLabel("計算式", { exact: true }).fill("@{1}*2");
+  await expect(dialog).toContainText("再計算待ち");
+  await assertHorizontalFit();
+  await screenshot(prefix + "-default-id-editor", currentScenario.width, false);
+  await save();
+  let saved = (await read()).blocks;
+  assert.deepEqual(saved.map(b => [b.evaluationMode, b.result, b.error, b.evaluationState.status]), [
+    ["block-references", null, null, "stale"], ["block-references", null, null, "stale"],
+  ]);
+  const sourceId = saved[0].id, targetId = saved[1].id;
+  assert.equal(saved[1].references.entries[0].blockId, sourceId);
+  await page.reload(); await selectPanel("notes");
+  assert.deepEqual((await read()).blocks, saved, "Saving and reloading new ID expressions must not evaluate them");
+  await passed(prefix + ": standard add creates ID calculations; visible-label selection and save/reload never implicitly calculate");
+
+  await open(); await recalculate(); await save();
+  saved = (await read()).blocks;
+  assert.equal(saved[0].result, Math.sqrt(2)); assert.equal(saved[1].result, Math.sqrt(2) * 2);
+  assert.ok(saved.every(b => b.evaluationState.status === "current"));
+  await open(); await cards().first().getByLabel("計算式", { exact: true }).fill("sqrt(3)"); await save();
+  saved = (await read()).blocks;
+  assert.equal(saved[0].result, Math.sqrt(2)); assert.equal(saved[1].result, Math.sqrt(2) * 2);
+  await open(); await activate(cards().last().getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
+  await recalculate(); await save();
+  saved = (await read()).blocks;
+  assert.equal(saved[0].id, targetId); assert.equal(saved[1].id, sourceId);
+  assert.equal(saved[0].result, Math.sqrt(3) * 2); assert.equal(saved[1].result, Math.sqrt(3));
+  assert.equal(saved[0].references.entries[0].blockId, sourceId);
+  await passed(prefix + ": standard ID values retain raw precision and old results until manual recalculation after edit/reorder");
+
+  await open(); await add("x=3", true); await add("x=x+1", true);
+  const mixed = await add("");
+  const mixedPicker = mixed.getByLabel("参照先を選んで式に挿入");
+  await activate(mixedPicker); await mixedPicker.selectOption({ label: "ブロック 4: x=x+1" });
+  await mixed.getByLabel("計算式", { exact: true }).fill("@{1}+1");
+  await recalculate(); await save();
+  saved = (await read()).blocks;
+  assert.deepEqual(saved.slice(2).map(b => [b.evaluationMode, b.result]), [["note-variables", 3], ["note-variables", 4], ["block-references", 5]]);
+  const confirmed = structuredClone(saved);
+  await open(); await cards().nth(1).getByLabel("計算式", { exact: true }).fill("1/0"); await recalculate();
+  await expect(cards().nth(1).locator(".block-attempt-diagnostic")).toContainText("今回の計算エラー");
+  await expect(cards().nth(0).locator(".block-attempt-diagnostic")).toContainText("今回の依存エラー");
+  for (const index of [2, 3, 4]) await expect(cards().nth(index).locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await cards().nth(1).locator(".block-attempt-diagnostic").scrollIntoViewIfNeeded();
+  await screenshot(prefix + "-default-id-own-error", currentScenario.width, false);
+  await cards().nth(4).getByText(/^一括確定を停止:/).scrollIntoViewIfNeeded();
+  await screenshot(prefix + "-default-id-unrelated-rollback", currentScenario.width, false);
+  await save();
+  saved = (await read()).blocks;
+  assert.deepEqual(saved.map(b => b.result), confirmed.map(b => b.result), "Any failed ID calculation must roll back all candidates");
+  assert.ok(saved.every(b => b.evaluationState.status === "stale"));
+  // A transaction rollback must not replace unrelated blocks' own error fields.
+  assert.equal(saved[2].error, null); assert.equal(saved[3].error, null); assert.equal(saved[4].error, null);
+  await open(); await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await cards().nth(1).getByLabel("計算式", { exact: true }).fill("sqrt(3)");
+  await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0);
+  await recalculate(); await expect(dialog.locator(".block-attempt-diagnostic")).toHaveCount(0); await save();
+  assert.deepEqual((await read()).blocks.map(b => b.result), confirmed.map(b => b.result));
+  await page.reload(); await selectPanel("notes");
+  assert.deepEqual((await read()).blocks.map(b => b.result), confirmed.map(b => b.result));
+  await passed(prefix + ": explicit legacy add preserves ordered reassignment within ID memo; ID failure rollback and corrected retry keep unrelated values/error fields");
+
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { const data = JSON.parse(localStorage.getItem("calculation-memo:data")); data.settings.theme = theme; localStorage.setItem("calculation-memo:data", JSON.stringify(data)); }, theme);
+    await page.reload(); await selectPanel("notes"); await open();
+    await page.evaluate(() => document.documentElement.style.fontSize = "200%");
+    await dialog.getByRole("button", { name: "＋ 計算", exact: true }).scrollIntoViewIfNeeded();
+    await expect(dialog.getByRole("button", { name: "＋ 旧変数計算", exact: true })).toBeVisible();
+    await assertHorizontalFit(); await screenshot(prefix + "-default-id-" + theme + "-toolbar", currentScenario.width, false);
+    await page.evaluate(() => document.documentElement.style.fontSize = "");
+    await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  }
+  await passed(prefix + ": standard/legacy add controls fit both themes with expanded text in each existing browser viewport");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
 }
 
 async function exerciseStorageProtection(prefix) {
@@ -1115,7 +1227,7 @@ async function exercise(scenario) {
   await dialog.getByLabel("タイトル", { exact: false }).fill("Synthetic block memo");
   await activate(dialog.getByRole("button", { name: "＋ 文章", exact: true }));
   await dialog.getByLabel("Markdown文章").fill("Synthetic block text.");
-  await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+  await activate(dialog.getByRole("button", { name: "＋ 旧変数計算", exact: true }));
   await assertHorizontalFit();
   await dialog.getByLabel("計算式", { exact: true }).fill("2*(5+3)");
   await expect(dialog.locator(".calculation-expression code")).toHaveText("2*(5+3)");
@@ -1383,6 +1495,7 @@ async function exercise(scenario) {
   await exerciseFormulaExecution(prefix);
   await exerciseBlockExtraFields(prefix);
   await exerciseBlockReferences(prefix);
+  await exerciseDefaultIdCalculations(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
