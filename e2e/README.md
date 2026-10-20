@@ -169,3 +169,46 @@ synthetic fixtures, not real user data, and do not claim native iOS text zoom or
 VoiceOver acceptance. The prior per-card rollback assertion is intentionally
 moved to the single memo-wide notice; its arithmetic and rollback expectations
 are unchanged.
+
+## Dependency-graph navigation evidence
+
+Each of the same six browser contexts renders the real, locally bundled Mermaid
+diagram for a synthetic manual memo with duplicate expression labels, a
+multistage ID chain, an unrelated calculation, a legacy-variable dependency and
+a non-calculation block.
+The harness checks the SVG's exact raw block-ID mapping, rendered labels and state
+classes against the read-only Mermaid source, plus the dependency-edge count.
+Computed SVG stroke styles must keep uncertain legacy edges dotted and definite
+ID edges solid after sanitization.
+Mouse clicks or real browser touch taps select existing cards by ID, scroll/focus
+the card and highlight only that card. Enter and Space activation are also
+checked separately. The expression input is focused only through the explicit
+edit action; this does not claim to test an iOS software keyboard.
+Geometry and center hit-testing must show the selected card's navigation/edit
+controls inside the unobstructed modal viewport after layout settles, without
+test-driven scrolling to repair navigation. Recorded `graphSelectionGeometry`
+keeps that evidence alongside the screenshots.
+
+Selection survives reordering two same-label blocks. Deleting the selected block
+removes its node and selected details, reports deletion and does not redirect to
+another block. Graph-selected error details must match the existing card details,
+and source links return to the actual source card. Opening/closing the diagram,
+zooming, selecting, inspecting details and copying preserve rendered numerical
+results, validity labels, saved notes and history. A temporary storage-write
+observer also rejects redundant writes. The copy test uses a synthetic clipboard
+sink to compare exact strings, not the operating-system clipboard.
+
+Both actual themes at 200% root font size check wrapping, 44px zoom controls and
+the diagram's bounded internal scroll area without document/modal horizontal
+overflow. Internal scrolling is programmatic; native iOS pinch/drag gestures,
+Safari chrome, VoiceOver and physical devices remain unverified. The 375px and
+390px contexts and all previous regressions remain mandatory.
+
+A valid 24-node/276-edge DAG deterministically exceeds the 256-edge drawing
+budget. Its fallback must keep the block list, card navigation and complete
+Mermaid copy available without calculation or saving. This checks the bounded
+drawing fallback, not a browser download outage or arbitrary Mermaid exception.
+Named `*-graph-selected-card`, `*-graph-error-detail`,
+`*-graph-{light,dark}-enlarged`, `*-graph-{light,dark}-enlarged-selection`
+and `*-graph-limit-fallback` screenshots accompany the existing exact-head
+provenance and traces.

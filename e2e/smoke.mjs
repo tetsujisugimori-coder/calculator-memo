@@ -1169,6 +1169,280 @@ async function exerciseCalculationDiagnostics(prefix) {
   await page.reload(); await selectPanel("notes");
 }
 
+async function exerciseDependencyGraphNavigation(prefix) {
+  await stage(prefix + ": dependency-graph-navigation");
+  const original = await storage();
+  const ids = ["graph-source:one", "graph-source:two", "graph-middle", "graph-end", "graph-unrelated", "graph-legacy-source", "graph-legacy-use"];
+  const calculation = (id, expression, references = []) => ({
+    id, type: "calculation", expression, displayExpression: expression, result: null, resultText: "", error: null,
+    evaluationMode: "block-references", references: { version: 1, entries: references.map((blockId, index) => ({ slot: index + 1, blockId })) },
+  });
+  const note = {
+    id: "graph-navigation-note", type: "plain-calculation", title: "Synthetic graph navigation",
+    content: "Synthetic graph navigation", createdAt: "2026-10-20T00:00:00Z", updatedAt: "2026-10-20T00:00:00Z",
+    calculationPolicy: { version: 1, mode: "manual" },
+    blocks: [
+      calculation(ids[0], "3"), calculation(ids[1], "3"),
+      calculation(ids[2], "@{1}*2", [ids[0]]), calculation(ids[3], "@{1}+1", [ids[2]]),
+      calculation(ids[4], "99"),
+      { ...calculation(ids[5], "x=2"), evaluationMode: "note-variables", references: undefined },
+      { ...calculation(ids[6], "x*2"), evaluationMode: "note-variables", references: undefined },
+      { id: "graph-text-only", type: "text", content: "Not a calculation node" },
+    ],
+  };
+  const seed = async value => {
+    await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [value] });
+    await page.reload(); await selectPanel("notes");
+  };
+  await seed(note);
+  let dialog;
+  const open = async title => {
+    await activate(page.locator(".note-card").filter({ hasText: title || note.title }).getByRole("button", { name: "編集", exact: true }));
+    dialog = page.getByRole("dialog");
+  };
+  const cards = () => dialog.locator(".block-editor-card.calculation");
+  const card = id => dialog.locator(`.block-editor-card[data-block-id=${JSON.stringify(id)}]`);
+  const panel = () => dialog.getByRole("region", { name: "依存関係図パネル", exact: true });
+  const graphToggle = () => dialog.getByText("依存関係の図を開く", { exact: true });
+  const nodes = () => panel().locator('svg g.node[role="button"]');
+  const node = id => panel().locator(`svg g.node[role="button"][data-block-id=${JSON.stringify(id)}]`);
+  const source = () => dialog.getByLabel("Mermaid依存関係図", { exact: true });
+  const exportToggle = () => dialog.getByText("依存関係をMermaidで取り出す", { exact: true });
+  const detailButton = (scope, number) => scope.getByRole("button", { name: `ブロック ${number} の状態とエラー詳細`, exact: true });
+  const snapshot = async () => ({
+    stored: await storage(),
+    cards: await cards().evaluateAll(elements => elements.map(element => ({
+      id: element.getAttribute("data-block-id"),
+      expression: element.querySelector("input.code-input").value,
+      result: element.querySelector(".calculation-live-result").textContent,
+      state: element.querySelector(".block-status").getAttribute("data-state-kind"),
+      diagnostics: [...element.querySelectorAll(".block-attempt-diagnostic")].map(item => item.textContent),
+    }))),
+  });
+  const assertNodeIds = async expected => {
+    await expect(nodes()).toHaveCount(expected.length);
+    assert.deepEqual((await nodes().evaluateAll(elements => elements.map(element => element.getAttribute("data-block-id")))).sort(), [...expected].sort());
+  };
+  const assertLocated = async id => {
+    await expect(card(id)).toBeFocused();
+    await expect(card(id)).toHaveClass(/block-graph-selected/);
+    await expect(card(id).getByLabel("計算式", { exact: true })).not.toBeFocused();
+    await expect(dialog.locator(".block-graph-selected")).toHaveCount(1);
+    let geometry;
+    // Do not scroll in the test: the app's navigation must expose its destination
+    // after the selected-details layout change, not merely focus an offscreen card.
+    try {
+      await expect.poll(async () => {
+        geometry = await card(id).locator(".block-graph-location").evaluate(element => {
+          const rect = value => {
+            const { left, right, top, bottom, width, height } = value.getBoundingClientRect();
+            return { left, right, top, bottom, width, height };
+          };
+          const target = rect(element), content = rect(element.closest(".modal-content"));
+          const header = rect(element.closest('[role="dialog"]').querySelector(".modal-header"));
+          const hit = document.elementFromPoint((target.left + target.right) / 2, (target.top + target.bottom) / 2);
+          return {
+            target, content, header,
+            visible: target.left >= Math.max(0, content.left) - 1 && target.right <= Math.min(innerWidth, content.right) + 1
+              && target.top >= Math.max(0, content.top, header.bottom) - 1 && target.bottom <= Math.min(innerHeight, content.bottom) + 1,
+            hit: hit === element || element.contains(hit),
+          };
+        });
+        return geometry.visible && geometry.hit;
+      }, { message: "The selected card's navigation/edit controls must be visible and unobstructed inside the modal" }).toBe(true);
+    } finally {
+      activeScenarioRecord.graphSelectionGeometry ||= [];
+      activeScenarioRecord.graphSelectionGeometry.push({ id, ...geometry });
+    }
+  };
+  const selectNode = async id => {
+    await activate(node(id));
+    await assertLocated(id);
+    await expect(panel().locator(".dependency-graph-selection")).toContainText(`ID: ${id}`);
+  };
+  const assertSourceAndSvg = async expectedIds => {
+    const text = await source().inputValue();
+    const encodedId = id => "block_" + Array.from({ length: id.length }, (_, index) => id.charCodeAt(index).toString(16).padStart(4, "0")).join("");
+    for (const id of expectedIds) {
+      const line = text.split("\n").find(value => value.startsWith(`  ${encodedId(id)}["`));
+      assert.ok(line, "Source includes the exact ID-backed node: " + id);
+      const encodedLabel = line.slice(line.indexOf('["') + 2, -2);
+      const expected = encodedLabel.replace(/#(\d+);/g, (_, code) => String.fromCodePoint(Number(code))).replace(/\s+/g, " ").trim();
+      await expect.poll(async () => (await node(id).textContent()).replace(/\s+/g, " ").trim()).toBe(expected);
+      const classLine = text.split("\n").find(value => value.startsWith(`  class ${encodedId(id)} `));
+      assert.ok(classLine, "Source includes a state class for " + id);
+      const stateClasses = classLine.slice(classLine.lastIndexOf(" ") + 1, -1).split(",");
+      const svgClasses = (await node(id).getAttribute("class")).split(/\s+/);
+      for (const stateClass of stateClasses) assert.ok(svgClasses.includes(stateClass), "SVG and source state agree for " + id);
+    }
+    assert.equal(await panel().locator("svg .flowchart-link").count(), text.split("\n").filter(line => / -->| -\.->/.test(line)).length, "SVG and Mermaid have the same dependency edge count");
+    await expect(panel().locator("svg")).toContainText("ID参照");
+    await expect(panel().locator("svg")).toContainText("旧変数候補");
+    const dashedEdges = panel().locator("svg .flowchart-link.edge-pattern-dotted");
+    assert.equal(await dashedEdges.count(), text.split("\n").filter(line => line.includes(" -.->")).length, "Every uncertain edge retains its dotted distinction");
+    for (const dash of await dashedEdges.evaluateAll(elements => elements.map(element => getComputedStyle(element).strokeDasharray))) {
+      assert.ok(dash.split(/[ ,]+/).some(value => parseFloat(value) > 0), "Uncertain edge is actually dashed after sanitization, not only class-named: " + dash);
+    }
+    // Mermaid also adds its default "solid" class to dotted paths; exclude the
+    // more-specific patterns rather than mistaking a legacy edge for an ID edge.
+    const solidEdges = panel().locator("svg .flowchart-link.edge-pattern-solid:not(.edge-pattern-dotted):not(.edge-pattern-dashed)");
+    assert.equal(await solidEdges.count(), text.split("\n").filter(line => line.includes(" -->")).length);
+    for (const dash of await solidEdges.evaluateAll(elements => elements.map(element => getComputedStyle(element).strokeDasharray))) {
+      assert.ok(dash === "none" || dash.split(/[ ,]+/).every(value => parseFloat(value) === 0), "Definite ID edge remains visually solid: " + dash);
+    }
+    return text;
+  };
+  const copySource = async () => {
+    // A test clipboard sink verifies exact payload, not OS/iOS clipboard access.
+    await page.evaluate(() => Object.defineProperty(navigator, "clipboard", {
+      configurable: true, value: { writeText: async text => { window.__graphCopiedText = text; } },
+    }));
+    await activate(dialog.getByRole("button", { name: "Mermaid文字列をコピー", exact: true }));
+    assert.equal(await page.evaluate(() => window.__graphCopiedText), await source().inputValue());
+    await expect(dialog.getByText("Mermaid文字列をコピーしました。", { exact: true })).toBeVisible();
+  };
+
+  await open();
+  await activate(dialog.getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect.poll(async () => (await storage()).notes[0].blocks.filter(block => block.type === "calculation").map(block => block.result)).toEqual([3, 3, 6, 7, 99, 2, 4]);
+  const storedBaseline = await storage();
+  await open();
+  await page.evaluate(() => {
+    window.__graphStorageWrites = [];
+    const originalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (this === localStorage) window.__graphStorageWrites.push(key);
+      return originalSetItem.call(this, key, value);
+    };
+    window.__restoreGraphStorage = () => { Storage.prototype.setItem = originalSetItem; };
+  });
+  const beforeOpen = await snapshot();
+  await activate(graphToggle()); await assertNodeIds(ids);
+  assert.equal(await node(ids[0]).textContent(), await node(ids[1]).textContent(), "Duplicate expressions have the same visual label");
+  await expect(node(ids[0])).toHaveAttribute("aria-label", `ブロック 1: 3（ID: ${ids[0]}）へ移動`);
+  await expect(node(ids[1])).toHaveAttribute("aria-label", `ブロック 2: 3（ID: ${ids[1]}）へ移動`);
+  await selectNode(ids[1]);
+  await node(ids[0]).press("Enter"); await assertLocated(ids[0]);
+  await node(ids[1]).press("Space"); await assertLocated(ids[1]);
+  assert.deepEqual(await snapshot(), beforeOpen, "Open, same-label selection, Enter and Space cannot calculate or persist");
+  await screenshot(prefix + "-graph-selected-card", currentScenario.width, false);
+  await activate(card(ids[1]).getByRole("button", { name: "選択ブロックの計算式を編集", exact: true }));
+  await expect(card(ids[1]).getByLabel("計算式", { exact: true })).toBeFocused();
+
+  await card(ids[0]).getByLabel("計算式", { exact: true }).fill("4");
+  await expect(card(ids[0]).locator(".block-status")).toHaveAttribute("data-state-kind", "changed");
+  await expect(card(ids[2]).locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
+  await expect(card(ids[3]).locator(".block-status")).toHaveAttribute("data-state-kind", "affected");
+  const beforeNavigation = await snapshot();
+  await activate(panel().getByRole("button", { name: "図を拡大", exact: true }));
+  await expect(panel().locator(".dependency-graph-tools")).toContainText("125%");
+  await activate(panel().getByRole("button", { name: "図を縮小", exact: true }));
+  await expect(panel().locator(".dependency-graph-tools")).toContainText("100%");
+  await activate(graphToggle()); await expect(panel()).toHaveCount(0);
+  await activate(graphToggle()); await assertNodeIds(ids);
+  await selectNode(ids[3]); await activate(detailButton(panel(), 4));
+  await expect(panel().locator(".block-diagnostic-details")).toContainText("変更の影響");
+  await activate(exportToggle()); await expect(source()).toHaveAttribute("readonly", "");
+  await assertSourceAndSvg(ids); await copySource();
+  assert.deepEqual(await snapshot(), beforeNavigation, "Graph open/close, zoom, node/detail selection and export cannot calculate, change validity or save");
+  assert.deepEqual(await page.evaluate(() => window.__graphStorageWrites), [], "Graph operations must not write even an unchanged storage payload");
+  await activate(exportToggle());
+  await passed(prefix + ": real SVG maps duplicate labels to raw IDs; mouse/touch and keyboard selection focus cards, explicit edit alone focuses input, and graph operations leave results/history/storage untouched");
+
+  await card(ids[0]).getByLabel("計算式", { exact: true }).fill("1/0");
+  await activate(dialog.getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await expect(card(ids[0]).locator(".block-status")).toHaveAttribute("data-state-kind", "error");
+  await expect(card(ids[3]).locator(".block-status")).toHaveAttribute("data-state-kind", "blocked");
+  await expect(card(ids[4]).locator(".block-status")).toHaveAttribute("data-state-kind", "normal");
+  const failedSnapshot = await snapshot();
+  await selectNode(ids[3]);
+  await expect(panel().locator(".block-status")).toHaveAttribute("data-state-kind", "blocked");
+  if (await detailButton(panel(), 4).getAttribute("aria-expanded") !== "true") await activate(detailButton(panel(), 4));
+  await activate(detailButton(card(ids[3]), 4));
+  assert.equal(await panel().locator(".block-diagnostic-details").textContent(), await card(ids[3]).locator(".block-diagnostic-details").textContent(), "Graph selection reuses the complete existing card diagnosis");
+  await activate(exportToggle()); await assertSourceAndSvg(ids); await copySource(); await activate(exportToggle());
+  await panel().locator(".block-diagnostic-details h4").scrollIntoViewIfNeeded();
+  await screenshot(prefix + "-graph-error-detail", currentScenario.width, false);
+  await activate(panel().locator(".block-diagnostic-details").getByRole("button", { name: "ブロック 1: 1/0へ移動", exact: true }).first());
+  await assertLocated(ids[0]);
+  assert.deepEqual(await snapshot(), failedSnapshot, "Error detail/source navigation cannot retry calculations or change retained results");
+  assert.deepEqual(await storage(), storedBaseline, "Failed draft and all graph actions remain unsaved");
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+
+  await open(); await activate(graphToggle()); await assertNodeIds(ids); await selectNode(ids[1]);
+  await activate(card(ids[1]).getByRole("button", { name: "計算ブロックを上へ移動", exact: true }));
+  await expect(cards().first()).toHaveAttribute("data-block-id", ids[1]);
+  await assertNodeIds(ids); await selectNode(ids[1]);
+  await expect(node(ids[1])).toHaveAttribute("aria-label", `ブロック 1: 3（ID: ${ids[1]}）へ移動`);
+  await expect(panel().locator(".dependency-graph-selection")).toContainText("選択中: ブロック 1");
+  await activate(card(ids[1]).getByRole("button", { name: "計算ブロックを削除", exact: true }));
+  await assertNodeIds(ids.filter(id => id !== ids[1]));
+  await expect(panel().getByText("選択したブロックは削除されています。", { exact: true })).toBeVisible();
+  await expect(panel().locator(".dependency-graph-selection")).toHaveCount(0);
+  await expect(dialog.locator(".block-graph-selected")).toHaveCount(0);
+  await selectNode(ids[0]); await expect(card(ids[0]).getByLabel("計算式", { exact: true })).toHaveValue("3");
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  assert.deepEqual(await storage(), storedBaseline);
+  assert.deepEqual(await page.evaluate(() => window.__graphStorageWrites), []);
+  await page.evaluate(() => window.__restoreGraphStorage());
+  await passed(prefix + ": raw-ID selection survives same-label reorder and selected-node deletion fails safely without selecting another block or saving the draft");
+
+  for (const theme of ["light", "dark"]) {
+    await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await open(); await page.evaluate(() => document.documentElement.style.fontSize = "200%");
+    await activate(graphToggle()); await assertNodeIds(ids);
+    await expect(panel().getByRole("button", { name: "図を拡大", exact: true })).toBeVisible();
+    for (const name of ["図を縮小", "図を拡大"]) {
+      const size = await panel().getByRole("button", { name, exact: true }).boundingBox();
+      assert.ok(size && size.width >= 44 && size.height >= 44, "Graph zoom retains 44px touch targets");
+    }
+    const scroll = panel().getByLabel("図のスクロール領域", { exact: true });
+    await scroll.scrollIntoViewIfNeeded();
+    const bounds = await scroll.boundingBox();
+    assert.ok(bounds && bounds.width <= currentScenario.width && bounds.height <= currentScenario.height * .65 + 2, "Large diagram is bounded by its own scroll viewport");
+    await scroll.evaluate(element => { element.scrollLeft = element.scrollWidth; element.scrollTop = element.scrollHeight; });
+    await assertHorizontalFit();
+    await scroll.evaluate(element => { element.scrollLeft = 0; element.scrollTop = 0; });
+    await screenshot(prefix + "-graph-" + theme + "-enlarged", currentScenario.width, false);
+    await selectNode(ids[2]);
+    await screenshot(prefix + "-graph-" + theme + "-enlarged-selection", currentScenario.width, false);
+    await activate(detailButton(panel(), 3));
+    await expect(panel().locator(".block-diagnostic-details")).toBeVisible();
+    await assertHorizontalFit();
+    await page.evaluate(() => document.documentElement.style.fontSize = "");
+    await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  }
+  await passed(prefix + ": graph, bounded scrolling, labels, zoom and selected diagnostics fit both themes at 200% root text size in each configured viewport");
+
+  await stage(prefix + ": dependency-graph-limit-fallback");
+  // 24-node DAG has 276 definite edges: valid analysis, beyond the 256-edge
+  // drawing budget. This is a deterministic fallback, not a network failure.
+  const denseIds = Array.from({ length: 24 }, (_, index) => `dense-graph-${index}`);
+  const dense = { ...note, id: "dense-graph-note", title: "Synthetic graph drawing limit",
+    blocks: denseIds.map((id, index) => calculation(id, index ? Array.from({ length: index }, (_, slot) => `@{${slot + 1}}`).join("+") : "1", denseIds.slice(0, index))) };
+  await seed(dense); await open(dense.title);
+  const beforeFallback = await snapshot();
+  await activate(graphToggle());
+  await expect(panel()).toContainText("図の表示上限");
+  await expect(panel().locator("svg")).toHaveCount(0);
+  await activate(panel().getByText("ブロック一覧から選ぶ", { exact: true }));
+  await expect(panel().locator(".dependency-graph-list button")).toHaveCount(24);
+  await activate(panel().locator(".dependency-graph-list button").last());
+  await assertLocated(denseIds[23]);
+  await activate(exportToggle()); await expect(source()).toHaveAttribute("readonly", "");
+  assert.equal((await source().inputValue()).split("\n").filter(line => line.includes(" -->")).length, 276);
+  await copySource();
+  assert.deepEqual(await snapshot(), beforeFallback, "Drawing fallback/list/copy cannot evaluate or save an oversized graph");
+  await panel().getByText(/図の表示上限/).scrollIntoViewIfNeeded();
+  await assertHorizontalFit(); await screenshot(prefix + "-graph-limit-fallback", currentScenario.width, false);
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  await passed(prefix + ": graph drawing limit retains accessible block-list navigation and exact Mermaid copy without numerical or persistence side effects");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
 async function exerciseStorageProtection(prefix) {
   await stage(prefix + ": nondestructive-storage-protection");
   const original = await storage();
@@ -1648,6 +1922,7 @@ async function exercise(scenario) {
   await exerciseBlockReferences(prefix);
   await exerciseDefaultIdCalculations(prefix);
   await exerciseCalculationDiagnostics(prefix);
+  await exerciseDependencyGraphNavigation(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");
