@@ -1695,6 +1695,101 @@ async function exerciseCalculationTrials(prefix) {
     await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
   }
   await passed(prefix + ": trial cards fit light/dark at 200% text with mobile touch and keyboard-accessible diagnostics");
+
+  // P2 regression: graph availability follows both the draft and its comparison
+  // baseline. Keep these small fixtures in the existing six-context trial stage.
+  const seedDeletionCase = async blocks => {
+    await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [{ ...note, blocks }] });
+    await page.reload(); await selectPanel("notes"); await open();
+  };
+  const oldBlocks = [
+    { ...calculation("a", "100"), result: 100, resultText: "100" },
+    { ...calculation("b", "@{1}+50", ["a"]), result: 150, resultText: "150" },
+    { ...calculation("c", "@{1}*2", ["b"]), result: 300, resultText: "300" },
+  ];
+  const remove = id => activate(card(id).getByRole("button", { name: "計算ブロックを削除", exact: true }));
+  await seedDeletionCase(oldBlocks);
+  const partialStorage = await storage();
+  await remove("b"); await openComparison();
+  await expect(comparisonRow("b")).toContainText("削除済み（変更前）");
+  await expect(comparisonRow("b").getByRole("button")).toHaveCount(0);
+  await expect(graph()).toContainText("−削除 2件");
+  for (const id of ["a", "c"]) {
+    await activate(graphNode(id)); await expect(card(id)).toBeFocused();
+    await expect(card(id)).toHaveClass(/block-graph-selected/);
+  }
+  assert.deepEqual(await dialog.locator(".calculation-live-result strong").allTextContents(), ["= 100", "= 300"]);
+  assert.deepEqual(await storage(), partialStorage);
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  await passed(prefix + ": deleting the middle of A-B-C preserves historical edges and navigation to both surviving IDs");
+
+  await seedDeletionCase(oldBlocks.slice(0, 2));
+  const deletionStorage = await storage();
+  await page.evaluate(() => {
+    const originalSet = Storage.prototype.setItem;
+    window.__deletionStorageWrites = 0;
+    Storage.prototype.setItem = function(key, value) { if (key === "calculation-memo:data") window.__deletionStorageWrites++; return originalSet.call(this, key, value); };
+  });
+  await input("a").fill("200"); await trial();
+  await expect(row("b")).toContainText("250");
+  await remove("a"); await remove("b");
+  await expect(dialog.locator(".block-editor-card.calculation")).toHaveCount(0);
+  await expect(apply()).toBeDisabled();
+  // This entry assertion is the red-before/green-after regression for the P2.
+  await expect(dialog.getByText("依存関係の図を開く", { exact: true })).toBeVisible();
+  await openComparison();
+  await expect(graph().locator("svg g.node[data-block-id]")).toHaveCount(2);
+  await expect(graph()).toContainText("−削除 1件");
+  await activate(graph().getByText("比較図をMermaidで取り出す", { exact: true }));
+  const removedSource = await graph().getByLabel("Mermaid変更比較図", { exact: true }).inputValue();
+  assert.ok(removedSource.split("\n").some(line => line.startsWith(`  ${encodedId("a")} -.->`) && line.endsWith(encodedId("b"))), "Historical A-to-B arrow survives full deletion");
+  await expect(graph().locator("svg .flowchart-link")).toHaveCount(1);
+  for (const id of ["a", "b"]) {
+    await expect(comparisonRow(id)).toContainText("削除済み（変更前）");
+    await expect(comparisonRow(id).getByRole("button")).toHaveCount(0);
+    await expect(graphNode(id)).toContainText("削除済み（変更前）");
+    await activate(graphNode(id));
+    await expect(dialog.locator(".block-graph-selected")).toHaveCount(0);
+    await expect(graph().locator(".dependency-graph-selection")).toHaveCount(0);
+    await expect(graph()).toContainText("対象ブロックは削除されています");
+  }
+  await activate(graph().getByRole("button", { name: "現在の依存関係", exact: true }));
+  await expect(graph().locator("svg g.node[data-block-id]")).toHaveCount(0);
+  await activate(graph().getByRole("button", { name: "変更前後・試算", exact: true }));
+  await expect(graphNode("b")).toBeVisible();
+  await expect(graph().locator("[data-comparison-trial]")).toHaveAttribute("data-comparison-trial", "none");
+  await expect(graph()).not.toContainText("保持中の旧結果:");
+  await expect(apply()).toBeDisabled();
+  assert.equal(await page.evaluate(() => window.__deletionStorageWrites), 0);
+  assert.deepEqual(await storage(), deletionStorage);
+  await screenshot(prefix + "-graph-all-deleted", currentScenario.width, false);
+  await passed(prefix + ": deleting all A-B calculations retains the historical graph without navigation, stale trial resurrection or data writes");
+
+  await activate(dialog.getByRole("button", { name: "＋ 計算", exact: true }));
+  const newCard = dialog.locator(".block-editor-card.calculation");
+  const newId = await newCard.getAttribute("data-block-id");
+  assert.ok(newId && !["a", "b"].includes(newId), "New calculation cannot reuse a deleted stable ID");
+  await newCard.getByLabel("計算式", { exact: true }).fill("100");
+  await expect(graph().locator("svg g.node[data-block-id]")).toHaveCount(3);
+  await expect(comparisonRow(newId)).not.toContainText("削除済み（変更前）");
+  await activate(graphNode(newId)); await expect(newCard).toBeFocused();
+  await expect(newCard).toHaveClass(/block-graph-selected/);
+  await expect(newCard.getByLabel("計算式", { exact: true })).not.toBeFocused();
+  await expect(comparisonRow("a").getByRole("button")).toHaveCount(0);
+  await expect(comparisonRow("b").getByRole("button")).toHaveCount(0);
+  await expect(graph().locator("[data-comparison-trial]")).toHaveAttribute("data-comparison-trial", "none");
+  await expect(apply()).toBeDisabled();
+  await expect(newCard.locator(".calculation-live-result")).not.toContainText("= 100");
+  assert.equal(await page.evaluate(() => window.__deletionStorageWrites), 0);
+  assert.deepEqual(await storage(), deletionStorage);
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  await passed(prefix + ": a calculation added after full deletion has a new navigable ID and no automatically committed or revived trial result");
+
+  await seedDeletionCase([{ id: "text-only", type: "text", content: "No calculations in either state" }]);
+  await expect(dialog.getByText("依存関係の図を開く", { exact: true })).toHaveCount(0);
+  await expect(graph()).toHaveCount(0);
+  await activate(dialog.getByRole("button", { name: "キャンセル", exact: true }));
+  await passed(prefix + ": a text-only baseline and draft do not expose an empty dependency graph");
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload(); await selectPanel("notes");
 }

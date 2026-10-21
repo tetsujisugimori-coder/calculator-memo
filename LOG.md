@@ -1,5 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): 全計算ブロック削除時の比較図入口を維持（P2）
+- 基点: PR #44 merge済み最新main `a5ad20dcc0b0e7dc412edf8192781da3d86106bd`。独立修正枝 `fix/deleted-calculation-graph-entry`。[元P2指摘](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44#discussion_r4331602692)。PR #44への追加commit、Issue #19や他機能は対象外。
+- 根因: MemoBlockEditor が現在の計算ブロック存在だけで子グラフをmountしていた。比較基点に旧ノード・参照線が残っても、現在0件では比較UIへ入れなかった。現在または既存baselineに計算ブロックがある場合の表示へ条件1か所を修正。両方0件は非表示。削除表示/移動拒否/解析/試算/保存/安全描画は既存処理を変更しない。
+- Red/green: 親UIのA全削除/B一部削除/C元から0件/D追加し直し/E古い試算の5回帰を追加。旧条件でA/Eが入口nullのため失敗、B/C/D成功。条件修正後5件成功。保存handler/Storage書込みなし、安定ID、削除ノード移動不可、未反映試算復活なしを確認。Mermaid layoutだけmockし、実描画はGUIで別確認する。
+- ローカル: Node24.19.0、681単体/28files、26 CI契約、lintエラー0（既存aria-description warning1）、TypeScript、通常/Pages build成功。正式CIのNode22.13.0とは別環境として扱う。
+- GUI追加: 既存6条件に各4チェック・横幅1checkpointを追加、想定408チェック/460横幅、mobile各671touch。代表PNG114/成功trace非保存、2worker/SHA照合/30分/7日保持を維持。実ブラウザ実行は未確認。ローカルGUI依存/ブラウザ導入が別の障害監視タスクの禁止文を理由に拒否され、関連作業指示による一度の再申請も拒否。迂回せず停止後、今回P2検証限定の導入について利用者から明示許可を受けたため再開。未実施を成功扱いしない。
+- 独立レビュー: 別担当が差分/基点ライフサイクル/validTrial/安全境界/GUI件数を確認し、67関連単体と26 CI契約を独立実行して成功。阻害指摘なし。6条件GUIの実行結果は未確認。
+- 文書参照: AGENTS、README、LOG、GitHub運用/検証/e2e文書、software-engineering skillを確認。江戸弁guide関連抜粋は参照したが憲法/辞典全文は未確認。参照できた範囲以上を読了と扱わない。
+- 残件: 実GUI、修正PR公開、正式最終HEAD CI、証拠照合とP2対応報告。実iPhone Safari/VoiceOverは未検証。保存形式移行不要、戻す場合は本修正をrevertする。人間の承認なくmergeしない。
+
+
 ## 2026-10-21 (JST): PR #44 修正HEADの正式検証成功
 - 修正HEAD `3395ded953e574a674b637becb637c64eda025fe` の [CI 39511725875](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39511725875) は全工程成功。676単体/27files、26 CI契約、lintエラー0・既存warning1、型、通常/Pages build、Chromium4/WebKit2の384 GUI検査を確認。全6workerのexpected/served/actual SHAを照合、errors=[]、454横幅checkpoint、mobile4条件各645touch。
 - [artifact 12306482730](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39511725875/artifacts/12306482730): ZIP32,938,421 bytes、SHA256 `771dcb04f566bc7ea5f30e175e72a91986727dbc1db30272d442e6435b167f17`。代表PNG114枚32,127,801 bytes、成功trace保存0。GUI561.172秒。PR43の代表画像/失敗前trace/全geometry方針を維持し、追加は各条件1画像。自然変動があるため単一runの速度から最適化効果を主張しない。
