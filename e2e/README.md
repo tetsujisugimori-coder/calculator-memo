@@ -353,3 +353,22 @@ Three new geometry-only checkpoints per context preserve representative PNG poli
 and success-trace discard. Expected totals become 462 GUI checks, 490 geometry
 checkpoints and 729 touch activations per mobile context. These are fail-closed
 coverage expectations; actual execution results are recorded separately in LOG/CI.
+
+
+## Report provenance regression (Issue #49)
+
+The existing report fixture now includes multi-stage ID references, an unused
+reference mapping, and legacy variable reassignment. Two additional named checks
+per context verify direct source body positions, current saved internal/display
+values and states, uncertain legacy candidates, and explicitly unavailable
+calculation-time inputs. A later persisted source expression changes while its
+old numeric result remains; neither it nor its consumers may be certified.
+The existing byte-for-byte copy/download and no-storage-write assertions cover
+the enriched report. Cancelled drafts, unapplied trials, protected data, both
+themes and 200% text remain checked.
+
+The expected contract is 474 GUI checks, 490 geometry checkpoints and 729 touch
+activations per mobile context. No new browser activations or success PNGs are
+added: the six contexts, 114 representative PNGs, zero exported success traces,
+and all existing acceptance checks remain. These are expected counts, not a
+claim of execution; actual results are recorded in LOG and exact-HEAD CI.
