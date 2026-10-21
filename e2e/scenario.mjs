@@ -1912,6 +1912,136 @@ async function exerciseCalculationTrials(prefix) {
   await page.reload(); await selectPanel("notes");
 }
 
+// Saved-only report export: all fixtures are synthetic and all file bytes are read back.
+async function exerciseMarkdownReports(prefix) {
+  await stage(prefix + ": saved-markdown-report");
+  const original = await storage();
+  const at = "2026-10-21T00:00:00Z";
+  const calc = (id, expression, result, resultText, entries = []) => ({
+    id, type: "calculation", expression, displayExpression: expression, result, resultText, error: null,
+    evaluationMode: "block-references", references: { version: 1, entries },
+    evaluationState: { version: 1, status: "stale" }, opaque: { keep: [id, 42] },
+  });
+  const note = { id: "report-note", type: "plain-calculation", title: "Synthetic / report", content: "not the block source",
+    createdAt: at, updatedAt: at, calculationPolicy: { version: 1, mode: "manual" }, opaque: { retain: "source" }, blocks: [
+      { id: "report-text", type: "text", content: "REPORT_FIRST\n\n**Recorded reasoning**" },
+      calc("report-a", "100/3", 100 / 3, "33.3333333333"),
+      { id: "report-formula", type: "formula", latex: "x^2 + y^2 = z^2" },
+      calc("report-b", "@{1}*3", 100, "100", [{ slot: 1, blockId: "report-a" }]),
+      { id: "report-last", type: "text", content: "REPORT_LAST\n\n```text\n<literal> and ``` nested\n```" },
+    ] };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload(); await selectPanel("notes");
+  const card = page.locator(".note-card").filter({ hasText: note.title });
+  const detail = () => page.getByRole("dialog", { name: note.title, exact: true });
+  const report = () => page.getByRole("dialog", { name: "計算メモのレポート出力", exact: true });
+  const source = () => report().getByRole("textbox", { name: "Markdownレポート全文", exact: true });
+  const openDetail = () => activate(card.getByRole("button", { name: "詳細", exact: true }));
+  const openReport = () => activate(detail().getByRole("button", { name: "レポート出力", exact: true }));
+  const closeReport = () => activate(report().getByRole("button", { name: "閉じる", exact: true }).last());
+  const closeDetail = () => activate(detail().getByRole("button", { name: "閉じる", exact: true }).last());
+  const raw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await openDetail();
+  const savedRaw = await raw();
+  await page.evaluate(() => {
+    window.__reportWrites = 0;
+    window.__reportOriginalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (...args) { window.__reportWrites++; return window.__reportOriginalSetItem.apply(this, args); };
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__reportCopy = text; } } });
+  });
+  await openReport();
+  await expect(source()).toHaveAttribute("readonly", "");
+  const markdown = await source().inputValue();
+  assert.ok(markdown.indexOf("REPORT_FIRST") < markdown.indexOf("100/3") && markdown.indexOf("100/3") < markdown.indexOf("x^2 + y^2") && markdown.indexOf("x^2 + y^2") < markdown.indexOf("@{1}*3") && markdown.indexOf("@{1}*3") < markdown.indexOf("REPORT_LAST"), "Original mixed block order");
+  assert.ok(markdown.includes(String(100 / 3)) && markdown.includes("33.3333333333"), "Stored internal and display precision remain separate");
+  assert.match(markdown, /古い可能性がある結果/); assert.match(markdown, /```mermaid/); assert.ok(markdown.includes("report\\-a"), "Stable block ID is escaped as literal metadata");
+  assert.ok(!markdown.includes("not the block source"), "Blocks, not stale generated content, are authoritative");
+  await activate(report().getByRole("button", { name: "Markdown全文をコピー", exact: true }));
+  await expect(report().getByRole("status")).toContainText("コピーしました");
+  assert.equal(await page.evaluate(() => window.__reportCopy), markdown);
+  const downloaded = page.waitForEvent("download");
+  await activate(report().getByRole("button", { name: ".mdをダウンロード", exact: true }));
+  const download = await downloaded;
+  assert.equal(download.suggestedFilename(), "Synthetic _ report.md");
+  assert.deepEqual(await readFile(await download.path()), Buffer.from(markdown, "utf8"));
+  await expect(report().getByRole("status")).toContainText("ダウンロードを要求");
+  await screenshot(prefix + "-markdown-report-source", currentScenario.width, false);
+  assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__reportWrites), 0);
+  await passed(prefix + ": saved report keeps mixed block order, stored precision, graph and exact copy/download bytes without storage writes");
+
+  await page.evaluate(() => {
+    navigator.clipboard.writeText = async () => { throw new Error("synthetic clipboard refusal"); };
+    window.__reportOriginalCreateUrl = URL.createObjectURL;
+    URL.createObjectURL = () => { throw new Error("synthetic download refusal"); };
+  });
+  await activate(report().getByRole("button", { name: "Markdown全文をコピー", exact: true }));
+  await expect(report().getByRole("alert")).toContainText("コピーに失敗");
+  await activate(report().getByRole("button", { name: ".mdをダウンロード", exact: true }));
+  await expect(report().getByRole("alert")).toContainText("ダウンロードを開始できません");
+  assert.equal(await source().inputValue(), markdown); assert.equal(await raw(), savedRaw);
+  await page.evaluate(() => { URL.createObjectURL = window.__reportOriginalCreateUrl; });
+  await closeReport();
+  // Simulate a later valid persisted source while the detail view retains its old memory.
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
+    data.notes[0].blocks[0].content = "SAVED_SOURCE_CHANGED";
+    window.__reportOriginalSetItem.call(localStorage, "calculation-memo:data", JSON.stringify(data));
+    window.__reportWrites = 0;
+  });
+  const changedRaw = await raw();
+  await openReport(); await expect(source()).toHaveValue(/SAVED_SOURCE_CHANGED/);
+  assert.ok(!(await source().inputValue()).includes("REPORT_FIRST"));
+  assert.equal(await raw(), changedRaw); assert.equal(await page.evaluate(() => window.__reportWrites), 0);
+  await closeReport(); await closeDetail();
+  await page.evaluate(raw => { window.__reportOriginalSetItem.call(localStorage, "calculation-memo:data", raw); Storage.prototype.setItem = window.__reportOriginalSetItem; }, savedRaw);
+  await passed(prefix + ": report copy/download failures remain visible and reopening reads persisted original rather than stale detail memory");
+
+  await activate(card.getByRole("button", { name: "編集", exact: true }));
+  const editor = page.getByRole("dialog", { name: "計算メモを編集", exact: true });
+  await editor.locator('[data-block-id="report-a"]').getByRole("textbox", { name: "計算式", exact: true }).fill("777");
+  await activate(editor.getByRole("button", { name: "試算する", exact: true }));
+  await expect(editor.getByRole("region", { name: "試算・差分プレビュー", exact: true })).toContainText("試算は未反映");
+  await expect(editor.getByRole("button", { name: "レポート出力", exact: true })).toHaveCount(0);
+  assert.equal(await raw(), savedRaw);
+  await activate(editor.getByRole("button", { name: "キャンセル", exact: true }));
+  await openDetail(); await openReport();
+  assert.equal(await source().inputValue(), markdown, "Cancelled draft and unreflected trial never enter report");
+  assert.equal(await raw(), savedRaw);
+  await closeReport(); await closeDetail();
+  await passed(prefix + ": unreflected trial and cancelled editor draft never replace saved report or persisted data");
+
+  for (const theme of ["light", "dark"]) {
+    await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(theme);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    const themeRaw = await raw();
+    await openDetail(); await openReport();
+    await report().locator(".markdown-report").evaluate(element => {
+      const children = [element, ...element.querySelectorAll("*")];
+      const sizes = children.map(child => parseFloat(getComputedStyle(child).fontSize) * 2);
+      children.forEach((child, i) => { child.style.fontSize = sizes[i] + "px"; });
+    });
+    await report().getByRole("button", { name: ".mdをダウンロード", exact: true }).scrollIntoViewIfNeeded();
+    await expect(report().getByRole("button", { name: ".mdをダウンロード", exact: true })).toBeInViewport();
+    await screenshot(prefix + "-markdown-report-" + theme + "-200-percent", currentScenario.width, false);
+    assert.equal(await raw(), themeRaw);
+    await closeReport(); await closeDetail();
+  }
+  await passed(prefix + ": readonly report controls remain reachable in both themes at 200 percent text and all desktop/mobile widths");
+
+  await openDetail();
+  const protectedRaw = JSON.stringify({ ...original, notes: [{ ...note, blocks: [{ id: "future", type: "future-report", payload: "keep" }] }] }, null, 2);
+  await page.evaluate(raw => localStorage.setItem("calculation-memo:data", raw), protectedRaw);
+  await openReport();
+  await expect(report().getByRole("alert")).toContainText("保存済み原本を安全に読み取れません");
+  await expect(source()).toHaveCount(0);
+  await expect(report().getByRole("button", { name: ".mdをダウンロード", exact: true })).toHaveCount(0);
+  assert.equal(await raw(), protectedRaw);
+  await closeReport(); await closeDetail();
+  await passed(prefix + ": protected unknown source refuses report instead of exporting a lossy or in-memory fallback");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
 async function exerciseStorageProtection(prefix) {
   await stage(prefix + ": nondestructive-storage-protection");
   const original = await storage();
@@ -2396,6 +2526,7 @@ async function exercise(scenario) {
   await exerciseDependencyGraphNavigation(prefix);
   await exerciseCalculationTrials(prefix);
   await exerciseNestedPercent(prefix);
+  await exerciseMarkdownReports(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

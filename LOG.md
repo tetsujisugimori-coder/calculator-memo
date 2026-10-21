@@ -1,5 +1,25 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #48 初回正式CI・保存済みレポート6条件検証成功
+- [PR #48](https://github.com/tetsujisugimori-coder/calculator-memo/pull/48)、実装HEAD `5384610f8eafd0f7903a06623d9f30dbc1a260c2` の [CI 39616743551](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39616743551) が全工程成功。816単体/33files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages build、Chromium4/WebKit2を確認。
+- 全6条件のexpected/served/actual SHA一致、errors=[]。462GUI検査、490横幅checkpoint、モバイル4条件それぞれ729touch。保存原本の混在順序/内部精度/依存図、コピーとdownload内容一致、失敗通知、未保存draft・未反映試算の不混入、保護中原本の拒否、出力前後storage完全一致を検証。375px/390px・ライト/ダーク・文字拡大・既存スクロール回帰を維持。
+- [artifact 12353278910](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39616743551/artifacts/12353278910): ZIP33,215,762 bytes、SHA256 `cd8ce84a3bce3367fc240cf8e88e1bd21c04373e07bc0b206f3dae9b9e25101a`。PNG114枚32,349,444 bytes、成功trace保存0、GUI実時間988.666秒。追加レポート地点はgeometryのみで成功PNGを増やさない。所要時間の改善は主張しない。
+- ローカル公式ブラウザ取得失敗は正式CI6条件で補完。独立レビューの阻害指摘は修正後再レビューで解消済み。実生成Markdown例と合成fixtureの完全一致・原本不変を追加テストで確認。公開tree `8012d668d87b37a6db2e5e63b53697e61bff0b0a` はローカル検証treeと同一。git pushの認証経路不足により、既存GitHub接続で同一treeを公開した。
+- この追記は文書のみ。記録commit自身の最終HEADも [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/48/checks) で別途確認し、Ready切替後の同一HEAD検証も確認する。実iPhone Safari/VoiceOver、Memo Nexus実ブラウザ、OS保存完了は未検証。マージは人間が判断する。
+
+
+## 2026-10-21 (JST): 保存済み計算メモのMarkdownレポート
+- 基点: PR #46マージ済みmain `08d92a2`、専用枝 `feat/saved-markdown-report`。[Issue #47](https://github.com/tetsujisugimori-coder/calculator-memo/issues/47)。同目的の既存Issue/PRなしを確認。PR番号/正式CIは未確定。
+- 保存済み詳細画面から明示操作で既存loadDataの原本を再取得し、読み取り専用ソース確認・全文コピー・.mdダウンロード要求を提供。draft/未反映試算/メモリfallbackを使わず、再計算/保存/履歴更新なし。保存形式・評価器・rollback・SVG処理は変更なし。
+- 既存依存解析/署名照合/Mermaidを再利用。本文順、LaTeX、式、保存表示値と内部数値、安定ID、診断を出す。署名のない旧結果は状態不明。失敗/古い記録を確定扱いしない。未知構造は出力拒否、付随情報は原本に保持しレポートが完全backupでないことを明示。
+- 安全処理: 動的フェンス、HTML文字化、未閉鎖境界補完、数式の安全な原文コードfallbackと警告、独自実行directiveの文字化、100万入力文字上限、80文字/200UTF8bytesファイル名、孤立サロゲートのdownload拒否。
+- 独立レビュー: 数式内フェンス/LaTeX実体参照変換/長いUnicode名/current+attemptError矛盾を検出し修正。再レビュー60関連テスト成功、標準Markdown parserでも後続章保持を実測、阻害指摘なし。HTML-bearing inlinecode等の表示差と第三者rendererの限界は設計に記録。
+- 検証: ローカル全813単体の成功後、mathfence2件と実生成例1件を追加し全件再確認中。関連60件、26 CI契約、lintエラー0（既存warning1）、TypeScript、通常/Pages build成功。新testのeach配列型とthisalias lint指摘は修正済み。実測最終件数は正式CIで確定する。
+- GUI: 既存6条件へ各5検査・3geometry追加、予定462検査/490横幅/mobile729touch。代表PNG114枚/成功trace非保存/2worker/30分/7日保持は維持。ローカル公式Chromium取得が不正ZIP/公式mirror503で失敗し実GUI未実施。正式CIで補完するまで成功扱いしない。
+- Memo Nexus repo memo main c32d3a42を読取確認。Markdown/Mermaid/$$対応コードはあるが、独自calcは再評価、jsonフェンスをニュース取込へ変換する経路、escape表示差がある。手動本文貼付けを基本とし、全表示互換/直接取込は保証しない。Memo Nexusの書込み/コード/MCP変更なし。
+- [設計](docs/agent/markdown-report.md)、[実生成例](docs/examples/markdown-report-example.md)と合成fixtureを追加。生成例は100→150→300、原本不変をテストする。参照: AGENTS/README/LOG/運用・検証・e2e/CI/関連実装、software-engineering guide、江戸弁ガイド関連抜粋。憲法/辞典全文は未読として記録し、読了を偽らない。
+- 実iPhone Safari/VoiceOver/Memo Nexus実ブラウザ/OS保存完了は未検証。PDF/印刷/直接送信/自動同期/新数学関数は対象外。保存形式移行不要、本PRのrevertで戻せる。マージは人間が判断する。
+
 ## 2026-10-21 (JST): PR #46 初回正式CI・6条件GUI成功
 - [PR #46](https://github.com/tetsujisugimori-coder/calculator-memo/pull/46)、HEAD `bee01cd80eba56bca12fb99e156eae82faa44d40` の [CI 39586945342](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39586945342) は全工程成功。固定Node22.13.0で755単体/30files、26契約、lint既存warning1・エラー0、型、通常/Pages build、Chromium4/WebKit2を確認。
 - 全6条件のexpected/served/actual SHA一致、errors=[]、追加percent4チェック各条件実行、432GUI/472横幅、mobile4条件各698touchを成果物で照合。旧保存データ読み込み・4式の全入口評価・明示保存と再読込・未知情報保持を含む。既存グラフ/試算/削除ノード/モバイルスクロール回帰を削除しない。

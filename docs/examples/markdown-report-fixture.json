@@ -1,0 +1,82 @@
+{
+  "id": "example-note",
+  "type": "plain-calculation",
+  "title": "計算過程の記録例",
+  "content": "",
+  "blocks": [
+    {
+      "id": "intro",
+      "type": "text",
+      "content": "**前提**: 基本金額100に50を加え、その2倍を比較します。"
+    },
+    {
+      "id": "A",
+      "type": "calculation",
+      "expression": "100",
+      "displayExpression": "100",
+      "result": 100,
+      "resultText": "100",
+      "error": null,
+      "evaluationState": {
+        "version": 1,
+        "status": "current",
+        "signature": "[[\"A\",null,\"100\",null],[],[],100,\"100\",null]"
+      }
+    },
+    {
+      "id": "B",
+      "type": "calculation",
+      "expression": "@{1}+50",
+      "displayExpression": "@{1}+50",
+      "result": 150,
+      "resultText": "150",
+      "error": null,
+      "evaluationMode": "block-references",
+      "references": {
+        "version": 1,
+        "entries": [
+          {
+            "slot": 1,
+            "blockId": "A"
+          }
+        ]
+      },
+      "evaluationState": {
+        "version": 1,
+        "status": "current",
+        "signature": "[[\"B\",\"block-references\",\"@{1}+50\",{\"version\":1,\"entries\":[{\"slot\":1,\"blockId\":\"A\"}]}],[],[[1,[[\"A\",null,\"100\",null],100,\"100\",null]]],150,\"150\",null]"
+      }
+    },
+    {
+      "id": "C",
+      "type": "calculation",
+      "expression": "@{1}*2",
+      "displayExpression": "@{1}*2",
+      "result": 300,
+      "resultText": "300",
+      "error": null,
+      "evaluationMode": "block-references",
+      "references": {
+        "version": 1,
+        "entries": [
+          {
+            "slot": 1,
+            "blockId": "B"
+          }
+        ]
+      },
+      "evaluationState": {
+        "version": 1,
+        "status": "current",
+        "signature": "[[\"C\",\"block-references\",\"@{1}*2\",{\"version\":1,\"entries\":[{\"slot\":1,\"blockId\":\"B\"}]}],[],[[1,[[\"B\",\"block-references\",\"@{1}+50\",{\"version\":1,\"entries\":[{\"slot\":1,\"blockId\":\"A\"}]}],150,\"150\",null]]],300,\"300\",null]"
+      }
+    },
+    {
+      "id": "formula",
+      "type": "formula",
+      "latex": "y = 2(x + 50)"
+    }
+  ],
+  "createdAt": "2026-10-21T00:00:00Z",
+  "updatedAt": "2026-10-21T00:00:00Z"
+}
