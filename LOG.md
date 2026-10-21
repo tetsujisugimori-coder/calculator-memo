@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #48 初回正式CI・保存済みレポート6条件検証成功
+- [PR #48](https://github.com/tetsujisugimori-coder/calculator-memo/pull/48)、実装HEAD `5384610f8eafd0f7903a06623d9f30dbc1a260c2` の [CI 39616743551](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39616743551) が全工程成功。816単体/33files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages build、Chromium4/WebKit2を確認。
+- 全6条件のexpected/served/actual SHA一致、errors=[]。462GUI検査、490横幅checkpoint、モバイル4条件それぞれ729touch。保存原本の混在順序/内部精度/依存図、コピーとdownload内容一致、失敗通知、未保存draft・未反映試算の不混入、保護中原本の拒否、出力前後storage完全一致を検証。375px/390px・ライト/ダーク・文字拡大・既存スクロール回帰を維持。
+- [artifact 12353278910](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39616743551/artifacts/12353278910): ZIP33,215,762 bytes、SHA256 `cd8ce84a3bce3367fc240cf8e88e1bd21c04373e07bc0b206f3dae9b9e25101a`。PNG114枚32,349,444 bytes、成功trace保存0、GUI実時間988.666秒。追加レポート地点はgeometryのみで成功PNGを増やさない。所要時間の改善は主張しない。
+- ローカル公式ブラウザ取得失敗は正式CI6条件で補完。独立レビューの阻害指摘は修正後再レビューで解消済み。実生成Markdown例と合成fixtureの完全一致・原本不変を追加テストで確認。公開tree `8012d668d87b37a6db2e5e63b53697e61bff0b0a` はローカル検証treeと同一。git pushの認証経路不足により、既存GitHub接続で同一treeを公開した。
+- この追記は文書のみ。記録commit自身の最終HEADも [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/48/checks) で別途確認し、Ready切替後の同一HEAD検証も確認する。実iPhone Safari/VoiceOver、Memo Nexus実ブラウザ、OS保存完了は未検証。マージは人間が判断する。
+
 
 ## 2026-10-21 (JST): 保存済み計算メモのMarkdownレポート
 - 基点: PR #46マージ済みmain `08d92a2`、専用枝 `feat/saved-markdown-report`。[Issue #47](https://github.com/tetsujisugimori-coder/calculator-memo/issues/47)。同目的の既存Issue/PRなしを確認。PR番号/正式CIは未確定。
