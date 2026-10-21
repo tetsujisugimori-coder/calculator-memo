@@ -134,7 +134,9 @@ export function CalculatorApp() {
     const changed = (event: StorageEvent) => {
       if ((event.key === STORAGE_KEY || event.key === null) && event.newValue !== savedRaw.current) {
         conflictRef.current = true;
-        setStorageConflict("別のタブなどで保存データが変わりました。上書きを停止しています。編集内容を控えてから再読み込みしてください。");
+        const loaded = loadData();
+        if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); setStorageConflict(""); }
+        else setStorageConflict("別のタブなどで保存データが変わりました。上書きを停止しています。編集内容を控えてから再読み込みしてください。");
       }
     };
     window.addEventListener("storage", changed);
@@ -228,6 +230,7 @@ export function CalculatorApp() {
         const next = { ...current, notes: original ? current.notes.map(item => item.id === original.id ? note : item) : [note, ...current.notes] };
         const saved = saveDataChecked(next, savedRaw.current);
         if (!saved.ok) {
+          if (saved.reason === "invalid") { const loaded = loadData(); if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); } }
           if (saved.reason === "uncertain") {
             conflictRef.current = true; const message = "書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。"; setStorageConflict(message); return message;
           }
@@ -348,7 +351,7 @@ export function CalculatorApp() {
       {libraryOpen && <FormulaLibraryModal library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
       {executionId && <FormulaExecutionModal key={executionId} formula={data.formulaLibrary?.entries.find((entry) => entry.id === executionId)} draft={data.formulaExecutions?.find((draft) => draft.formulaId === executionId)} notes={data.notes} writable={storageStatus === "ready"} onClose={() => setExecutionId(null)} onDraftChange={(draft) => setData((current) => ({ ...current, formulaExecutions: [draft, ...(current.formulaExecutions ?? []).filter((entry) => entry.formulaId !== draft.formulaId && current.formulaLibrary?.entries.some((formula) => formula.id === entry.formulaId))].slice(0, 200) }))} onHistory={(snapshot) => { const item = executionHistory(snapshot, makeId("history"), new Date().toISOString()); setData((current) => ({ ...current, history: [item, ...current.history].slice(0, 200) })); }} onMemo={(snapshot) => setNoteEditor({ draft: executionMemo(snapshot) })} />}
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
-      {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict])} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
+      {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}

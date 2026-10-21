@@ -183,7 +183,8 @@ export function saveDataChecked(data: StoredData, expectedRaw: string | null, st
   let written = false;
   try {
     const target = storage ?? localStorage;
-    if (target.getItem(STORAGE_KEY) !== expectedRaw) return { ok: false, reason: "conflict" };
+    const currentRaw = target.getItem(STORAGE_KEY);
+    if (currentRaw !== expectedRaw) return { ok: false, reason: loadData({ getItem: () => currentRaw }).status === "error" ? "invalid" : "conflict" };
     if (loadData(target).status === "error") return { ok: false, reason: "invalid" };
     readStoredNotes(data.notes);
     const raw = JSON.stringify(data);

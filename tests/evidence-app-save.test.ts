@@ -89,3 +89,16 @@ it('a rejected browser write lock stops autosave with a visible notice and no wr
   await act(async () => { const select = host.querySelector<HTMLSelectElement>('.theme-select select')!; select.value = 'dark'; select.dispatchEvent(new Event('change', { bubbles: true })); });
   expect(host.textContent).toContain('保存用ロックを取得できず'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });
+it.each(['autosave', 'storage event', 'explicit save'])('a corrupted replacement enters non-destructive recovery rather than generic conflict: %s', async trigger => {
+  await open(); if (trigger === 'autosave') await click('キャンセル');
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  const malformed = '{ "notes": '; localStorage.setItem(STORAGE_KEY, malformed);
+  await act(async () => {
+    if (trigger === 'storage event') window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: malformed }));
+    else if (trigger === 'explicit save') button('保存する').click();
+    else { const select = host.querySelector<HTMLSelectElement>('.theme-select select')!; select.value = 'dark'; select.dispatchEvent(new Event('change', { bubbles: true })); }
+  });
+  expect(host.querySelector('.storage-recovery')?.textContent).toContain('保存データを読み込めませんでした');
+  expect(host.querySelector('#calculator')?.hasAttribute('inert')).toBe(true);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(malformed);
+});

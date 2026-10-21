@@ -1,5 +1,11 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 (JST): 根拠記録GUIで見つかった保存保護の回帰修正
+- [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52)をDraft作成。初回HEAD `feb868e8796ed3ee1bb57dcf8c524de06e5e8255` はCLI pushの認証経路不足のためGitHub接続で同一検証tree `fe077f4bee5b8ccdcbec089d692285df49255453` を公開した。
+- 固定HEADのローカルGUIで255checks成功（3条件は新規根拠6checks成功）後、起動後に壊れた原本へ差し替わったとき一般競合通知が既存復旧UIを隠す回帰を検出。原本の構造保護を優先し、autosave/storageevent/明示保存の3経路で元rawを変更しないテストを追加した。
+- 通常電卓の非同期Web Locks保存が完了する前に後続操作の不変比較基点を採るテスト競合も検出。直前の意図した式と正確な値が保存されるまでpollし、その後の履歴全体deepEqualを維持する。期待値や6条件を緩めていない。ローカルWebKit2条件は既存OSライブラリ不足で起動不可、成功と扱わない。初回browser既定path不足は既存browser path指定で解消し、新規導入はしていない。
+- 追加91件を含む929単体/41files成功。独立追補レビュー49件と26 CI契約成功、阻害指摘なし。初回正式[CI 39692397713](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39692397713)と修正後GUIの結果は確認中。後続の実測結果を追記する。
+
 ## 2026-10-22 (JST): 計算確定時の根拠スナップショット
 - 調査基点: 最新 main `bf09f8d9398f79046bafbf20aeb30a4a6185f749`、PR #50 mergeを確認し、clean treeから `feat/calculation-evidence-snapshots` を作成。[Issue #51](https://github.com/tetsujisugimori-coder/calculator-memo/issues/51)。PR未作成。AGENTS、README、LOG、関連設計/保存形式/Actionsを実読。江戸弁の関連指針全文は今回参照できておらず、確認済みとはしない。
 - 従来は現在値だけを表示し、当時使用値は確認不能だった。新方針は実評価で読んだ旧変数/IDの内部値を観測し、全件成功候補を明示保存の成功後だけ記録する。試算preview/draft/失敗/rollbackでは確定記録を追加せず、同式再計算は別IDで追記。過去記録を改変せず、既存履歴なしの値を推定しない。設計は実装前に提示し [根拠記録設計](docs/agent/calculation-evidence.md) に記録した。

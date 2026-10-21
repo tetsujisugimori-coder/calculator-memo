@@ -2562,6 +2562,11 @@ async function exercise(scenario) {
     await activate(button("すべて消去"));
     await page.keyboard.type((negative ? "-" : "") + "1/10000000=");
     await expect(page.locator(".lcd-result")).toHaveText(negative ? "-0.0000001" : "0.0000001");
+    // Web Locks persistence is asynchronous: settle the intentional calculation
+    // before proving that the following operator-only edit does not save history.
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject({
+      expression: (negative ? "-" : "") + "1/10000000", result: negative ? -1e-7 : 1e-7,
+    });
     const historyBeforeChain = (await storage()).history;
     await activate(button("掛ける"));
     await noteDisabled();
