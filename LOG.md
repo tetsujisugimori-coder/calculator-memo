@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): P2修正 PR #45 の正式6条件検証成功
+- [PR #45](https://github.com/tetsujisugimori-coder/calculator-memo/pull/45)、HEAD `116f5f5195166cfc5d90a0c56c90217715b2eba2` の [CI 39540924934](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39540924934) は全工程成功。681単体/28files、26 CI契約、lintエラー0・既存warning1、型、通常/Pages build、Chromium4/WebKit2の408 GUI検査を確認。
+- 全6条件のexpected/served/actual SHA一致、errors=[]、460横幅checkpoint、mobile4条件各671touchを成果物で照合。全削除A→B・一部削除A→B→C・元から計算なし・新ID追加・古い試算失効の追加チェックも全6条件に存在し成功。
+- [artifact 12320220548](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39540924934/artifacts/12320220548): ZIP33,184,271 bytes、SHA256 `d872a47d0893d1d510de9f71e3bf322ab92d9f2161d7d0d514d147fc0699c842` を照合。代表PNG114枚32,361,132 bytes、成功trace保存0、GUI618.776秒。全削除の追加geometryは画像を保存せず検査し、PR43の軽量化を維持。
+- WebKit390実画像で既存比較図の状態ラベル/有界スクロールを視認。新しい全削除状態は実SVGノード2件・参照線1件・削除ラベル・移動拒否・コピー源・保存書込み0をGUI assertionで確認しており、専用成功PNGは増やさない。
+- ローカルでもChromium4条件271検査/306横幅/mobile各671touch成功。WebKit2条件はOS libraries不足で起動前失敗し、今回の正式Ubuntu CIで実行を補完。ローカル未実行と正式成功を混同しない。公開tree `b718ae2dcad48fd3e5126b3a523a690316712a01` はローカル検証commitと一致。
+- 独立コードレビューの未解消指摘なし。この結果追記は文書のみ。記録commit自身の最終HEADは [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/45/checks) で別途成功を確認し、レビュー待ちへ移行する。以前のSHA成功で代用しない。実iPhone Safari/VoiceOverは未検証。マージは人間が判断する。
+
+
 ## 2026-10-21 (JST): 全計算ブロック削除時の比較図入口を維持（P2）
 - 基点: PR #44 merge済み最新main `a5ad20dcc0b0e7dc412edf8192781da3d86106bd`。独立修正枝 `fix/deleted-calculation-graph-entry`。[元P2指摘](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44#discussion_r4331602692)。PR #44への追加commit、Issue #19や他機能は対象外。
 - 根因: MemoBlockEditor が現在の計算ブロック存在だけで子グラフをmountしていた。比較基点に旧ノード・参照線が残っても、現在0件では比較UIへ入れなかった。現在または既存baselineに計算ブロックがある場合の表示へ条件1か所を修正。両方0件は非表示。削除表示/移動拒否/解析/試算/保存/安全描画は既存処理を変更しない。
