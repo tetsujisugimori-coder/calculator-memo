@@ -91,7 +91,7 @@ Follow the repository [AGENTS.md](../AGENTS.md). Before opening a PR, decide whe
 
 ## Mobile acceptance boundary
 
-The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 454 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
+The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 460 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
 
 Use the recorded exact PR SHA and the downloaded screenshots/traces for review. The next complementary acceptance step is physical iPhone Safari: repeat input/edit/error recovery and both memo saves, inspect the software keyboard and portrait/landscape scrolling, close/reopen Safari and confirm persistence using only synthetic data. No external device-hosting account or public preview service is required or created by this PR.
 
@@ -304,3 +304,16 @@ geometry checkpoints still execute; success trace export remains disabled and
 pre-failure tracing is unchanged. The exact touch count is enforced by the same
 fail-closed coverage contract. These browser-emulated conditions still do not
 claim physical iPhone Safari or native OS text zoom coverage.
+
+
+### P2: graph entry after deleting every calculation
+
+The deletion regression extends the existing trial stage in all six contexts with
+four named checks: partial A→B→C deletion and surviving-ID navigation; full A→B
+deletion with historical nodes/edge and no navigation, writes or stale trial;
+a new stable ID after full deletion; and no graph for a text-only baseline/draft.
+The full-deletion entry assertion fails on the pre-fix current-only render guard.
+The complete current contract is 408 acceptance checks, 460 horizontal-fit
+checkpoints, and 671 touch activations per touch context. The new
+`*-graph-all-deleted` checkpoint checks geometry without retaining a success PNG:
+114 representative PNGs and zero success trace exports remain unchanged.
