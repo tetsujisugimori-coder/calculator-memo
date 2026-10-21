@@ -27,3 +27,8 @@ Top-level schemaVersion 1 gains optional `formulaExecutions`: up to 200 records 
 Unit tests cover input/error classes, precision/negative zero/tiny values, AST and numeric boundaries, stale-independent snapshots, draft and old-data loading, note scope/order and 500 independent JavaScript Math comparisons. Existing 1000-formula regression remains part of the full suite. GUI adds execution and handoff cases in all existing six Chromium/WebKit configurations, including 375px/390px, light/dark and CSS 200% text probes. CSS enlargement is not OS text scaling. Real iPhone Safari, software keyboard, OS IME, assistive technologies and long-term browser eviction remain unverified.
 
 No nested library references, related reports, scientific-notation input, unit conversion or new percent syntax. Issue #19 remains independent.
+
+
+## 2026-10-21 (JST): Issue #19 の後続修正
+
+上記の既知不具合・旧%変換に関する記述は当時の判断として保持する。数値/括弧式のネストと先頭小数点%は後続の[後置%解析修正](percent-parser.md)で対応する。変数・関数・定数・累乗との%混在制限、AST全体検証と一回評価、状態・保存形式は変更しない。

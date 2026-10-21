@@ -67,11 +67,11 @@ describe("registered formula execution", () => {
     const run = executeFormula(formula("x+1"), { x: "2" });
     expect(() => executionHistory({ ...run, value: 9 }, "h", "now")).toThrow("同一");
   });
-  it("supports no-variable definitions and preserves old percent limitation", () => {
+  it("supports numeric percent definitions while retaining variable-percent rejection", () => {
     expect(executeFormula(formula("2*pi"), {}).value).toBe(2 * Math.PI);
     expect(executeFormula(formula("50%"), {}).value).toBe(.5);
     expect(() => executeFormula(formula("x%"), { x: "50" })).toThrow();
-    expect(() => executeFormula(formula("((50+50))%"), {})).toThrow();
+    expect(executeFormula(formula("((50+50))%"), {}).value).toBe(1);
   });
   it("recomputes only selected note's final scope, ignoring cached values and text", () => {
     const note: PlainCalculationNote = { id: "n", type: "plain-calculation", title: "n", content: "x=999", createdAt: "now", updatedAt: "now", blocks: [

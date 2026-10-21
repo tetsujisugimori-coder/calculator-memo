@@ -36,3 +36,8 @@ cloud Linux / Node v24.19.0 / mathjs15.2.0、基点に対する作業差分。20
 ノード数に対応する一回評価が主な改善。端末全般の体感速度・Safari実機性能の保証ではない。既存GUI6条件をCIで回帰確認する。実機iPhone Safariは未確認。Issue #19、科学記数法、新数学構文と%混在は別課題のまま。
 
 関連: [Issue #23](https://github.com/tetsujisugimori-coder/calculator-memo/issues/23)。最終SHAの検証はPRのChecksと成果物を参照。
+
+
+## 2026-10-21 (JST): Issue #19 の後続修正
+
+上記の既知不具合・旧%変換に関する記述は当時の判断として保持する。数値/括弧式のネストと先頭小数点%は後続の[後置%解析修正](percent-parser.md)で対応する。変数・関数・定数・累乗との%混在制限、AST全体検証と一回評価、状態・保存形式は変更しない。

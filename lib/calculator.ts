@@ -26,8 +26,8 @@ export function validateExpression(expression: string): string {
   if (!ALLOWED_EXPRESSION.test(normalized)) throw new Error("使用できない文字が含まれています");
   // e is a named constant, not an opt-in to scientific notation.
   if (/[\d.]e[+\-]?\d/i.test(normalized)) throw new Error("指数表記は使用できない文字形式です");
-  // The legacy postfix-% rewrite is intentionally unchanged (Issue #19).
-  // It cannot safely interpret new function/power syntax, so fail explicitly.
+  // Keep the established numeric/parenthesized percent scope. This fix does
+  // not opt functions, named constants or powers into percent syntax.
   if (normalized.includes("%") && /[a-z^]/.test(normalized)) {
     throw new Error("数学関数・定数・累乗と%の組合せにはまだ対応していません");
   }
@@ -43,17 +43,56 @@ export function validateExpression(expression: string): string {
   return normalized;
 }
 
+// Translate only postfix percent, before mathjs can interpret % as modulo or
+// relative addition. Track source operands and matching brackets, not generated
+// parentheses. The existing parser/allowlist still validates the complete result.
 function expandPercent(expression: string): string {
-  let previous: string;
-  let next = expression;
-  do {
-    previous = next;
-    next = previous
-      .replace(/(\d+(?:\.\d+)?)%/g, "($1/100)")
-      .replace(/(\([^()]+\))%/g, "($1/100)");
-  } while (next !== previous);
-  if (next.includes("%")) throw new Error("% の位置を確認してください");
-  return next;
+  if (!expression.includes("%")) return expression;
+  const parts: string[] = [];
+  const openings: number[] = [];
+  let operandStart: number | null = null;
+  let remainingPercents = 0;
+  for (let index = 0; index < expression.length;) {
+    const char = expression[index];
+    if (/[0-9.]/.test(char)) {
+      const start = index;
+      while (index < expression.length && /[0-9.]/.test(expression[index])) index++;
+      const number = expression.slice(start, index);
+      // A full decimal token prevents .5 becoming .(5/100). Keep the previous
+      // rejection of incomplete trailing-dot percent operands such as 50.%.
+      operandStart = /^(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)$/.test(number) ? parts.length : null;
+      remainingPercents = 2;
+      parts.push(number);
+    } else if (char === "(") {
+      openings.push(parts.length);
+      parts.push(char);
+      operandStart = null;
+      remainingPercents = 0;
+      index++;
+    } else if (char === ")") {
+      const opening = openings.pop();
+      if (opening === undefined) throw new Error("括弧の位置を確認してください");
+      parts.push(char);
+      operandStart = opening;
+      remainingPercents = 1;
+      index++;
+    } else if (char === "%") {
+      if (operandStart === null || remainingPercents === 0) throw new Error("% の位置を確認してください");
+      remainingPercents--;
+      parts[operandStart] = "(" + parts[operandStart];
+      parts.push("/100)");
+      // Preserve the old direct-repeat boundary: 50%% is accepted, but
+      // 50%%% and (50)%% are not. Explicit (50%)% is nested percent.
+      index++;
+    } else {
+      parts.push(char);
+      operandStart = null;
+      remainingPercents = 0;
+      index++;
+    }
+  }
+  if (openings.length) throw new Error("括弧が閉じていません");
+  return parts.join("");
 }
 
 // Validate the complete tree before evaluating any subtree. No assignments,
