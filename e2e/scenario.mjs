@@ -509,6 +509,124 @@ async function exerciseBasicMath(prefix) {
   await screenshot(prefix + "-basic-math-url-history");
   await passed(prefix + ": URL math remains editable until equals, and exact history/memo payloads plus rendered results survive reload");
 }
+// Issue #19: independent expected numbers, with all four inputs exercised at
+// every public entry point. Legacy fixtures deliberately omit block mode/policy.
+async function exerciseNestedPercent(prefix) {
+  const original = await storage();
+  const samples = [
+    { expression: "((50+50))%", result: 1, resultText: "1" },
+    { expression: "(50+(25+25))%", result: 1, resultText: "1" },
+    { expression: "(5%+5%)%", result: 0.001, resultText: "0.001" },
+    { expression: ".5%", result: 0.005, resultText: "0.005" },
+  ];
+  const input = page.getByRole("textbox", { name: "計算式を入力", exact: true });
+  const dialog = page.getByRole("dialog");
+  const result = page.locator(".lcd-result");
+  const assertCalculated = async sample => {
+    await activate(button("計算する"));
+    await expect(result).toHaveText(sample.resultText);
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject(sample);
+    await expect(button("単独計算メモを作成")).toBeEnabled();
+  };
+
+  await stage(prefix + ": nested-percent-calculator");
+  await page.goto(base);
+  await activate(page.locator("details.expression-entry > summary"));
+  for (const sample of samples) {
+    const before = await storage();
+    await input.fill(sample.expression);
+    await expect(button("単独計算メモを作成")).toBeDisabled();
+    assert.deepEqual((await storage()).history, before.history, "Percent input alone must not create history");
+    await assertCalculated(sample);
+    assert.deepEqual((await storage()).notes, before.notes);
+  }
+  await passed(prefix + ": all four Issue #19 percent expressions calculate and store exact ordinary-calculator results");
+
+  await stage(prefix + ": nested-percent-url");
+  for (const sample of samples) {
+    const before = await storage();
+    await page.goto(base + "?expr=" + encodeURIComponent(sample.expression));
+    await activate(page.locator("details.expression-entry > summary"));
+    await expect(input).toHaveValue(sample.expression);
+    await expect(button("単独計算メモを作成")).toBeDisabled();
+    assert.deepEqual((await storage()).history, before.history, "Percent URL receipt must not evaluate or add history");
+    assert.deepEqual((await storage()).notes, before.notes);
+    await assertCalculated(sample);
+  }
+  await passed(prefix + ": all four percent URL inputs remain editable and unconfirmed until explicit calculation");
+
+  await stage(prefix + ": nested-percent-legacy-single");
+  const at = "2026-01-01T00:00:00.000Z";
+  const singleFixture = {
+    id: "legacy-percent-single", schemaVersion: 1, type: "calculation", title: "Synthetic legacy percent single",
+    expression: "10%", displayExpression: "10%", result: 0.1, resultText: "0.1",
+    latexExpression: null, unit: "", note: "Synthetic saved data only.", tags: [], relatedMemoName: "", displayMode: "plain",
+    createdAt: at, updatedAt: at,
+  };
+  const blockFixture = {
+    id: "legacy-percent-blocks", type: "plain-calculation", title: "Synthetic legacy percent blocks",
+    content: "Synthetic saved data only.", createdAt: at, updatedAt: at,
+    blocks: samples.map((_, index) => ({
+      id: "legacy-percent-" + index, type: "calculation", expression: "10%", displayExpression: "10%",
+      result: 0.1, resultText: "0.1", error: null, syntheticExtra: { retained: index },
+    })),
+  };
+  const beforeFixtures = await storage();
+  const seeded = { ...beforeFixtures, notes: [singleFixture, blockFixture, ...beforeFixtures.notes] };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), seeded);
+  await page.goto(base); await selectPanel("notes");
+  assert.deepEqual((await storage()).notes, seeded.notes, "Loading saved percent notes must preserve their data without migration");
+  assert.deepEqual((await storage()).history, seeded.history);
+  const single = page.locator(".note-card").filter({ hasText: singleFixture.title });
+  const block = page.locator(".note-card").filter({ hasText: blockFixture.title });
+  const readSingle = async () => (await storage()).notes.find(note => note.id === singleFixture.id);
+  const readBlock = async () => (await storage()).notes.find(note => note.id === blockFixture.id);
+  await expect(single.locator(".note-formula strong")).toHaveText("= 0.1");
+  await expect(block.locator(".calculation-block strong")).toHaveText(samples.map(() => "= 0.1"));
+  for (const sample of samples) {
+    await activate(single.getByRole("button", { name: "編集", exact: true }));
+    await dialog.getByLabel("計算式", { exact: true }).fill(sample.expression);
+    await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+    await expect(single.locator(".note-formula strong")).toHaveText("= " + sample.resultText);
+    await expect.poll(readSingle).toMatchObject(sample);
+  }
+  const beforeSingleReload = await storage();
+  await page.reload(); await selectPanel("notes");
+  assert.deepEqual((await storage()).notes, beforeSingleReload.notes);
+  assert.deepEqual((await storage()).history, seeded.history, "Memo recalculation must not create calculator history");
+  await expect(single.locator(".note-formula strong")).toHaveText("= 0.005");
+  await passed(prefix + ": saved legacy single memo loads unchanged, recalculates all four percent inputs on save and persists after reload");
+
+  await stage(prefix + ": nested-percent-legacy-blocks");
+  await activate(block.getByRole("button", { name: "編集", exact: true }));
+  const cards = dialog.locator(".block-editor-card.calculation");
+  await expect(cards).toHaveCount(samples.length);
+  for (const [index, sample] of samples.entries()) {
+    await cards.nth(index).getByLabel("計算式", { exact: true }).fill(sample.expression);
+    await expect(cards.nth(index).locator(".calculation-live-result strong")).toHaveText("= " + sample.resultText);
+  }
+  assert.deepEqual(await readBlock(), blockFixture, "Legacy block live recalculation must remain an unsaved draft");
+  await screenshot(prefix + "-nested-percent-block-editor", currentScenario.width, false);
+  await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  const assertBlocks = async () => {
+    await expect(block.locator(".calculation-block strong")).toHaveText(samples.map(sample => "= " + sample.resultText));
+    await expect.poll(async () => (await readBlock()).blocks).toMatchObject(samples.map((sample, index) => ({
+      ...sample, id: "legacy-percent-" + index, error: null, syntheticExtra: { retained: index },
+    })));
+    assert.ok((await readBlock()).blocks.every(saved => saved.evaluationMode === undefined), "Legacy calculation modes must not be silently migrated");
+  };
+  await assertBlocks();
+  const beforeBlockReload = await storage();
+  await page.reload(); await selectPanel("notes");
+  assert.deepEqual((await storage()).notes, beforeBlockReload.notes);
+  assert.deepEqual((await storage()).history, seeded.history);
+  await assertBlocks();
+  await screenshot(prefix + "-nested-percent-persisted-memos");
+  await passed(prefix + ": saved legacy blocks recalculate all four percent inputs, preserve opaque fields and mode, and retain exact results after reload");
+  // Keep the pre-existing graph/trial/storage fixtures and their contracts isolated.
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.goto(base); await selectPanel("notes");
+}
 async function exerciseFormulaExecution(prefix) {
   await stage(prefix + ": formula-execution-inputs-and-snapshots");
   // Synthetic fixture, after all existing regressions. Expected arithmetic uses
@@ -2277,6 +2395,7 @@ async function exercise(scenario) {
   await exerciseCalculationDiagnostics(prefix);
   await exerciseDependencyGraphNavigation(prefix);
   await exerciseCalculationTrials(prefix);
+  await exerciseNestedPercent(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

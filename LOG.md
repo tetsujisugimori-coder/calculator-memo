@@ -1,5 +1,24 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #46 初回正式CI・6条件GUI成功
+- [PR #46](https://github.com/tetsujisugimori-coder/calculator-memo/pull/46)、HEAD `bee01cd80eba56bca12fb99e156eae82faa44d40` の [CI 39586945342](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39586945342) は全工程成功。固定Node22.13.0で755単体/30files、26契約、lint既存warning1・エラー0、型、通常/Pages build、Chromium4/WebKit2を確認。
+- 全6条件のexpected/served/actual SHA一致、errors=[]、追加percent4チェック各条件実行、432GUI/472横幅、mobile4条件各698touchを成果物で照合。旧保存データ読み込み・4式の全入口評価・明示保存と再読込・未知情報保持を含む。既存グラフ/試算/削除ノード/モバイルスクロール回帰を削除しない。
+- [artifact 12340243030](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39586945342/artifacts/12340243030): ZIP32,952,029 bytes、SHA256 `3261b939abc2183e6d43d675a8724d0434d444efa4a03e6ffdfea6144fae939c`。代表PNG114枚32,107,701 bytes、成功trace保存0、GUI実時間626.376秒。WebKit390 dark文字拡大の代表画像を視認。%追加地点は横幅checkpointのみであり、保存PNGを増やさない。
+- ローカルブラウザ配布失敗は正式CIでは再現せず、正式6条件で補完できた。Node24ローカルをNode22正式実行と混同しない。公開tree `92660417629c0b94bd07742f8f875bf218295003` はローカル検証treeと一致。通常git pushは認証経路不足だったため既存GitHub接続で同一treeを公開し、内容同一を照合した。
+- 独立レビューの未解消阻害指摘なし。比較corpus33,467式は両方成功の値差0、通常モード新拒否2件は不正な複数小数点のみ。拒否同士のエラー文は解析到達段階が変わるため一部異なる。oracle9,479式は厳密一致。既存Issue本文は追記権限の確認で停止し未変更、PR本文の関連リンクで追跡する。
+- この追記は文書のみ。記録commit自身の最終HEADも [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/46/checks) で別途確認し、その後Readyへ移行する。実iPhone Safari/VoiceOverは未検証、マージは人間が判断する。
+
+## 2026-10-21 (JST): Issue #19 ネスト括弧・先頭小数点の後置%を修正
+- 基点: PR #45 merge済みmain `fdf10ee6ee7453f583f0c6c92d3e2c06b71dfcb6`、独立枝 `fix/nested-postfix-percent`。[Issue #19](https://github.com/tetsujisugimori-coder/calculator-memo/issues/19)。PRは未作成。
+- 根因/方式: 旧正規表現が内部括弧を含む対象と `.5%` を扱えなかった。mathjsの直接% ASTは相対加算/剰余となり既存仕様と違うため不採用。数値トークンと括弧対応を走査して `(対象/100)` へ変換し、その後のAST許可検査・予算・評価器を維持。[比較/境界/互換性](docs/agent/percent-parser.md)。保存・ID/旧変数・試算・rollbackの実装、lockfileとworkflowは変更なし。
+- Red/green: 4式 `((50+50))%`, `(50+(25+25))%`, `(5%+5%)%`, `.5%` は旧mainで全て共通構文エラー、修正後1/1/0.001/0.005。最初の60回帰は旧コード12失敗/48成功、修正後60成功。追加境界4件と統合10件を含め全755単体/30files成功。初回複合式の小数リテラル期待誤差は独立演算式の厳密期待へ訂正し、丸め/近似で隠さない。旧Issue19失敗固定2テストは今回の正しい値へ更新。
+- 互換性判断: 独立比較で `50%%%` と `(50)%%` の新規受入を検出し旧拒否へ戻した。`50%%`、普通電卓の暗黙乗算、旧変数モードの空白/暗黙乗算拒否は維持。不正な `1.2.3%` が旧変換で0.023になる副作用は不正十進数として拒否し、仕様拡大とは区別して記録。
+- ローカル: cloud Linux Node24.19.0、26 CI契約成功、lintエラー0（既存aria-description warning1）、型・通常/Pages build成功。正式CIのNode22.13.0とは別環境。Playwrightブラウザ導入が公式配布の破損ZIP/503で失敗し、ローカルGUI未実施。配布ログを保持し正式CI6条件で補完予定、成功扱いしない。
+- GUI追加: 4再現式を通常電卓/URL/保存済み単独メモ/旧ブロックで検査。既存6条件・図/試算/モバイル/スクロール回帰を維持し、契約432検査/472横幅/mobile各698touch。代表PNG114/成功trace非保存/失敗前trace/7日保持/30分timeoutを維持。実ブラウザ結果は確認待ち。
+- 独立レビュー: 33,467式の旧新比較で共通成功の数値差なし。独立算術oracle9,479式でObject.is一致。混在制限/構文予算を確認し、expanded AST深度の有効な入れ子%回帰を補強。GUI/統合差分と件数契約も独立確認し、未解消の阻害指摘なし。実GUIは正式CIで別途確認する。
+- 文書参照: repo AGENTS/README/LOG/GitHub運用/検証/e2e/workflow、Issue19/PR45を確認。software-engineering skillはこの環境で参照不可、江戸弁guideの関連抜粋のみ参照。憲法/辞典全文の確認とは扱わない。
+- 残件: Draft PR公開、正式最終HEAD CI・成果物照合、Readyへの移行。実iPhone Safari/VoiceOverは未検証。人間の判断なくマージしない。戻す場合は本PRをrevert、データ移行不要。
+
 ## 2026-10-21 (JST): P2修正 PR #45 の正式6条件検証成功
 - [PR #45](https://github.com/tetsujisugimori-coder/calculator-memo/pull/45)、HEAD `116f5f5195166cfc5d90a0c56c90217715b2eba2` の [CI 39540924934](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39540924934) は全工程成功。681単体/28files、26 CI契約、lintエラー0・既存warning1、型、通常/Pages build、Chromium4/WebKit2の408 GUI検査を確認。
 - 全6条件のexpected/served/actual SHA一致、errors=[]、460横幅checkpoint、mobile4条件各671touchを成果物で照合。全削除A→B・一部削除A→B→C・元から計算なし・新ID追加・古い試算失効の追加チェックも全6条件に存在し成功。

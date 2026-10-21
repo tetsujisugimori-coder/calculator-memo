@@ -41,6 +41,7 @@ Each scenario actively exercises:
 - Document/body horizontal overflow at initial display, memo dialogs and screenshot checkpoints fails the test
 - After-equals BS/CE/± edits, disabled memo entrances, recalculated memo payload, repeated/chained equals and zero-division recovery
 - Small positive/negative result chaining without exponent syntax, exact history/memo values, editable chained operands, whitespace/Unicode-sign URL editing, parentheses error correction and simple postfix percent
+- All four Issue #19 nested/leading-decimal percent expressions through ordinary calculation, URL import, saved single-memo editing and saved legacy-block recalculation, with exact stored values and reload persistence
 
 The harness checks `git rev-parse HEAD` against the PR head SHA. Only after the Pages build, it generates `dist-pages/__gui_provenance.json` with exact SHA, branch, run and attempt; each browser fetches and compares it. No test marker is added to `public/` or application source. Screenshots have a clearly labeled test-only overlay that is immediately removed; provenance JSON and trace retain the unambiguous identity.
 
@@ -91,7 +92,7 @@ Follow the repository [AGENTS.md](../AGENTS.md). Before opening a PR, decide whe
 
 ## Mobile acceptance boundary
 
-The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 460 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
+The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 472 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
 
 Use the recorded exact PR SHA and the downloaded screenshots/traces for review. The next complementary acceptance step is physical iPhone Safari: repeat input/edit/error recovery and both memo saves, inspect the software keyboard and portrait/landscape scrolling, close/reopen Safari and confirm persistence using only synthetic data. No external device-hosting account or public preview service is required or created by this PR.
 
@@ -109,7 +110,7 @@ The first implementation left the calculator at a fixed 104px sticky offset, int
 
 The new math checks run in every existing six-context scenario after the prior regressions, preserving their fixed entry-count assertions. Named `*-basic-math-history`, `*-basic-math-domain-error`, `*-basic-math-block-editor`, `*-basic-math-persisted-memos`, and `*-basic-math-url-history` screenshots complement each scenario's trace. Expression text is entered with `fill`; equals, restore, save, edit and tabs still use the shared mouse/touch activation helper. This does not verify a physical iOS keyboard.
 
-These checks do not change or resolve the known nested-postfix-percent issue (#19); the existing simple-percent regressions remain intact.
+The basic-math checks keep function/constant/power mixing with percent unsupported. Separate Issue #19 coverage below verifies nested postfix percent; the existing simple-percent regressions remain intact.
 
 ## Formula-library evidence
 
@@ -313,7 +314,28 @@ four named checks: partial A→B→C deletion and surviving-ID navigation; full 
 deletion with historical nodes/edge and no navigation, writes or stale trial;
 a new stable ID after full deletion; and no graph for a text-only baseline/draft.
 The full-deletion entry assertion fails on the pre-fix current-only render guard.
-The complete current contract is 408 acceptance checks, 460 horizontal-fit
+The complete P2 contract was 408 acceptance checks, 460 horizontal-fit
 checkpoints, and 671 touch activations per touch context. The new
 `*-graph-all-deleted` checkpoint checks geometry without retaining a success PNG:
 114 representative PNGs and zero success trace exports remain unchanged.
+
+## Nested postfix percent regression (Issue #19)
+
+Every existing context evaluates `((50+50))% = 1`, `(50+(25+25))% = 1`,
+`(5%+5%)% = 0.001`, and `.5% = 0.005` through the ordinary expression textbox,
+URL `expr`, single-memo edit/save, and legacy calculation-block live recalculation.
+URL receipt remains unconfirmed and cannot add history until explicit equals.
+Synthetic existing-format single and block notes load unchanged before editing;
+all four corrected expressions retain their exact stored numbers and displayed
+results. Both memo types survive reload, opaque block fields and absent legacy
+mode metadata are preserved, and memo recalculation does not create calculator
+history. The existing dependency-graph and trial regressions remain unchanged.
+
+Four named checks and two geometry-only checkpoints per context extend the
+fail-closed contract to 432 acceptance checks and 472 horizontal-fit checkpoints.
+The exact mobile touch count is 698 per touch context (27 more than P2).
+`*-nested-percent-block-editor` and `*-nested-percent-persisted-memos` still run
+horizontal-fit assertions but do not retain success PNGs. The six contexts,
+114 representative PNGs, no automatic retries, pre-started failure traces and
+zero exported success traces are unchanged. This remains browser emulation,
+not physical iPhone Safari validation.

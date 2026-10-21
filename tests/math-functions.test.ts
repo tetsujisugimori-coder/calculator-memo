@@ -33,9 +33,9 @@ describe("bounded basic mathematics", () => {
   it.each(["sqrt(100)%", "sqrt(100%)", "abs(-100)%", "2^3%", "2%^3", "pi%", "e+10%"])("rejects new/legacy percent mixing explicitly: %s", (expression) => {
     expect(() => calculateExpression(expression)).toThrow("%の組合せ");
   });
-  it("retains Issue 19 as known behavior, not an incidental fix", () => {
-    expect(() => calculateExpression("((1+2))%")).toThrow();
-    expect(() => calculateExpression(".5%")).toThrow();
+  it("fixes Issue 19 without enabling named mathematics with percent", () => {
+    expect(calculateExpression("((1+2))%").value).toBe(.03);
+    expect(calculateExpression(".5%").value).toBe(.005);
   });
   it("bounds unnormalized length, parentheses and AST complexity before evaluation", () => {
     expect(() => calculateExpression(" ".repeat(EXPRESSION_LIMITS.length) + "1")).toThrow("2000文字");
