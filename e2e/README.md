@@ -92,7 +92,7 @@ Follow the repository [AGENTS.md](../AGENTS.md). Before opening a PR, decide whe
 
 ## Mobile acceptance boundary
 
-The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 472 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
+The existing check name `Checks and Chromium GUI` is retained to avoid silently changing a potential required-check identifier; its workflow now includes mandatory WebKit scenarios as well. A WebKit install/launch/assertion failure fails the same job. There is no optional-success fallback. The `scenarios` array in provenance records each started scenario and its completion; a failure stops that worker, while other independent workers continue without retries. The aggregate fails unless all six exact conditions, acceptance-check counts, all 490 screenshot geometry checkpoints (including all 448 historical checkpoints), and touch counts pass. Missing scenarios are never success.
 
 Use the recorded exact PR SHA and the downloaded screenshots/traces for review. The next complementary acceptance step is physical iPhone Safari: repeat input/edit/error recovery and both memo saves, inspect the software keyboard and portrait/landscape scrolling, close/reopen Safari and confirm persistence using only synthetic data. No external device-hosting account or public preview service is required or created by this PR.
 
@@ -339,3 +339,17 @@ horizontal-fit assertions but do not retain success PNGs. The six contexts,
 114 representative PNGs, no automatic retries, pre-started failure traces and
 zero exported success traces are unchanged. This remains browser emulation,
 not physical iPhone Safari validation.
+
+
+## Saved Markdown report regression
+
+The saved block-note report stage adds five checks per context: mixed source order
+with distinct stored/internal values and exact copy/download bytes; visible failure
+handling and fresh persisted-source lookup; cancelled draft/unreflected trial
+exclusion; light/dark 200% text controls; and refusal of unknown protected source.
+Synthetic clipboard sinks verify payload and failure handling, not OS clipboard.
+Real browser downloads are read back byte-for-byte, not claimed as OS save success.
+Three new geometry-only checkpoints per context preserve representative PNG policy
+and success-trace discard. Expected totals become 462 GUI checks, 490 geometry
+checkpoints and 729 touch activations per mobile context. These are fail-closed
+coverage expectations; actual execution results are recorded separately in LOG/CI.

@@ -453,3 +453,11 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .calculation-trial dl { display: grid; gap: .5rem; }
 .calculation-trial dd { margin: .2rem 0 0; }
 .calculation-trial dt { font-weight: 600; }
+
+/* Read-only saved-source report: no editor or calculation controls. */
+.markdown-report { display: grid; gap: .8rem; min-width: 0; overflow-wrap: anywhere; }
+.markdown-report p, .markdown-report ul { margin: 0; }
+.markdown-report label { display: grid; gap: .4rem; min-width: 0; }
+.markdown-report textarea { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; resize: vertical; white-space: pre-wrap; overflow-wrap: anywhere; padding: .75rem; background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.report-detail-actions { flex-wrap: wrap; }
+.report-detail-actions button { height: auto; padding-top: .6rem; padding-bottom: .6rem; overflow-wrap: anywhere; max-width: 100%; }
