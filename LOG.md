@@ -1,5 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 (JST): 保存済みMarkdownレポートの根拠情報・追跡可能性
+- 基点: PR #48 マージ済みmain `4059953b63e1b6cca13bdd0cfc7c33606e318e09`。専用枝 `feat/report-provenance`。[Issue #49](https://github.com/tetsujisugimori-coder/calculator-memo/issues/49)。既存Issue検索で同目的なしを確認し、調査結果を実装前に設計へ記録。
+- PR #48 の本文順/ID/入力式/保存内部値・表示値/状態/図/全文確認/コピー/downloadを再利用。追加は直接参照元の本文位置、ID、現在の保存式/内部数値/表示値/状態。既存AST slot検査とgraph.bindingsを使い、独自式解析なし。未使用対応表と直接依存、旧変数の再代入候補/未定義可能性を区別。
+- 計算時使用値の検証可能な履歴は未保存。署名には状態照合用snapshotが含まれるが、過去の実使用値としてdecode/推定しない。「計算時の使用値は確認不能」、依存図は履歴証明でないと明記。エンジン/評価/参照/試算/rollback/保存形式/UI変更なし。
+- 独立レビューの出力増幅指摘を修正。長い参照元全文は一度だけ再掲し以降は本文位置を案内。内部数値/状態は維持。生成400万文字上限を集約時にも検査し、明示エラーで停止。部分出力を完全レポートと偽らず、解析/図fallbackで上限エラーを隠さない。
+- 検証: 既存816件に追加回帰を加えて全件再確認。26 CI契約成功、lintエラー0（既存aria-description warning1）、型検査、通常/Pages build成功。最終件数/正式CIは次の記録で確定。独立レビュー82関連テスト成功後、集約時上限の最終差分を再確認中。
+- GUI: 既存6条件を維持し根拠区別/参照元変更後の古い値を各2件追加。予定474GUI/490geometry/mobile各729touch、PNG114枚/成功trace0/2worker/30分を維持。ローカル公式ブラウザ取得は完了したがWebKit用OSライブラリ不足があり、正式CIで補完するまで成功扱いしない。
+- 実生成Markdown例と既存合成fixtureを同期。未検証: 実iPhone Safari/VoiceOver、Memo Nexus実画面連携、OS保存完了。将来の実使用値履歴には実行ID/原子的確定/移行/改ざん耐性等の設計が必要、今回は保存しない。rollbackは本PRrevertで前版レポート維持。
+- 参照: AGENTS/README/LOG/設計/CI/テスト/PR #48、江戸弁ガイド関連抜粋。憲法と辞典全文は未読として記録し、読了を偽らない。
+
+
 ## 2026-10-21 (JST): PR #48 初回正式CI・保存済みレポート6条件検証成功
 - [PR #48](https://github.com/tetsujisugimori-coder/calculator-memo/pull/48)、実装HEAD `5384610f8eafd0f7903a06623d9f30dbc1a260c2` の [CI 39616743551](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39616743551) が全工程成功。816単体/33files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages build、Chromium4/WebKit2を確認。
 - 全6条件のexpected/served/actual SHA一致、errors=[]。462GUI検査、490横幅checkpoint、モバイル4条件それぞれ729touch。保存原本の混在順序/内部精度/依存図、コピーとdownload内容一致、失敗通知、未保存draft・未反映試算の不混入、保護中原本の拒否、出力前後storage完全一致を検証。375px/390px・ライト/ダーク・文字拡大・既存スクロール回帰を維持。

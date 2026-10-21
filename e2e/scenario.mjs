@@ -1922,12 +1922,19 @@ async function exerciseMarkdownReports(prefix) {
     evaluationMode: "block-references", references: { version: 1, entries },
     evaluationState: { version: 1, status: "stale" }, opaque: { keep: [id, 42] },
   });
+  const legacy = (id, expression, result) => ({
+    ...calc(id, expression, result, String(result)), evaluationMode: "note-variables", references: undefined,
+  });
   const note = { id: "report-note", type: "plain-calculation", title: "Synthetic / report", content: "not the block source",
     createdAt: at, updatedAt: at, calculationPolicy: { version: 1, mode: "manual" }, opaque: { retain: "source" }, blocks: [
       { id: "report-text", type: "text", content: "REPORT_FIRST\n\n**Recorded reasoning**" },
       calc("report-a", "100/3", 100 / 3, "33.3333333333"),
       { id: "report-formula", type: "formula", latex: "x^2 + y^2 = z^2" },
       calc("report-b", "@{1}*3", 100, "100", [{ slot: 1, blockId: "report-a" }]),
+      calc("report-c", "@{1}+1", 101, "101", [{ slot: 1, blockId: "report-b" }, { slot: 2, blockId: "report-a" }]),
+      legacy("report-x-first", "x=10", 10),
+      legacy("report-x-second", "x=20", 20),
+      legacy("report-x-reader", "x+1", 21),
       { id: "report-last", type: "text", content: "REPORT_LAST\n\n```text\n<literal> and ``` nested\n```" },
     ] };
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
@@ -1968,6 +1975,21 @@ async function exerciseMarkdownReports(prefix) {
   await screenshot(prefix + "-markdown-report-source", currentScenario.width, false);
   assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__reportWrites), 0);
   await passed(prefix + ": saved report keeps mixed block order, stored precision, graph and exact copy/download bytes without storage writes");
+  const blockSection = (text, position) => text.split("### ブロック " + position + "（")[1]?.split("### ブロック ")[0];
+  const bEvidence = blockSection(markdown, 4), cEvidence = blockSection(markdown, 5), legacyEvidence = blockSection(markdown, 8);
+  assert.ok(bEvidence && cEvidence && legacyEvidence, "Every consumer has its original body position");
+  assert.ok(bEvidence.includes("参照元: ブロック 2 / ID: report\\-a"));
+  assert.ok(bEvidence.includes("参照元の現在の保存内部数値: " + String(100 / 3)));
+  assert.ok(bEvidence.includes("参照元の現在の保存表示値（丸め・整形済み）:") && bEvidence.includes("33.3333333333"));
+  assert.ok(bEvidence.includes("参照元の結果状態 = 古い可能性"));
+  assert.ok(cEvidence.includes("参照元: ブロック 4 / ID: report\\-b"));
+  assert.ok(cEvidence.includes("式で未使用の保存参照対応"), "Unused slot is not represented as an actual dependency");
+  assert.ok(!cEvidence.includes("参照元: ブロック 2 / ID: report\\-a"), "Only direct used sources receive provenance details");
+  assert.ok(legacyEvidence.includes("report\\-x\\-first") && legacyEvidence.includes("report\\-x\\-second") && legacyEvidence.includes("不確定"), "Legacy reassignment retains both uncertain candidates");
+  for (const section of [bEvidence, cEvidence, legacyEvidence]) assert.ok(section.includes("計算時の使用値は確認不能"));
+  assert.ok(markdown.includes("計算履歴の証明ではありません"));
+  assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__reportWrites), 0);
+  await passed(prefix + ": report provenance separates direct current saved sources, legacy reassignment candidates and unavailable historical inputs");
 
   await page.evaluate(() => {
     navigator.clipboard.writeText = async () => { throw new Error("synthetic clipboard refusal"); };
@@ -1985,12 +2007,20 @@ async function exerciseMarkdownReports(prefix) {
   await page.evaluate(() => {
     const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
     data.notes[0].blocks[0].content = "SAVED_SOURCE_CHANGED";
+    // A changed source keeps its old result, rather than inventing a new calculation.
+    data.notes[0].blocks[1].expression = "200/3";
     window.__reportOriginalSetItem.call(localStorage, "calculation-memo:data", JSON.stringify(data));
     window.__reportWrites = 0;
   });
   const changedRaw = await raw();
   await openReport(); await expect(source()).toHaveValue(/SAVED_SOURCE_CHANGED/);
-  assert.ok(!(await source().inputValue()).includes("REPORT_FIRST"));
+  const changedMarkdown = await source().inputValue();
+  assert.ok(!changedMarkdown.includes("REPORT_FIRST"));
+  const changedEvidence = blockSection(changedMarkdown, 4);
+  assert.ok(changedEvidence.includes("200/3") && changedEvidence.includes("参照元の現在の保存内部数値: " + String(100 / 3)));
+  assert.ok(changedEvidence.includes("参照元の結果状態 = 古い可能性") && changedEvidence.includes("計算時の使用値は確認不能"));
+  assert.ok(!changedMarkdown.includes("状態: 確定済み"), "A saved stale source cannot certify its consumers");
+  await passed(prefix + ": changed persisted source formula retains old numeric evidence and cannot become a certified calculation input");
   assert.equal(await raw(), changedRaw); assert.equal(await page.evaluate(() => window.__reportWrites), 0);
   await closeReport(); await closeDetail();
   await page.evaluate(raw => { window.__reportOriginalSetItem.call(localStorage, "calculation-memo:data", raw); Storage.prototype.setItem = window.__reportOriginalSetItem; }, savedRaw);
