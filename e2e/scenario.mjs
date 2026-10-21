@@ -379,6 +379,13 @@ async function selectPanel(panel) {
   await expect(page.locator("#" + panel + "-panel")).toBeVisible();
 }
 async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }
+// Used only after an intentional successful calculation, never by no-write assertions.
+async function waitForStoredCalculation(previousId, expression, result) {
+  await expect.poll(async () => {
+    const latest = (await storage()).history[0];
+    return { isNew: Boolean(latest?.id && latest.id !== previousId), expression: latest?.expression, result: latest?.result };
+  }).toEqual({ isNew: true, expression, result });
+}
 // Run after the existing regressions so their fixed history/memo counts remain unchanged.
 async function exerciseBasicMath(prefix) {
   const input = page.getByRole("textbox", { name: "計算式を入力", exact: true });
@@ -2463,9 +2470,12 @@ async function exercise(scenario) {
   await expect(page.locator(".lcd-result")).toHaveText("-3");
   await activate(button("現在の数値を消去"));
   await page.keyboard.type("0.5");
+  const beforeDecimalCalculationId = (await storage()).history[0]?.id;
   await page.keyboard.press("Enter");
   await expect(page.locator(".lcd-result")).toHaveText("11.5");
   await screenshot(prefix + "-trailing-number-edit");
+  // Settle the preceding explicit calculation before the URL no-write baseline.
+  await waitForStoredCalculation(beforeDecimalCalculationId, "12-0.5", 11.5);
   // Memo-Nexus URL input is still editable and does not evaluate/store automatically.
   const beforeUrl = await storage();
   await page.goto(base + "?expr=" + encodeURIComponent("12--34"));
@@ -2481,8 +2491,10 @@ async function exercise(scenario) {
   async function confirmed15() {
     await activate(button("すべて消去"));
     await page.keyboard.type("12+3");
+    const previousId = (await storage()).history[0]?.id;
     await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText("15");
+    await waitForStoredCalculation(previousId, "12+3", 15);
     await expect(button("単独計算メモを作成")).toBeEnabled();
   }
   async function noteDisabled() {
@@ -2603,7 +2615,7 @@ async function exercise(scenario) {
   await expect(page.locator(".lcd-expression")).toHaveText("0");
   await noteDisabled();
   const beforeImported = await storage();
-  for (const imported of ["12 * - 34 ", "12 × − 34 "]) {
+  for (const [imported, edited] of [["12 * - 34 ", "12 * 2"], ["12 × − 34 ", "12 × 2"]]) {
     await page.goto(base + "?expr=" + encodeURIComponent(imported));
     await expect(page.locator(".lcd-result")).toHaveText("-34");
     assert.deepEqual((await storage()).history, beforeImported.history);
@@ -2615,8 +2627,10 @@ async function exercise(scenario) {
     await noteDisabled();
     await activate(button("現在の数値を消去"));
     await activate(button("2"));
+    const beforeImportedCalculationId = (await storage()).history[0]?.id;
     await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText("24");
+    await waitForStoredCalculation(beforeImportedCalculationId, edited, 24);
     // A new URL navigation must preserve all stored items, with no automatic history.
     beforeImported.history = (await storage()).history;
   }
@@ -2628,8 +2642,8 @@ async function exercise(scenario) {
   await passed(prefix + ": positive/negative tiny result chain, editable decimal, exact history/memo payload and imported whitespace/Unicode signs");
   await stage(prefix + ": parentheses-percent-and-error-boundaries");
   for (const sample of [
-    { expression: "(2+3", correction: ")", result: "5" },
-    { expression: "12+", correction: "*2", result: "24" },
+    { expression: "(2+3", correction: ")", result: "5", savedExpression: "(2+3)" },
+    { expression: "12+", correction: "*2", result: "24", savedExpression: "12*2" },
   ]) {
     await activate(button("すべて消去"));
     const snapshot = await storage();
@@ -2637,8 +2651,10 @@ async function exercise(scenario) {
     await expect(page.locator(".lcd-result")).toHaveText("Error");
     await noteDisabled();
     assert.deepEqual((await storage()).history, snapshot.history);
+    const beforeCorrectionId = (await storage()).history[0]?.id;
     await page.keyboard.type(sample.correction + "=");
     await expect(page.locator(".lcd-result")).toHaveText(sample.result);
+    await waitForStoredCalculation(beforeCorrectionId, sample.savedExpression, Number(sample.result));
   }
   await page.keyboard.type("(50+50)="); // Left parenthesis starts fresh after equals.
   await expect(page.locator(".lcd-result")).toHaveText("100");
@@ -2650,8 +2666,10 @@ async function exercise(scenario) {
   await noteDisabled();
   await page.keyboard.type("=");
   await expect(page.locator(".lcd-result")).toHaveText("1");
+  const beforeFinalCalculationId = (await storage()).history[0]?.id;
   await page.keyboard.type("+2=");
   await expect(page.locator(".lcd-result")).toHaveText("3");
+  await waitForStoredCalculation(beforeFinalCalculationId, "1+2", 3);
   const beforeFinalReload = await storage();
   await page.goto(base);
   await selectPanel("notes");

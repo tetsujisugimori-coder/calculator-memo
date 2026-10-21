@@ -1,5 +1,11 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 (JST): 非同期保存後のGUI比較基点を厳密化
+- [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52) の HEAD `6cd35cf990b16229db44309cae6fb54cd13f4e77` はローカルChromium4条件339checks/334geometry/mobile各754touch成功。WebKitはOSライブラリ不足で起動不可。
+- 同HEADの正式 [CI 39693381832](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39693381832) は単体929/契約26/lint/型/両build成功、WebKit2条件171checks成功。一方Chromium4条件は、直前の明示計算の非同期保存が不変比較基点の取得後に完了するテスト競合で失敗した。全体成功とは扱わない。旧HEADのCI 39692397713は新HEADに伴い自動cancelled。
+- 保存完了を待たず取得していた5か所を監査し、明示計算前の履歴IDから変化し、かつ正確な式と内部値が一致した時だけ比較基点を採る。独立レビューで同式の旧record即一致を検出し、新ID条件を補強。URL/不完全式/編集操作のfull deepEqualは維持し、no-write判定自体には待機を追加しない。
+- 途中のテスト案はUnicode入力の保存原式「12 × 2」をASCII「12 * 2」と誤期待して失敗したため、元入力方式ごとの正確な式へ修正。製品の変換規則・計算処理は変更しない。契約26件と構文検査成功。最終の新ID条件付き差分は次の正式CIで検証し、未実施を成功扱いしない。
+
 ## 2026-10-22 (JST): 根拠記録GUIで見つかった保存保護の回帰修正
 - [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52)をDraft作成。初回HEAD `feb868e8796ed3ee1bb57dcf8c524de06e5e8255` はCLI pushの認証経路不足のためGitHub接続で同一検証tree `fe077f4bee5b8ccdcbec089d692285df49255453` を公開した。
 - 固定HEADのローカルGUIで255checks成功（3条件は新規根拠6checks成功）後、起動後に壊れた原本へ差し替わったとき一般競合通知が既存復旧UIを隠す回帰を検出。原本の構造保護を優先し、autosave/storageevent/明示保存の3経路で元rawを変更しないテストを追加した。
