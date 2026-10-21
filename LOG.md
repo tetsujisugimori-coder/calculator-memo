@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 (JST): PR #50 初回正式CI・根拠情報6条件成功
+- [PR #50](https://github.com/tetsujisugimori-coder/calculator-memo/pull/50)、実装HEAD `8cdebf434b2bb79ed17fac91b34a6123bc22ec78` の [CI 39680436913](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39680436913) が全工程成功。追加22件を含む838単体/34files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages buildを確認。
+- 6条件のexpected/served/actual SHA一致、errors=[]。474 GUI検査、490横幅checkpoint、モバイル4条件それぞれ729touch。参照元内部/丸め値、直接参照と未使用mapping、旧変数再代入候補、参照元変更後の古い結果、使用値確認不能、保存不変・draft/試算不混入、全文確認/copy/downloadを確認。独立レビューの阻害指摘なし。
+- [artifact 12385041720](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39680436913/artifacts/12385041720): ZIP32,970,211 bytes、SHA256 `6e4f7a403c1d95061d9e277f6adec93dbf2595f61aa8ba519b7e0d0f430cda35`。PNG114枚32,101,475 bytes、成功trace0、GUI707.210秒。代表375pxダーク拡大画面を確認。新規PNGなし、CI条件/timeoutは不変。
+- ローカル初回GUIは実行中にHEADを変更したため後半4条件をprovenance検査が拒否し失敗記録。固定HEAD再実行ではChromium4条件成功、WebKit2条件はOSライブラリ不足で起動失敗。正式CIの両WebKit成功で補完し、ローカル失敗を成功扱いしない。今後はGUI実行中にHEADを動かさない。
+- git pushは資格情報経路不足で未実行。既存GitHub接続でローカル検証tree `2bc0abb030bc201415434cfb33fc83aab4f9a18f` と同一treeを公開。既存lockのnpm audit表示43件（low2/moderate13/high25/critical3）はこの変更で依存を変更せず、実到達性の調査は未実施。セキュリティ解消済みとは主張しない。
+- この追記は文書のみ。記録commit自身の最終HEADとReady切替後の同一HEADのCIもPR Checksで確認する。実iPhone/VoiceOver、Memo Nexus実画面、OS保存完了は未検証のまま。マージは人間が判断する。
+
+
 ## 2026-10-22 (JST): 保存済みMarkdownレポートの根拠情報・追跡可能性
 - 基点: PR #48 マージ済みmain `4059953b63e1b6cca13bdd0cfc7c33606e318e09`。専用枝 `feat/report-provenance`。[Issue #49](https://github.com/tetsujisugimori-coder/calculator-memo/issues/49)。既存Issue検索で同目的なしを確認し、調査結果を実装前に設計へ記録。
 - PR #48 の本文順/ID/入力式/保存内部値・表示値/状態/図/全文確認/コピー/downloadを再利用。追加は直接参照元の本文位置、ID、現在の保存式/内部数値/表示値/状態。既存AST slot検査とgraph.bindingsを使い、独自式解析なし。未使用対応表と直接依存、旧変数の再代入候補/未定義可能性を区別。
