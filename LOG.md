@@ -1,5 +1,28 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #44 修正HEADの正式検証成功
+- 修正HEAD `3395ded953e574a674b637becb637c64eda025fe` の [CI 39511725875](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39511725875) は全工程成功。676単体/27files、26 CI契約、lintエラー0・既存warning1、型、通常/Pages build、Chromium4/WebKit2の384 GUI検査を確認。全6workerのexpected/served/actual SHAを照合、errors=[]、454横幅checkpoint、mobile4条件各645touch。
+- [artifact 12306482730](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39511725875/artifacts/12306482730): ZIP32,938,421 bytes、SHA256 `771dcb04f566bc7ea5f30e175e72a91986727dbc1db30272d442e6435b167f17`。代表PNG114枚32,127,801 bytes、成功trace保存0。GUI561.172秒。PR43の代表画像/失敗前trace/全geometry方針を維持し、追加は各条件1画像。自然変動があるため単一runの速度から最適化効果を主張しない。
+- 本番distのChromium375最小診断でも、CSS注入なしの実tapでsummary open、changed/error・affected/blockedクラス、storage不変を確認。これは全GUIの代用とせず、上記正式6条件で回帰を確認。初回失敗と原因/修正記録は残す。
+- WebKit390とdesktopの実画像で、影響対象/数値変化あり/数値変化なし、保持旧結果→未反映試算を確認。図は既存の有界スクロール領域で一部分を表示する方式であり、一画面に全ノードが収まるとはしない。実iPhone Safari/VoiceOver/実OS clipboardは未検証。
+- 独立再レビューの阻害指摘なし。[PR #44](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44) は未マージ。この成功記録だけの最終文書commitについても [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44/checks) を別途確認してからレビュー可能化する。記録commit自身の未確認成功を先取りしない。
+
+## 2026-10-21 (JST): PR #44 初回正式CIで複合状態の描画不備を検出
+- [PR #44](https://github.com/tetsujisugimori-coder/calculator-memo/pull/44) をDraftで公開。HEAD `c807b78f663af2fc50373e02249e9b9e65513723` の [CI 39508607943](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39508607943) は675単体・26 CI契約・lint・型・両build成功、GUIは6条件とも試算失敗後の比較図で停止。前段の比較値/不変/無関係、辺追加削除、保存再読込検査は通過。全GUI成功とは扱わない。
+- 原因の一つ: Mermaid 11.12.2は `class A changed,error;` を2クラスでなく単一名 `changed,error` と解釈し、既存SVG安全境界がclass属性を除去していた。実parserのDB検査を先に失敗させ、状態ごとのclass文へ訂正。通常図/比較図とも複合状態を維持し、単一状態の出力、ID、辺、ラベル、計算・保存は不変。安全フィルタを緩めず、GUIの `g.node` 期待も維持する。
+- 修正後ローカル676単体/27files、関連23件の成功を確認。失敗artifactは38,936,091 bytes、SHA256 `34eddc2607070f421d9134f24a568a73b379b0e46c06123fd7fbfaf3ebd56690` を照合し、失敗前trace6本とPNGを取得。Chromium mobile2条件はsummaryのfocus時にscroll anchoringが約2200px移動させ、mouseup/clickが別要素へ配送されて開かなかった。最小fixtureで実tapのイベント/座標を比較し、編集部だけの `overflow-anchor: none` でscroll位置維持とopenを確認（graphだけの除外は不足）。編集部に限定して適用し、実tap・open確認・複合class確認を維持。固定待機・force操作・期待値緩和は行わず、正式CIは再検証待ち。
+- 独立再レビューはclass修正とeditor限定のscroll anchoring除外を確認し、関連28件を別実行して成功。新テストの許容union外状態は型検査で検出し既存許容状態へ訂正、再型検査成功。未解消のコード阻害指摘なし、6条件GUIと最終HEAD正式CIの成功は別途確認する。
+
+## 2026-10-21 (JST): 依存関係の変更比較と試算連携（PR #44 予定）
+- PR #43 merge済み最新main `8923e0c85f685a8631f5967e25e40894f0d043ba` から `feat/graph-trial-impact` を作成。PR未作成、正式CI未実行。実採番はGitHubに従う。
+- 既存解析/影響追跡と有効試算rowsを使う表示専用比較モデルを追加。＋追加/−削除/変更不明の辺、変更元/影響対象/影響なし/不明と、数値変更/不変/比較不可を分離。変更前はeditor開始・最後の一括確定時点で保存済み原本とは異なる。通常図/出力/ナビ/明示編集/診断/fallbackを維持し比較コピーと一覧を追加。計算エンジン、試算の有効性/適用、保存形式、未知情報、旧変数意味論は変更しない。[設計記録](docs/agent/dependency-comparison.md)。
+- ローカル: 675単体/27files（既存658維持）、CI契約26、lintエラー0・既存aria-description warning1、型検査、通常/Pages build成功。独立担当は関連7files/96件を別実行し成功。比較モデル最終文言修正後も675単体/lint/type/Pagesを再確認。
+- 独立レビュー: global解析制限でnodesが空でも実在blockを削除扱いしない修正、変更前由来の式の明示、追加辺太線CSSの修正と回帰検査を確認。コード上の未解消阻害なし、正式GUI/最終HEAD CIは未確認。
+- GUI初回: Chromium3条件は既存zoom selectorが新表示切替も拾う多重一致で停止、対象をzoom操作部へ限定し125%/100%期待を維持。375は比較前の既存scrollTo後のscrollY=19（期待0）で停止。traceで現象を確認、根因未解明。
+- GUI修正後: desktop/narrowは比較前の既存load/button待機でtimeout、390も既存reloadでtimeout。375は先のscroll検査を通過し新比較/数値区別/コピー/移動の検査を通過した後、新規pickerのラベル完全一致待機で停止。select一意指定へ訂正する。既存timeout/期待値は緩めず、別run成功を根因解消と扱わない。各失敗trace/PNGを保持。local WebKit2条件は必須OS libraries不足、公式install-depsはroot認証待ちで入力せず中止。正式Ubuntu CIで全6条件を補完する。
+- CIは既存6条件/検査を維持し比較を既存stageへ統合、予定384checks/454geometry/114代表PNG（各1枚追加）。PR #43の成功trace非保存、失敗前からのtrace、2worker、SHA照合、30分timeout、7日保持を維持。最終実測は公開後記録に追記する。
+- 参照: AGENTS/README/LOG/検証/GitHub運用/e2e/workflow、software-engineering、江戸弁運用ガイド抜粋・憲法/辞典の関連箇所を参照。全文参照とはしない。実iPhone Safari/VoiceOver/実OS clipboardは未検証。新しい計算方式/CI再最適化/Memo Nexus送信は対象外。mergeは行わない。
+
 ## 2026-10-21 (JST): PR #43 初回公開後の正式検証
 - [PR #43](https://github.com/tetsujisugimori-coder/calculator-memo/pull/43) をDraftで作成。公開HEAD `ff9d37b3bb3a2582432f8cf9c900804416bc0f87`、[CI 39462748334](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39462748334) 成功。ローカル実装commitとはmetadata差があるがtree `b336ec0bb78a6b19b450b20f20dd251627aa493a` 一致。
 - 658単体/26files、26 CI契約、lint既存warning1、型検査、通常/Pages build成功。全6条件372 GUIの本文/順序も旧証拠と一致、448横はみ出しcheckpoint、mobile各629touch、errors=[]。代表108 PNG、成功trace保存0。

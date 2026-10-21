@@ -62,7 +62,7 @@ describe('dependency Mermaid export', () => {
     const input = graph([a, node('b')]);
     const output = toMermaid(input, { changedIds: new Set(['a']), affectedIds: new Set(['a']) });
     for (const state of ['変更元', '影響候補', '再計算待ち', '解析エラー', '依存不確定', '通常']) expect(output).toContain(encoded(state));
-    expect(output).toContain(`class ${mermaidBlockId('a')} changed,affected,pending,error,uncertain;`);
+    for (const name of ['changed', 'affected', 'pending', 'error', 'uncertain']) expect(output).toContain(`class ${mermaidBlockId('a')} ${name};`);
     expect(await mermaid.parse(output)).toBeTruthy();
   });
 
@@ -117,4 +117,33 @@ it('parses evidence-aware states while escaping labels and retaining stable node
   expect(result).not.toContain('unsafe[');
   expect(toMermaid({ ...input, nodes: [...input.nodes].reverse() }, { nodeStates })).toBe(result);
   expect(result).toContain(`class ${mermaidBlockId('b')} blocked;`);
+});
+
+it('parses added, removed and unknown edges without merging distinct change evidence', async () => {
+  const a = edge('a', 'b');
+  const old = { ...a, kind: 'variable' as const, certainty: 'uncertain' as const, variable: '旧"名前' };
+  const uncertain = edge('b', 'a');
+  const input = graph([node('a', '日本語 " ] --> text'), node('b')], [a, old, a, uncertain]);
+  const { dependencyEdgeKey } = await import('../lib/dependency-mermaid');
+  const changes = new Map([
+    [dependencyEdgeKey(a), 'added' as const],
+    [dependencyEdgeKey(old), 'removed' as const],
+    [dependencyEdgeKey(uncertain), 'unknown' as const],
+  ]);
+  const output = toMermaid(input, { edgeChanges: changes });
+  expect(output).toContain(encoded('＋追加 ID参照'));
+  expect(output).toContain(encoded('−削除 変数 旧"名前（不確定）'));
+  expect(output).toContain(encoded('変更不明 ID参照'));
+  expect(output.match(/ ==>/g)).toHaveLength(1);
+  expect(output.match(/ -\.->/g)).toHaveLength(2);
+  expect(await mermaid.parse(output)).toBeTruthy();
+  expect(toMermaid({ ...input, edges: [...input.edges].reverse() }, { edgeChanges: changes })).toBe(output);
+  expect(toMermaid(input, { edgeChanges: new Map() })).toBe(toMermaid(input));
+});
+
+it('assigns combined states as separate Mermaid classes, not one comma-containing class', async () => {
+  const output = toMermaid(graph([node('a')]), { nodeStates: new Map([['a', { labels: ['変更元', '計算エラー'], classes: ['changed', 'error', 'affected'] }]]) });
+  const parsed = await mermaid.mermaidAPI.getDiagramFromText(output);
+  const db = parsed.db as { getVertices: () => Map<string, { classes: string[] }> };
+  expect(db.getVertices().get(mermaidBlockId('a'))?.classes).toEqual(['changed', 'error', 'affected']);
 });

@@ -49,3 +49,41 @@ describe('diagram failure and asynchronous selection boundary', () => {
     expect(host.textContent).toContain('選択中: ブロック 1');
   });
 });
+
+describe('comparison and trial are presentation only', () => {
+  async function compare() {
+    await act(async () => [...host.querySelectorAll('button')].find(button => button.textContent === '変更前後・試算')!.click());
+  }
+  it('keeps removed nodes as historical records without navigating', async () => {
+    mocks.render.mockResolvedValue({ svg: source });
+    const locate = vi.fn();
+    const current: MemoBlock[] = [];
+    await act(async () => root.render(createElement(DependencyGraph, { blocks: current, report: buildCalculationStatus(current, { baseline: blocks }), onLocate: locate })));
+    await open(); await compare();
+    expect(host.querySelector('[data-comparison-block-id="a"]')?.textContent).toContain('削除済み');
+    expect(host.querySelector('[data-comparison-block-id="a"] button')).toBeNull();
+    await act(async () => host.querySelector('[data-block-id]')!.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+    expect(locate).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('対象ブロックは削除されています');
+  });
+  it('removes numeric evidence when a trial is no longer supplied, preserving normal export', async () => {
+    const { createCalculationTrial, trialSnapshot } = await import('../lib/calculation-trial');
+    mocks.render.mockResolvedValue({ svg: source });
+    const current = blocks.map(block => ({ ...block, expression: '4' })) as MemoBlock[];
+    const report = buildCalculationStatus(current, { baseline: blocks });
+    const trial = createCalculationTrial(current, { memoKey: 'm', revision: 1, snapshot: trialSnapshot(current) }, { baseline: blocks });
+    const locate = vi.fn();
+    const before = JSON.stringify(current);
+    await act(async () => root.render(createElement(DependencyGraph, { blocks: current, report, trial, onLocate: locate })));
+    await open(); await compare();
+    expect(host.querySelector('[data-comparison-trial]')?.getAttribute('data-comparison-trial')).toBe('valid');
+    expect(host.querySelector('[data-comparison-block-id="a"]')?.textContent).toContain('数値変化あり');
+    await act(async () => root.render(createElement(DependencyGraph, { blocks: current, report, onLocate: locate })));
+    expect(host.querySelector('[data-comparison-trial]')?.getAttribute('data-comparison-trial')).toBe('none');
+    expect(host.querySelector('[data-comparison-block-id="a"]')?.textContent).not.toContain('数値変化あり');
+    expect(JSON.stringify(current)).toBe(before); expect(locate).not.toHaveBeenCalled();
+    await act(async () => [...host.querySelectorAll('button')].find(button => button.textContent === '現在の依存関係')!.click());
+    expect(host.querySelector('[data-comparison-block-id]')).toBeNull();
+    expect(host.querySelector('[aria-label="Mermaid変更比較図"]')).toBeNull();
+  });
+});

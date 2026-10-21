@@ -69,3 +69,11 @@ it('parses the display projection of actual exported node/edge syntax', async ()
   mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', htmlLabels: false });
   await expect(mermaid.parse(projected.text)).resolves.toMatchObject({ diagramType: 'flowchart-v2' });
 });
+
+it('retains delta and uncertain-change labels in the safe display projection', async () => {
+  const { prepareDependencyLayout } = await import('../lib/dependency-svg');
+  for (const change of ['＋追加', '−削除', '変更不明']) {
+    const encoded = Array.from(`${change} ID参照`, char => `#${char.codePointAt(0)};`).join('');
+    expect(prepareDependencyLayout(`flowchart TD\na -->|"${encoded}"| b`).text).toContain(`|${change} ID参照|`);
+  }
+});
