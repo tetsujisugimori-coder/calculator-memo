@@ -1,3 +1,4 @@
+import { validCalculationEvidence } from "./calculation-evidence";
 import { readExecutionDrafts } from "./formula-execution";
 import { identificationMode } from "./identification";
 import type { StoredData } from "./types";
@@ -49,6 +50,7 @@ function readStoredNotes(value: unknown): StoredData["notes"] {
     ids.add(item.id);
     if (!["title", "createdAt", "updatedAt"].every((key) => typeof item[key] === "string")) throw new Error("メモの必須項目が不正です。");
     if (item.type === "plain-calculation") {
+      if (item.calculationEvidence !== undefined && !validCalculationEvidence(item.calculationEvidence)) throw new NoteStructureError("計算根拠履歴の形式を確認できません。元データを保護しています。", "invalid-structure");
       if (item.calculationPolicy !== undefined && (!isRecord(item.calculationPolicy) || item.calculationPolicy.version !== 1 || item.calculationPolicy.mode !== "manual")) throw new Error("未対応の再計算方式です。");
       if (item.schemaVersion !== undefined && item.schemaVersion !== 1) throw new Error("未対応のメモ形式です。");
       if (typeof item.content !== "string") throw new Error("メモ本文が不正です。");
@@ -171,4 +173,33 @@ export function resetStoredData(expectedRaw: string | null, storage?: WritableSt
     target.setItem(STORAGE_KEY, JSON.stringify(cloneDefaultData()));
     return true;
   } catch { return false; }
+}
+
+
+export type CheckedSaveResult = { ok: true; raw: string } | { ok: false; reason: "conflict" | "invalid" | "unavailable" | "uncertain" };
+/** Byte-level optimistic check; the application also holds the shared Web Lock.
+ * Readback is not a durable-disk acknowledgement or protection from old clients. */
+export function saveDataChecked(data: StoredData, expectedRaw: string | null, storage?: WritableStorage): CheckedSaveResult {
+  let written = false;
+  try {
+    const target = storage ?? localStorage;
+    if (target.getItem(STORAGE_KEY) !== expectedRaw) return { ok: false, reason: "conflict" };
+    if (loadData(target).status === "error") return { ok: false, reason: "invalid" };
+    readStoredNotes(data.notes);
+    const raw = JSON.stringify(data);
+    if (loadData({ getItem: () => raw }).status !== "ok") return { ok: false, reason: "invalid" };
+    if (target.getItem(STORAGE_KEY) !== expectedRaw) return { ok: false, reason: "conflict" };
+    if (raw !== expectedRaw) { target.setItem(STORAGE_KEY, raw); written = true; }
+    if (target.getItem(STORAGE_KEY) !== raw) return { ok: false, reason: "conflict" };
+    return { ok: true, raw };
+  } catch { return { ok: false, reason: written ? "uncertain" : "unavailable" }; }
+}
+let writeQueue: Promise<unknown> = Promise.resolve();
+/** All current application writers use one lock. Old clients cannot be locked. */
+export function withStorageWriteLock<T>(write: () => T | Promise<T>): Promise<T> {
+  const run = async (): Promise<T> => typeof navigator !== "undefined" && navigator.locks
+    ? await navigator.locks.request(`${STORAGE_KEY}:write`, async () => await write()) : await write();
+  const result = writeQueue.then(run, run);
+  writeQueue = result.catch(() => undefined);
+  return result;
 }

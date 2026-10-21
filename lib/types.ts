@@ -1,3 +1,4 @@
+import type { EvidenceHistory } from './calculation-evidence';
 export type DisplayMode = "plain" | "katex";
 
 export type HistoryEntry = {
@@ -58,6 +59,7 @@ export type CalculationMemoBlock = {
 export type MemoBlock = TextMemoBlock | FormulaMemoBlock | CalculationMemoBlock;
 
 export type PlainCalculationNote = {
+  calculationEvidence?: EvidenceHistory;
   calculationPolicy?: { version: 1; mode: "manual" };
   id: string;
   type: "plain-calculation";

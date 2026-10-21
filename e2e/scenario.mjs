@@ -2072,6 +2072,116 @@ async function exerciseMarkdownReports(prefix) {
   await page.reload(); await selectPanel("notes");
 }
 
+// Real UI confirmation boundary: traces originate in evaluation, never injected fixtures.
+async function exerciseCalculationEvidence(prefix) {
+  await stage(prefix + ": calculation-evidence-snapshots");
+  const original = await storage();
+  const at = "2026-10-21T00:00:00Z";
+  const legacy = (id, expression) => ({ id, type: "calculation", evaluationMode: "note-variables", expression,
+    displayExpression: expression, result: null, resultText: "", error: null, evaluationState: { version: 1, status: "stale" } });
+  const note = { id: "evidence-note", type: "plain-calculation", title: "Synthetic evidence", content: "", createdAt: at, updatedAt: at,
+    calculationPolicy: { version: 1, mode: "manual" }, opaque: { keep: "unchanged" }, blocks: [
+      legacy("x-first", "x=10"), legacy("x-early", "x+1"), legacy("x-second", "x=20"), legacy("x-late", "x+1"),
+      { ...legacy("sum", "@{1}+@{2}"), evaluationMode: "block-references", references: { version: 1, entries: [{ slot: 1, blockId: "x-early" }, { slot: 2, blockId: "x-late" }] } },
+    ] };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload(); await selectPanel("notes");
+  const card = page.locator(".note-card").filter({ hasText: note.title });
+  const editor = () => page.getByRole("dialog", { name: "計算メモを編集", exact: true });
+  const openEditor = () => activate(card.getByRole("button", { name: "編集", exact: true }));
+  const editFirst = value => editor().locator('[data-block-id="x-first"]').getByRole("textbox", { name: "計算式", exact: true }).fill(value);
+  const save = async () => { await activate(editor().getByRole("button", { name: "保存する", exact: true })); await expect(editor()).toHaveCount(0); };
+  const raw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  const savedNote = async () => (await storage()).notes.find(item => item.id === note.id);
+  const before = await raw();
+  await openEditor(); await activate(editor().getByRole("button", { name: "試算する", exact: true }));
+  await expect(editor().getByRole("region", { name: "試算・差分プレビュー", exact: true })).toContainText("試算は未反映");
+  assert.equal(await raw(), before);
+  await activate(editor().getByRole("button", { name: "キャンセル", exact: true }));
+  assert.equal((await savedNote()).calculationEvidence, undefined);
+  await passed(prefix + ": trial preview and cancelled draft create no persisted calculation evidence");
+
+  await openEditor();
+  await activate(editor().getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await activate(editor().getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await expect(editor()).toContainText("計算根拠の保存待ち: 2件");
+  assert.equal(await raw(), before, "Successful calculations remain unsaved until explicit save");
+  await screenshot(prefix + "-evidence-unsaved-confirmations", currentScenario.width, false);
+  await save();
+  const first = await savedNote();
+  assert.equal(first.calculationEvidence.version, 1);
+  assert.equal(first.calculationEvidence.records.length, 2);
+  assert.notEqual(first.calculationEvidence.records[0].id, first.calculationEvidence.records[1].id);
+  const oldRecords = JSON.stringify(first.calculationEvidence.records);
+  const trace = first.calculationEvidence.records[0].blocks;
+  assert.deepEqual(trace.find(block => block.blockId === "x-early").inputs, [{ kind: "variable", name: "x", sourceBlockId: "x-first", value: "10" }]);
+  assert.deepEqual(trace.find(block => block.blockId === "x-late").inputs, [{ kind: "variable", name: "x", sourceBlockId: "x-second", value: "20" }]);
+  assert.deepEqual(trace.find(block => block.blockId === "sum").inputs.map(input => [input.sourceBlockId, input.value]), [["x-early", "11"], ["x-late", "21"]]);
+  assert.equal(trace.find(block => block.blockId === "sum").result, "32");
+  assert.deepEqual(first.opaque, note.opaque);
+  await passed(prefix + ": repeated successful calculations append distinct saved batches with actual reassignment and ID inputs");
+
+  await openEditor(); await editFirst("x=99"); await save();
+  const changed = await savedNote();
+  assert.equal(JSON.stringify(changed.calculationEvidence.records), oldRecords, "Editing a source never rewrites historical used values");
+  assert.equal(changed.blocks[0].expression, "x=99");
+  assert.equal(changed.blocks[0].result, 10, "No automatic recalculation at manual save");
+  await passed(prefix + ": a saved source edit retains old immutable evidence and old current result without inventing new inputs");
+
+  await activate(card.getByRole("button", { name: "詳細", exact: true }));
+  const detail = () => page.getByRole("dialog", { name: note.title, exact: true });
+  await activate(detail().getByRole("button", { name: "レポート出力", exact: true }));
+  const report = () => page.getByRole("dialog", { name: "計算メモのレポート出力", exact: true });
+  const source = report().getByRole("textbox", { name: "Markdownレポート全文", exact: true });
+  const reportRaw = await raw();
+  const markdown = await source.inputValue();
+  assert.ok(markdown.includes("## 確定根拠の履歴") && markdown.includes("x=99") && markdown.includes("x=10"));
+  assert.ok(markdown.includes("実際に使用した内部数値: 10") && markdown.includes("古い可能性"));
+  await activate(report().getByRole("button", { name: "保存記録を再現検証", exact: true }));
+  await expect(report()).toContainText("2件の保存記録を再現できました");
+  await page.evaluate(() => Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__evidenceCopy = text; } } }));
+  await activate(report().getByRole("button", { name: "Markdown全文をコピー", exact: true }));
+  await expect(report()).toContainText("Markdown全文をコピーしました");
+  assert.equal(await page.evaluate(() => window.__evidenceCopy), markdown);
+  const downloaded = page.waitForEvent("download");
+  await activate(report().getByRole("button", { name: ".mdをダウンロード", exact: true }));
+  const download = await downloaded;
+  assert.deepEqual(await readFile(await download.path()), Buffer.from(markdown, "utf8"));
+  await screenshot(prefix + "-evidence-historical-report", currentScenario.width, false);
+  assert.equal(await raw(), reportRaw, "Report and explicit replay verification leave saved data unchanged");
+  assert.equal(await source.inputValue(), markdown);
+  await activate(report().getByRole("button", { name: "閉じる", exact: true }).last());
+  await activate(detail().getByRole("button", { name: "閉じる", exact: true }).last());
+  await passed(prefix + ": historical report replay copy and download preserve original bytes and distinguish current stale values");
+
+  await openEditor(); await editFirst("x=1/0");
+  await activate(editor().getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await expect(editor()).toContainText("計算根拠の保存待ち: 0件");
+  await save();
+  const failed = await savedNote();
+  assert.equal(JSON.stringify(failed.calculationEvidence.records), oldRecords);
+  assert.equal(failed.blocks.find(block => block.id === "sum").result, 32, "Failed batch preserves prior committed result");
+  await passed(prefix + ": failed recalculation and rollback append no evidence and preserve prior saved history");
+
+  await openEditor(); await editFirst("x=99");
+  await activate(editor().getByRole("button", { name: "試算する", exact: true }));
+  await expect(editor().getByRole("region", { name: "試算・差分プレビュー", exact: true })).toContainText("試算は未反映");
+  assert.equal((await savedNote()).calculationEvidence.records.length, 2);
+  await activate(editor().getByRole("button", { name: "結果を反映", exact: true }));
+  await expect(editor()).toContainText("計算根拠の保存待ち: 1件");
+  assert.equal((await savedNote()).calculationEvidence.records.length, 2);
+  await save();
+  const applied = await savedNote();
+  assert.equal(applied.calculationEvidence.records.length, 3);
+  assert.equal(JSON.stringify(applied.calculationEvidence.records.slice(0, 2)), oldRecords);
+  const latest = applied.calculationEvidence.records[2].blocks;
+  assert.equal(latest.find(block => block.blockId === "x-early").inputs[0].value, "99");
+  assert.equal(latest.find(block => block.blockId === "sum").result, "121");
+  await passed(prefix + ": only successful explicit trial application followed by save appends its actual new execution evidence");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
 async function exerciseStorageProtection(prefix) {
   await stage(prefix + ": nondestructive-storage-protection");
   const original = await storage();
@@ -2557,6 +2667,7 @@ async function exercise(scenario) {
   await exerciseCalculationTrials(prefix);
   await exerciseNestedPercent(prefix);
   await exerciseMarkdownReports(prefix);
+  await exerciseCalculationEvidence(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

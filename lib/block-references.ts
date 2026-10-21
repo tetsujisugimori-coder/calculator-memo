@@ -1,5 +1,6 @@
 import { calculateVariableExpression } from './calculator';
-import { calculateMemoBlock } from './memo-blocks';
+import { calculateMemoBlock, describeCalculationBlock } from './memo-blocks';
+import { EvidenceScope, evidenceBlock, type EvidenceBlock } from './calculation-evidence';
 import { inspectBlockReferenceExpression, REFERENCE_MODE } from './reference-syntax';
 import { createMemoExecutionPlan, analyzeBlockDependencies, blockedReferenceDiagnostics } from './execution-plan';
 import type { DependencyDiagnostic } from './dependency-structure';
@@ -39,7 +40,7 @@ export function markCalculationsStale(blocks: MemoBlock[]): MemoBlock[] {
 export type CalculationObservation = { blockId: string; result: number | null; resultText: string; error: string | null };
 /** Pure evaluation, including transient observations from a failed transaction.
  * observations are evidence only; blocks retains the historical atomic contract. */
-export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[]; success: boolean; evaluated: string[]; observations: CalculationObservation[]; diagnostics: DependencyDiagnostic[] } {
+export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[]; success: boolean; evaluated: string[]; observations: CalculationObservation[]; evidence?: EvidenceBlock[]; diagnostics: DependencyDiagnostic[] } {
   const graph = createMemoExecutionPlan(blocks);
   const evaluated: string[] = [];
   const observations: CalculationObservation[] = [];
@@ -49,13 +50,20 @@ export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[
     return fail(id === '*' ? message : `ブロック ${blocks.findIndex(b => b.id === id) + 1}: ${message}`, graph.diagnostics);
   }
   const results = new Map<string, CalculationMemoBlock>();
-  const scope = new Map<string, number>();
+  const scope = new EvidenceScope('variable');
+  const evidence: EvidenceBlock[] = [];
   // Preserve old assignment/reassignment semantics. This stage runs once and does
   // not commit any partial result. Reference blocks cannot define scoped variables.
   for (const id of graph.legacyOrder) {
     const b = blocks.find(b => b.id === id) as CalculationMemoBlock;
+    scope.reads.length = 0;
     const result = { ...b, ...calculateMemoBlock(b.id, b.expression, b.evaluationMode, scope) };
     results.set(b.id, result); evaluated.push(b.id);
+    if (result.error === null && result.result !== null) {
+      evidence.push(evidenceBlock(result, blocks.indexOf(b) + 1, scope.reads));
+      const variableName = b.evaluationMode === 'note-variables' ? describeCalculationBlock(b.expression).variableName : undefined;
+      if (variableName) scope.origins.set(variableName, b.id);
+    }
     observations.push({ blockId: b.id, result: result.result, resultText: result.resultText, error: result.error });
   }
   // Finish the legacy scope first (failed reassignment keeps its previous value),
@@ -68,12 +76,13 @@ export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[
     if (b.type !== 'calculation' || b.evaluationMode !== REFERENCE_MODE) continue;
     try {
       const { expression, slots } = inspectBlockReferenceExpression(b);
-      const bindings = new Map<string, number>();
+      const bindings = new EvidenceScope('id');
       for (const slot of slots) {
         const target = b.references!.entries.find(e => e.slot === slot)!.blockId;
         const source = results.get(target);
         if (!source || source.error || source.result === null) throw new Error(`参照元 @{${slot}} を計算できません`);
         bindings.set(`ReferenceValue${slot}`, source.result);
+        bindings.origins.set(`ReferenceValue${slot}`, target);
       }
       // Record actual numeric attempts, including calls that throw. Preflight and
       // missing-source failures above do not invoke the numeric evaluator.
@@ -81,6 +90,7 @@ export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[
       const value = calculateVariableExpression(expression, bindings);
       observations.push({ blockId: id, result: value.value, resultText: value.resultText, error: null });
       results.set(id, { ...b, displayExpression: b.expression, result: value.value, resultText: value.resultText, error: null });
+      evidence.push(evidenceBlock(results.get(id)!, blocks.indexOf(b) + 1, bindings.reads));
     } catch (e) {
       const message = e instanceof Error ? e.message : '計算できません';
       if (evaluated.includes(id)) observations.push({ blockId: id, result: null, resultText: "", error: message });
@@ -88,7 +98,7 @@ export function evaluateReferenceMemo(blocks: MemoBlock[]): { blocks: MemoBlock[
     }
   }
   const next = blocks.map(b => b.type === 'calculation' ? results.get(b.id)! : { ...b });
-  return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated, observations, diagnostics: [] };
+  return { blocks: next.map(b => b.type === 'calculation' ? { ...b, evaluationState: { ...b.evaluationState, version: 1, status: 'current', signature: signature(b, next), attemptError: undefined } } : b), success: true, evaluated, observations, evidence, diagnostics: [] };
 }
 
 /** Existing callers see exactly the original result shape and rollback behavior. */

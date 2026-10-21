@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 (JST): 計算確定時の根拠スナップショット
+- 調査基点: 最新 main `bf09f8d9398f79046bafbf20aeb30a4a6185f749`、PR #50 mergeを確認し、clean treeから `feat/calculation-evidence-snapshots` を作成。[Issue #51](https://github.com/tetsujisugimori-coder/calculator-memo/issues/51)。PR未作成。AGENTS、README、LOG、関連設計/保存形式/Actionsを実読。江戸弁の関連指針全文は今回参照できておらず、確認済みとはしない。
+- 従来は現在値だけを表示し、当時使用値は確認不能だった。新方針は実評価で読んだ旧変数/IDの内部値を観測し、全件成功候補を明示保存の成功後だけ記録する。試算preview/draft/失敗/rollbackでは確定記録を追加せず、同式再計算は別IDで追記。過去記録を改変せず、既存履歴なしの値を推定しない。設計は実装前に提示し [根拠記録設計](docs/agent/calculation-evidence.md) に記録した。
+- 任意のnote単位version1、トップ保存version不変。最大100回/500,000 UTF-8 bytes、上限時は保存拒否し黙って削除しない。原本文字列照合・現行writerのWeb Locks直列化・保存中編集禁止・不確定読戻しでの再送停止を追加。完全CAS/非協調writer/物理flushは保証しない。未知履歴は非破壊保護する。
+- Markdownは現在値と保存記録を分離し、内部値/表示値、実使用元、本文順/実行順、日時を出す。通常出力は再計算なし。明示ボタンのみ同じ評価器で記録を再現検証し、暗号学的真正性/数学的証明は主張しない。Memo Nexus直接通信/PDF/AI生成は対象外。
+- ローカル検証: 追加88件を含む926単体/41files成功。26 CI契約・lint（既存warning1）・型・通常/Pages buildも成功。6条件GUIの回帰を追加したが、正式CIは未実行。独立レビューで実入力・候補整合・129以上の旧block再現・保存境界を確認し、指摘を修正。独立25件を含む保存/UI/レポート68件の最終再検証も成功し、阻害指摘なし。
+- 未検証: 実iPhone Safari/VoiceOver、OS保存完了、非協調writer完全排他。既存依存のaudit指摘は今回依存を変更せず、解消したとは主張しない。最終HEADと実在PR/CI結果は検証後に追記する。mainへはマージしない。
+
 ## 2026-10-22 (JST): PR #50 初回正式CI・根拠情報6条件成功
 - [PR #50](https://github.com/tetsujisugimori-coder/calculator-memo/pull/50)、実装HEAD `8cdebf434b2bb79ed17fac91b34a6123bc22ec78` の [CI 39680436913](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39680436913) が全工程成功。追加22件を含む838単体/34files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages buildを確認。
 - 6条件のexpected/served/actual SHA一致、errors=[]。474 GUI検査、490横幅checkpoint、モバイル4条件それぞれ729touch。参照元内部/丸め値、直接参照と未使用mapping、旧変数再代入候補、参照元変更後の古い結果、使用値確認不能、保存不変・draft/試算不混入、全文確認/copy/downloadを確認。独立レビューの阻害指摘なし。

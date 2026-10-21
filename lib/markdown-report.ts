@@ -1,4 +1,5 @@
 import { staleBlockIds } from './block-references';
+import { validCalculationEvidence, type EvidenceHistory } from './calculation-evidence';
 import { inspectBlockReferenceExpression } from './reference-syntax';
 import { analyzeMemoDependencies, type DependencyGraph } from './dependency-analysis';
 import { toMermaid, type MermaidNodeState } from './dependency-mermaid';
@@ -90,6 +91,7 @@ function checkedBlocks(note: PlainCalculationNote): MemoBlock[] {
   if (!note || note.type !== 'plain-calculation' || !['id', 'title', 'content', 'createdAt', 'updatedAt'].every(key => typeof (note as unknown as Record<string, unknown>)[key] === 'string') || !note.id.trim()) throw new Error('保存済み計算メモの形式を確認できません。');
   const record = note as unknown as Record<string, unknown>;
   if ((record.schemaVersion !== undefined && record.schemaVersion !== 1) || (note.calculationPolicy !== undefined && (note.calculationPolicy.version !== 1 || note.calculationPolicy.mode !== 'manual'))) throw new Error('未対応のメモ形式です。原本JSONを保護して確認してください。');
+  if (note.calculationEvidence !== undefined && !validCalculationEvidence(note.calculationEvidence)) throw new Error('未対応または不正な計算根拠履歴があります。省略せず出力を停止しました。原本JSONを保護してください。');
   const blocks = note.blocks === undefined ? (note.content ? [{ id: `legacy-text-${note.id}`, type: 'text' as const, content: note.content }] : []) : note.blocks;
   if (!Array.isArray(blocks) || !blocks.every(isMemoBlock) || new Set(blocks.map(b => b.id)).size !== blocks.length || blocks.some(b => b.type === 'calculation' && b.evaluationMode !== undefined && !['note-variables', 'block-references'].includes(b.evaluationMode))) throw new Error('未対応または不正なブロックがあります。省略せず出力を停止しました。原本JSONを確認してください。');
   const raw = JSON.stringify(note);
@@ -108,8 +110,10 @@ function resultState(block: CalculationMemoBlock, stale: Set<string> | undefined
 }
 
 /** Current saved snapshot only. Signatures are never decoded as historical input records. */
-function referenceEvidence(block: CalculationMemoBlock, blocks: MemoBlock[], graph: DependencyGraph | undefined, stateById: Map<string, string>, expandedSourceIds: Set<string>): string[] {
-  const lines = reportLines(['直接参照と根拠情報:', '', '計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。', '']);
+function referenceEvidence(block: CalculationMemoBlock, blocks: MemoBlock[], graph: DependencyGraph | undefined, stateById: Map<string, string>, expandedSourceIds: Set<string>, hasHistoricalRecord: boolean): string[] {
+  const lines = reportLines(['直接参照と根拠情報:', '', hasHistoricalRecord
+    ? 'このIDの計算時の使用値は「確定根拠の履歴」に保存記録があります。過去の式・結果の記録であり、現在の式や結果への対応は保証しません。以下の現在の保存値とは区別してください。'
+    : '計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。', '']);
   const node = graph?.nodes.find(n => n.id === block.id);
   const sourceDetails = (id: string) => {
     const index = blocks.findIndex(b => b.id === id);
@@ -160,6 +164,40 @@ function referenceEvidence(block: CalculationMemoBlock, blocks: MemoBlock[], gra
   return lines;
 }
 
+/** Historical data is displayed as recorded, never reconstructed from current sources. */
+function historicalEvidence(history: EvidenceHistory, blocks: MemoBlock[]): string[] {
+  const lines = reportLines(['## 確定根拠の履歴', '',
+    '以下は計算全体の成功後にアプリが保存した根拠記録です。現在の保存式・現在値や未反映の試算とは別の時点の情報です。出力時の再計算・再現検証は行っていません。JSONの外部変更を検出する暗号学的な真正性保証や数学的証明ではありません。', '',
+    '計算日時は評価成功時、保存日時は保存処理時の端末時計です。時計の正確性は保証しません。履歴の内部数値は丸め前の値で、-0も区別しています。', '']);
+  for (const [recordIndex, record] of history.records.entries()) {
+    lines.push(`### 確定記録 ${recordIndex + 1}`, '', `記録ID: ${literal(record.id)}`, '',
+      `計算日時: ${literal(record.calculatedAt)}`, '', `保存日時: ${literal(record.persistedAt)}`, '',
+      `評価器: ${literal(record.evaluator)}`, '', '記録状態: 確定（保存された記録。現在の結果状態を保証しません）', '');
+    for (const [order, block] of record.blocks.entries()) {
+      const currentIndex = blocks.findIndex(b => b.type === 'calculation' && b.id === block.blockId);
+      lines.push(`#### 記録内の実行順 ${order + 1} / 当時の本文順序 ${block.position}`, '',
+        `当時のブロックID: ${literal(block.blockId)}`, '',
+        currentIndex < 0 ? '現在の原本: 同じIDの計算ブロックはありません（削除済み、または現在は確認不能）。' : `現在の原本: ブロック ${currentIndex + 1} に同じIDがあります。式・値が当時と同一とは限りません。`, '',
+        `当時の評価方式: ${literal(block.evaluationMode ?? 'legacy（旧方式）')}`, '',
+        '計算時の入力式:', '', reportCode(block.expression), '',
+        `計算時の内部結果: ${block.result}`, '',
+        '計算時の表示値（丸め・整形済み）:', '', reportCode(block.resultText), '',
+        '計算時の結果状態: 成功（この保存記録内）', '', '計算時に実際に使用した参照元と内部数値:', '');
+      if (!block.inputs.length) lines.push('ブロックID参照・旧変数からの使用値なし（記録された実読取り）。', '');
+      for (const input of block.inputs) {
+        const source = record.blocks.find(candidate => candidate.blockId === input.sourceBlockId);
+        const slot = input.kind === 'id' ? block.references?.entries.find(entry => input.name === `ReferenceValue${entry.slot}`)?.slot : undefined;
+        const name = slot === undefined ? input.name : `@{${slot}}`;
+        lines.push(`- ${input.kind === 'id' ? 'ID参照' : '旧変数'}: ${literal(name)}`, '',
+          `  参照元ID（計算時）: ${literal(input.sourceBlockId)}${source ? ` / 当時の本文順序 ${source.position}` : ' / この記録内の参照元は確認不能'}`, '',
+          `  実際に使用した内部数値: ${input.value}`, '');
+      }
+    }
+  }
+  lines.push('依存関係図は現在の保存済み状態を表します。この履歴の実行順・実使用値を証明する図ではありません。', '');
+  return lines;
+}
+
 /** Presentation only: no evaluator, editor baseline, trial, or persistence calls. */
 export function buildMarkdownReport(note: PlainCalculationNote): MarkdownReport {
   const blocks = checkedBlocks(note);
@@ -174,6 +212,7 @@ export function buildMarkdownReport(note: PlainCalculationNote): MarkdownReport 
       blocks.forEach(b => { if (b.type === 'calculation') stale!.add(b.id); });
   }
   catch { graphFailure = '依存関係の解析処理に失敗しました。計算内容は保存記録のまま出力しています。'; warnings.push(graphFailure); }
+  const historicalIds = new Set(note.calculationEvidence?.records.flatMap(record => record.blocks.map(block => block.blockId)) ?? []);
   const expandedSourceIds = new Set<string>();
   const states = new Map<string, MermaidNodeState>();
   const stateById = new Map<string, string>();
@@ -200,7 +239,7 @@ export function buildMarkdownReport(note: PlainCalculationNote): MarkdownReport 
         `保存内部数値: ${block.result === null ? 'なし' : Object.is(block.result, -0) ? '-0' : String(block.result)}`, '', `評価方式: ${literal(block.evaluationMode ?? 'legacy（旧方式）')}`, '');
       if (block.error) lines.push('保存エラー:', '', reportCode(block.error), '');
       if (block.evaluationState?.attemptError) lines.push('保存された一括確定失敗:', '', reportCode(block.evaluationState.attemptError), '');
-      lines.push(...referenceEvidence(block, blocks, graph, stateById, expandedSourceIds));
+      lines.push(...referenceEvidence(block, blocks, graph, stateById, expandedSourceIds, historicalIds.has(block.id)));
       lines.push('');
     }
   });
@@ -211,6 +250,7 @@ export function buildMarkdownReport(note: PlainCalculationNote): MarkdownReport 
   } else if (graph?.complete) lines.push('計算ブロックがないため、依存関係図はありません。', '');
   else if (!graphFailure) { graphFailure = '依存関係図を出力できませんでした。解析制限・診断を確認してください。'; warnings.push(graphFailure); }
   if (graphFailure) lines.push(graphFailure, '');
+  if (note.calculationEvidence?.records.length) lines.push(...historicalEvidence(note.calculationEvidence, blocks));
   lines.push('## 計算状態と注意事項', '', 'これは保存時の記録と静的な構造確認です。計算の成立と数学的な証明の成立は別です。旧方式など署名のない結果は状態不明としています。Markdownは原本JSONの代替バックアップではなく、未知の付随フィールドは解釈・掲載していません。', '');
   if (graph && !graph.complete) lines.push('依存関係の解析は不完全です。正常な全体図とみなさないでください。', '');
   for (const d of graph?.diagnostics ?? []) lines.push(`- ${literal(d.code)} / ${literal(d.blockId ?? '全体')}: ${literal(d.message)}${d.relatedIds?.length ? `（関連ID: ${d.relatedIds.map(literal).join(', ')}）` : ''}`);

@@ -1,13 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { trailingNumber } from "../lib/calculator";
 import { transitionInput, type InputAction } from "../lib/calculator-input";
 import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
 import { downloadOriginalJson } from "../lib/storage-export";
-import { defaultData, loadData, saveData, resetStoredData, type StorageLoadResult } from "../lib/storage";
+import { defaultData, loadData, saveDataChecked, withStorageWriteLock, STORAGE_KEY, resetStoredData, type StorageLoadResult } from "../lib/storage";
+import { appendCalculationEvidence, type EvidenceCandidate } from "../lib/calculation-evidence";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
 import { IdentificationSettings } from "./Identification";
 import { FormulaExecutionModal } from "./FormulaExecutionModal";
@@ -48,6 +49,11 @@ export function CalculatorApp() {
   const headerRef = useRef<HTMLElement>(null);
   const [data, setData] = useState<StoredData>(defaultData);
   const [storageStatus, setStorageStatus] = useState<"loading" | "ready" | "error">("loading");
+  const savedRaw = useRef<string | null>(null);
+  const liveData = useRef(data);
+  useLayoutEffect(() => { liveData.current = data; }, [data]);
+  const [storageConflict, setStorageConflict] = useState("");
+  const conflictRef = useRef(false);
   const [storageIssue, setStorageIssue] = useState<StorageIssue | null>(null);
   const [expression, setExpression] = useState("");
   const [result, setResult] = useState(blankResult);
@@ -98,20 +104,42 @@ export function CalculatorApp() {
         setStorageStatus("error");
         return;
       }
+      savedRaw.current = loaded.status === "ok" ? loaded.raw : null;
       setData(loaded.data);
       setStorageStatus("ready");
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
-    if (storageStatus !== "ready" || saveData(data)) return;
-    const timer = window.setTimeout(() => {
-      const loaded = loadData();
-      if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); }
-      showToast("ローカル保存に失敗しました");
-    }, 0);
-    return () => window.clearTimeout(timer);
+    if (storageStatus !== "ready" || conflictRef.current) return;
+    let cancelled = false;
+    void withStorageWriteLock(() => {
+      if (cancelled || conflictRef.current || liveData.current !== data) return;
+      const saved = saveDataChecked(data, savedRaw.current);
+      if (saved.ok) { savedRaw.current = saved.raw; return; }
+      if (saved.reason === "uncertain") {
+        conflictRef.current = true; setStorageConflict("書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。");
+      } else if (saved.reason === "conflict") {
+        conflictRef.current = true;
+        setStorageConflict("別のタブなどで保存データが変わりました。上書きを停止しています。編集内容を控えてから再読み込みしてください。");
+      } else {
+        const loaded = loadData();
+        if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); }
+        showToast("ローカル保存に失敗しました");
+      }
+    }).catch(() => { if (!cancelled) { conflictRef.current = true; setStorageConflict("保存用ロックを取得できず、保存処理を停止しました。編集内容を控えて再読み込みしてください。"); showToast("ローカル保存を確認できませんでした"); } });
+    return () => { cancelled = true; };
   }, [data, storageStatus, showToast]);
+  useEffect(() => {
+    const changed = (event: StorageEvent) => {
+      if ((event.key === STORAGE_KEY || event.key === null) && event.newValue !== savedRaw.current) {
+        conflictRef.current = true;
+        setStorageConflict("別のタブなどで保存データが変わりました。上書きを停止しています。編集内容を控えてから再読み込みしてください。");
+      }
+    };
+    window.addEventListener("storage", changed);
+    return () => window.removeEventListener("storage", changed);
+  }, []);
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = data.settings.theme;
@@ -181,18 +209,41 @@ export function CalculatorApp() {
     setNoteEditor(null); showToast(noteEditor?.editingId ? `${MEMO_LABELS.single}を更新しました` : `${MEMO_LABELS.single}を保存しました`);
   }, [noteEditor, showToast, storageStatus]);
 
-  const savePlainNote = useCallback((draft: PlainNoteDraft) => {
-    if (storageStatus !== "ready") return;
-    const now = new Date().toISOString();
-    setData((current) => {
-      if (plainNoteEditor?.editingId) {
-        return { ...current, notes: current.notes.map((note) => note.id === plainNoteEditor.editingId && note.type === "plain-calculation" ? { ...note, ...draft, updatedAt: now } : note) };
-      }
-      const note: PlainCalculationNote = { ...draft, id: makeId("plain-note"), type: "plain-calculation", createdAt: now, updatedAt: now };
-      return { ...current, notes: [note, ...current.notes] };
-    });
-    setPlainNoteEditor(null);
-    showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
+  const savePlainNote = useCallback(async (draft: PlainNoteDraft, candidates: EvidenceCandidate[] = []): Promise<string | void> => {
+    if (storageStatus !== "ready" || conflictRef.current) return "保存保護中です。編集内容は保持しています。元データを確認してください。";
+    const current = liveData.current;
+    const original = plainNoteEditor?.editingId ? current.notes.find(note => note.id === plainNoteEditor.editingId) : undefined;
+    if (plainNoteEditor?.editingId && (original?.type !== "plain-calculation" || JSON.stringify(original) !== JSON.stringify(plainNoteEditor.draft))) return "編集開始後に原本が変更されました。上書きせず編集内容を保持しています。";
+    try {
+      return await withStorageWriteLock(() => {
+        if (conflictRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。編集内容を確認してもう一度保存してください。";
+        const now = new Date().toISOString();
+        const history = original?.type === "plain-calculation" ? original.calculationEvidence : undefined;
+        // Only the preserved original supplies history. A draft cannot replace it.
+        const calculationEvidence = candidates.length ? appendCalculationEvidence(history, candidates, now) : history;
+        const safeDraft = { title: draft.title, content: draft.content, blocks: draft.blocks, calculationPolicy: draft.calculationPolicy };
+        const note: PlainCalculationNote = original?.type === "plain-calculation"
+          ? { ...original, ...safeDraft, ...(calculationEvidence ? { calculationEvidence } : {}), updatedAt: now }
+          : { ...safeDraft, ...(calculationEvidence ? { calculationEvidence } : {}), id: makeId("plain-note"), type: "plain-calculation", createdAt: now, updatedAt: now };
+        const next = { ...current, notes: original ? current.notes.map(item => item.id === original.id ? note : item) : [note, ...current.notes] };
+        const saved = saveDataChecked(next, savedRaw.current);
+        if (!saved.ok) {
+          if (saved.reason === "uncertain") {
+            conflictRef.current = true; const message = "書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。"; setStorageConflict(message); return message;
+          }
+          if (saved.reason === "conflict") {
+            conflictRef.current = true;
+            setStorageConflict("保存データの競合を検出し、上書きを停止しました。編集内容を控えてから再読み込みしてください。");
+          }
+          return "保存できませんでした。計算根拠は保存済みとして扱っていません。編集内容を保持しています。容量・保存保護・他タブの更新を確認してください。";
+        }
+        savedRaw.current = saved.raw;
+        liveData.current = next;
+        setData(next);
+        setPlainNoteEditor(null);
+        showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
+      });
+    } catch (cause) { return cause instanceof Error ? cause.message : "保存できませんでした。編集内容を保持しています。"; }
   }, [plainNoteEditor, showToast, storageStatus]);
 
   const requestDelete = useCallback((kind: "history" | "note", id: string) => {
@@ -227,13 +278,15 @@ export function CalculatorApp() {
     title: "保存データを初期化しますか？",
     message: "読み込めなかった元データを削除し、空の履歴と計算メモで開始します。この操作は取り消せません。必要であれば先に元データをコピーしてください。",
     confirmLabel: "初期化する",
-    action: () => {
+    action: async () => {
       const cleanData: StoredData = { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
-      if (!storageIssue || !resetStoredData(storageIssue.raw)) {
+      if (!storageIssue || !await withStorageWriteLock(() => resetStoredData(storageIssue.raw)).catch(() => false)) {
         setConfirm(null);
         showToast("保存データを初期化できませんでした");
         return;
       }
+      savedRaw.current = JSON.stringify(cleanData);
+      conflictRef.current = false; setStorageConflict("");
       setData(cleanData);
       setStorageIssue(null);
       setStorageStatus("ready");
@@ -263,6 +316,7 @@ export function CalculatorApp() {
         <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
       </header>
 
+      {storageConflict && <p role="alert" className="field-error">{storageConflict}</p>}
       {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} protectionReason={storageIssue.protectionReason} onExport={exportOriginal} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw !== null && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
       <section className="workspace" id="calculator" inert={storageStatus !== "ready"}>
@@ -294,7 +348,7 @@ export function CalculatorApp() {
       {libraryOpen && <FormulaLibraryModal library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
       {executionId && <FormulaExecutionModal key={executionId} formula={data.formulaLibrary?.entries.find((entry) => entry.id === executionId)} draft={data.formulaExecutions?.find((draft) => draft.formulaId === executionId)} notes={data.notes} writable={storageStatus === "ready"} onClose={() => setExecutionId(null)} onDraftChange={(draft) => setData((current) => ({ ...current, formulaExecutions: [draft, ...(current.formulaExecutions ?? []).filter((entry) => entry.formulaId !== draft.formulaId && current.formulaLibrary?.entries.some((formula) => formula.id === entry.formulaId))].slice(0, 200) }))} onHistory={(snapshot) => { const item = executionHistory(snapshot, makeId("history"), new Date().toISOString()); setData((current) => ({ ...current, history: [item, ...current.history].slice(0, 200) })); }} onMemo={(snapshot) => setNoteEditor({ draft: executionMemo(snapshot) })} />}
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
-      {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify(plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null)} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
+      {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict])} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}

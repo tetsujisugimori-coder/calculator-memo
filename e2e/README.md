@@ -19,6 +19,8 @@ These are explicitly configured browser contexts, not certified device models. R
 
 Each scenario actively exercises:
 
+- Calculation evidence: preview/cancel cannot persist records; two explicit recalculations append two batches only after save; actual legacy/ID inputs, old records after source edits, failed rollback, explicit trial apply and save, report copy/download and read-only reproduction verification. Existing six engines/viewports and screenshot/trace budgets are unchanged.
+
 - Header guide text stays on one line inside its button; wordmark/actions fit the header and viewport without overlap, with unobstructed hit-test centers
 - Guide and actual native theme select have at least 44px touch height; the guide opens after activation, with search/category/scroll/close checks; the native select receives a real click/tap before programmatic option selection and theme state/persistence checks
 - Sticky header controls remain reachable after page scrolling and guide reopen/close; Chromium desktop and WebKit 375 additionally probe 320/360/414/540/720/721px header geometry
