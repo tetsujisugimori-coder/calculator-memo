@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-21 (JST): PR #46 初回正式CI・6条件GUI成功
+- [PR #46](https://github.com/tetsujisugimori-coder/calculator-memo/pull/46)、HEAD `bee01cd80eba56bca12fb99e156eae82faa44d40` の [CI 39586945342](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39586945342) は全工程成功。固定Node22.13.0で755単体/30files、26契約、lint既存warning1・エラー0、型、通常/Pages build、Chromium4/WebKit2を確認。
+- 全6条件のexpected/served/actual SHA一致、errors=[]、追加percent4チェック各条件実行、432GUI/472横幅、mobile4条件各698touchを成果物で照合。旧保存データ読み込み・4式の全入口評価・明示保存と再読込・未知情報保持を含む。既存グラフ/試算/削除ノード/モバイルスクロール回帰を削除しない。
+- [artifact 12340243030](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39586945342/artifacts/12340243030): ZIP32,952,029 bytes、SHA256 `3261b939abc2183e6d43d675a8724d0434d444efa4a03e6ffdfea6144fae939c`。代表PNG114枚32,107,701 bytes、成功trace保存0、GUI実時間626.376秒。WebKit390 dark文字拡大の代表画像を視認。%追加地点は横幅checkpointのみであり、保存PNGを増やさない。
+- ローカルブラウザ配布失敗は正式CIでは再現せず、正式6条件で補完できた。Node24ローカルをNode22正式実行と混同しない。公開tree `92660417629c0b94bd07742f8f875bf218295003` はローカル検証treeと一致。通常git pushは認証経路不足だったため既存GitHub接続で同一treeを公開し、内容同一を照合した。
+- 独立レビューの未解消阻害指摘なし。比較corpus33,467式は両方成功の値差0、通常モード新拒否2件は不正な複数小数点のみ。拒否同士のエラー文は解析到達段階が変わるため一部異なる。oracle9,479式は厳密一致。既存Issue本文は追記権限の確認で停止し未変更、PR本文の関連リンクで追跡する。
+- この追記は文書のみ。記録commit自身の最終HEADも [PR Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/46/checks) で別途確認し、その後Readyへ移行する。実iPhone Safari/VoiceOverは未検証、マージは人間が判断する。
+
 ## 2026-10-21 (JST): Issue #19 ネスト括弧・先頭小数点の後置%を修正
 - 基点: PR #45 merge済みmain `fdf10ee6ee7453f583f0c6c92d3e2c06b71dfcb6`、独立枝 `fix/nested-postfix-percent`。[Issue #19](https://github.com/tetsujisugimori-coder/calculator-memo/issues/19)。PRは未作成。
 - 根因/方式: 旧正規表現が内部括弧を含む対象と `.5%` を扱えなかった。mathjsの直接% ASTは相対加算/剰余となり既存仕様と違うため不採用。数値トークンと括弧対応を走査して `(対象/100)` へ変換し、その後のAST許可検査・予算・評価器を維持。[比較/境界/互換性](docs/agent/percent-parser.md)。保存・ID/旧変数・試算・rollbackの実装、lockfileとworkflowは変更なし。
