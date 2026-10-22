@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 12:41 JST: PR #54 初回GUI失敗の修正
+
+- 公開HEAD `9cf653331ae0da792a7154381d5ec887d4ffe9e9` の正式CI `39715830851` は単体993件・CI契約26件・lint・型・両build成功、GUI3条件成功/3条件失敗。Draftを維持し、成功扱いせずartifact `12399468520`（SHA256 `570cc091992d28ddafa9a313fa0db5324c0475e6da7ee98cd7583fbed565d6cc`）と失敗traceを確認した。
+- WebKit375/390で新規比較modal-contentのscrollWidth532、clientWidth373/388を検出。ページ全体はviewport内、200%拡大前、長いIDは折返し済み。traceには子要素の幅がなく、特定select単体の原因とは断定しない。暗黙auto gridとnative selectの最小内容幅の相互作用を疑い、比較コンテナとlabelの列をminmax(0,1fr)へ明示する。overflow隠蔽や検査緩和は行わず、正式WebKit再検証で判定する。
+- desktopは既存通常電卓試験の新規メモ保存直後に、カード描画済みでもlocalStorageに新メモがない非同期保存境界をtraceで確認。明示保存した式/表示値の永続化を局所確認してから従来の内部精度assertionを行う。共通storage読取は即時のまま、読取専用・pending-write試験を待機で隠さない。回帰契約を追加する。
+- 修正後ローカル再検証: 単体993件/43ファイル、CI契約28件、型検査、通常/Pages build成功。lintはエラー0、既存aria-description警告1件。独立レビューで検査緩和・保存境界変更・overflow隠蔽なしを確認し阻害指摘なし。正式WebKit再検証は未完了。
+- 初回ローカルdesktopの404は並行Pages buildによる出力差替えで、安定buildで93検査成功。mobile375も93検査成功。ただしこの成功は上記正式WebKit失敗を打ち消さない。最終HEADの再検証結果・CI URLはPR本文へ実測記録する。
+
+
 ## 2026-10-22 12:07 JST: 保存済み計算記録の一覧・2記録比較（Issue #53）
 
 - PR #52のmergeとmain `939828ca6673530d4b855b51479ed7e7a403996d` を確認し、cleanな作業ツリーから専用branchを作成。既存の根拠記録/validator/原本読込/Modal/Markdown補助を再利用し、現在値の参照レポート#49（完了済み）とは別の過去2記録比較として#53へ目的・範囲・完了条件を記録した。

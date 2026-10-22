@@ -166,3 +166,26 @@ test('isolated preview ports are distinct and allowed by Fetch before any transp
     }), error => error.cause?.message === 'isolated-transport-probe');
   }
 });
+
+
+test('successful memo save waits for persistence without delaying read-only storage observations', async () => {
+  const scenario = await readFile(join(root, 'e2e/scenario.mjs'), 'utf8');
+  const section = scenario.split('await stage(prefix + ": basic-math-single-memo-edit");')[1]?.split('await stage(prefix + ": basic-math-block-save-and-recalculate");')[0];
+  assert.ok(section, 'Ordinary memo persistence regression section must exist');
+  const poll = section.indexOf('await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic math single"))');
+  const exact = section.indexOf('near((await storage()).notes.find((note) => note.title === "Synthetic math single").result, Math.sqrt(2), "saved sqrt memo")');
+  assert.ok(poll >= 0 && exact > poll, 'Await the saved memo before reading its full-precision result');
+  assert.ok(section.slice(poll, exact).includes('.toMatchObject({ expression: "sqrt(2)", resultText: "1.414213562373" })'), 'Wait for this exact submitted memo, not a visual card or arbitrary delay');
+  assert.ok(scenario.includes('async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }'), 'Read-only and pending-write checks retain immediate storage reads');
+});
+
+
+test('modal overflow diagnostics are failure-only bounded and retain the strict geometry assertion', async () => {
+  const scenario = await readFile(join(root, 'e2e/scenario.mjs'), 'utf8');
+  const fit = scenario.split('async function assertHorizontalFit(')[1]?.split('async function exerciseFormulaLibrary(')[0];
+  assert.ok(fit);
+  assert.ok(fit.includes('if (size.scroll > size.client + 1) {'));
+  assert.ok(fit.includes('descendants.slice(0, 5000)') && fit.includes('.slice(0, 12)'));
+  assert.ok(fit.includes('assert.ok(size.scroll <= size.client + 1,'));
+  assert.ok(!/innerHTML|textContent|\.value|\.style\s*=/.test(fit), 'Diagnostics record box metadata, not content, and do not modify layout');
+});

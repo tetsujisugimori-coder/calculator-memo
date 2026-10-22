@@ -61,6 +61,27 @@ async function assertHorizontalFit(expectedWidth = currentScenario.width) {
     const content = modal.locator(".modal-content");
     for (const scrollArea of await content.all()) {
       const size = await scrollArea.evaluate((element) => ({ scroll: element.scrollWidth, client: element.clientWidth }));
+      // Failure-only diagnostics: identify overflowing boxes without capturing
+      // their text/values or changing the layout/acceptance boundary.
+      if (size.scroll > size.client + 1) {
+        size.diagnostic = await scrollArea.evaluate(element => {
+          const root = element.getBoundingClientRect();
+          const descendants = [...element.querySelectorAll("*")];
+          const round = number => Math.round(number * 100) / 100;
+          const candidates = descendants.slice(0, 5000).map(child => {
+            const rect = child.getBoundingClientRect();
+            const style = getComputedStyle(child);
+            const overflow = Math.max(root.left - rect.left, rect.right - root.right, child.scrollWidth - child.clientWidth);
+            return { tag: child.tagName, class: (child.getAttribute("class") || "").slice(0, 160), role: (child.getAttribute("role") || "").slice(0, 64),
+              left: round(rect.left), right: round(rect.right), width: round(rect.width), client: child.clientWidth, scroll: child.scrollWidth,
+              display: style.display, gridTemplateColumns: style.gridTemplateColumns.slice(0, 160), minWidth: style.minWidth,
+              whiteSpace: style.whiteSpace, fontSize: style.fontSize,
+              overflow: round(overflow), visible: rect.width > 0 && rect.height > 0 };
+          }).filter(item => item.visible && item.overflow > 1).sort((a, b) => b.overflow - a.overflow).slice(0, 12);
+          return { container: { left: round(root.left), right: round(root.right), width: round(root.width) },
+            inspected: Math.min(descendants.length, 5000), totalDescendants: descendants.length, offenders: candidates };
+        });
+      }
       assert.ok(size.scroll <= size.client + 1, "Synthetic modal content must not be horizontally clipped: " + JSON.stringify(size));
     }
   }
@@ -486,6 +507,11 @@ async function exerciseBasicMath(prefix) {
   await selectPanel("notes");
   const single = page.locator(".note-card").filter({ hasText: "Synthetic math single" });
   await expect(single.locator(".note-formula strong")).toHaveText("= 1.414213562373");
+  // Card rendering precedes the asynchronous Web Locks persistence boundary.
+  // Await this explicit successful save, not every storage read: read-only tests
+  // must still observe writes immediately rather than conceal them with polling.
+  await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic math single"))
+    .toMatchObject({ expression: "sqrt(2)", resultText: "1.414213562373" });
   near((await storage()).notes.find((note) => note.title === "Synthetic math single").result, Math.sqrt(2), "saved sqrt memo");
   await activate(single.getByRole("button", { name: "編集", exact: true }));
   await dialog.getByLabel("計算式", { exact: true }).fill("2*pi");
