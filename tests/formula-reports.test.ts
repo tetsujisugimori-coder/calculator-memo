@@ -21,13 +21,14 @@ describe("formula reports", () => {
     expect(result.confirmedExpression).toBe("x+1");
     const renamed = { ...formula, title: "別名" };
     expect(formulaReportCorrespondence(result, renamed)).toBe("confirmed");
-    expect(formulaReportCorrespondence(result, { expression: "1+x" })).toBe("changed");
+    expect(formulaReportCorrespondence(result, { ...formula, expression: "1+x" })).toBe("changed");
     expect(formulaReportCorrespondence(result, undefined)).toBe("orphan");
   });
   it.each(["body", "title"] as const)("editing %s invalidates an old confirmation", field => {
     const confirmed = { ...report, confirmedExpression: "x+1" };
     const result = saveFormulaReport({ version: 1, entries: [confirmed] }, library, request({ [field]: "edited", expectedReport: formulaReportSignature(confirmed) }), now);
-    expect(result.entries[0].confirmedExpression).toBeNull(); expect(confirmed.confirmedExpression).toBe("x+1");
+    expect(result.entries[0].confirmedExpression).toBe("x+1");
+    expect(formulaReportCorrespondence(result.entries[0], formula)).toBe("unknown"); expect(confirmed.confirmedExpression).toBe("x+1");
   });
   it("preserves unchanged confirmation and createdAt on later edits", () => {
     const confirmed = { ...report, confirmedExpression: "x+1" };

@@ -279,7 +279,14 @@ export function CalculatorApp() {
     try {
       return await withStorageWriteLock(() => {
         if (conflictRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。レポートは保存していません。内容を確認してください。";
-        const formulaReports = saveFormulaReport(current.formulaReports ?? emptyFormulaReports(), current.formulaLibrary ?? emptyFormulaLibrary(), request, new Date().toISOString());
+        // Resolve links only against the persisted original, never live unsaved memo edits.
+        const original = loadData();
+        if (original.status !== "ok" || original.raw !== savedRaw.current) {
+          conflictRef.current = true;
+          const message = "保存原本との競合または読込失敗を検出しました。レポートと根拠の保存を停止しました。本文を控えて再読み込みしてください。";
+          setStorageConflict(message); return message;
+        }
+        const formulaReports = saveFormulaReport(current.formulaReports ?? emptyFormulaReports(), current.formulaLibrary ?? emptyFormulaLibrary(), request, new Date().toISOString(), original.data.notes);
         const next = { ...current, formulaReports };
         const saved = saveDataChecked(next, savedRaw.current);
         if (!saved.ok) {

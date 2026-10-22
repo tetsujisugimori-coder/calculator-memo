@@ -491,3 +491,22 @@ iPhone Safari and VoiceOver remain outside this Playwright emulation.
 ## PR #60 CI環境準備の障害切り分け
 
 GitHub Ubuntu24.04のfresh runnerでは、正確なAzure Ubuntu sourceだけ公式HTTPS archive/securityへ切り替え、署名・suite・componentを保持する。OS依存は固定Playwrightの `install-deps chromium webkit`（5分）、browserは `install chromium webkit`（3分）に分離し、各log/timingを残す。失敗時は後続GUIを成功扱いせずalways artifactへ保存。ローカル用の上記手順は変更せず、CI専用root設定scriptを利用者PCへ適用しない。30分/全6条件/114PNG/成功trace非保存は不変。[原因・案比較・制約・復旧](../docs/agent/ci-environment-acquisition.md)。
+
+## Issue #61: report confirmation evidence
+
+The existing six contexts additionally select a saved record by memo ID + record
+ID, inspect its actual input `z = -0` and internal result `-0` while the current
+memo has `z = 999`, and assert byte-equivalent storage before/after browsing.
+Explicit confirmation records `x * 2`, variable `x`, report text and the selected
+record. Renaming remains a match; changing to `x * 3` adds another confirmation;
+editing the report leaves both histories and the original compatibility expression
+intact while marking current text unconfirmed. After removing the saved memo from
+the synthetic storage, explicit refresh must show an unavailable reference and no
+stale detail. No real user records are used.
+
+These add two named acceptance groups per context and two geometry-only checks
+(light/dark with 200% text) per context. Required totals become 636 checks and 562
+geometry checkpoints; the expected mobile activation count is 866. All prior
+checks remain. The 30-minute CI limit, six engines/viewports, 114 PNG ceiling,
+successful trace discard and failure artifacts remain unchanged. Actual complete
+execution is recorded by the final PR head's CI, not inferred from focused runs.
