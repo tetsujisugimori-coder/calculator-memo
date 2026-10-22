@@ -84,7 +84,20 @@ export type RegisteredFormula = {
 };
 export type FormulaLibrary = { version: 1; entries: RegisteredFormula[]; selectedId: string | null };
 
+/** User-authored explanation, never numeric evidence or an automatically verified proof. */
+export type FormulaReport = {
+  id: string;
+  formulaId: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  confirmedExpression: string | null;
+};
+export type FormulaReports = { version: 1; entries: FormulaReport[] };
+
 export type StoredData = {
+  formulaReports?: FormulaReports;
   formulaExecutions?: import("./formula-execution").ExecutionDraft[];
   formulaLibrary?: FormulaLibrary;
   version: 1;

@@ -9,12 +9,13 @@ import { createHistoryEntry } from "../lib/history";
 import { downloadOriginalJson } from "../lib/storage-export";
 import { defaultData, loadData, saveDataChecked, withStorageWriteLock, STORAGE_KEY, resetStoredData, type StorageLoadResult } from "../lib/storage";
 import { appendCalculationEvidence, type EvidenceCandidate } from "../lib/calculation-evidence";
-import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme } from "../lib/types";
+import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme, FormulaReport } from "../lib/types";
 import { IdentificationSettings } from "./Identification";
 import { FormulaExecutionModal } from "./FormulaExecutionModal";
 import { executionHistory, executionMemo } from "../lib/formula-execution";
 import { FormulaLibraryModal } from "./FormulaLibraryModal";
 import { emptyFormulaLibrary } from "../lib/formula-library";
+import { emptyFormulaReports, saveFormulaReport, type FormulaReportSaveRequest } from "../lib/formula-reports";
 import { CalculatorPad } from "./CalculatorPad";
 import { HistoryPanel } from "./HistoryPanel";
 import { NotesPanel } from "./NotesPanel";
@@ -270,6 +271,39 @@ export function CalculatorApp() {
     } catch (cause) { return cause instanceof Error ? cause.message : "保存できませんでした。編集内容を保持しています。"; }
   }, [plainNoteEditor, showToast, storageStatus]);
 
+  // Reports are explicit transactions, not optimistic autosave candidates. A
+  // successful checked readback precedes publishing their confirmation in React.
+  const persistFormulaReport = useCallback(async (request: FormulaReportSaveRequest): Promise<string | FormulaReport> => {
+    if (storageStatus !== "ready" || conflictRef.current) return "保存保護中です。レポート本文を控え、保存原本を確認してください。";
+    const current = liveData.current;
+    try {
+      return await withStorageWriteLock(() => {
+        if (conflictRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。レポートは保存していません。内容を確認してください。";
+        const formulaReports = saveFormulaReport(current.formulaReports ?? emptyFormulaReports(), current.formulaLibrary ?? emptyFormulaLibrary(), request, new Date().toISOString());
+        const next = { ...current, formulaReports };
+        const saved = saveDataChecked(next, savedRaw.current);
+        if (!saved.ok) {
+          if (saved.reason === "invalid") {
+            const loaded = loadData();
+            if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); }
+          }
+          if (saved.reason === "conflict" || saved.reason === "uncertain") {
+            conflictRef.current = true;
+            const message = saved.reason === "uncertain"
+              ? "書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。"
+              : "式またはレポートを含む保存データの競合を検出しました。上書きを停止しています。本文を控えて再読み込みしてください。";
+            setStorageConflict(message); return message;
+          }
+          return "レポートを保存できませんでした。保存済み・確認済みとして扱っていません。本文を保持しています。容量と保存保護を確認してください。";
+        }
+        savedRaw.current = saved.raw;
+        confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw);
+        liveData.current = next; setData(next);
+        return formulaReports.entries.find(entry => entry.id === request.id)!;
+      });
+    } catch (cause) { return cause instanceof Error ? cause.message : "レポートを保存できませんでした。本文を保持しています。"; }
+  }, [storageStatus]);
+
   const requestDelete = useCallback((kind: "history" | "note", id: string) => {
     setConfirm({
       title: kind === "history" ? "履歴を削除しますか？" : "メモを削除しますか？",
@@ -372,7 +406,7 @@ export function CalculatorApp() {
         </aside>
       </section>
 
-      {libraryOpen && <FormulaLibraryModal pendingSave={hasUnsavedChanges} library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
+      {libraryOpen && <FormulaLibraryModal reports={data.formulaReports} onSaveReport={persistFormulaReport} pendingSave={hasUnsavedChanges} library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready" && !storageConflict} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
       {executionId && <FormulaExecutionModal pendingSave={hasUnsavedChanges} key={executionId} formula={data.formulaLibrary?.entries.find((entry) => entry.id === executionId)} draft={data.formulaExecutions?.find((draft) => draft.formulaId === executionId)} notes={data.notes} writable={storageStatus === "ready"} onClose={() => setExecutionId(null)} onDraftChange={(draft) => setData((current) => ({ ...current, formulaExecutions: [draft, ...(current.formulaExecutions ?? []).filter((entry) => entry.formulaId !== draft.formulaId && current.formulaLibrary?.entries.some((formula) => formula.id === entry.formulaId))].slice(0, 200) }))} onHistory={(snapshot) => { const item = executionHistory(snapshot, makeId("history"), new Date().toISOString()); setData((current) => ({ ...current, history: [item, ...current.history].slice(0, 200) })); }} onMemo={(snapshot) => setNoteEditor({ draft: executionMemo(snapshot) })} />}
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => { explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false); setPlainNoteEditor(null); }} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}

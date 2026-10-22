@@ -1,5 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-23 04:26 JST: 登録式の関連数学レポート（Issue #59）
+
+- PR #58 merged / 最新 main `93180027baef45acf57f886b3adf37280a900bfd`、新規 checkout clean を確認し `feat/formula-math-reports` を作成。初回依頼正本 [Issue #59](https://github.com/tetsujisugimori-coder/calculator-memo/issues/59) の本文は変更しない。
+- 実装前に既存登録式/実行/Markdown/保存保護/CIを調査し、独立 optional `formulaReports` 領域、既存描画・保存ロック/readback再利用、明示確認・孤立レポート保全の方針を報告。[調査・第一希望・互換性/復旧](docs/agent/formula-reports.md)。
+- 依頼文の top-level schemaVersion=1 は実コードでは version:1。フィールド名を変更せず追加領域で互換性を維持する。未知root/settings付随キーを保持する補強を行い、未知version/不正構造の保護は緩めない。
+- 実装・単体/GUI・独立レビュー・最終HEAD CIは着手時点で未完了。成功結果は実測後に追記する。PR未作成。
+- 04:32 JST追記: 関連レポートの独立保存・安定ID・生Markdown編集/既存安全プレビュー・本文コピー/.md・明示確認・式変更の要確認・名称変更の区別・削除後孤立レポート救出を実装。本文/タイトル編集は確認を無効化。保存成功はロック内の原本/式/レポート照合とreadback後にのみ表示する。
+- 単体1127件/50ファイル、lint 0 error（既存aria-description警告1）、型検査が成功。通常/Pagesビルド成功。独立レビューは関連109テスト・型・diff検査で阻害指摘なし。指摘された超過本文preview負荷と競合時の確認済み誤表示は防止し回帰追加。実ブラウザ最終6条件・対象HEAD CIは確認待ちであり、この時点で成功扱いしない。
+- GUIは既存6条件・30分・114 PNG・成功trace非保存を維持して5受入群を追加。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。ローカルNode24.19.0、CIの固定Node22.13.0は変更なし。新しい依存パッケージ追加なし。初回npm cache書込み失敗は専用/tmp cacheで再実行して解消。
+- 旧版は新しい領域を落とす可能性があるため、rollback前に原本JSONを退避し旧版で新データを上書きしない。説明の正しさ、数学的証明、出典の信頼性は自動保証しない。Issue #59本文は原文維持。PRは未作成、最終HEADの検証は後続PR Checksへ記録する。
+
 ## 2026-10-22 20:20 JST: 保存記録の影響経路図（Issue #57）
 
 - PR #56 merged と最新 main `2c1b55db104afa60ab1fb61ab2b73507de4043af`、作業ツリーcleanを確認し `feat/saved-impact-graph` を作成。関連Issue/PRを照合しIssue #57に目的/範囲/受入条件を記録した。

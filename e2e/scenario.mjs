@@ -172,6 +172,106 @@ async function exerciseFormulaLibrary(prefix) {
   }
   await passed(prefix + ": formula registration, syntax rejection, cancel, selection, edit, delete/undo, reload and unchanged notes/history");
 }
+async function exerciseFormulaReports(prefix) {
+  await stage(prefix + ": formula-math-reports");
+  const original = await storage();
+  const now = "2026-10-23T00:00:00.000Z";
+  const formulas = ["report-formula-a", "report-formula-b"].map(id => ({ id, title: "Same named formula", expression: "x * 2", createdAt: now, updatedAt: now }));
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, formulaLibrary: { version: 1, entries: formulas, selectedId: formulas[0].id }, formulaReports: { version: 1, entries: [] } });
+  await page.reload();
+  const library = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  const report = () => page.getByRole("dialog", { name: "登録式の関連レポート", exact: true });
+  const openLibrary = () => activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+  const closeReport = () => activate(report().getByRole("button", { name: "レポートを閉じる", exact: true }).first());
+  const editFormula = async (name, expression) => {
+    await activate(library().getByRole("button", { name: "登録式を編集", exact: true }));
+    await library().getByLabel("登録名", { exact: true }).fill(name);
+    await library().getByLabel("登録する計算式", { exact: true }).fill(expression);
+    await activate(library().getByRole("button", { name: "登録する", exact: true }));
+    await expect(library().getByTestId("library-unsaved-changes")).toHaveCount(0);
+  };
+  await openLibrary();
+  const creation = library().getByRole("button", { name: "レポートを作成", exact: true });
+  await creation.focus(); await page.keyboard.press("Enter");
+  const body = '# 証明と導出\n\n$x^2$\n\n$$\n\\frac{1}{2}\n$$\n\n```html\n<script>alert("no")</script>\n```\n\n<img src=x onerror="window.reportExecuted=true">\n\n参考資料は未記入。\n' + '長い説明と識別情報'.repeat(50);
+  await report().getByLabel("レポートタイトル", { exact: true }).fill("Synthetic report / math");
+  await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill(body);
+  await page.keyboard.press("Escape");
+  const discard = page.getByRole("dialog", { name: "未保存のレポート編集を破棄しますか？", exact: true });
+  await expect(discard).toBeVisible();
+  await activate(discard.getByRole("button", { name: "編集に戻る", exact: true }));
+  await expect(report().getByLabel("レポート本文（Markdown）", { exact: true })).toHaveValue(body);
+  await activate(report().getByRole("button", { name: "レポートをプレビュー", exact: true }));
+  await expect(report().locator(".katex")).not.toHaveCount(0);
+  await expect(report().locator(".katex-display")).toHaveCount(1);
+  await expect(report().getByRole("heading", { name: "証明と導出", exact: true })).toHaveCount(1);
+  await expect(report().locator("pre code")).toContainText('<script>alert("no")</script>');
+  assert.equal(await report().locator("script,img").count(), 0);
+  assert.equal(await page.evaluate(() => window.reportExecuted), undefined);
+  await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
+  await expect.poll(async () => (await storage()).formulaReports.entries[0]).toMatchObject({ formulaId: formulas[0].id, body, confirmedExpression: null });
+  await passed(prefix + ": formula report renders safe Markdown math fences and HTML text without execution and ordinary save never confirms automatically");
+  await activate(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true }));
+  await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBe("x * 2");
+  await closeReport();
+  await expect(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true })).toBeFocused();
+  await editFormula("Renamed report formula", "x * 2");
+  await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
+  await expect(report()).toContainText("式との対応を確認済み");
+  await closeReport();
+  await editFormula("Renamed report formula", "x * 3");
+  await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
+  await expect(report()).toContainText("要確認");
+  assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
+  await activate(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true }));
+  await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBe("x * 3");
+  await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
+  await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill(body + "\n編集");
+  await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
+  await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBeNull();
+  await passed(prefix + ": explicit report confirmation binds expression and content while rename remains distinct from expression changes and body edits invalidate confirmation");
+  await closeReport();
+  await activate(library().getByRole("button", { name: "Same named formula", exact: true }));
+  await expect(library().getByRole("button", { name: "レポートを作成", exact: true })).toHaveCount(1);
+  await activate(library().getByRole("button", { name: "Renamed report formula", exact: true }));
+  await activate(library().getByRole("button", { name: "登録式を削除", exact: true }));
+  await expect(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true })).toContainText("レポート");
+  await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "削除する", exact: true }));
+  await expect.poll(async () => (await storage()).formulaReports.entries.length).toBe(1);
+  await activate(library().getByRole("button", { name: /Synthetic report \/ math/ }));
+  await expect(report()).toContainText("登録式が見つからない");
+  await expect(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true })).toBeDisabled();
+  const saved = (await storage()).formulaReports.entries[0];
+  await page.evaluate(() => Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__formulaReportCopy = text; } } }));
+  await activate(report().getByRole("button", { name: "レポート本文をコピー", exact: true }));
+  assert.equal(await page.evaluate(() => window.__formulaReportCopy), saved.body);
+  const downloadPromise = page.waitForEvent("download");
+  await activate(report().getByRole("button", { name: "レポート.mdをダウンロード", exact: true }));
+  const download = await downloadPromise;
+  assert.equal(await readFile(await download.path(), "utf8"), saved.body);
+  assert.ok(!download.suggestedFilename().includes("/"));
+  assert.deepEqual((await storage()).formulaReports.entries[0], saved);
+  await passed(prefix + ": stable formula IDs separate same-name entries and deletion retains orphan report for exact Markdown copy and download rescue");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await report().getByRole("button", { name: "レポート.mdをダウンロード", exact: true }).scrollIntoViewIfNeeded();
+    await expect(report().getByRole("button", { name: "レポート.mdをダウンロード", exact: true })).toBeInViewport();
+    await screenshot(prefix + "-formula-report-" + theme + "-200-percent", currentScenario.width, false);
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await passed(prefix + ": formula report editor and rescue controls remain reachable in both themes at 200 percent text across desktop and mobile widths");
+  await closeReport(); await activate(library().getByRole("button", { name: "閉じる", exact: true }).first());
+  await page.reload(); await openLibrary();
+  await activate(library().getByRole("button", { name: /Synthetic report \/ math/ }));
+  await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
+  await expect(report().getByLabel("レポート本文（Markdown）", { exact: true })).toHaveValue(saved.body);
+  assert.deepEqual((await storage()).notes, original.notes); assert.deepEqual((await storage()).history, original.history);
+  await closeReport(); await activate(library().getByRole("button", { name: "閉じる", exact: true }).first());
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload();
+  await passed(prefix + ": formula report and orphan survive reload without altering existing calculation notes history or registered execution data");
+}
+
 async function exerciseIdentification(prefix) {
   await stage(prefix + ": identification-modes-and-native-input");
   const shell = page.locator("main.app-shell");
@@ -3142,6 +3242,7 @@ async function exercise(scenario) {
   await exerciseBasicMath(prefix);
   await exerciseVariables(prefix);
   await exerciseFormulaLibrary(prefix);
+  await exerciseFormulaReports(prefix);
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);
   await exerciseBlockExtraFields(prefix);
