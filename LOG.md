@@ -17,6 +17,13 @@
 - 20:37 JST追記: 修正後の全単体1072件/47ファイル、lint（既存警告1のみ）、型検査、通常/Pagesビルド成功。新規識別表示UI1件の独立レビュー成功。製品ビルドのfocused Chromium desktop/WebKit375が両テーマ・root200%で成功し、再生成SVG/文字の2倍拡大とページ幅375px、フォーカス、図操作、コピー/ダウンロード、取得世代の非混入を確認。正式6条件と最終HEAD CIは確認待ち。
 
 
+- 21:20 JST追記: [PR #58](https://github.com/tetsujisugimori-coder/calculator-memo/pull/58)をDraft作成、[Issue #57](https://github.com/tetsujisugimori-coder/calculator-memo/issues/57)へ紐付け。ローカル検証HEAD `4e375e56ac8be574b4aa40a7229d312c0eeafa7a` と公開HEAD `7ec1420c01b22c38d66abb1733fc00dd068efe6f` はtree `bf033bb6cf5fde5d40c4992a7092a9ba2dbba017` が完全一致（commit作成日時等のみ異なる）。CLI pushは資格情報なしで未実行終了、一括tree送信は応答不明で停止後に存在確認404。小分けblobとSHA照合で公開を完了し、main/保存データには変更なし。
+- ローカル正式GUIは上記検証HEADでChromium/WebKit6条件すべて成功: 594検査、横幅538地点、19画像×6=114枚、モバイル各824タッチ、ブラウザ/ネットワークエラー0。並列2で27分9秒、既存30分枠・画像予算・成功trace非保存を維持。375/390px、デスクトップ、両テーマ、root200%文字と再生成SVG2倍、タッチ/キーボード、原本不変・世代切替・旧経路非混入を確認。
+- 独立レビューはモデル20/UI33/SVG13/識別UI1=67件を独立実行し成功。フォーカス/非同期取消/世代境界を再確認し阻害指摘なし、最終公開HEADの正式CI成功を条件にマージ可との推奨。全GUIの実行は実装側であり、独立実行と混同しない。
+- 代表画面（PCのA→B→C/当時B使用値150・C結果300、Chromium390経路全体、WebKit375暗色200%詳細）は実画素を確認し、人工保存fixture・期待値・検証集計とともに利用者へレビュー資料として用意。fixture/期待値のリポジトリ内参照は[設計文書](docs/agent/saved-impact-graph.md)に記載。図の縮小は既存50〜200%操作で行い画像内容は加工していない。
+- 正式リモートCI: 初回公開HEADの[run 39777291797](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39777291797)開始を確認。このLOG追記コミット自身のCIは未確認で、最終結果はPR Checks/本文とIssueへ実測後に記載する。以前のHEADやローカル成功を最終リモート成功としない。実機iPhone Safari/VoiceOver/native OS文字拡大、全経路の列挙/原因証明は未検証または対象外。マージ/本番公開は行わず人間のレビュー待ちとする。
+
+
 ## 2026-10-22 17:30 JST: 保存済み計算記録の変更影響分析（Issue #55）
 
 - PR #54 mergeとmain e9601e43e68f32328b4a42296e868cd84c7071c0を確認。従来作業場所がこの環境にないため既存の別作業ツリーを変更せずfresh cloneし、clean mainからfeat/saved-record-impactを作成。Issue #55を目的/範囲/完了条件とともに作成した。
