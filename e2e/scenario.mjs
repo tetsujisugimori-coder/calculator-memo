@@ -61,6 +61,27 @@ async function assertHorizontalFit(expectedWidth = currentScenario.width) {
     const content = modal.locator(".modal-content");
     for (const scrollArea of await content.all()) {
       const size = await scrollArea.evaluate((element) => ({ scroll: element.scrollWidth, client: element.clientWidth }));
+      // Failure-only diagnostics: identify overflowing boxes without capturing
+      // their text/values or changing the layout/acceptance boundary.
+      if (size.scroll > size.client + 1) {
+        size.diagnostic = await scrollArea.evaluate(element => {
+          const root = element.getBoundingClientRect();
+          const descendants = [...element.querySelectorAll("*")];
+          const round = number => Math.round(number * 100) / 100;
+          const candidates = descendants.slice(0, 5000).map(child => {
+            const rect = child.getBoundingClientRect();
+            const style = getComputedStyle(child);
+            const overflow = Math.max(root.left - rect.left, rect.right - root.right, child.scrollWidth - child.clientWidth);
+            return { tag: child.tagName, class: (child.getAttribute("class") || "").slice(0, 160), role: (child.getAttribute("role") || "").slice(0, 64),
+              left: round(rect.left), right: round(rect.right), width: round(rect.width), client: child.clientWidth, scroll: child.scrollWidth,
+              display: style.display, gridTemplateColumns: style.gridTemplateColumns.slice(0, 160), minWidth: style.minWidth,
+              whiteSpace: style.whiteSpace, fontSize: style.fontSize,
+              overflow: round(overflow), visible: rect.width > 0 && rect.height > 0 };
+          }).filter(item => item.visible && item.overflow > 1).sort((a, b) => b.overflow - a.overflow).slice(0, 12);
+          return { container: { left: round(root.left), right: round(root.right), width: round(root.width) },
+            inspected: Math.min(descendants.length, 5000), totalDescendants: descendants.length, offenders: candidates };
+        });
+      }
       assert.ok(size.scroll <= size.client + 1, "Synthetic modal content must not be horizontally clipped: " + JSON.stringify(size));
     }
   }
@@ -486,6 +507,11 @@ async function exerciseBasicMath(prefix) {
   await selectPanel("notes");
   const single = page.locator(".note-card").filter({ hasText: "Synthetic math single" });
   await expect(single.locator(".note-formula strong")).toHaveText("= 1.414213562373");
+  // Card rendering precedes the asynchronous Web Locks persistence boundary.
+  // Await this explicit successful save, not every storage read: read-only tests
+  // must still observe writes immediately rather than conceal them with polling.
+  await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic math single"))
+    .toMatchObject({ expression: "sqrt(2)", resultText: "1.414213562373" });
   near((await storage()).notes.find((note) => note.title === "Synthetic math single").result, Math.sqrt(2), "saved sqrt memo");
   await activate(single.getByRole("button", { name: "編集", exact: true }));
   await dialog.getByLabel("計算式", { exact: true }).fill("2*pi");
@@ -2164,6 +2190,190 @@ async function exerciseMarkdownReports(prefix) {
   await page.reload(); await selectPanel("notes");
 }
 
+// Historical comparison fixtures are persisted records, never a claim of real UI confirmation.
+async function exerciseSavedRecordComparison(prefix) {
+  await stage(prefix + ": saved-record-comparison");
+  const original = await storage();
+  const at = "2026-10-22T00:00:00.000Z";
+  const precisionId = "precision-" + "x".repeat(160);
+  const recordsFor = (id, value, calculatedAt) => {
+    const block = (blockId, position, expression, result, inputs = [], entries = []) => ({
+      blockId, position, expression, evaluationMode: "block-references", references: { version: 1, entries },
+      inputs, result: String(result), resultText: String(result), status: "success",
+    });
+    const input = (sourceBlockId, value) => ({ kind: "id", name: "ReferenceValue1", sourceBlockId, value: String(value) });
+    return { id, calculatedAt, persistedAt: at, evaluator: "calculator-memo-v1", status: "confirmed", blocks: [
+      block("A", 1, String(value), value),
+      block("B", 2, "@{1}+50", value + 50, [input("A", value)], [{ slot: 1, blockId: "A" }]),
+      block("C", 3, "@{1}*2", (value + 50) * 2, [input("B", value + 50)], [{ slot: 1, blockId: "B" }]),
+      { ...block(precisionId, 4, value === 100 ? "12341/10000" : "12342/10000", value === 100 ? "1.2341" : "1.2342"), resultText: "1.23" },
+      { ...block("signed-zero", 5, value === 100 ? "-0" : "0", value === 100 ? "-0" : "0"), resultText: "0" },
+    ] };
+  };
+  const beforeRecord = recordsFor("record-before", 100, "2026-10-22T02:00:00.000Z");
+  const afterRecord = recordsFor("record-after", 120, "2026-10-22T01:00:00.000Z");
+  const sameRecord = { ...structuredClone(beforeRecord), id: "record-identical" };
+  const note = { id: "comparison-note", type: "plain-calculation", title: "Synthetic / comparison", content: "", createdAt: at, updatedAt: at,
+    calculationPolicy: { version: 1, mode: "manual" }, blocks: [{ id: "present-only", type: "text", content: "CURRENT_ONLY_NOT_HISTORY" }],
+    calculationEvidence: { version: 1, records: [sameRecord, beforeRecord, afterRecord] }, opaque: { retain: "unchanged" } };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload(); await selectPanel("notes");
+  const card = page.locator(".note-card").filter({ hasText: note.title });
+  const detail = () => page.getByRole("dialog", { name: note.title, exact: true });
+  const dialog = () => page.getByRole("dialog", { name: "保存済み計算記録", exact: true });
+  const source = () => dialog().getByRole("textbox", { name: "比較Markdown全文", exact: true });
+  const before = () => dialog().getByRole("combobox", { name: "変更前の記録", exact: true });
+  const after = () => dialog().getByRole("combobox", { name: "変更後の記録", exact: true });
+  const openDetail = () => activate(card.getByRole("button", { name: "詳細", exact: true }));
+  const open = () => activate(detail().getByRole("button", { name: "計算記録を開く", exact: true }));
+  const close = () => activate(dialog().getByRole("button", { name: "閉じる", exact: true }).last());
+  const closeDetail = () => activate(detail().getByRole("button", { name: "閉じる", exact: true }).last());
+  const refresh = () => activate(dialog().getByRole("button", { name: "最新の保存内容を再取得", exact: true }));
+  const raw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await openDetail();
+  const savedRaw = await raw();
+  await page.evaluate(() => {
+    window.__comparisonWrites = 0;
+    window.__comparisonOriginalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (...args) { window.__comparisonWrites++; return window.__comparisonOriginalSetItem.apply(this, args); };
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__comparisonCopy = text; } } });
+  });
+  await open();
+  await expect(before()).toHaveValue(beforeRecord.id); await expect(after()).toHaveValue(afterRecord.id);
+  await expect(dialog()).toContainText("保存要求時刻");
+  await expect(dialog()).toContainText("保存完了時刻ではありません");
+  await activate(dialog().locator(".evidence-help > summary"));
+  await activate(dialog().locator(".evidence-record-list > summary"));
+  await expect(dialog().locator(".evidence-record-list")).toContainText("追記 3");
+  await activate(dialog().locator(".evidence-record-detail > summary"));
+  await activate(dialog().locator(".evidence-record-detail > details").filter({ hasText: "ID：B" }).locator("summary"));
+  await expect(dialog().locator(".evidence-record-detail")).toContainText("120");
+  const chainRow = dialog().locator('.evidence-diff-row[data-block-id="B"]');
+  await activate(chainRow.locator("summary"));
+  await expect(chainRow).toContainText("実使用内部値");
+  for (const value of ["100", "120", "150", "170"]) await expect(chainRow).toContainText(value);
+  await expect(source()).toHaveAttribute("readonly", "");
+  const markdown = await source().inputValue();
+  assert.ok(markdown.includes("record\\-before") && markdown.includes("record\\-after"));
+  for (const value of ["100", "120", "150", "170", "300", "340"]) assert.ok(markdown.includes(value));
+  assert.ok(markdown.includes("実使用内部値") && markdown.includes("実際に使用した参照元"));
+  assert.ok(!markdown.includes("CURRENT_ONLY_NOT_HISTORY"));
+  assert.ok(markdown.includes("1.2341") && markdown.includes("1.2342") && markdown.includes("1.23"));
+  const precisionRow = dialog().locator('.evidence-diff-row').filter({ has: page.locator('summary').filter({ hasText: precisionId }) });
+  await activate(precisionRow.locator("summary"));
+  await expect(precisionRow.locator("summary")).toContainText("内部結果");
+  await expect(precisionRow.locator("summary")).not.toContainText("表示結果");
+  await expect(dialog().locator('.evidence-diff-row[data-block-id="signed-zero"] > summary')).toContainText("内部結果");
+  assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await screenshot(prefix + "-saved-record-comparison", currentScenario.width, false);
+  await passed(prefix + ": saved-record comparison defaults to append order despite reversed clocks and exposes historical chain inputs without current memo enrichment");
+
+  await activate(dialog().getByRole("button", { name: "前後を入れ替える", exact: true }));
+  await expect(before()).toHaveValue(afterRecord.id); await expect(after()).toHaveValue(beforeRecord.id);
+  assert.notEqual(await source().inputValue(), markdown);
+  await before().selectOption(sameRecord.id); await after().selectOption(beforeRecord.id);
+  await expect(source()).toHaveValue(/変更: 0 \/ 追加: 0 \/ 削除: 0 \/ 比較対象項目に変更なし: 5/);
+  await activate(dialog().getByRole("checkbox", { name: "比較対象項目に変更なしのブロックも表示", exact: true }));
+  const unchanged = dialog().locator('.evidence-diff-row[data-block-id="B"]');
+  await activate(unchanged.locator("summary"));
+  await expect(unchanged).toContainText("比較対象項目に変更なし");
+  await before().selectOption(beforeRecord.id); await after().selectOption(afterRecord.id);
+  assert.equal(await source().inputValue(), markdown);
+  await passed(prefix + ": swapping records changes comparison direction while distinct IDs with identical recorded fields remain unchanged");
+
+  await activate(dialog().getByRole("button", { name: "比較Markdown全文をコピー", exact: true }));
+  await expect(dialog().getByRole("status")).toContainText("コピーしました");
+  assert.equal(await page.evaluate(() => window.__comparisonCopy), markdown);
+  const downloaded = page.waitForEvent("download");
+  await activate(dialog().getByRole("button", { name: "比較.mdをダウンロード", exact: true }));
+  const download = await downloaded;
+  assert.ok(download.suggestedFilename().endsWith("-記録比較.md") && !download.suggestedFilename().includes("/"));
+  assert.deepEqual(await readFile(await download.path()), Buffer.from(markdown, "utf8"));
+  await expect(dialog().getByRole("status")).toContainText("ダウンロードを要求");
+  await page.evaluate(() => {
+    navigator.clipboard.writeText = async () => { throw new Error("synthetic comparison clipboard refusal"); };
+    window.__comparisonOriginalCreateUrl = URL.createObjectURL;
+    URL.createObjectURL = () => { throw new Error("synthetic comparison download refusal"); };
+  });
+  await activate(dialog().getByRole("button", { name: "比較Markdown全文をコピー", exact: true }));
+  await expect(dialog().getByRole("alert")).toContainText("コピーに失敗");
+  await activate(dialog().getByRole("button", { name: "比較.mdをダウンロード", exact: true }));
+  await expect(dialog().getByRole("alert")).toContainText("ダウンロードを開始できません");
+  await page.evaluate(() => { URL.createObjectURL = window.__comparisonOriginalCreateUrl; });
+  assert.equal(await source().inputValue(), markdown); assert.equal(await raw(), savedRaw);
+  assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await passed(prefix + ": comparison preview copy and downloaded bytes agree and export failures never mutate persisted records");
+
+  // External persistence changes while the reader stays open. Do not mix acquisition times.
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
+    data.notes[0].calculationEvidence.records = [data.notes[0].calculationEvidence.records[0]];
+    window.__comparisonOriginalSetItem.call(localStorage, "calculation-memo:data", JSON.stringify(data));
+    window.dispatchEvent(new StorageEvent("storage", { key: "calculation-memo:data", newValue: JSON.stringify(data), storageArea: localStorage }));
+    window.__comparisonWrites = 0;
+  });
+  const externalRaw = await raw();
+  assert.equal(await source().inputValue(), markdown);
+  await refresh();
+  await expect(source()).toHaveCount(0);
+  await expect(dialog()).toContainText(/選択していた記録が再取得した原本にありません/);
+  assert.equal(await raw(), externalRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await passed(prefix + ": external saves cannot mix with frozen comparison and explicit refresh reports vanished selections without silently substituting records");
+  await close(); await open();
+  await expect(dialog()).toContainText(/比較には2件|比較には.*2.*件/);
+  await expect(source()).toHaveCount(0);
+  await activate(dialog().locator(".evidence-record-detail > summary"));
+  await expect(dialog().getByRole("region", { name: "選択した記録の情報", exact: true })).toContainText(sameRecord.id);
+  await close();
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("calculation-memo:data")); delete data.notes[0].calculationEvidence;
+    window.__comparisonOriginalSetItem.call(localStorage, "calculation-memo:data", JSON.stringify(data)); window.__comparisonWrites = 0;
+  });
+  const emptyRaw = await raw(); await open();
+  await expect(dialog()).toContainText(/保存済み計算記録は0件/); await expect(source()).toHaveCount(0);
+  assert.equal(await raw(), emptyRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await close(); await closeDetail();
+  await passed(prefix + ": one persisted record supports detail only and absent history is explained without inventing comparison evidence");
+
+  // Restore the known fixture and reload, clearing test-only instrumentation.
+  await page.evaluate(raw => window.__comparisonOriginalSetItem.call(localStorage, "calculation-memo:data", raw), savedRaw);
+  await page.reload(); await selectPanel("notes");
+  for (const theme of ["light", "dark"]) {
+    await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
+    const themeRaw = await raw();
+    await openDetail(); await open();
+    await dialog().locator(".saved-evidence").evaluate(element => {
+      const children = [element, ...element.querySelectorAll("*")];
+      const sizes = children.map(child => parseFloat(getComputedStyle(child).fontSize) * 2);
+      children.forEach((child, i) => { child.style.fontSize = sizes[i] + "px"; });
+    });
+    const button = dialog().getByRole("button", { name: "比較.mdをダウンロード", exact: true });
+    await button.focus(); await expect(button).toBeFocused();
+    await page.keyboard.press("Tab");
+    assert.ok(await dialog().evaluate(element => element.contains(document.activeElement)), "Keyboard focus remains inside record dialog");
+    await button.scrollIntoViewIfNeeded(); await expect(button).toBeInViewport();
+    await screenshot(prefix + "-saved-record-comparison-" + theme + "-200-percent", currentScenario.width, false);
+    assert.equal(await raw(), themeRaw);
+    await close(); await expect(detail().getByRole("button", { name: "計算記録を開く", exact: true })).toBeFocused();
+    await closeDetail();
+  }
+  await passed(prefix + ": record comparison stays horizontally contained with reachable controls focus restoration and both themes at 200 percent text");
+
+  await openDetail();
+  const protectedRaw = JSON.stringify({ ...original, notes: [{ ...note, calculationEvidence: { version: 99, records: [beforeRecord] } }] }, null, 2);
+  await page.evaluate(raw => localStorage.setItem("calculation-memo:data", raw), protectedRaw);
+  await open();
+  await expect(dialog().getByRole("alert")).toContainText(/安全に読み取れません|比較不可/);
+  await expect(source()).toHaveCount(0);
+  assert.equal(await raw(), protectedRaw);
+  await close(); await closeDetail();
+  await passed(prefix + ": unsupported persisted record version refuses comparison and preserves the exact protected original");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
 // Real UI confirmation boundary: traces originate in evaluation, never injected fixtures.
 async function exerciseCalculationEvidence(prefix) {
   await stage(prefix + ": calculation-evidence-snapshots");
@@ -2776,6 +2986,7 @@ async function exercise(scenario) {
   await exerciseNestedPercent(prefix);
   await exerciseMarkdownReports(prefix);
   await exerciseCalculationEvidence(prefix);
+  await exerciseSavedRecordComparison(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

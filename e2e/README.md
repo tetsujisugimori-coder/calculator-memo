@@ -388,3 +388,26 @@ Expected totals are 516 acceptance checks and 502 geometry checkpoints; the six
 contexts, 754 touch activations per mobile context, 114 representative PNGs, two
 workers and zero exported success traces remain unchanged. Execution results must
 still be established by the exact-HEAD CI, not inferred from these expectations.
+
+
+## Saved calculation record comparison regression
+
+Seven additional acceptance checks per context cover persisted record list/detail,
+append-order defaults despite reversed clocks, swapped direction, distinct records
+with equal contents, a 100→120 / 150→170 / 300→340 dependency chain and its actual
+recorded inputs, rounded-equal internal-result changes, signed zero, long IDs,
+unchanged-block disclosure, exact preview/copy/download bytes, clipboard/download
+failure, frozen acquisition across external saves, explicit refresh with missing
+selection, zero/one record, and unsupported-version protection. The historical
+comparison fixtures are deliberately synthetic persisted records; the preceding
+calculation-evidence scenario separately verifies real evaluation/save boundaries.
+No current memo block is used to fill historical information.
+
+Three added geometry checkpoints per context cover the expanded comparison and
+both themes at 200% text; keyboard containment and restored trigger focus are
+asserted. No additional success PNG is retained. The expected complete contract is
+558 acceptance checks, 520 geometry checkpoints, and 792 observed touch
+activations per mobile context. The six contexts, 114 representative PNGs, two
+workers, time limits, and zero exported success traces remain unchanged. These
+counts specify required coverage, not a claim that every context has already run;
+actual execution and final-HEAD CI results belong in LOG and the PR checks.

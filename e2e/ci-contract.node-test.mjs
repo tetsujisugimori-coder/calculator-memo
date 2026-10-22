@@ -99,17 +99,17 @@ const { validateCoverage } = await import('./ci-contract.mjs');
 const { scenarios } = await import('./scenario-config.mjs');
 const sha = 'a'.repeat(40);
 function completedContexts() {
-  const counts = [86, 85, 86, 86, 86, 87], checkpointCounts = [85, 83, 83, 83, 83, 85];
+  const counts = [93, 92, 93, 93, 93, 94], checkpointCounts = [88, 86, 86, 86, 86, 88];
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 754 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 792 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
 }
-test('complete six-context contract preserves 516 checks and 502 geometry checkpoints', () => {
-  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 516, horizontalCheckpoints: 502 });
+test('complete six-context contract preserves 558 checks and 520 geometry checkpoints', () => {
+  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 558, horizontalCheckpoints: 520 });
 });
 const mutations = {
   'one scenario never ran': records => records.pop(),
@@ -165,4 +165,27 @@ test('isolated preview ports are distinct and allowed by Fetch before any transp
       dispatcher: { dispatch() { throw new Error('isolated-transport-probe'); } },
     }), error => error.cause?.message === 'isolated-transport-probe');
   }
+});
+
+
+test('successful memo save waits for persistence without delaying read-only storage observations', async () => {
+  const scenario = await readFile(join(root, 'e2e/scenario.mjs'), 'utf8');
+  const section = scenario.split('await stage(prefix + ": basic-math-single-memo-edit");')[1]?.split('await stage(prefix + ": basic-math-block-save-and-recalculate");')[0];
+  assert.ok(section, 'Ordinary memo persistence regression section must exist');
+  const poll = section.indexOf('await expect.poll(async () => (await storage()).notes.find((note) => note.title === "Synthetic math single"))');
+  const exact = section.indexOf('near((await storage()).notes.find((note) => note.title === "Synthetic math single").result, Math.sqrt(2), "saved sqrt memo")');
+  assert.ok(poll >= 0 && exact > poll, 'Await the saved memo before reading its full-precision result');
+  assert.ok(section.slice(poll, exact).includes('.toMatchObject({ expression: "sqrt(2)", resultText: "1.414213562373" })'), 'Wait for this exact submitted memo, not a visual card or arbitrary delay');
+  assert.ok(scenario.includes('async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }'), 'Read-only and pending-write checks retain immediate storage reads');
+});
+
+
+test('modal overflow diagnostics are failure-only bounded and retain the strict geometry assertion', async () => {
+  const scenario = await readFile(join(root, 'e2e/scenario.mjs'), 'utf8');
+  const fit = scenario.split('async function assertHorizontalFit(')[1]?.split('async function exerciseFormulaLibrary(')[0];
+  assert.ok(fit);
+  assert.ok(fit.includes('if (size.scroll > size.client + 1) {'));
+  assert.ok(fit.includes('descendants.slice(0, 5000)') && fit.includes('.slice(0, 12)'));
+  assert.ok(fit.includes('assert.ok(size.scroll <= size.client + 1,'));
+  assert.ok(!/innerHTML|textContent|\.value|\.style\s*=/.test(fit), 'Diagnostics record box metadata, not content, and do not modify layout');
 });
