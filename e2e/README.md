@@ -460,3 +460,34 @@ activations in each mobile context. These are fail-closed required counts, not
 claims of a completed run. Renderer fault/cap and broader graph topology cases
 are additionally covered by unit tests; physical iPhone Safari and VoiceOver are
 not exercised by this synthetic Playwright harness.
+
+
+## Registered-formula mathematical reports (Issue #59)
+
+Five additional acceptance groups per context cover a new separate report bound
+to a stable formula ID, clean labelled raw Markdown editing, keyboard opening
+and restored focus, cancelling dirty-close without losing content, safe KaTeX,
+code fences and literal HTML without script/image execution, ordinary save without
+automatic confirmation, explicit confirmation, name-versus-expression changes,
+and confirmation invalidation after content changes. Two identically named
+formulas remain independent. Deletion retains the orphan report for exact-byte
+clipboard and Markdown-file rescue; reload preserves it without modifying notes
+or calculation history. Fixtures are synthetic and restore the original storage.
+
+Two geometry-only checkpoints per context cover the report in both themes with
+200% root text. The complete required contract is now 624 named checks, 550
+geometry checkpoints and 855 actual touch activations per mobile context. The
+31 additional report taps were observed in the focused WebKit 375px preflight;
+the complete suite still verifies the total independently. All prior checks are
+retained. Six contexts, two workers, 114 retained PNGs, existing job limits, and
+zero exported successful traces remain unchanged. Counts describe required
+coverage, not a completed run; exact-HEAD results are recorded in LOG and PR CI.
+
+Storage conflict/failed-save/unknown-data and capacity boundaries also have unit
+tests; these must not be represented as physical-device GUI verification. Real
+iPhone Safari and VoiceOver remain outside this Playwright emulation.
+
+
+## PR #60 CI環境準備の障害切り分け
+
+GitHub Ubuntu24.04のfresh runnerでは、正確なAzure Ubuntu sourceだけ公式HTTPS archive/securityへ切り替え、署名・suite・componentを保持する。OS依存は固定Playwrightの `install-deps chromium webkit`（5分）、browserは `install chromium webkit`（3分）に分離し、各log/timingを残す。失敗時は後続GUIを成功扱いせずalways artifactへ保存。ローカル用の上記手順は変更せず、CI専用root設定scriptを利用者PCへ適用しない。30分/全6条件/114PNG/成功trace非保存は不変。[原因・案比較・制約・復旧](../docs/agent/ci-environment-acquisition.md)。

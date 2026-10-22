@@ -492,3 +492,11 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .historical-graph-svg .node:focus-visible rect { stroke: var(--ink); stroke-width: 6px; stroke-dasharray: 8 3; }
 .evidence-impact-graph button[aria-pressed="true"] { outline: 2px solid var(--brand); outline-offset: -2px; }
 @media (max-width: 900px) { .historical-graph-workspace { grid-template-columns: minmax(0, 1fr); } }
+
+/* Related reports are separate explanatory documents, not executable formulas. */
+.formula-report { min-width: 0; overflow-wrap: anywhere; }
+.formula-report input, .formula-report textarea { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+.formula-report pre, .formula-report-preview { min-width: 0; max-width: 100%; overflow-x: auto; }
+.formula-report .modal-actions { flex-wrap: wrap; }
+.formula-report button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.formula-report-preview { border: 1px solid var(--border); padding: 1rem; border-radius: .5rem; }

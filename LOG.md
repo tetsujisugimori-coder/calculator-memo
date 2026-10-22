@@ -1,5 +1,28 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-10-23 07:40 JST: PR #60 CI環境取得タイムアウトの原因検証と最小修正
+
+- 基準HEAD `b3ebe0c8591078071f7fe55f2506553492fa2f60`、[成功#118](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39841897542)と[失敗#119両attempt](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39845374995)の公式job/logを照合。全回119MB/181新規+8更新、成功9秒、失敗はAPT archive取得で1716/1757秒を消費しGUI未開始。成功とattempt2は同image、リージョンは異なるが通信経路/ミラー内部どちらが唯一の根因かは未確定。
+- 従来はOS/browser一括準備が30分全体予算まで待てた。第一希望の同runner/正規全依存維持を採用し、Azureの正確なUbuntu URIだけ公式HTTPS archive/securityへ変更、APT timeout/retry有界化、OS5分/browser3分の段階別log/timingへ分離する。公式containerは環境差とimage取得検証が必要な次善策、cacheではAPT問題を代替できず今回は未採用。[比較・根拠・安全境界・復旧](docs/agent/ci-environment-acquisition.md)。
+- 変更はCI準備script/workflow/契約テスト/文書のみ。製品、lockfile、30分、6条件624検査/550配置/mobile各855touch、114PNG、trace/7日artifact方針を維持。署名/TLS検証を緩めず未知source構造は停止する。
+- 独立レビューのSuite継続行見落としを修正し回帰fixtureを追加、再レビューでコード上の阻害指摘なし（実CI成功は別条件）。CI契約36件成功（既存28+追加8）。単体1127件/50files、lint 0error（既存warning1）、型、通常/Pages両build、YAML構文検査が成功。修正後実GitHub Actions全完走は未確認であり、最終HEADの成功はPR Checks/コメントで確認する。模擬timeoutは実ネットワーク障害の再現とは別。
+- 07:48 JST追記: 初回修正HEAD `9c4a1085c100287aa917292019787fa59af24a3f` / [CI #120](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39867226720) は直接Azure URIを前提にした設定ガードで失敗。公式runner-imageのmirror+file構造を確認し、正確な既知URIだけへの対応と設定優先順を修正。未知構造拒否は維持、外部障害と区別して記録。37契約で回帰し、新HEAD実CIを確認する。
+- Issue #59本文は保持、既存PR #60/作業branchにのみ反映する。main直接push/merge/本番公開なし。rollbackはCI限定差分revertとfresh runnerで行い、保存原本に変更不要。1回の成功で外部通信の恒久的解消を断定しない。
+
+## 2026-10-23 04:26 JST: 登録式の関連数学レポート（Issue #59）
+
+- 04:37 JST追記: [PR #60](https://github.com/tetsujisugimori-coder/calculator-memo/pull/60) をDraft作成。実装tree `489277a8634a46aeb982a4197ac79837493548b2` を各blob SHAと照合してGitHubへ公開。コードcommit `118e87620f53535da772eee2ab7c5ba8862d122b`。この文書追記コミットを含む最終HEADの全6条件GUI・CI結果はPR Checks/コメントで確認する。過去HEADの成功は流用しない。初期GUI重点Chromium desktop/WebKit375、契約28件は成功。mainへのpush/merge/本番公開なし。
+
+- PR #58 merged / 最新 main `93180027baef45acf57f886b3adf37280a900bfd`、新規 checkout clean を確認し `feat/formula-math-reports` を作成。初回依頼正本 [Issue #59](https://github.com/tetsujisugimori-coder/calculator-memo/issues/59) の本文は変更しない。
+- 実装前に既存登録式/実行/Markdown/保存保護/CIを調査し、独立 optional `formulaReports` 領域、既存描画・保存ロック/readback再利用、明示確認・孤立レポート保全の方針を報告。[調査・第一希望・互換性/復旧](docs/agent/formula-reports.md)。
+- 依頼文の top-level schemaVersion=1 は実コードでは version:1。フィールド名を変更せず追加領域で互換性を維持する。未知root/settings付随キーを保持する補強を行い、未知version/不正構造の保護は緩めない。
+- 実装・単体/GUI・独立レビュー・最終HEAD CIは着手時点で未完了。成功結果は実測後に追記する。PR未作成。
+- 04:32 JST追記: 関連レポートの独立保存・安定ID・生Markdown編集/既存安全プレビュー・本文コピー/.md・明示確認・式変更の要確認・名称変更の区別・削除後孤立レポート救出を実装。本文/タイトル編集は確認を無効化。保存成功はロック内の原本/式/レポート照合とreadback後にのみ表示する。
+- 単体1127件/50ファイル、lint 0 error（既存aria-description警告1）、型検査が成功。通常/Pagesビルド成功。独立レビューは関連109テスト・型・diff検査で阻害指摘なし。指摘された超過本文preview負荷と競合時の確認済み誤表示は防止し回帰追加。実ブラウザ最終6条件・対象HEAD CIは確認待ちであり、この時点で成功扱いしない。
+- GUIは既存6条件・30分・114 PNG・成功trace非保存を維持して5受入群を追加。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。ローカルNode24.19.0、CIの固定Node22.13.0は変更なし。新しい依存パッケージ追加なし。初回npm cache書込み失敗は専用/tmp cacheで再実行して解消。
+- 旧版は新しい領域を落とす可能性があるため、rollback前に原本JSONを退避し旧版で新データを上書きしない。説明の正しさ、数学的証明、出典の信頼性は自動保証しない。Issue #59本文は原文維持。PRは未作成、最終HEADの検証は後続PR Checksへ記録する。
+
 ## 2026-10-22 20:20 JST: 保存記録の影響経路図（Issue #57）
 
 - PR #56 merged と最新 main `2c1b55db104afa60ab1fb61ab2b73507de4043af`、作業ツリーcleanを確認し `feat/saved-impact-graph` を作成。関連Issue/PRを照合しIssue #57に目的/範囲/受入条件を記録した。

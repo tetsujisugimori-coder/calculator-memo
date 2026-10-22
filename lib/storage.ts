@@ -2,6 +2,7 @@ import { validCalculationEvidence } from "./calculation-evidence";
 import { readExecutionDrafts } from "./formula-execution";
 import { identificationMode } from "./identification";
 import type { StoredData } from "./types";
+import { readFormulaReports } from "./formula-reports";
 import { readFormulaLibrary } from "./formula-library";
 import { sanitizeMemoBlocks } from "./memo-blocks";
 
@@ -120,6 +121,11 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
       try { formulaLibrary = readFormulaLibrary(parsed.formulaLibrary); }
       catch { return { status: "error", reason: "invalid-data", raw, message: "登録式ライブラリを読み取れませんでした。元データを保護するため自動保存を停止しました。" }; }
     }
+    let formulaReports: StoredData["formulaReports"];
+    if (parsed.formulaReports !== undefined) {
+      try { formulaReports = readFormulaReports(parsed.formulaReports); }
+      catch { return { status: "error", reason: "invalid-data", raw, message: "関連レポートを読み取れませんでした。元データを保護するため自動保存を停止しました。" }; }
+    }
     let formulaExecutions: StoredData["formulaExecutions"];
     if (parsed.formulaExecutions !== undefined) {
       try { formulaExecutions = readExecutionDrafts(parsed.formulaExecutions); }
@@ -131,13 +137,17 @@ export function loadData(storage?: ReadableStorage): StorageLoadResult {
     const activePanel = ["history", "notes"].includes(String(parsed.settings.activePanel))
       ? parsed.settings.activePanel as StoredData["settings"]["activePanel"]
       : defaultData.settings.activePanel;
+    const preservedSettings = { ...parsed.settings };
+    delete preservedSettings.identificationMode; // Known invalid values retain the existing normalization behavior.
     return { status: "ok", raw, data: {
+      ...parsed,
       version: 1,
+      ...(formulaReports ? { formulaReports } : {}),
       ...(formulaLibrary ? { formulaLibrary } : {}),
       ...(formulaExecutions ? { formulaExecutions } : {}),
       history: Array.isArray(parsed.history) ? parsed.history.filter((item) => item?.id && item?.expression) : [],
       notes,
-      settings: { theme, activePanel, ...(identificationMode(parsed.settings.identificationMode) ? { identificationMode: identificationMode(parsed.settings.identificationMode) } : {}) },
+      settings: { ...preservedSettings, theme, activePanel, ...(identificationMode(parsed.settings.identificationMode) ? { identificationMode: identificationMode(parsed.settings.identificationMode) } : {}) },
     } };
   } catch (error) {
     console.error("ローカル保存領域へアクセスできませんでした", error);
