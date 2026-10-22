@@ -2,6 +2,8 @@
 
 ## 2026-10-23 04:26 JST: 登録式の関連数学レポート（Issue #59）
 
+- 04:37 JST追記: [PR #60](https://github.com/tetsujisugimori-coder/calculator-memo/pull/60) をDraft作成。実装tree `489277a8634a46aeb982a4197ac79837493548b2` を各blob SHAと照合してGitHubへ公開。コードcommit `118e87620f53535da772eee2ab7c5ba8862d122b`。この文書追記コミットを含む最終HEADの全6条件GUI・CI結果はPR Checks/コメントで確認する。過去HEADの成功は流用しない。初期GUI重点Chromium desktop/WebKit375、契約28件は成功。mainへのpush/merge/本番公開なし。
+
 - PR #58 merged / 最新 main `93180027baef45acf57f886b3adf37280a900bfd`、新規 checkout clean を確認し `feat/formula-math-reports` を作成。初回依頼正本 [Issue #59](https://github.com/tetsujisugimori-coder/calculator-memo/issues/59) の本文は変更しない。
 - 実装前に既存登録式/実行/Markdown/保存保護/CIを調査し、独立 optional `formulaReports` 領域、既存描画・保存ロック/readback再利用、明示確認・孤立レポート保全の方針を報告。[調査・第一希望・互換性/復旧](docs/agent/formula-reports.md)。
 - 依頼文の top-level schemaVersion=1 は実コードでは version:1。フィールド名を変更せず追加領域で互換性を維持する。未知root/settings付随キーを保持する補強を行い、未知version/不正構造の保護は緩めない。
