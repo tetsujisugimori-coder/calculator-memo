@@ -903,3 +903,5 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - 全体単体1043件/45ファイル、lint（既存aria-description警告1、error0）、型検査成功。通常/Pagesビルドは初期実装で成功し、最終修正は正式CIでも確認する。GUIは実行中。実生成例 docs/examples/saved-record-impact.md はID参照A100→120/B150→170/C300→340を入力して生成し、手書きの推定履歴ではない。
 - Git CLI push dry-runは認証資格情報がないため未送信。認証済みGitHub connectorで同じ変更treeを公開し、取得し直してtree/SHAを照合する。権限や認証設定を変更しない。
 - GUI予備実行: Chromium375pxは96検査/87幅/799タッチ成功。desktopは既存の非同期保存pollが保存前のundefinedへアクセスして即時失敗。期待値・待機時間を変えずoptional-chainで再試行可能にした。最終モデルを再ビルドし全6条件を再実行する。
+- 正式CI初回（HEAD76951047fd9dc572172e39c0733902e9b0e39f19、run39749464226）は全工程成功。成果物を読戻し、HEAD/SHA256一致、Chromium/WebKit全6条件576検査・526横幅チェック・モバイル各799タップ、PNG114枚・成功trace0を実測確認した。1043単体/28契約、lint/型/両ビルド成功。最終記録コミットのCIとReady切替時CIはPRで追跡する。
+- ローカルWebKit26は標準OSライブラリ不足のため、公式Debian署名/パッケージhashを確認し一時ディレクトリへ展開したライブラリと一時起動アダプタで実行。システム導入/セキュリティ設定/CI設定変更なし。実iPhone Safari/VoiceOverは未検証。参考画面は別途合成データで取得し、正式CIの画像予算とは分離した。
