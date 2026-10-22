@@ -6,6 +6,7 @@ import { SavedEvidenceModal } from '../components/SavedEvidenceModal';
 import * as evidence from '../lib/calculation-evidence';
 import * as report from '../lib/markdown-report';
 import * as comparison from '../lib/evidence-comparison';
+import * as impactAnalysis from '../lib/evidence-impact';
 import { STORAGE_KEY } from '../lib/storage';
 import type { PlainCalculationNote } from '../lib/types';
 const record = (id: string, value = 100): evidence.EvidenceRecord => ({ id, calculatedAt: '2026-10-21T01:00:00.000Z', persistedAt: '2026-10-21T01:01:00.000Z', evaluator: 'calculator-memo-v1', status: 'confirmed', blocks: [
@@ -143,4 +144,32 @@ it('retains record identity when explicit refresh changes append-index labels', 
   expect(select('変更後の記録').value).toBe('c'); expect(select('変更後の記録').selectedOptions[0].textContent).toBe('記録 2');
   save(note([record('c')])); await click('最新の保存内容を再取得');
   expect(host.textContent).toContain('選択していた記録が再取得した原本にありません'); expect(md()).toBeUndefined();
+});
+
+it('shares frozen impact paths and independent labels with exported Markdown', async () => {
+  await show(); const raw = localStorage.getItem(STORAGE_KEY); const writes = vi.spyOn(Storage.prototype, 'setItem');
+  const region = host.querySelector('[aria-label="保存記録の変更影響分析"]')!;
+  await act(async () => { const detail = region.querySelector('details')!; detail.open = true; detail.dispatchEvent(new Event('toggle')); });
+  const row = region.querySelector<HTMLDetailsElement>('[data-impact-block-id="C"]')!;
+  expect(row.textContent).toContain('波及変更候補'); expect(row.textContent).toContain('結果差分');
+  await act(async () => { row.open = true; row.dispatchEvent(new Event('toggle')); });
+  expect(row.textContent).toContain('A → B → C'); expect(row.textContent).toContain('150'); expect(row.textContent).toContain('170');
+  expect(md()).toContain('A → B → C'); expect(md()).toContain('変更後の経路');
+  expect(writes).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+
+it('flags structurally valid inconsistent saved inputs without rewriting or repairing them', async () => {
+  const n = note(); n.calculationEvidence!.records[1].blocks[1].inputs[0].value = '999'; save(n);
+  const raw = localStorage.getItem(STORAGE_KEY); await show();
+  expect(md()).toContain('判定不能'); expect(md()).toContain('一致しません'); expect(md()).toContain('999');
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+
+it('keeps existing comparison and blocks incomplete export if analysis alone fails', async () => {
+  vi.spyOn(impactAnalysis, 'analyzeEvidenceImpact').mockImplementation(() => { throw new Error('analysis failed'); });
+  const raw = localStorage.getItem(STORAGE_KEY); await show();
+  expect(host.textContent).toContain('既存の記録比較は表示しています');
+  expect(host.querySelector('.evidence-diff-row')).not.toBeNull();
+  expect(button('比較Markdown全文をコピー')).toBeUndefined();
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });

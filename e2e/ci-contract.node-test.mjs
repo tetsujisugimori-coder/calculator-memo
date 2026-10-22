@@ -99,17 +99,17 @@ const { validateCoverage } = await import('./ci-contract.mjs');
 const { scenarios } = await import('./scenario-config.mjs');
 const sha = 'a'.repeat(40);
 function completedContexts() {
-  const counts = [93, 92, 93, 93, 93, 94], checkpointCounts = [88, 86, 86, 86, 86, 88];
+  const counts = [96, 95, 96, 96, 96, 97], checkpointCounts = [89, 87, 87, 87, 87, 89];
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 792 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 799 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
 }
-test('complete six-context contract preserves 558 checks and 520 geometry checkpoints', () => {
-  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 558, horizontalCheckpoints: 520 });
+test('complete six-context contract preserves 576 checks and 526 geometry checkpoints', () => {
+  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 576, horizontalCheckpoints: 526 });
 });
 const mutations = {
   'one scenario never ran': records => records.pop(),
@@ -177,6 +177,7 @@ test('successful memo save waits for persistence without delaying read-only stor
   assert.ok(poll >= 0 && exact > poll, 'Await the saved memo before reading its full-precision result');
   assert.ok(section.slice(poll, exact).includes('.toMatchObject({ expression: "sqrt(2)", resultText: "1.414213562373" })'), 'Wait for this exact submitted memo, not a visual card or arbitrary delay');
   assert.ok(scenario.includes('async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }'), 'Read-only and pending-write checks retain immediate storage reads');
+  assert.ok(scenario.includes('await expect.poll(async () => (await readNote())?.blocks.filter((block) => block.type === "calculation").map((block) => block.result)).toEqual([1200, 5, 6000, 0.1, 6000 * (1 + 0.1), 10, 20, 20, 1200])'), 'Variable-save poll safely retries absent pending note while retaining every exact result');
 });
 
 
