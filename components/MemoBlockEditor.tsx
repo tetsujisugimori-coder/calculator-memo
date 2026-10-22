@@ -6,8 +6,9 @@ import { useCalculationTrial } from "./useCalculationTrial";
 import { DependencyGraph } from "./DependencyGraph";
 import { buildCalculationStatus, type CalculationAttempt } from "../lib/calculation-status";
 import { CalculationStatusDetails, DependencyMermaidExport } from "./CalculationStatusDetails";
-import { analyzeBlockDependencies, isManualMemo, markCalculationsStale, recalculateReferenceMemo, REFERENCE_MODE, staleBlockIds } from "../lib/block-references";
+import { analyzeBlockDependencies, isManualMemo, markCalculationsStale, evaluateReferenceMemo, REFERENCE_MODE, staleBlockIds } from "../lib/block-references";
 import { VariableIdentification } from "./Identification";
+import { makeEvidenceCandidate, type EvidenceCandidate } from "../lib/calculation-evidence";
 import type { MemoBlock } from "../lib/types";
 import { calculateMemoBlock, describeCalculationBlock, recalculateMemoBlocks } from "../lib/memo-blocks";
 import { KatexFormula, validateLatex } from "./KatexFormula";
@@ -19,12 +20,13 @@ type Props = {
   blocks: MemoBlock[];
   manual?: boolean;
   onChange: (blocks: MemoBlock[]) => void;
+  onEvidence?: (blocks: MemoBlock[], candidate: EvidenceCandidate) => void | boolean;
   onOpenGuide: (insert: (latex: string) => void) => void;
 };
 
 const makeBlockId = (kind: MemoBlock["type"]) => `${kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false, memoKey = "editor", sourceRevision = "" }: Props) {
+export function MemoBlockEditor({ blocks, onChange, onEvidence, onOpenGuide, manual = false, memoKey = "editor", sourceRevision = "" }: Props) {
   const [attempt, setAttempt] = useState<CalculationAttempt>();
   const [baseline, setBaseline] = useState<MemoBlock[]>(blocks);
   const [baselineKnown, setBaselineKnown] = useState(() => !isManualMemo(blocks) || staleBlockIds(blocks).size === 0);
@@ -37,7 +39,7 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false,
   const statusReport = buildCalculationStatus(blocks, { baseline, baselineKnown, attempt });
   const { trial, trialMessage, validTrial, pendingTrial, preview, applyTrial, invalidateTrial, clearTrial } = useCalculationTrial({
     blocks, memoKey, sourceRevision, baseline, baselineKnown,
-    onApply: result => { onChange(result.blocks); setAttempt(result); setBaseline(result.blocks); setBaselineKnown(true); trialButton.current?.focus(); },
+    onApply: result => { if (result.evidence?.length && onEvidence) { if (onEvidence(result.blocks, makeEvidenceCandidate(result.blocks, result.evidence)) === false) return false; } else onChange(result.blocks); setAttempt(result); setBaseline(result.blocks); setBaselineKnown(true); trialButton.current?.focus(); },
   });
   const locate = (id: string) => {
     const card = cards.current.get(id);
@@ -66,8 +68,9 @@ export function MemoBlockEditor({ blocks, onChange, onOpenGuide, manual = false,
   };
   const recalculate = () => {
     clearTrial();
-    const result = recalculateReferenceMemo(blocks);
-    onChange(result.blocks);
+    const result = evaluateReferenceMemo(blocks);
+    if (result.success && result.evidence?.length && onEvidence) { if (onEvidence(result.blocks, makeEvidenceCandidate(result.blocks, result.evidence)) === false) return; }
+    else onChange(result.blocks);
     setAttempt({ ...result });
     if (result.success) {
       setBaseline(result.blocks);

@@ -1,5 +1,60 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 10:23 JST: テーマ変更の保存境界をGUIで明示（Issue #51 / PR #52）
+
+- HEAD `afd60efd863a4399490d74fec5a6d262e612b9ff` の正式CI `39703103323` は事前工程成功・GUI5条件成功/ WebKit375失敗。追加した未保存表示/遅延ロック/離脱guardの回帰は全6条件で成功した。手元desktop/mobile390も各86検査成功。
+- 失敗traceの保存JSONを独立に比較し、レポート表示前後の唯一の差は直前に操作した `settings.theme` の light→dark と確認。notes/history/根拠記録等は完全一致した。DOMのテーマ反映だけを待って採った比較基点に、明示テーマ変更の非同期保存が遅着していた。
+- 読取専用操作の計測区間より前で、指定テーマが保存済みになったことを明示確認する。計測区間内に保存待機を入れず、全文raw比較/書込み回数/timeout/6条件を維持する。同種の意図的変更と比較基点の境界をシナリオ全体で監査する。製品コードを変更するものではない。
+- 全体監査で正常theme/識別表示/panel選択、library登録・undo、同式再計算の旧ID誤一致も補完した。保護中の意図的失敗操作、即時storage getter、原本不変/ゼロwrite検査は維持。構文/26契約成功、独立レビュー阻害なし。検査総数516・横幅502・画像予算は不変。
+- 監査で追加した通常電卓のnewID必須条件は、既存の同式2秒以内重複抑止を見落とした試験側の誤りだった。手元desktop/mobile375がその条件で失敗し、製品は変更せず元の式/表示値/内部数値確認とpending解除へ修正した。根拠スナップショットの同式追記とは別の仕様であり、sleepで回避しない。他のnewID確認5箇所は直前成功式が別式であることを再監査した。
+- 最終HEADの正式CI/成果物と独立レビュー結果はPR本文へ実測記録する。失敗を成功扱いせず、Draftのまま再検証する。
+
+
+## 2026-10-22 09:55 JST: 非同期保存待ちの離脱回帰を修正（Issue #51 / PR #52）
+
+- HEAD `e4b4d9b89ee6f3398a7f00adf7527770fef09ab7` の正式CI `39698976503` は全工程成功（929単体、26契約、510GUI/502横幅/各754touch、PNG114/trace0、全SHA一致）。Ready切替後の同一HEAD CI `39700993461` では5条件成功、desktop登録式draftの即時reloadで直前入力へ戻る回帰を検出し、Draftへ戻した。
+- 入力開始から約20msでreloadしたtraceと独立レビューに基づき、共有lock追加で広がった未保存喪失窓と判断した。単なるtest同期問題という扱いを訂正する。旧状態の遅延書込み自体は取消/最新data照合で抑止するが、未保存中の離脱を黙って許可しないため、中央の未保存表示とbeforeunload警告を追加する。
+- 保存成功を先取りする通知を避け、保存失敗/新しい入力がある場合は未保存を維持する。離脱時にロックを迂回して書かない。モバイルや強制終了で警告/保存が必ず成立するとは保証しない。
+- 補完後の931単体/41files、26 CI契約、lint（既存warning1）、型検査、通常/Pages buildが成功。独立レビュー51関連単体＋26契約、阻害指摘なし。常設の短い状態表示を登録式の両dialogにも設け、切替時に配置が動かないようにした。
+- 遅延ロック下の連続入力、最新値の保存、原本不変、離脱ガード、保存失敗を単体/GUIで検証する。既存の再読込試験は実保存した対象入力を確認後にreloadし、期待値は変えない。本追補の件数・正式CI結果・最終HEADは検証後にPR本文へ記録する。
+
+
+## 2026-10-22 09:18 JST: 保存完了・比較図切替のGUI同期を補完（Issue #51 / PR #52）
+
+- 文書追記HEAD `17acbfea0afe05c70fedb10a9d00d09866868219` の正式CI `39697349680` は、単体929件・CI契約26件・lint・型検査・両ビルド成功、GUI4条件成功/2条件失敗。成功扱いせず、失敗traceを独立に確認した。
+- desktopは明示的な第2メモ保存の完了前に試験がstorage比較基点を採取したため、再読込後の正しい保存済み原本との差を誤判定。保存成功後のdialog閉鎖を観測してから比較基点を取る。
+- Chromium mobile390は通常図の初期描画によるレイアウト変動中に比較ボタンへtouchし、切替が成立しないまま比較SVGを待っていた。通常図準備完了後のtouchと比較選択状態を確認する。図の描画・保存製品コード、最終SVG/原本不変assertion、timeout、6条件、画像予算は変えない。
+- 既存の全6条件成功記録 `39695357161` はその実装HEADの実測であり、本追記後HEADの成功を意味しない。本変更の最終HEAD、独立レビュー、正式CI結果はPR本文に実測で記録する。
+
+
+## 2026-10-22 (JST): PR #52 根拠スナップショット正式6条件成功
+- [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52)、実装・同期修正HEAD `dd298ab071cefe086f94f99c973d8f2c3fdd4de7` の [CI 39695357161](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39695357161) が全工程成功。追加91件を含む929単体/41files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages build成功。
+- 全6条件のexpected/served/actual SHA一致、errors=[]。510 GUI検査、502横幅checkpoint、モバイル4条件それぞれ754touch。実使用値の確定保存、旧記録保持、同式再計算の新ID、preview/draft/失敗/取消での不追記、容量/保存競合拒否、原本読取レポートと明示再現検証を確認した。前述の非同期保存baseline競合も最終差分で解消。
+- [artifact 12391262641](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39695357161/artifacts/12391262641): ZIP33,281,240 bytes、SHA256 `f3169bceb04ac9c78e2f3e392c564bc2ce326cdf12803b1939344ddc4d37bf28`。PNG114枚32,393,226 bytes、成功trace0、GUI769.339秒。代表375px WebKitダーク拡大画面を確認。6条件/timeout/画像予算/worker数は変更していない。
+- 独立レビュー: 25逆境テストを含む保存・UI・レポートの検証と追補49件、最終GUI同期差分のレビューを完了し阻害指摘なし。保存された記録の範囲で式・実使用内部値・参照元・結果・順序を追跡できるが、履歴なし過去値の復元、暗号学的真正性、数学的証明は保証しない。
+- ローカルWebKitはOSライブラリ不足のまま、正式CIの両条件成功で補完。実iPhone Safari/VoiceOver、OS物理保存、旧版/外部非協調writerとの完全排他、Memo Nexus実画面は未検証。既存audit指摘は依存変更なしで未解消。上限100回/500,000 bytes到達時は黙って削除せず拒否する。
+- この追記は文書のみ。記録commit自身の最終HEADとReady切替後の同一HEADの正式CIも別途確認し、PR本文と完了報告へ実在URLを記す。mainへマージしない。
+
+## 2026-10-22 (JST): 非同期保存後のGUI比較基点を厳密化
+- [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52) の HEAD `6cd35cf990b16229db44309cae6fb54cd13f4e77` はローカルChromium4条件339checks/334geometry/mobile各754touch成功。WebKitはOSライブラリ不足で起動不可。
+- 同HEADの正式 [CI 39693381832](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39693381832) は単体929/契約26/lint/型/両build成功、WebKit2条件171checks成功。一方Chromium4条件は、直前の明示計算の非同期保存が不変比較基点の取得後に完了するテスト競合で失敗した。全体成功とは扱わない。旧HEADのCI 39692397713は新HEADに伴い自動cancelled。
+- 保存完了を待たず取得していた5か所を監査し、明示計算前の履歴IDから変化し、かつ正確な式と内部値が一致した時だけ比較基点を採る。独立レビューで同式の旧record即一致を検出し、新ID条件を補強。URL/不完全式/編集操作のfull deepEqualは維持し、no-write判定自体には待機を追加しない。
+- 途中のテスト案はUnicode入力の保存原式「12 × 2」をASCII「12 * 2」と誤期待して失敗したため、元入力方式ごとの正確な式へ修正。製品の変換規則・計算処理は変更しない。契約26件と構文検査成功。最終の新ID条件付き差分は次の正式CIで検証し、未実施を成功扱いしない。
+
+## 2026-10-22 (JST): 根拠記録GUIで見つかった保存保護の回帰修正
+- [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52)をDraft作成。初回HEAD `feb868e8796ed3ee1bb57dcf8c524de06e5e8255` はCLI pushの認証経路不足のためGitHub接続で同一検証tree `fe077f4bee5b8ccdcbec089d692285df49255453` を公開した。
+- 固定HEADのローカルGUIで255checks成功（3条件は新規根拠6checks成功）後、起動後に壊れた原本へ差し替わったとき一般競合通知が既存復旧UIを隠す回帰を検出。原本の構造保護を優先し、autosave/storageevent/明示保存の3経路で元rawを変更しないテストを追加した。
+- 通常電卓の非同期Web Locks保存が完了する前に後続操作の不変比較基点を採るテスト競合も検出。直前の意図した式と正確な値が保存されるまでpollし、その後の履歴全体deepEqualを維持する。期待値や6条件を緩めていない。ローカルWebKit2条件は既存OSライブラリ不足で起動不可、成功と扱わない。初回browser既定path不足は既存browser path指定で解消し、新規導入はしていない。
+- 追加91件を含む929単体/41files成功。独立追補レビュー49件と26 CI契約成功、阻害指摘なし。初回正式[CI 39692397713](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39692397713)と修正後GUIの結果は確認中。後続の実測結果を追記する。
+
+## 2026-10-22 (JST): 計算確定時の根拠スナップショット
+- 調査基点: 最新 main `bf09f8d9398f79046bafbf20aeb30a4a6185f749`、PR #50 mergeを確認し、clean treeから `feat/calculation-evidence-snapshots` を作成。[Issue #51](https://github.com/tetsujisugimori-coder/calculator-memo/issues/51)。PR未作成。AGENTS、README、LOG、関連設計/保存形式/Actionsを実読。江戸弁の関連指針全文は今回参照できておらず、確認済みとはしない。
+- 従来は現在値だけを表示し、当時使用値は確認不能だった。新方針は実評価で読んだ旧変数/IDの内部値を観測し、全件成功候補を明示保存の成功後だけ記録する。試算preview/draft/失敗/rollbackでは確定記録を追加せず、同式再計算は別IDで追記。過去記録を改変せず、既存履歴なしの値を推定しない。設計は実装前に提示し [根拠記録設計](docs/agent/calculation-evidence.md) に記録した。
+- 任意のnote単位version1、トップ保存version不変。最大100回/500,000 UTF-8 bytes、上限時は保存拒否し黙って削除しない。原本文字列照合・現行writerのWeb Locks直列化・保存中編集禁止・不確定読戻しでの再送停止を追加。完全CAS/非協調writer/物理flushは保証しない。未知履歴は非破壊保護する。
+- Markdownは現在値と保存記録を分離し、内部値/表示値、実使用元、本文順/実行順、日時を出す。通常出力は再計算なし。明示ボタンのみ同じ評価器で記録を再現検証し、暗号学的真正性/数学的証明は主張しない。Memo Nexus直接通信/PDF/AI生成は対象外。
+- ローカル検証: 追加88件を含む926単体/41files成功。26 CI契約・lint（既存warning1）・型・通常/Pages buildも成功。6条件GUIの回帰を追加したが、正式CIは未実行。独立レビューで実入力・候補整合・129以上の旧block再現・保存境界を確認し、指摘を修正。独立25件を含む保存/UI/レポート68件の最終再検証も成功し、阻害指摘なし。
+- 未検証: 実iPhone Safari/VoiceOver、OS保存完了、非協調writer完全排他。既存依存のaudit指摘は今回依存を変更せず、解消したとは主張しない。最終HEADと実在PR/CI結果は検証後に追記する。mainへはマージしない。
+
 ## 2026-10-22 (JST): PR #50 初回正式CI・根拠情報6条件成功
 - [PR #50](https://github.com/tetsujisugimori-coder/calculator-memo/pull/50)、実装HEAD `8cdebf434b2bb79ed17fac91b34a6123bc22ec78` の [CI 39680436913](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39680436913) が全工程成功。追加22件を含む838単体/34files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages buildを確認。
 - 6条件のexpected/served/actual SHA一致、errors=[]。474 GUI検査、490横幅checkpoint、モバイル4条件それぞれ729touch。参照元内部/丸め値、直接参照と未使用mapping、旧変数再代入候補、参照元変更後の古い結果、使用値確認不能、保存不変・draft/試算不混入、全文確認/copy/downloadを確認。独立レビューの阻害指摘なし。

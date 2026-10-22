@@ -80,6 +80,8 @@ async function exerciseFormulaLibrary(prefix) {
   await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
   await expect(dialog().getByRole("region", { name: "選択した登録式" })).toContainText("price、quantity");
   await expect(dialog()).toContainText("計算結果：未計算");
+  await expect.poll(async () => (await storage()).formulaLibrary?.entries[0]).toMatchObject({ title: "Synthetic formula", expression: "price * quantity" });
+  await expect(dialog().getByTestId("library-unsaved-changes")).toHaveCount(0);
   const original = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")).formulaLibrary.entries[0]);
   await activate(dialog().getByRole("button", { name: "登録式を編集", exact: true }));
   await dialog().getByLabel("登録する計算式", { exact: true }).fill("x=2");
@@ -114,6 +116,11 @@ async function exerciseFormulaLibrary(prefix) {
   await expect(dialog().getByRole("button", { name: "Synthetic renamed formula", exact: true })).toHaveCount(0);
   await activate(dialog().getByRole("button", { name: "直前の削除を取り消す", exact: true }));
   await expect(dialog()).toContainText("price * quantity + tax");
+  await expect.poll(async () => {
+    const library = (await storage()).formulaLibrary;
+    return { selectedId: library?.selectedId, count: library?.entries.length, restored: library?.entries.find(entry => entry.id === original.id) };
+  }).toMatchObject({ selectedId: original.id, count: 2, restored: { id: original.id, title: "Synthetic renamed formula", expression: "price * quantity + tax" } });
+  await expect(dialog().getByTestId("library-unsaved-changes")).toHaveCount(0);
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
   await page.reload();
   await open();
@@ -126,6 +133,8 @@ async function exerciseFormulaLibrary(prefix) {
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
   for (const mode of ["dark", "light"]) {
     await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(mode);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(mode);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
     await open();
     await activate(dialog().getByRole("button", { name: "長い登録名".repeat(20), exact: true }));
@@ -174,6 +183,8 @@ async function exerciseIdentification(prefix) {
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
   for (const mode of ["labels", "color", "none"]) {
     await activate(settings); await settings.selectOption(mode);
+    await expect.poll(async () => (await storage()).settings.identificationMode).toBe(mode);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(shell).toHaveAttribute("data-identification", mode);
     await page.setViewportSize({width: currentScenario.width <= 720 ? 1000 : 375, height: currentScenario.height});
     await expect(shell).toHaveAttribute("data-identification", mode);
@@ -183,6 +194,8 @@ async function exerciseIdentification(prefix) {
     assert.equal(variableColor === "rgba(0, 0, 0, 0)", mode === "none");
     for (const theme of ["light", "dark"]) {
       await page.getByRole("combobox", {name:"テーマ",exact:true}).selectOption(theme);
+      await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+      await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
       await open();
       assert.equal(await labelPosition(), mode === "labels" ? "static" : "absolute");
       const color = await dialog().locator(".identity-registered").first().evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -275,6 +288,8 @@ async function exerciseHeader(prefix) {
   const theme = page.getByRole("combobox", { name: "テーマ", exact: true });
   await activate(theme);
   await theme.selectOption("dark");
+  await expect.poll(async () => (await storage()).settings.theme).toBe("dark");
+  await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   await page.keyboard.press("Escape"); // dismiss a native select popup where present
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect.poll(storage).toMatchObject({ settings: { theme: "dark" } });
@@ -283,8 +298,12 @@ async function exerciseHeader(prefix) {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await assertHeaderFit("dark-theme");
   await theme.selectOption("system");
+  await expect.poll(async () => (await storage()).settings.theme).toBe("system");
+  await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   await expect.poll(storage).toMatchObject({ settings: { theme: "system" } });
   await theme.selectOption("light");
+  await expect.poll(async () => (await storage()).settings.theme).toBe("light");
+  await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
   await assertHeaderFit("page-scrolled");
@@ -375,10 +394,21 @@ async function selectPanel(panel) {
   if (await tab.isVisible()) {
     await activate(tab);
     await expect(tab).toHaveAttribute("aria-selected", "true");
+    // This helper performs an intentional persisted setting change. Complete it
+    // before callers begin a no-write measurement; storage() itself stays immediate.
+    await expect.poll(async () => (await storage()).settings.activePanel).toBe(panel);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   }
   await expect(page.locator("#" + panel + "-panel")).toBeVisible();
 }
 async function storage() { return page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data"))); }
+// Used only after an intentional successful calculation, never by no-write assertions.
+async function waitForStoredCalculation(previousId, expression, result) {
+  await expect.poll(async () => {
+    const latest = (await storage()).history[0];
+    return { isNew: Boolean(latest?.id && latest.id !== previousId), expression: latest?.expression, result: latest?.result };
+  }).toEqual({ isNew: true, expression, result });
+}
 // Run after the existing regressions so their fixed history/memo counts remain unchanged.
 async function exerciseBasicMath(prefix) {
   const input = page.getByRole("textbox", { name: "計算式を入力", exact: true });
@@ -395,7 +425,10 @@ async function exerciseBasicMath(prefix) {
     assert.deepEqual((await storage()).history, before, "Typing does not create history");
     await activate(button("計算する"));
     await expect(result).toHaveText(text);
+    // Identical calculations within two seconds legitimately reuse the history
+    // entry. Await any pending save without requiring a new record for that case.
     await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression, resultText: text });
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     near((await storage()).history[0].result, value, expression);
     await expect(button("単独計算メモを作成")).toBeEnabled();
   }
@@ -700,9 +733,45 @@ async function exerciseFormulaExecution(prefix) {
   await input("divisor").fill("3"); await run(); await expect(result().locator("strong")).toHaveText("4");
   await input("amount").fill("9007199254740992"); await run();
   await expect(execution().getByRole("alert")).toContainText("桁数");
-  await input("amount").fill("-"); await page.reload(); await open("Synthetic division");
+  const executionInputs = async () => (await storage()).formulaExecutions.find(draft => draft.formulaId === "exec-division")?.inputs;
+  await expect.poll(executionInputs).toEqual({ amount: "9007199254740992", divisor: "3" });
+  const pendingNotice = execution().getByTestId("execution-unsaved-changes");
+  await expect(pendingNotice).toHaveCount(0);
+  const persistedBeforePendingDraft = await storage();
+  // Synthetic delay controls only this test's authorized write boundary. It does
+  // not claim to exercise a native browser dismissal dialog or OS persistence.
+  await page.evaluate(() => {
+    const locks = navigator.locks;
+    if (!locks?.request) throw new Error("This GUI context requires the Web Locks API");
+    const request = locks.request.bind(locks);
+    let release;
+    const gate = new Promise(resolve => { release = resolve; });
+    window.__guiHeldDraftWrites = 0;
+    locks.request = (...args) => {
+      window.__guiHeldDraftWrites += 1;
+      return gate.then(() => request(...args));
+    };
+    window.__guiReleaseDraftWrites = () => { locks.request = request; release(); };
+  });
+  await input("amount").fill("-0");
+  await expect.poll(() => page.evaluate(() => window.__guiHeldDraftWrites)).toBeGreaterThan(0);
+  await input("amount").fill("-");
+  await expect(pendingNotice).toBeVisible();
+  assert.deepEqual(await storage(), persistedBeforePendingDraft, "Held draft writes must not alter persisted data");
+  const dispatchLeave = () => page.evaluate(() => {
+    const event = new Event("beforeunload", { cancelable: true });
+    const allowed = window.dispatchEvent(event);
+    return { allowed, prevented: event.defaultPrevented };
+  });
+  assert.deepEqual(await dispatchLeave(), { allowed: false, prevented: true }, "Pending draft requests a navigation warning");
+  await page.evaluate(() => window.__guiReleaseDraftWrites());
+  await expect.poll(executionInputs).toEqual({ amount: "-", divisor: "3" });
+  await expect(pendingNotice).toHaveCount(0);
+  assert.deepEqual(await dispatchLeave(), { allowed: true, prevented: false }, "Persisted latest draft clears navigation guard");
+  await page.reload(); await open("Synthetic division");
   await expect(input("amount")).toHaveValue("-"); await expect(input("divisor")).toHaveValue("3");
   await expect(result()).toHaveCount(0); await expect(execution()).toContainText("未確定");
+  await passed(prefix + ": delayed draft writes preserve storage, warn before leaving, persist latest input and restore after reload");
   await input("amount").fill("15"); await run(); await expect(result().locator("strong")).toHaveText("5");
   await closeExecution(); await open("Synthetic root"); await input("value").fill("-1");
   await run(); await expect(execution().getByRole("alert")).toBeVisible();
@@ -740,6 +809,8 @@ async function exerciseFormulaExecution(prefix) {
   await activate(library().getByRole("button", {name:"閉じる",exact:true}));
   for (const theme of ["light", "dark"]) {
     await page.getByRole("combobox", {name:"テーマ",exact:true}).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open("Synthetic division");
     await input("amount").fill("15"); await input("divisor").fill("3"); await run();
     await activate(execution().getByRole("button", {name:"登録式の実行の説明",exact:true}));
@@ -835,6 +906,11 @@ async function exerciseVariables(prefix) {
   await add("price = 2", "2");
   await add("price * 5", "10");
   await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  // Explicit save completes asynchronously; baseline only the persisted second scope.
+  await expect(dialog).toHaveCount(0);
+  await expect.poll(async () => (await storage()).notes.find(note => note.title === "Synthetic isolated variables")?.blocks).toMatchObject([
+    { expression: "price = 2", result: 2 }, { expression: "price * 5", result: 10 },
+  ]);
   const before = (await storage()).notes;
   await page.reload();
   await selectPanel("notes");
@@ -846,6 +922,8 @@ async function exerciseVariables(prefix) {
   const theme = page.getByRole("combobox", { name: "テーマ", exact: true });
   for (const mode of ["dark", "light"]) {
     await theme.selectOption(mode);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(mode);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
     await activate(saved.getByRole("button", { name: "編集", exact: true }));
     await expect(dialog.locator(".calculation-variable").first()).toContainText("変数 price");
@@ -1287,6 +1365,8 @@ async function exerciseCalculationDiagnostics(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open(); await expression(0).fill("5");
     await activate(detailButton(0));
     await page.evaluate(() => document.documentElement.style.fontSize = "200%");
@@ -1534,6 +1614,8 @@ async function exerciseDependencyGraphNavigation(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open(); await page.evaluate(() => document.documentElement.style.fontSize = "200%");
     await activate(graphToggle()); await assertNodeIds(ids);
     await expect(panel().getByRole("button", { name: "図を拡大", exact: true })).toBeVisible();
@@ -1622,7 +1704,13 @@ async function exerciseCalculationTrials(prefix) {
   const openComparison = async () => {
     await activate(dialog.getByText("依存関係の図を開く", { exact: true }));
     await expect(dialog.locator(".dependency-graph-panel")).toHaveAttribute("open", "");
-    await activate(graph().getByRole("button", { name: "変更前後・試算", exact: true }));
+    // Initial Mermaid insertion can move the touch target. Even an empty current
+    // graph has an SVG; wait for that render before switching to the comparison.
+    await expect(graph().locator(".dependency-graph-svg > svg")).toHaveCount(1);
+    await expect(graph()).not.toContainText("図を準備しています…");
+    const comparisonButton = graph().getByRole("button", { name: "変更前後・試算", exact: true });
+    await activate(comparisonButton);
+    await expect(comparisonButton).toHaveAttribute("aria-pressed", "true");
     await expect(graphNode("a")).toBeVisible();
   };
   const trial = async () => {
@@ -1791,6 +1879,8 @@ async function exerciseCalculationTrials(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open(); await input("a").fill("130"); await trial();
     await page.evaluate(() => document.documentElement.style.fontSize = "200%");
     await row("a").scrollIntoViewIfNeeded();
@@ -2042,6 +2132,8 @@ async function exerciseMarkdownReports(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const themeRaw = await raw();
     await openDetail(); await openReport();
@@ -2068,6 +2160,116 @@ async function exerciseMarkdownReports(prefix) {
   assert.equal(await raw(), protectedRaw);
   await closeReport(); await closeDetail();
   await passed(prefix + ": protected unknown source refuses report instead of exporting a lossy or in-memory fallback");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload(); await selectPanel("notes");
+}
+
+// Real UI confirmation boundary: traces originate in evaluation, never injected fixtures.
+async function exerciseCalculationEvidence(prefix) {
+  await stage(prefix + ": calculation-evidence-snapshots");
+  const original = await storage();
+  const at = "2026-10-21T00:00:00Z";
+  const legacy = (id, expression) => ({ id, type: "calculation", evaluationMode: "note-variables", expression,
+    displayExpression: expression, result: null, resultText: "", error: null, evaluationState: { version: 1, status: "stale" } });
+  const note = { id: "evidence-note", type: "plain-calculation", title: "Synthetic evidence", content: "", createdAt: at, updatedAt: at,
+    calculationPolicy: { version: 1, mode: "manual" }, opaque: { keep: "unchanged" }, blocks: [
+      legacy("x-first", "x=10"), legacy("x-early", "x+1"), legacy("x-second", "x=20"), legacy("x-late", "x+1"),
+      { ...legacy("sum", "@{1}+@{2}"), evaluationMode: "block-references", references: { version: 1, entries: [{ slot: 1, blockId: "x-early" }, { slot: 2, blockId: "x-late" }] } },
+    ] };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
+  await page.reload(); await selectPanel("notes");
+  const card = page.locator(".note-card").filter({ hasText: note.title });
+  const editor = () => page.getByRole("dialog", { name: "計算メモを編集", exact: true });
+  const openEditor = () => activate(card.getByRole("button", { name: "編集", exact: true }));
+  const editFirst = value => editor().locator('[data-block-id="x-first"]').getByRole("textbox", { name: "計算式", exact: true }).fill(value);
+  const save = async () => { await activate(editor().getByRole("button", { name: "保存する", exact: true })); await expect(editor()).toHaveCount(0); };
+  const raw = () => page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  const savedNote = async () => (await storage()).notes.find(item => item.id === note.id);
+  const before = await raw();
+  await openEditor(); await activate(editor().getByRole("button", { name: "試算する", exact: true }));
+  await expect(editor().getByRole("region", { name: "試算・差分プレビュー", exact: true })).toContainText("試算は未反映");
+  assert.equal(await raw(), before);
+  await activate(editor().getByRole("button", { name: "キャンセル", exact: true }));
+  assert.equal((await savedNote()).calculationEvidence, undefined);
+  await passed(prefix + ": trial preview and cancelled draft create no persisted calculation evidence");
+
+  await openEditor();
+  await activate(editor().getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await activate(editor().getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await expect(editor()).toContainText("計算根拠の保存待ち: 2件");
+  assert.equal(await raw(), before, "Successful calculations remain unsaved until explicit save");
+  await screenshot(prefix + "-evidence-unsaved-confirmations", currentScenario.width, false);
+  await save();
+  const first = await savedNote();
+  assert.equal(first.calculationEvidence.version, 1);
+  assert.equal(first.calculationEvidence.records.length, 2);
+  assert.notEqual(first.calculationEvidence.records[0].id, first.calculationEvidence.records[1].id);
+  const oldRecords = JSON.stringify(first.calculationEvidence.records);
+  const trace = first.calculationEvidence.records[0].blocks;
+  assert.deepEqual(trace.find(block => block.blockId === "x-early").inputs, [{ kind: "variable", name: "x", sourceBlockId: "x-first", value: "10" }]);
+  assert.deepEqual(trace.find(block => block.blockId === "x-late").inputs, [{ kind: "variable", name: "x", sourceBlockId: "x-second", value: "20" }]);
+  assert.deepEqual(trace.find(block => block.blockId === "sum").inputs.map(input => [input.sourceBlockId, input.value]), [["x-early", "11"], ["x-late", "21"]]);
+  assert.equal(trace.find(block => block.blockId === "sum").result, "32");
+  assert.deepEqual(first.opaque, note.opaque);
+  await passed(prefix + ": repeated successful calculations append distinct saved batches with actual reassignment and ID inputs");
+
+  await openEditor(); await editFirst("x=99"); await save();
+  const changed = await savedNote();
+  assert.equal(JSON.stringify(changed.calculationEvidence.records), oldRecords, "Editing a source never rewrites historical used values");
+  assert.equal(changed.blocks[0].expression, "x=99");
+  assert.equal(changed.blocks[0].result, 10, "No automatic recalculation at manual save");
+  await passed(prefix + ": a saved source edit retains old immutable evidence and old current result without inventing new inputs");
+
+  await activate(card.getByRole("button", { name: "詳細", exact: true }));
+  const detail = () => page.getByRole("dialog", { name: note.title, exact: true });
+  await activate(detail().getByRole("button", { name: "レポート出力", exact: true }));
+  const report = () => page.getByRole("dialog", { name: "計算メモのレポート出力", exact: true });
+  const source = report().getByRole("textbox", { name: "Markdownレポート全文", exact: true });
+  const reportRaw = await raw();
+  const markdown = await source.inputValue();
+  assert.ok(markdown.includes("## 確定根拠の履歴") && markdown.includes("x=99") && markdown.includes("x=10"));
+  assert.ok(markdown.includes("実際に使用した内部数値: 10") && markdown.includes("古い可能性"));
+  await activate(report().getByRole("button", { name: "保存記録を再現検証", exact: true }));
+  await expect(report()).toContainText("2件の保存記録を再現できました");
+  await page.evaluate(() => Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__evidenceCopy = text; } } }));
+  await activate(report().getByRole("button", { name: "Markdown全文をコピー", exact: true }));
+  await expect(report()).toContainText("Markdown全文をコピーしました");
+  assert.equal(await page.evaluate(() => window.__evidenceCopy), markdown);
+  const downloaded = page.waitForEvent("download");
+  await activate(report().getByRole("button", { name: ".mdをダウンロード", exact: true }));
+  const download = await downloaded;
+  assert.deepEqual(await readFile(await download.path()), Buffer.from(markdown, "utf8"));
+  await screenshot(prefix + "-evidence-historical-report", currentScenario.width, false);
+  assert.equal(await raw(), reportRaw, "Report and explicit replay verification leave saved data unchanged");
+  assert.equal(await source.inputValue(), markdown);
+  await activate(report().getByRole("button", { name: "閉じる", exact: true }).last());
+  await activate(detail().getByRole("button", { name: "閉じる", exact: true }).last());
+  await passed(prefix + ": historical report replay copy and download preserve original bytes and distinguish current stale values");
+
+  await openEditor(); await editFirst("x=1/0");
+  await activate(editor().getByRole("button", { name: "メモ全体を再計算", exact: true }));
+  await expect(editor()).toContainText("計算根拠の保存待ち: 0件");
+  await save();
+  const failed = await savedNote();
+  assert.equal(JSON.stringify(failed.calculationEvidence.records), oldRecords);
+  assert.equal(failed.blocks.find(block => block.id === "sum").result, 32, "Failed batch preserves prior committed result");
+  await passed(prefix + ": failed recalculation and rollback append no evidence and preserve prior saved history");
+
+  await openEditor(); await editFirst("x=99");
+  await activate(editor().getByRole("button", { name: "試算する", exact: true }));
+  await expect(editor().getByRole("region", { name: "試算・差分プレビュー", exact: true })).toContainText("試算は未反映");
+  assert.equal((await savedNote()).calculationEvidence.records.length, 2);
+  await activate(editor().getByRole("button", { name: "結果を反映", exact: true }));
+  await expect(editor()).toContainText("計算根拠の保存待ち: 1件");
+  assert.equal((await savedNote()).calculationEvidence.records.length, 2);
+  await save();
+  const applied = await savedNote();
+  assert.equal(applied.calculationEvidence.records.length, 3);
+  assert.equal(JSON.stringify(applied.calculationEvidence.records.slice(0, 2)), oldRecords);
+  const latest = applied.calculationEvidence.records[2].blocks;
+  assert.equal(latest.find(block => block.blockId === "x-early").inputs[0].value, "99");
+  assert.equal(latest.find(block => block.blockId === "sum").result, "121");
+  await passed(prefix + ": only successful explicit trial application followed by save appends its actual new execution evidence");
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload(); await selectPanel("notes");
 }
@@ -2353,9 +2555,12 @@ async function exercise(scenario) {
   await expect(page.locator(".lcd-result")).toHaveText("-3");
   await activate(button("現在の数値を消去"));
   await page.keyboard.type("0.5");
+  const beforeDecimalCalculationId = (await storage()).history[0]?.id;
   await page.keyboard.press("Enter");
   await expect(page.locator(".lcd-result")).toHaveText("11.5");
   await screenshot(prefix + "-trailing-number-edit");
+  // Settle the preceding explicit calculation before the URL no-write baseline.
+  await waitForStoredCalculation(beforeDecimalCalculationId, "12-0.5", 11.5);
   // Memo-Nexus URL input is still editable and does not evaluate/store automatically.
   const beforeUrl = await storage();
   await page.goto(base + "?expr=" + encodeURIComponent("12--34"));
@@ -2371,8 +2576,10 @@ async function exercise(scenario) {
   async function confirmed15() {
     await activate(button("すべて消去"));
     await page.keyboard.type("12+3");
+    const previousId = (await storage()).history[0]?.id;
     await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText("15");
+    await waitForStoredCalculation(previousId, "12+3", 15);
     await expect(button("単独計算メモを作成")).toBeEnabled();
   }
   async function noteDisabled() {
@@ -2452,6 +2659,11 @@ async function exercise(scenario) {
     await activate(button("すべて消去"));
     await page.keyboard.type((negative ? "-" : "") + "1/10000000=");
     await expect(page.locator(".lcd-result")).toHaveText(negative ? "-0.0000001" : "0.0000001");
+    // Web Locks persistence is asynchronous: settle the intentional calculation
+    // before proving that the following operator-only edit does not save history.
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject({
+      expression: (negative ? "-" : "") + "1/10000000", result: negative ? -1e-7 : 1e-7,
+    });
     const historyBeforeChain = (await storage()).history;
     await activate(button("掛ける"));
     await noteDisabled();
@@ -2488,7 +2700,7 @@ async function exercise(scenario) {
   await expect(page.locator(".lcd-expression")).toHaveText("0");
   await noteDisabled();
   const beforeImported = await storage();
-  for (const imported of ["12 * - 34 ", "12 × − 34 "]) {
+  for (const [imported, edited] of [["12 * - 34 ", "12 * 2"], ["12 × − 34 ", "12 × 2"]]) {
     await page.goto(base + "?expr=" + encodeURIComponent(imported));
     await expect(page.locator(".lcd-result")).toHaveText("-34");
     assert.deepEqual((await storage()).history, beforeImported.history);
@@ -2500,8 +2712,10 @@ async function exercise(scenario) {
     await noteDisabled();
     await activate(button("現在の数値を消去"));
     await activate(button("2"));
+    const beforeImportedCalculationId = (await storage()).history[0]?.id;
     await activate(button("計算する"));
     await expect(page.locator(".lcd-result")).toHaveText("24");
+    await waitForStoredCalculation(beforeImportedCalculationId, edited, 24);
     // A new URL navigation must preserve all stored items, with no automatic history.
     beforeImported.history = (await storage()).history;
   }
@@ -2513,8 +2727,8 @@ async function exercise(scenario) {
   await passed(prefix + ": positive/negative tiny result chain, editable decimal, exact history/memo payload and imported whitespace/Unicode signs");
   await stage(prefix + ": parentheses-percent-and-error-boundaries");
   for (const sample of [
-    { expression: "(2+3", correction: ")", result: "5" },
-    { expression: "12+", correction: "*2", result: "24" },
+    { expression: "(2+3", correction: ")", result: "5", savedExpression: "(2+3)" },
+    { expression: "12+", correction: "*2", result: "24", savedExpression: "12*2" },
   ]) {
     await activate(button("すべて消去"));
     const snapshot = await storage();
@@ -2522,8 +2736,10 @@ async function exercise(scenario) {
     await expect(page.locator(".lcd-result")).toHaveText("Error");
     await noteDisabled();
     assert.deepEqual((await storage()).history, snapshot.history);
+    const beforeCorrectionId = (await storage()).history[0]?.id;
     await page.keyboard.type(sample.correction + "=");
     await expect(page.locator(".lcd-result")).toHaveText(sample.result);
+    await waitForStoredCalculation(beforeCorrectionId, sample.savedExpression, Number(sample.result));
   }
   await page.keyboard.type("(50+50)="); // Left parenthesis starts fresh after equals.
   await expect(page.locator(".lcd-result")).toHaveText("100");
@@ -2535,8 +2751,10 @@ async function exercise(scenario) {
   await noteDisabled();
   await page.keyboard.type("=");
   await expect(page.locator(".lcd-result")).toHaveText("1");
+  const beforeFinalCalculationId = (await storage()).history[0]?.id;
   await page.keyboard.type("+2=");
   await expect(page.locator(".lcd-result")).toHaveText("3");
+  await waitForStoredCalculation(beforeFinalCalculationId, "1+2", 3);
   const beforeFinalReload = await storage();
   await page.goto(base);
   await selectPanel("notes");
@@ -2557,6 +2775,7 @@ async function exercise(scenario) {
   await exerciseCalculationTrials(prefix);
   await exerciseNestedPercent(prefix);
   await exerciseMarkdownReports(prefix);
+  await exerciseCalculationEvidence(prefix);
   await exerciseStorageProtection(prefix);
   assert.deepEqual(browserErrors, [], "Browser errors, HTTP errors, or unexpected external requests");
   await passed(prefix + ": zero browser/runtime/network errors");

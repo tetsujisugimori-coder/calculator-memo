@@ -19,6 +19,8 @@ These are explicitly configured browser contexts, not certified device models. R
 
 Each scenario actively exercises:
 
+- Calculation evidence: preview/cancel cannot persist records; two explicit recalculations append two batches only after save; actual legacy/ID inputs, old records after source edits, failed rollback, explicit trial apply and save, report copy/download and read-only reproduction verification. Existing six engines/viewports and screenshot/trace budgets are unchanged.
+
 - Header guide text stays on one line inside its button; wordmark/actions fit the header and viewport without overlap, with unobstructed hit-test centers
 - Guide and actual native theme select have at least 44px touch height; the guide opens after activation, with search/category/scroll/close checks; the native select receives a real click/tap before programmatic option selection and theme state/persistence checks
 - Sticky header controls remain reachable after page scrolling and guide reopen/close; Chromium desktop and WebKit 375 additionally probe 320/360/414/540/720/721px header geometry
@@ -372,3 +374,17 @@ activations per mobile context. No new browser activations or success PNGs are
 added: the six contexts, 114 representative PNGs, zero exported success traces,
 and all existing acceptance checks remain. These are expected counts, not a
 claim of execution; actual results are recorded in LOG and exact-HEAD CI.
+
+
+## Pending persistence navigation regression
+
+One additional check per context holds a synthetic Web Locks write boundary while
+two consecutive registered-formula draft edits occur. It checks the pending notice,
+unchanged persisted data, and cancellation of a synthetic cancelable beforeunload
+event. After releasing the write, the exact latest inputs must be persisted and the
+notice/guard clear before a real browser reload verifies restoration. This checks
+the application's guard, not a native leave-page dialog or OS durability.
+Expected totals are 516 acceptance checks and 502 geometry checkpoints; the six
+contexts, 754 touch activations per mobile context, 114 representative PNGs, two
+workers and zero exported success traces remain unchanged. Execution results must
+still be established by the exact-HEAD CI, not inferred from these expectations.

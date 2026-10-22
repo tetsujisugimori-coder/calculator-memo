@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { scenarios } from './scenario-config.mjs';
-const counts = [79, 78, 79, 79, 79, 80];
-const checkpoints = [83, 81, 81, 81, 81, 83];
+const counts = [86, 85, 86, 86, 86, 87];
+const checkpoints = [85, 83, 83, 83, 83, 85];
 /** Validate before a successful worker discards its live trace, and again when aggregating. */
 export function validateScenarioCoverage(record, expectedSha, requireSuccess = true) {
   assert.match(expectedSha, /^[0-9a-f]{40}$/);
@@ -22,7 +22,7 @@ export function validateScenarioCoverage(record, expectedSha, requireSuccess = t
     assert.equal(record.screenshotCheckpoints.length, checkpoints[index], 'All historical screenshot geometry checkpoints must execute');
     assert.equal(new Set(record.screenshotCheckpoints.map(check => check.name)).size, checkpoints[index], "Duplicate geometry checkpoint");
     assert.ok(record.screenshotCheckpoints.every(check => check.horizontalFit === 'passed'));
-    if (observed.hasTouch) assert.equal(observed.touchActivations, 729);
+    if (observed.hasTouch) assert.equal(observed.touchActivations, 754);
   return observed.id;
 }
 /** Fail closed: exit codes alone cannot certify complete, correctly identified coverage. */

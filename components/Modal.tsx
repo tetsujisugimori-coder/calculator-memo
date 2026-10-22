@@ -8,7 +8,7 @@ function isTopModal(token: symbol): boolean {
   return modalStack.at(-1) === token;
 }
 
-export function Modal({ title, onClose, children, wide = false }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+export function Modal({ title, onClose, children, wide = false, closeDisabled = false }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean; closeDisabled?: boolean }) {
   const titleId = `${useId()}-modal-title`;
   const dialogRef = useRef<HTMLDivElement>(null);
   const restoreFocus = useRef<HTMLElement | null>(null);
@@ -16,8 +16,8 @@ export function Modal({ title, onClose, children, wide = false }: { title: strin
   const modalToken = useRef(Symbol("modal"));
 
   useEffect(() => {
-    closeRef.current = onClose;
-  }, [onClose]);
+    closeRef.current = closeDisabled ? () => undefined : onClose;
+  }, [onClose, closeDisabled]);
 
   useEffect(() => {
     const token = modalToken.current;
@@ -52,11 +52,11 @@ export function Modal({ title, onClose, children, wide = false }: { title: strin
   }, []);
 
   return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="modal-backdrop" onMouseDown={(e) => !closeDisabled && e.target === e.currentTarget && onClose()}>
       <div className={`modal ${wide ? "modal-wide" : ""}`} role="dialog" aria-modal="true" aria-labelledby={titleId} ref={dialogRef}>
         <header className="modal-header">
           <div><span className="eyebrow">CALCULATION MEMO</span><h2 id={titleId}>{title}</h2></div>
-          <button className="icon-button" onClick={onClose} aria-label="閉じる">×</button>
+          <button className="icon-button" disabled={closeDisabled} onClick={onClose} aria-label="閉じる">×</button>
         </header>
         <div className="modal-content">{children}</div>
       </div>

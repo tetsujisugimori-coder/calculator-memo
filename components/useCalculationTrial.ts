@@ -4,7 +4,7 @@ import { applyCalculationTrial, createCalculationTrial, trialMatches, trialSnaps
 import type { MemoBlock } from '../lib/types';
 export function useCalculationTrial({ blocks, memoKey, sourceRevision, baseline, baselineKnown, onApply }: {
   blocks: MemoBlock[]; memoKey: string; sourceRevision: string; baseline: MemoBlock[]; baselineKnown: boolean;
-  onApply: (result: CalculationTrial['evaluation']) => void;
+  onApply: (result: CalculationTrial['evaluation']) => void | boolean;
 }) {
   const applied = useRef<CalculationTrial>(undefined);
   const [trial, setTrial] = useState<CalculationTrial>();
@@ -48,9 +48,9 @@ export function useCalculationTrial({ blocks, memoKey, sourceRevision, baseline,
     if (!trial || applied.current === trial) return;
     const result = applyCalculationTrial(trial, live.current.blocks, live.current.scopeKey, live.current.revision);
     if (!result.success) { setTrialMessage(result.message); return; }
+    if (onApply(result.evaluation) === false) { setTrialMessage("根拠候補の上限などにより反映を停止しました。編集結果は変更していません。"); return; }
     applied.current = trial;
     invalidateTrial();
-    onApply(result.evaluation);
     setTrial(undefined); setTrialMessage("試算結果を編集内容へ一括反映しました。永続保存は「保存する」で行います。");
   };
   const clearTrial = () => { invalidateTrial(); setTrial(undefined); };
