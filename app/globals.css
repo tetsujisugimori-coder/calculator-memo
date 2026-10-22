@@ -461,3 +461,22 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .markdown-report textarea { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; resize: vertical; white-space: pre-wrap; overflow-wrap: anywhere; padding: .75rem; background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
 .report-detail-actions { flex-wrap: wrap; }
 .report-detail-actions button { height: auto; padding-top: .6rem; padding-bottom: .6rem; overflow-wrap: anywhere; max-width: 100%; }
+
+/* Saved history comparison is intentionally separate from editable trial preview. */
+.saved-evidence select { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); padding: .5rem; }
+.saved-evidence details { min-width: 0; border: 1px solid var(--line); padding: .65rem; border-radius: .5rem; }
+.saved-evidence summary { cursor: pointer; min-height: 44px; overflow-wrap: anywhere; }
+.saved-evidence summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.saved-evidence summary span { display: block; }
+.saved-evidence .evidence-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+.saved-evidence .evidence-pair > *, .evidence-block-values { min-width: 0; }
+.evidence-fields { display: grid; gap: .5rem; margin: .65rem 0; }
+.evidence-fields dt { font-weight: 600; }
+.evidence-fields dd { margin: .15rem 0 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.saved-evidence pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+.saved-evidence ul, .saved-evidence ol { padding-left: 1.25rem; }
+.saved-evidence li { margin-bottom: .5rem; }
+.saved-evidence .evidence-toggle { display: flex; align-items: center; gap: .5rem; min-height: 44px; margin: .7rem 0; }
+.saved-evidence .evidence-toggle input { flex: 0 0 auto; }
+.evidence-diff-row { margin: .65rem 0; }
+@media (max-width: 720px) { .saved-evidence .evidence-pair { grid-template-columns: minmax(0, 1fr); } }

@@ -13,7 +13,7 @@ class ReportSizeError extends Error {
   constructor() { super('レポートの出力が上限（400万文字）を超えています。省略せず出力を停止しました。'); }
 }
 /** Bound aggregation as well as the final string; never return a partial report. */
-function reportLines(initial: string[] = []): string[] {
+export function reportLines(initial: string[] = []): string[] {
   const lines: string[] = [];
   let length = 0;
   lines.push = (...items: string[]) => {
@@ -25,7 +25,7 @@ function reportLines(initial: string[] = []): string[] {
   return lines;
 }
 const html = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const literal = (s: string) => html(s).replace(/[\\`*_{}\[\]()#+.!|~$-]/g, '\\$&').replace(/[\r\n\u2028\u2029]+/g, ' ');
+export const literal = (s: string) => html(s).replace(/[\\`*_{}\[\]()#+.!|~$-]/g, '\\$&').replace(/[\r\n\u2028\u2029]+/g, ' ');
 /** Dynamic fences cannot be closed by the value they enclose. */
 export function reportCode(value: string, language = 'text'): string {
   let longest = 0;
