@@ -51,6 +51,20 @@ export function CalculatorApp() {
   const [storageStatus, setStorageStatus] = useState<"loading" | "ready" | "error">("loading");
   const savedRaw = useRef<string | null>(null);
   const liveData = useRef(data);
+  const confirmedData = useRef<string | null>(null);
+  const [confirmedSerialized, setConfirmedSerialized] = useState<string | null>(null);
+  const explicitUnconfirmedRef = useRef(false);
+  const [explicitUnconfirmed, setExplicitUnconfirmed] = useState(false);
+  const hasUnsavedChanges = explicitUnconfirmed || (confirmedSerialized !== null && JSON.stringify(data) !== confirmedSerialized);
+  useEffect(() => {
+    const warn = (event: BeforeUnloadEvent) => {
+      if (explicitUnconfirmedRef.current || (confirmedData.current !== null && JSON.stringify(liveData.current) !== confirmedData.current)) {
+        event.preventDefault(); event.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
   useLayoutEffect(() => { liveData.current = data; }, [data]);
   const [storageConflict, setStorageConflict] = useState("");
   const conflictRef = useRef(false);
@@ -105,6 +119,8 @@ export function CalculatorApp() {
         return;
       }
       savedRaw.current = loaded.status === "ok" ? loaded.raw : null;
+      // A successful load is the initial clean baseline, even if JSON whitespace differs.
+      confirmedData.current = JSON.stringify(loaded.data); setConfirmedSerialized(confirmedData.current);
       setData(loaded.data);
       setStorageStatus("ready");
     }, 0);
@@ -116,7 +132,7 @@ export function CalculatorApp() {
     void withStorageWriteLock(() => {
       if (cancelled || conflictRef.current || liveData.current !== data) return;
       const saved = saveDataChecked(data, savedRaw.current);
-      if (saved.ok) { savedRaw.current = saved.raw; return; }
+      if (saved.ok) { savedRaw.current = saved.raw; confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw); return; }
       if (saved.reason === "uncertain") {
         conflictRef.current = true; setStorageConflict("書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。");
       } else if (saved.reason === "conflict") {
@@ -208,7 +224,7 @@ export function CalculatorApp() {
       const note: CalculationNote = { ...draft, id: makeId("calc-note"), schemaVersion: 1, type: "calculation", createdAt: now, updatedAt: now };
       return { ...current, notes: [note, ...current.notes] };
     });
-    setNoteEditor(null); showToast(noteEditor?.editingId ? `${MEMO_LABELS.single}を更新しました` : `${MEMO_LABELS.single}を保存しました`);
+    setNoteEditor(null); showToast(noteEditor?.editingId ? `${MEMO_LABELS.single}の更新を保存処理中です` : `${MEMO_LABELS.single}の追加を保存処理中です`);
   }, [noteEditor, showToast, storageStatus]);
 
   const savePlainNote = useCallback(async (draft: PlainNoteDraft, candidates: EvidenceCandidate[] = []): Promise<string | void> => {
@@ -216,6 +232,7 @@ export function CalculatorApp() {
     const current = liveData.current;
     const original = plainNoteEditor?.editingId ? current.notes.find(note => note.id === plainNoteEditor.editingId) : undefined;
     if (plainNoteEditor?.editingId && (original?.type !== "plain-calculation" || JSON.stringify(original) !== JSON.stringify(plainNoteEditor.draft))) return "編集開始後に原本が変更されました。上書きせず編集内容を保持しています。";
+    explicitUnconfirmedRef.current = true; setExplicitUnconfirmed(true);
     try {
       return await withStorageWriteLock(() => {
         if (conflictRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。編集内容を確認してもう一度保存してください。";
@@ -241,6 +258,8 @@ export function CalculatorApp() {
           return "保存できませんでした。計算根拠は保存済みとして扱っていません。編集内容を保持しています。容量・保存保護・他タブの更新を確認してください。";
         }
         savedRaw.current = saved.raw;
+        confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw);
+        explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false);
         liveData.current = next;
         setData(next);
         setPlainNoteEditor(null);
@@ -289,6 +308,8 @@ export function CalculatorApp() {
         return;
       }
       savedRaw.current = JSON.stringify(cleanData);
+      confirmedData.current = savedRaw.current; setConfirmedSerialized(savedRaw.current);
+      explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false);
       conflictRef.current = false; setStorageConflict("");
       setData(cleanData);
       setStorageIssue(null);
@@ -319,6 +340,7 @@ export function CalculatorApp() {
         <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
       </header>
 
+      <p role={hasUnsavedChanges ? "status" : undefined} aria-hidden={!hasUnsavedChanges} data-testid={hasUnsavedChanges ? "unsaved-changes" : undefined} style={{ visibility: hasUnsavedChanges ? "visible" : "hidden" }}>未保存です。再読み込み・終了に注意。</p>
       {storageConflict && <p role="alert" className="field-error">{storageConflict}</p>}
       {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} protectionReason={storageIssue.protectionReason} onExport={exportOriginal} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw !== null && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
@@ -348,10 +370,10 @@ export function CalculatorApp() {
         </aside>
       </section>
 
-      {libraryOpen && <FormulaLibraryModal library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
-      {executionId && <FormulaExecutionModal key={executionId} formula={data.formulaLibrary?.entries.find((entry) => entry.id === executionId)} draft={data.formulaExecutions?.find((draft) => draft.formulaId === executionId)} notes={data.notes} writable={storageStatus === "ready"} onClose={() => setExecutionId(null)} onDraftChange={(draft) => setData((current) => ({ ...current, formulaExecutions: [draft, ...(current.formulaExecutions ?? []).filter((entry) => entry.formulaId !== draft.formulaId && current.formulaLibrary?.entries.some((formula) => formula.id === entry.formulaId))].slice(0, 200) }))} onHistory={(snapshot) => { const item = executionHistory(snapshot, makeId("history"), new Date().toISOString()); setData((current) => ({ ...current, history: [item, ...current.history].slice(0, 200) })); }} onMemo={(snapshot) => setNoteEditor({ draft: executionMemo(snapshot) })} />}
+      {libraryOpen && <FormulaLibraryModal pendingSave={hasUnsavedChanges} library={data.formulaLibrary ?? emptyFormulaLibrary()} writable={storageStatus === "ready"} onChange={(formulaLibrary) => setData((current) => ({ ...current, formulaLibrary }))} onClose={() => setLibraryOpen(false)} onExecute={setExecutionId} />}
+      {executionId && <FormulaExecutionModal pendingSave={hasUnsavedChanges} key={executionId} formula={data.formulaLibrary?.entries.find((entry) => entry.id === executionId)} draft={data.formulaExecutions?.find((draft) => draft.formulaId === executionId)} notes={data.notes} writable={storageStatus === "ready"} onClose={() => setExecutionId(null)} onDraftChange={(draft) => setData((current) => ({ ...current, formulaExecutions: [draft, ...(current.formulaExecutions ?? []).filter((entry) => entry.formulaId !== draft.formulaId && current.formulaLibrary?.entries.some((formula) => formula.id === entry.formulaId))].slice(0, 200) }))} onHistory={(snapshot) => { const item = executionHistory(snapshot, makeId("history"), new Date().toISOString()); setData((current) => ({ ...current, history: [item, ...current.history].slice(0, 200) })); }} onMemo={(snapshot) => setNoteEditor({ draft: executionMemo(snapshot) })} />}
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
-      {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => setPlainNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
+      {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => { explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false); setPlainNoteEditor(null); }} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}

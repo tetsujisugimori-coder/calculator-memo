@@ -707,9 +707,45 @@ async function exerciseFormulaExecution(prefix) {
   await input("divisor").fill("3"); await run(); await expect(result().locator("strong")).toHaveText("4");
   await input("amount").fill("9007199254740992"); await run();
   await expect(execution().getByRole("alert")).toContainText("桁数");
-  await input("amount").fill("-"); await page.reload(); await open("Synthetic division");
+  const executionInputs = async () => (await storage()).formulaExecutions.find(draft => draft.formulaId === "exec-division")?.inputs;
+  await expect.poll(executionInputs).toEqual({ amount: "9007199254740992", divisor: "3" });
+  const pendingNotice = execution().getByTestId("execution-unsaved-changes");
+  await expect(pendingNotice).toHaveCount(0);
+  const persistedBeforePendingDraft = await storage();
+  // Synthetic delay controls only this test's authorized write boundary. It does
+  // not claim to exercise a native browser dismissal dialog or OS persistence.
+  await page.evaluate(() => {
+    const locks = navigator.locks;
+    if (!locks?.request) throw new Error("This GUI context requires the Web Locks API");
+    const request = locks.request.bind(locks);
+    let release;
+    const gate = new Promise(resolve => { release = resolve; });
+    window.__guiHeldDraftWrites = 0;
+    locks.request = (...args) => {
+      window.__guiHeldDraftWrites += 1;
+      return gate.then(() => request(...args));
+    };
+    window.__guiReleaseDraftWrites = () => { locks.request = request; release(); };
+  });
+  await input("amount").fill("-0");
+  await expect.poll(() => page.evaluate(() => window.__guiHeldDraftWrites)).toBeGreaterThan(0);
+  await input("amount").fill("-");
+  await expect(pendingNotice).toBeVisible();
+  assert.deepEqual(await storage(), persistedBeforePendingDraft, "Held draft writes must not alter persisted data");
+  const dispatchLeave = () => page.evaluate(() => {
+    const event = new Event("beforeunload", { cancelable: true });
+    const allowed = window.dispatchEvent(event);
+    return { allowed, prevented: event.defaultPrevented };
+  });
+  assert.deepEqual(await dispatchLeave(), { allowed: false, prevented: true }, "Pending draft requests a navigation warning");
+  await page.evaluate(() => window.__guiReleaseDraftWrites());
+  await expect.poll(executionInputs).toEqual({ amount: "-", divisor: "3" });
+  await expect(pendingNotice).toHaveCount(0);
+  assert.deepEqual(await dispatchLeave(), { allowed: true, prevented: false }, "Persisted latest draft clears navigation guard");
+  await page.reload(); await open("Synthetic division");
   await expect(input("amount")).toHaveValue("-"); await expect(input("divisor")).toHaveValue("3");
   await expect(result()).toHaveCount(0); await expect(execution()).toContainText("未確定");
+  await passed(prefix + ": delayed draft writes preserve storage, warn before leaving, persist latest input and restore after reload");
   await input("amount").fill("15"); await run(); await expect(result().locator("strong")).toHaveText("5");
   await closeExecution(); await open("Synthetic root"); await input("value").fill("-1");
   await run(); await expect(execution().getByRole("alert")).toBeVisible();

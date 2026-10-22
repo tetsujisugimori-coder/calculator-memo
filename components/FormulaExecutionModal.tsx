@@ -12,13 +12,14 @@ type Props = {
   draft?: ExecutionDraft;
   notes: Memo[];
   writable: boolean;
+  pendingSave?: boolean;
   onDraftChange: (draft: ExecutionDraft) => void;
   onHistory: (result: ExecutionResult) => void;
   onMemo: (result: ExecutionResult) => void;
   onClose: () => void;
 };
 
-export function FormulaExecutionModal({ formula, draft, notes, writable, onDraftChange, onHistory, onMemo, onClose }: Props) {
+export function FormulaExecutionModal({ formula, draft, notes, writable, pendingSave = false, onDraftChange, onHistory, onMemo, onClose }: Props) {
   const [inputs, setInputs] = useState<Record<string, string>>(draft?.inputs ?? {});
   const [result, setResult] = useState<ExecutionResult | null>(null);
   const [error, setError] = useState("");
@@ -52,6 +53,7 @@ export function FormulaExecutionModal({ formula, draft, notes, writable, onDraft
     } catch (cause) { setError(cause instanceof Error ? cause.message : "受け渡しできませんでした"); }
   };
   return <Modal title="登録式の実行" onClose={onClose} wide>
+    <p role={pendingSave ? "status" : undefined} aria-hidden={!pendingSave} data-testid={pendingSave ? "execution-unsaved-changes" : undefined} style={{ visibility: pendingSave ? "visible" : "hidden" }}>未保存です。再読み込み・終了に注意。</p>
     <div className="formula-execution">
       {!formula ? <p role="alert">この登録式は削除されています。ライブラリに戻って選び直してください。</p> : <>
         <div className="execution-heading"><h3 className="identity-item identity-registered"><span className="identity-label">登録式</span>{formula.title}</h3><button type="button" aria-label="登録式の実行の説明" aria-haspopup="dialog" onClick={() => setHelp(true)}>i</button></div>

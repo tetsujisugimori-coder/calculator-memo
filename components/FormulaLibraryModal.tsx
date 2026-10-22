@@ -6,8 +6,8 @@ import { inspectFormulaDefinition } from "../lib/calculator";
 import { removeFormula, saveFormula, validateFormula } from "../lib/formula-library";
 import type { FormulaLibrary, RegisteredFormula } from "../lib/types";
 
-type Props = { library: FormulaLibrary; onChange: (library: FormulaLibrary) => void; onClose: () => void; writable: boolean; onExecute: (id: string) => void };
-export function FormulaLibraryModal({ library, onChange, onClose, writable, onExecute }: Props) {
+type Props = { library: FormulaLibrary; onChange: (library: FormulaLibrary) => void; onClose: () => void; writable: boolean; pendingSave?: boolean; onExecute: (id: string) => void };
+export function FormulaLibraryModal({ library, onChange, onClose, writable, pendingSave = false, onExecute }: Props) {
   const [draft, setDraft] = useState<{ id?: string; title: string; expression: string } | null>(null);
   const [error, setError] = useState("");
   const [pendingDelete, setPendingDelete] = useState<RegisteredFormula | null>(null);
@@ -26,6 +26,7 @@ export function FormulaLibraryModal({ library, onChange, onClose, writable, onEx
     } catch (cause) { setError(cause instanceof Error ? cause.message : "登録内容を確認してください"); }
   };
   return <Modal title="登録式ライブラリ" onClose={close} wide>
+    <p role={pendingSave ? "status" : undefined} aria-hidden={!pendingSave} data-testid={pendingSave ? "library-unsaved-changes" : undefined} style={{ visibility: pendingSave ? "visible" : "hidden" }}>未保存です。再読み込み・終了に注意。</p>
     <div className="formula-library">
       <p>計算方法を保存する場所です。選択すると詳細を表示します。「登録式を実行」から変数の値を入力して計算できます。</p>
       <p>構文だけを確認します。0除算・負数の平方根・指数や結果の範囲など、計算時の成立は未検証です。</p>
