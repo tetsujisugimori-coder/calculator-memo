@@ -80,6 +80,8 @@ async function exerciseFormulaLibrary(prefix) {
   await activate(dialog().getByRole("button", { name: "登録する", exact: true }));
   await expect(dialog().getByRole("region", { name: "選択した登録式" })).toContainText("price、quantity");
   await expect(dialog()).toContainText("計算結果：未計算");
+  await expect.poll(async () => (await storage()).formulaLibrary?.entries[0]).toMatchObject({ title: "Synthetic formula", expression: "price * quantity" });
+  await expect(dialog().getByTestId("library-unsaved-changes")).toHaveCount(0);
   const original = await page.evaluate(() => JSON.parse(localStorage.getItem("calculation-memo:data")).formulaLibrary.entries[0]);
   await activate(dialog().getByRole("button", { name: "登録式を編集", exact: true }));
   await dialog().getByLabel("登録する計算式", { exact: true }).fill("x=2");
@@ -114,6 +116,11 @@ async function exerciseFormulaLibrary(prefix) {
   await expect(dialog().getByRole("button", { name: "Synthetic renamed formula", exact: true })).toHaveCount(0);
   await activate(dialog().getByRole("button", { name: "直前の削除を取り消す", exact: true }));
   await expect(dialog()).toContainText("price * quantity + tax");
+  await expect.poll(async () => {
+    const library = (await storage()).formulaLibrary;
+    return { selectedId: library?.selectedId, count: library?.entries.length, restored: library?.entries.find(entry => entry.id === original.id) };
+  }).toMatchObject({ selectedId: original.id, count: 2, restored: { id: original.id, title: "Synthetic renamed formula", expression: "price * quantity + tax" } });
+  await expect(dialog().getByTestId("library-unsaved-changes")).toHaveCount(0);
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
   await page.reload();
   await open();
@@ -126,6 +133,8 @@ async function exerciseFormulaLibrary(prefix) {
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
   for (const mode of ["dark", "light"]) {
     await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(mode);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(mode);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
     await open();
     await activate(dialog().getByRole("button", { name: "長い登録名".repeat(20), exact: true }));
@@ -174,6 +183,8 @@ async function exerciseIdentification(prefix) {
   await activate(dialog().getByRole("button", { name: "閉じる", exact: true }));
   for (const mode of ["labels", "color", "none"]) {
     await activate(settings); await settings.selectOption(mode);
+    await expect.poll(async () => (await storage()).settings.identificationMode).toBe(mode);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(shell).toHaveAttribute("data-identification", mode);
     await page.setViewportSize({width: currentScenario.width <= 720 ? 1000 : 375, height: currentScenario.height});
     await expect(shell).toHaveAttribute("data-identification", mode);
@@ -183,6 +194,8 @@ async function exerciseIdentification(prefix) {
     assert.equal(variableColor === "rgba(0, 0, 0, 0)", mode === "none");
     for (const theme of ["light", "dark"]) {
       await page.getByRole("combobox", {name:"テーマ",exact:true}).selectOption(theme);
+      await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+      await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
       await open();
       assert.equal(await labelPosition(), mode === "labels" ? "static" : "absolute");
       const color = await dialog().locator(".identity-registered").first().evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -275,6 +288,8 @@ async function exerciseHeader(prefix) {
   const theme = page.getByRole("combobox", { name: "テーマ", exact: true });
   await activate(theme);
   await theme.selectOption("dark");
+  await expect.poll(async () => (await storage()).settings.theme).toBe("dark");
+  await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   await page.keyboard.press("Escape"); // dismiss a native select popup where present
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect.poll(storage).toMatchObject({ settings: { theme: "dark" } });
@@ -283,8 +298,12 @@ async function exerciseHeader(prefix) {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await assertHeaderFit("dark-theme");
   await theme.selectOption("system");
+  await expect.poll(async () => (await storage()).settings.theme).toBe("system");
+  await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   await expect.poll(storage).toMatchObject({ settings: { theme: "system" } });
   await theme.selectOption("light");
+  await expect.poll(async () => (await storage()).settings.theme).toBe("light");
+  await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
   await assertHeaderFit("page-scrolled");
@@ -375,6 +394,10 @@ async function selectPanel(panel) {
   if (await tab.isVisible()) {
     await activate(tab);
     await expect(tab).toHaveAttribute("aria-selected", "true");
+    // This helper performs an intentional persisted setting change. Complete it
+    // before callers begin a no-write measurement; storage() itself stays immediate.
+    await expect.poll(async () => (await storage()).settings.activePanel).toBe(panel);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
   }
   await expect(page.locator("#" + panel + "-panel")).toBeVisible();
 }
@@ -402,7 +425,10 @@ async function exerciseBasicMath(prefix) {
     assert.deepEqual((await storage()).history, before, "Typing does not create history");
     await activate(button("計算する"));
     await expect(result).toHaveText(text);
-    await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression, resultText: text });
+    await expect.poll(async () => {
+      const latest = (await storage()).history[0];
+      return { isNew: Boolean(latest?.id && latest.id !== before[0]?.id), expression: latest?.expression, resultText: latest?.resultText };
+    }).toEqual({ isNew: true, expression, resultText: text });
     near((await storage()).history[0].result, value, expression);
     await expect(button("単独計算メモを作成")).toBeEnabled();
   }
@@ -783,6 +809,8 @@ async function exerciseFormulaExecution(prefix) {
   await activate(library().getByRole("button", {name:"閉じる",exact:true}));
   for (const theme of ["light", "dark"]) {
     await page.getByRole("combobox", {name:"テーマ",exact:true}).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open("Synthetic division");
     await input("amount").fill("15"); await input("divisor").fill("3"); await run();
     await activate(execution().getByRole("button", {name:"登録式の実行の説明",exact:true}));
@@ -894,6 +922,8 @@ async function exerciseVariables(prefix) {
   const theme = page.getByRole("combobox", { name: "テーマ", exact: true });
   for (const mode of ["dark", "light"]) {
     await theme.selectOption(mode);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(mode);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", mode);
     await activate(saved.getByRole("button", { name: "編集", exact: true }));
     await expect(dialog.locator(".calculation-variable").first()).toContainText("変数 price");
@@ -1335,6 +1365,8 @@ async function exerciseCalculationDiagnostics(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open(); await expression(0).fill("5");
     await activate(detailButton(0));
     await page.evaluate(() => document.documentElement.style.fontSize = "200%");
@@ -1582,6 +1614,8 @@ async function exerciseDependencyGraphNavigation(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open(); await page.evaluate(() => document.documentElement.style.fontSize = "200%");
     await activate(graphToggle()); await assertNodeIds(ids);
     await expect(panel().getByRole("button", { name: "図を拡大", exact: true })).toBeVisible();
@@ -1845,6 +1879,8 @@ async function exerciseCalculationTrials(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByLabel("テーマ", { exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await open(); await input("a").fill("130"); await trial();
     await page.evaluate(() => document.documentElement.style.fontSize = "200%");
     await row("a").scrollIntoViewIfNeeded();
@@ -2096,6 +2132,8 @@ async function exerciseMarkdownReports(prefix) {
 
   for (const theme of ["light", "dark"]) {
     await page.getByRole("combobox", { name: "テーマ", exact: true }).selectOption(theme);
+    await expect.poll(async () => (await storage()).settings.theme).toBe(theme);
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const themeRaw = await raw();
     await openDetail(); await openReport();
