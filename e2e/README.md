@@ -486,3 +486,8 @@ coverage, not a completed run; exact-HEAD results are recorded in LOG and PR CI.
 Storage conflict/failed-save/unknown-data and capacity boundaries also have unit
 tests; these must not be represented as physical-device GUI verification. Real
 iPhone Safari and VoiceOver remain outside this Playwright emulation.
+
+
+## PR #60 CI環境準備の障害切り分け
+
+GitHub Ubuntu24.04のfresh runnerでは、正確なAzure Ubuntu sourceだけ公式HTTPS archive/securityへ切り替え、署名・suite・componentを保持する。OS依存は固定Playwrightの `install-deps chromium webkit`（5分）、browserは `install chromium webkit`（3分）に分離し、各log/timingを残す。失敗時は後続GUIを成功扱いせずalways artifactへ保存。ローカル用の上記手順は変更せず、CI専用root設定scriptを利用者PCへ適用しない。30分/全6条件/114PNG/成功trace非保存は不変。[原因・案比較・制約・復旧](../docs/agent/ci-environment-acquisition.md)。

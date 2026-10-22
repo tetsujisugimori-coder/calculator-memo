@@ -39,7 +39,7 @@ function executableRun(id) {
   return runFor(id).replace(/^node e2e\/run-stage\.mjs/, JSON.stringify(process.execPath) + ' e2e/run-stage.mjs');
 }
 
-for (const [id, binary] of [['unit', 'npm'], ['normal_build', 'npm'], ['pages_build', 'npm'], ['browser_install', 'node']]) {
+for (const [id, binary] of [['unit', 'npm'], ['normal_build', 'npm'], ['pages_build', 'npm'], ['apt_config', 'sudo'], ['os_install', 'sudo'], ['browser_install', 'node']]) {
   test(`${id}: command failure propagates and leaves the diagnostic log`, async () => {
     const cwd = await mkdtemp(join(tmpdir(), 'calculator-ci-fault-'));
     try {
@@ -54,7 +54,7 @@ for (const [id, binary] of [['unit', 'npm'], ['normal_build', 'npm'], ['pages_bu
       });
       assert.notEqual(result.status, 0, `${id} cannot turn command failure into success`);
       assert.match(result.stdout + result.stderr, /isolated diagnostic failure/);
-      const name = { unit: 'unit', normal_build: 'normal-build', pages_build: 'pages-build', browser_install: 'browser-install' }[id];
+      const name = { unit: 'unit', normal_build: 'normal-build', pages_build: 'pages-build', apt_config: 'apt-config', os_install: 'os-install', browser_install: 'browser-install' }[id];
       assert.match(await readFile(join(cwd, 'gui-evidence', name + '.log'), 'utf8'), /isolated diagnostic failure/);
     } finally { await rm(cwd, { recursive: true, force: true }); }
   });
@@ -189,4 +189,59 @@ test('modal overflow diagnostics are failure-only bounded and retain the strict 
   assert.ok(fit.includes('descendants.slice(0, 5000)') && fit.includes('.slice(0, 12)'));
   assert.ok(fit.includes('assert.ok(size.scroll <= size.client + 1,'));
   assert.ok(!/innerHTML|textContent|\.value|\.style\s*=/.test(fit), 'Diagnostics record box metadata, not content, and do not modify layout');
+});
+
+const { rewriteUbuntuSources, assertRunner, aptSettings } = await import('./configure-ci-apt.mjs');
+test('deb822 source rewrite preserves signing, suites, components and unrelated sources', () => {
+  const before = '# http://azure.archive.ubuntu.com/ubuntu example\nTypes: deb\nURIs:   http://azure.archive.ubuntu.com/ubuntu/\nSuites: noble noble-updates noble-backports\nComponents: main restricted universe multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n\nTypes: deb\nURIs: https://security.ubuntu.com/ubuntu\nSuites: noble-security\nComponents: main\n';
+  const expected = before.replace('URIs:   http://azure.archive.ubuntu.com/ubuntu/', 'URIs:   https://archive.ubuntu.com/ubuntu');
+  assert.deepEqual(rewriteUbuntuSources(before, 'sources'), { text: expected, changed: 1 });
+  assert.deepEqual(rewriteUbuntuSources(expected, 'sources'), { text: expected, changed: 0 });
+});
+test('legacy sources preserve options and other hosts; Azure security gets official security endpoint', () => {
+  const source = 'deb [arch=amd64 signed-by=/keys/ubuntu.gpg] https://azure.archive.ubuntu.com/ubuntu noble-security main\ndeb https://packages.microsoft.com/ubuntu/24.04/prod noble main\n';
+  assert.deepEqual(rewriteUbuntuSources(source, 'list'), { text: source.replace('https://azure.archive.ubuntu.com/ubuntu', 'https://security.ubuntu.com/ubuntu'), changed: 1 });
+});
+test('unknown URI, suite and wrapped or ambiguous fields fail closed', () => {
+  for (const text of [
+    'deb http://azure.archive.ubuntu.com.evil/ubuntu noble main',
+    'deb http://azure.archive.ubuntu.com/ubuntu-extra noble main',
+    'deb http://azure.archive.ubuntu.com/ubuntu future main',
+  ]) assert.throws(() => rewriteUbuntuSources(text, 'list'));
+  for (const text of [
+    'Types: deb\nURIs:\n http://azure.archive.ubuntu.com/ubuntu\nSuites: noble',
+    'URIs: http://azure.archive.ubuntu.com/ubuntu\nSuites: noble noble-security',
+    'URIs: http://azure.archive.ubuntu.com/ubuntu\nSuites: noble\n noble-security',
+    'URIs: http://azure.archive.ubuntu.com/ubuntu\nSuites: noble\n future',
+    'URIs: http://azure.archive.ubuntu.com/ubuntu\nSuites: noble\nSuites: noble-updates',
+  ]) assert.throws(() => rewriteUbuntuSources(text, 'sources'));
+});
+test('APT configuration is restricted to root GitHub Ubuntu 24.04 and transport settings', () => {
+  const os = 'ID=ubuntu\nVERSION_ID="24.04"\n';
+  assert.doesNotThrow(() => assertRunner(os, { GITHUB_ACTIONS: 'true' }, 0));
+  assert.throws(() => assertRunner(os, {}, 0));
+  assert.throws(() => assertRunner(os, { GITHUB_ACTIONS: 'true' }, 1000));
+  assert.throws(() => assertRunner(os.replace('ubuntu', 'debian'), { GITHUB_ACTIONS: 'true' }, 0));
+  assert.deepEqual(aptSettings, { 'Acquire::http::Timeout': '20', 'Acquire::https::Timeout': '20', 'Acquire::Retries': '1', 'APT::Update::Error-Mode': 'any' });
+});
+test('OS and browser acquisition have separate bounded budgets without dependency omissions', () => {
+  assert.match(runFor('os_install'), /os-install sudo timeout --verbose --signal=TERM --kill-after=10s 300s/);
+  assert.match(runFor('os_install'), /install-deps chromium webkit$/);
+  assert.match(runFor('browser_install'), /browser-install timeout --verbose --signal=TERM --kill-after=10s 180s/);
+  assert.match(runFor('browser_install'), /install chromium webkit$/);
+  assert.doesNotMatch(runFor('os_install') + runFor('browser_install'), /only-shell|no-shell|\|\|/);
+  assert.ok(workflow.indexOf('id: apt_config') < workflow.indexOf('id: os_install'));
+  assert.ok(workflow.indexOf('id: os_install') < workflow.indexOf('id: browser_install'));
+  for (const id of ['apt_config', 'os_install', 'browser_install', 'gui']) assert.doesNotMatch(stepWithId(id), /if: always|continue-on-error/);
+});
+test('bounded acquisition timeout fails and preserves its stage log and timing', async () => {
+  const cwd = await mkdtemp(join(tmpdir(), 'calculator-ci-timeout-'));
+  try {
+    await prepareStageWrapper(cwd);
+    const result = spawnSync(process.execPath, ['e2e/run-stage.mjs', 'os-install', 'timeout', '--verbose', '--kill-after=0.2s', '0.1s', process.execPath, '-e', 'console.log("synthetic stalled acquisition"); require("node:child_process").spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], { stdio: "inherit" }); setInterval(() => {}, 1000)'], { cwd, encoding: 'utf8', timeout: 5000 });
+    assert.equal(result.status, 124);
+    const timing = JSON.parse(await readFile(join(cwd, 'gui-evidence/os-install-timing.json'), 'utf8'));
+    assert.equal(timing.status, 'failed'); assert.equal(timing.exitCode, 124);
+    assert.match(await readFile(join(cwd, 'gui-evidence/os-install.log'), 'utf8'), /synthetic stalled acquisition/);
+  } finally { await rm(cwd, { recursive: true, force: true }); }
 });

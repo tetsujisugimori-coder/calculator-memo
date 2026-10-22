@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-10-23 07:40 JST: PR #60 CI環境取得タイムアウトの原因検証と最小修正
+
+- 基準HEAD `b3ebe0c8591078071f7fe55f2506553492fa2f60`、[成功#118](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39841897542)と[失敗#119両attempt](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39845374995)の公式job/logを照合。全回119MB/181新規+8更新、成功9秒、失敗はAPT archive取得で1716/1757秒を消費しGUI未開始。成功とattempt2は同image、リージョンは異なるが通信経路/ミラー内部どちらが唯一の根因かは未確定。
+- 従来はOS/browser一括準備が30分全体予算まで待てた。第一希望の同runner/正規全依存維持を採用し、Azureの正確なUbuntu URIだけ公式HTTPS archive/securityへ変更、APT timeout/retry有界化、OS5分/browser3分の段階別log/timingへ分離する。公式containerは環境差とimage取得検証が必要な次善策、cacheではAPT問題を代替できず今回は未採用。[比較・根拠・安全境界・復旧](docs/agent/ci-environment-acquisition.md)。
+- 変更はCI準備script/workflow/契約テスト/文書のみ。製品、lockfile、30分、6条件624検査/550配置/mobile各855touch、114PNG、trace/7日artifact方針を維持。署名/TLS検証を緩めず未知source構造は停止する。
+- 独立レビューのSuite継続行見落としを修正し回帰fixtureを追加、再レビューでコード上の阻害指摘なし（実CI成功は別条件）。CI契約36件成功（既存28+追加8）。単体1127件/50files、lint 0error（既存warning1）、型、通常/Pages両build、YAML構文検査が成功。修正後実GitHub Actions全完走は未確認であり、最終HEADの成功はPR Checks/コメントで確認する。模擬timeoutは実ネットワーク障害の再現とは別。
+- Issue #59本文は保持、既存PR #60/作業branchにのみ反映する。main直接push/merge/本番公開なし。rollbackはCI限定差分revertとfresh runnerで行い、保存原本に変更不要。1回の成功で外部通信の恒久的解消を断定しない。
+
 ## 2026-10-23 04:26 JST: 登録式の関連数学レポート（Issue #59）
 
 - 04:37 JST追記: [PR #60](https://github.com/tetsujisugimori-coder/calculator-memo/pull/60) をDraft作成。実装tree `489277a8634a46aeb982a4197ac79837493548b2` を各blob SHAと照合してGitHubへ公開。コードcommit `118e87620f53535da772eee2ab7c5ba8862d122b`。この文書追記コミットを含む最終HEADの全6条件GUI・CI結果はPR Checks/コメントで確認する。過去HEADの成功は流用しない。初期GUI重点Chromium desktop/WebKit375、契約28件は成功。mainへのpush/merge/本番公開なし。
