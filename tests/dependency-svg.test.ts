@@ -77,3 +77,15 @@ it('retains delta and uncertain-change labels in the safe display projection', a
     expect(prepareDependencyLayout(`flowchart TD\na -->|"${encoded}"| b`).text).toContain(`|${change} ID参照|`);
   }
 });
+
+it('keeps historical actual-use labels distinct from current uncertain variable candidates', async () => {
+  const { prepareDependencyLayout } = await import('../lib/dependency-svg');
+  const { default: mermaid } = await import('mermaid');
+  const encoded = Array.from('変数 x（不確定）', char => `#${char.codePointAt(0)};`).join('');
+  const source = `flowchart TD\na -.->|"${encoded}"| b`;
+  expect(prepareDependencyLayout(source).text).toContain('旧変数候補');
+  const historical = prepareDependencyLayout(source, true).text;
+  expect(historical).toContain('旧変数（実使用）・不整合'); expect(historical).not.toContain('候補');
+  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', htmlLabels: false });
+  await expect(mermaid.parse(historical)).resolves.toMatchObject({ diagramType: 'flowchart-v2' });
+});

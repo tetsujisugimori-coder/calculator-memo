@@ -2204,7 +2204,7 @@ async function exerciseSavedRecordComparison(prefix) {
     const input = (sourceBlockId, value) => ({ kind: "id", name: "ReferenceValue1", sourceBlockId, value: String(value) });
     return { id, calculatedAt, persistedAt: at, evaluator: "calculator-memo-v1", status: "confirmed", blocks: [
       block("A", 1, String(value), value),
-      block("B", 2, "@{1}+50", value + 50, [input("A", value)], [{ slot: 1, blockId: "A" }]),
+      block("B", 2, "@{1}+@{2}-@{2}+50", value + 50, [input("A", value), { ...input("A", value), name: "ReferenceValue2" }], [{ slot: 1, blockId: "A" }, { slot: 2, blockId: "A" }]),
       block("C", 3, "@{1}*2", (value + 50) * 2, [input("B", value + 50)], [{ slot: 1, blockId: "B" }]),
       { ...block(precisionId, 4, value === 100 ? "12341/10000" : "12342/10000", value === 100 ? "1.2341" : "1.2342"), resultText: "1.23" },
       { ...block("signed-zero", 5, value === 100 ? "-0" : "0", value === 100 ? "-0" : "0"), resultText: "0" },
@@ -2215,12 +2215,13 @@ async function exerciseSavedRecordComparison(prefix) {
   const sameRecord = { ...structuredClone(beforeRecord), id: "record-identical" };
   const retargetRecord = { ...structuredClone(afterRecord), id: "record-retarget" };
   Object.assign(retargetRecord.blocks[2], { expression: "@{1}*2", inputs: [{ kind: "id", name: "ReferenceValue1", sourceBlockId: "A", value: "120" }], references: { version: 1, entries: [{ slot: 1, blockId: "A" }] }, result: "240", resultText: "240" });
+  const missingRecord = { ...structuredClone(afterRecord), id: "record-without-C", blocks: structuredClone(afterRecord.blocks.filter(block => block.blockId !== "C")) };
   const inconsistentRecord = { ...structuredClone(afterRecord), id: "record-inconsistent" };
   inconsistentRecord.blocks[2].inputs[0].value = "999"; // Shape-valid, but contradicts the recorded source result.
 
   const note = { id: "comparison-note", type: "plain-calculation", title: "Synthetic / comparison", content: "", createdAt: at, updatedAt: at,
     calculationPolicy: { version: 1, mode: "manual" }, blocks: [{ id: "present-only", type: "text", content: "CURRENT_ONLY_NOT_HISTORY" }],
-    calculationEvidence: { version: 1, records: [inconsistentRecord, retargetRecord, sameRecord, beforeRecord, afterRecord] }, opaque: { retain: "unchanged" } };
+    calculationEvidence: { version: 1, records: [missingRecord, inconsistentRecord, retargetRecord, sameRecord, beforeRecord, afterRecord] }, opaque: { retain: "unchanged" } };
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
   await page.reload(); await selectPanel("notes");
   const card = page.locator(".note-card").filter({ hasText: note.title });
@@ -2249,7 +2250,7 @@ async function exerciseSavedRecordComparison(prefix) {
   await expect(dialog()).toContainText("保存完了時刻ではありません");
   await activate(dialog().locator(".evidence-help > summary"));
   await activate(dialog().locator(".evidence-record-list > summary"));
-  await expect(dialog().locator(".evidence-record-list")).toContainText("追記 5");
+  await expect(dialog().locator(".evidence-record-list")).toContainText("追記 6");
   await activate(dialog().locator(".evidence-record-detail > summary"));
   await activate(dialog().locator(".evidence-record-detail > details").filter({ hasText: "ID：B" }).locator("summary"));
   await expect(dialog().locator(".evidence-record-detail")).toContainText("120");
@@ -2290,6 +2291,51 @@ async function exerciseSavedRecordComparison(prefix) {
   await screenshot(prefix + "-saved-record-impact", currentScenario.width, false);
   await passed(prefix + ": saved impact separates observed direct changes propagation candidates and result differences with historical multi-hop evidence");
 
+  const graph = () => dialog().getByRole("region", { name: "保存記録の影響経路図", exact: true });
+  const graphChoice = () => graph().getByRole("combobox", { name: "図で選択するブロック", exact: true });
+  const rootChoice = () => graph().getByRole("combobox", { name: "代表経路の起点", exact: true });
+  const selectedPath = () => graph().locator('[data-evidence-path]');
+  const showGraph = async () => {
+    const opener = dialog().getByText("変更影響を図でたどる", { exact: true });
+    if (!(await opener.isVisible())) await activate(dialog().getByText("変更影響分析", { exact: true }));
+    if (!(await graph().isVisible())) await activate(opener);
+    await expect(graph()).toBeVisible();
+  };
+  const svgNode = id => graph().locator(`svg [data-block-id="${id}"]`);
+  await showGraph();
+  await expect(graph().locator('svg [data-block-id]')).toHaveCount(5);
+  await activate(svgNode("C"));
+  await expect(graphChoice()).toHaveValue("C");
+  await expect(svgNode("C")).toHaveAttribute("aria-pressed", "true");
+  await rootChoice().selectOption("A");
+  await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
+  for (const value of ["150", "170", "300", "340"]) await expect(graph()).toContainText(value);
+  await activate(graph().getByRole("button", { name: "選択経路だけ表示", exact: true }));
+  await expect(graph().locator('svg [data-block-id]')).toHaveCount(3);
+  assert.equal(await source().inputValue(), markdown, "Graph filtering cannot filter the complete Markdown model");
+  await rootChoice().selectOption("B");
+  await expect(selectedPath()).toContainText(/B\s*→\s*C/);
+  await expect(graph().locator('svg [data-block-id]')).toHaveCount(2);
+  await expect(svgNode("A")).toHaveCount(0);
+  await activate(graph().getByRole("button", { name: "変更前の図", exact: true }));
+  await expect(graphChoice()).toHaveValue("C"); await expect(rootChoice()).toHaveValue("B");
+  await expect(selectedPath()).toContainText(/B\s*→\s*C/);
+  await activate(graph().getByRole("button", { name: "全体表示", exact: true }));
+  await expect(graph().locator('svg [data-block-id]')).toHaveCount(5);
+  await svgNode("B").focus(); await page.keyboard.press("Enter");
+  await expect(graphChoice()).toHaveValue("B");
+  await expect(svgNode("B")).toBeFocused();
+  await expect(graph()).toContainText("ID参照 @{1}"); await expect(graph()).toContainText("ID参照 @{2}");
+  await svgNode("C").focus(); await page.keyboard.press("Space");
+  await expect(graphChoice()).toHaveValue("C");
+  await expect(svgNode("C")).toBeFocused();
+  assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await expect(page.getByRole("dialog", { name: "計算メモを編集", exact: true })).toHaveCount(0);
+  await rootChoice().selectOption("A");
+  await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
+  await screenshot(prefix + "-saved-impact-graph-path", currentScenario.width, false);
+  await passed(prefix + ": saved impact graph selects historical nodes by touch and keyboard and shows distinct root paths without filtering Markdown or inventing an input cause");
+
   await after().selectOption(retargetRecord.id);
   await expect(impactRow("C")).toContainText("実使用参照元");
   const beforePath = () => impactRow("C").getByRole("heading", { name: "変更前の経路", exact: true }).locator("..");
@@ -2304,18 +2350,62 @@ async function exerciseSavedRecordComparison(prefix) {
   await expect(impact().getByRole("heading", { name: "削除", exact: true }).locator("..")).toContainText(/B\s*→\s*C/);
   assert.equal(await raw(), savedRaw);
   await passed(prefix + ": reference retargeting keeps before and after propagation paths separate and exposes added and removed dependencies");
+  await showGraph();
+  await expect(graphChoice()).toHaveValue(""); await expect(rootChoice()).toHaveValue("");
+  await graphChoice().selectOption("C"); await rootChoice().selectOption("B");
+  await expect(selectedPath()).toHaveCount(0);
+  await expect(graph()).toContainText("完全な分析で到達関係が確認されていません");
+  await activate(graph().getByRole("button", { name: "変更前の図", exact: true }));
+  await expect(graphChoice()).toHaveValue("C"); await expect(rootChoice()).toHaveValue("B");
+  await expect(selectedPath()).toContainText(/B\s*→\s*C/);
+  await activate(graph().getByRole("button", { name: "変更後の図", exact: true }));
+  await activate(graph().getByRole("button", { name: "選択経路だけ表示", exact: true }));
+  await expect(selectedPath()).toHaveCount(0); await expect(graph().locator("svg")).toHaveCount(0);
+  await rootChoice().selectOption("A");
+  await expect(selectedPath()).toContainText(/A\s*→\s*C/);
+  await expect(graph().locator('svg [data-block-id]')).toHaveCount(2);
+  assert.equal(await source().inputValue(), retargetMarkdown);
+  await passed(prefix + ": historical graph preserves selection across sides but never synthesizes a removed root path from the other record");
 
   await after().selectOption(inconsistentRecord.id);
   await expect(impactRow("C")).toContainText("判定不能");
   await expect(afterPath()).not.toContainText(/A\s*→\s*B\s*→\s*C/);
   assert.ok((await source().inputValue()).includes("判定不能"));
+  await showGraph();
+  await expect(graphChoice()).toHaveValue(""); await expect(rootChoice()).toHaveValue("");
+  await graphChoice().selectOption("C"); await rootChoice().selectOption("A");
+  await expect(selectedPath()).toHaveCount(0);
+  await expect(graph()).toContainText("不整合または分析上限");
+  await expect(graph()).toContainText("判定不能");
+  await expect(graph().locator(".historical-path")).toHaveCount(0);
   assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
   await after().selectOption(afterRecord.id);
   assert.equal(await source().inputValue(), markdown);
   await passed(prefix + ": inconsistent recorded used value is unknown rather than certified historical propagation and viewing leaves the original intact");
 
+  await after().selectOption(missingRecord.id);
+  await showGraph();
+  await expect(graphChoice()).toHaveValue(""); await expect(rootChoice()).toHaveValue("");
+  await graphChoice().selectOption("C"); await rootChoice().selectOption("A");
+  await expect(graph()).toContainText("選択したブロックは変更後の記録に存在しません");
+  await expect(svgNode("C")).toHaveCount(0); await expect(selectedPath()).toHaveCount(0);
+  await activate(graph().getByRole("button", { name: "変更前の図", exact: true }));
+  await expect(graphChoice()).toHaveValue("C"); await expect(rootChoice()).toHaveValue("A");
+  await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
+  await activate(graph().getByRole("button", { name: "変更後の図", exact: true }));
+  await expect(graphChoice()).toHaveValue("C"); await expect(rootChoice()).toHaveValue("A");
+  await expect(selectedPath()).toHaveCount(0);
+  await screenshot(prefix + "-saved-impact-graph-absent", currentScenario.width, false);
+  await after().selectOption(afterRecord.id); await showGraph();
+  await graphChoice().selectOption("C"); await rootChoice().selectOption("A");
+  assert.equal(await source().inputValue(), markdown); assert.equal(await raw(), savedRaw);
+  await passed(prefix + ": inconsistent and absent historical nodes are explicitly unknown or absent rather than replaced and record changes clear old graph paths");
+
   await activate(dialog().getByRole("button", { name: "前後を入れ替える", exact: true }));
   await expect(before()).toHaveValue(afterRecord.id); await expect(after()).toHaveValue(beforeRecord.id);
+  await showGraph();
+  await expect(graphChoice()).toHaveValue(""); await expect(rootChoice()).toHaveValue("");
+  await expect(selectedPath()).toHaveCount(0);
   assert.notEqual(await source().inputValue(), markdown);
   await before().selectOption(sameRecord.id); await after().selectOption(beforeRecord.id);
   await expect(source()).toHaveValue(/変更: 0 \/ 追加: 0 \/ 削除: 0 \/ 比較対象項目に変更なし: 5/);
@@ -2328,14 +2418,14 @@ async function exerciseSavedRecordComparison(prefix) {
   await passed(prefix + ": swapping records changes comparison direction while distinct IDs with identical recorded fields remain unchanged");
 
   await activate(dialog().getByRole("button", { name: "比較Markdown全文をコピー", exact: true }));
-  await expect(dialog().getByRole("status")).toContainText("コピーしました");
+  await expect(dialog().getByRole("status").filter({ hasText: "コピーしました" })).toContainText("コピーしました");
   assert.equal(await page.evaluate(() => window.__comparisonCopy), markdown);
   const downloaded = page.waitForEvent("download");
   await activate(dialog().getByRole("button", { name: "比較.mdをダウンロード", exact: true }));
   const download = await downloaded;
   assert.ok(download.suggestedFilename().endsWith("-記録比較.md") && !download.suggestedFilename().includes("/"));
   assert.deepEqual(await readFile(await download.path()), Buffer.from(markdown, "utf8"));
-  await expect(dialog().getByRole("status")).toContainText("ダウンロードを要求");
+  await expect(dialog().getByRole("status").filter({ hasText: "ダウンロードを要求" })).toContainText("ダウンロードを要求");
   await page.evaluate(() => {
     navigator.clipboard.writeText = async () => { throw new Error("synthetic comparison clipboard refusal"); };
     window.__comparisonOriginalCreateUrl = URL.createObjectURL;
@@ -2350,19 +2440,24 @@ async function exerciseSavedRecordComparison(prefix) {
   assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
   await passed(prefix + ": comparison preview copy and downloaded bytes agree and export failures never mutate persisted records");
 
+  await showGraph(); await graphChoice().selectOption("C"); await rootChoice().selectOption("A");
+  await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
   // External persistence changes while the reader stays open. Do not mix acquisition times.
   await page.evaluate(() => {
     const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
-    data.notes[0].calculationEvidence.records = [data.notes[0].calculationEvidence.records[2]];
+    data.notes[0].calculationEvidence.records = [data.notes[0].calculationEvidence.records.find(record => record.id === "record-identical")];
     window.__comparisonOriginalSetItem.call(localStorage, "calculation-memo:data", JSON.stringify(data));
     window.dispatchEvent(new StorageEvent("storage", { key: "calculation-memo:data", newValue: JSON.stringify(data), storageArea: localStorage }));
     window.__comparisonWrites = 0;
   });
   const externalRaw = await raw();
   assert.equal(await source().inputValue(), markdown);
+  await expect(graphChoice()).toHaveValue("C"); await expect(rootChoice()).toHaveValue("A");
+  await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
   await refresh();
   await expect(source()).toHaveCount(0);
   await expect(dialog()).toContainText(/選択していた記録が再取得した原本にありません/);
+  await expect(graph()).toHaveCount(0);
   assert.equal(await raw(), externalRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
   await passed(prefix + ": external saves cannot mix with frozen comparison and explicit refresh reports vanished selections without silently substituting records");
   await close(); await open();
@@ -2393,11 +2488,33 @@ async function exerciseSavedRecordComparison(prefix) {
     await activate(dialog().getByText("変更影響分析", { exact: true }));
     await activate(impactRow("C").locator("summary").first());
     await expect(impactRow("C")).toContainText(/A\s*→\s*B\s*→\s*C/);
+    await showGraph(); await graphChoice().selectOption("C"); await rootChoice().selectOption("A");
+    await activate(graph().getByRole("button", { name: "選択経路だけ表示", exact: true }));
+    await expect(graph().locator('svg [data-block-id]')).toHaveCount(3);
+    const originalRootFont = await page.evaluate(() => document.documentElement.style.fontSize);
+    const graphSize = () => graph().locator("svg").evaluate(element => ({
+      width: element.getBoundingClientRect().width,
+      labelWidth: element.querySelector('[data-block-id="C"] text').getBoundingClientRect().width,
+    }));
+    const graphAt100 = await graphSize();
     await dialog().locator(".saved-evidence").evaluate(element => {
-      const children = [element, ...element.querySelectorAll("*")];
+      // Existing HTML controls/details retain their explicit doubled-font check.
+      // SVG geometry and labels scale together via root rem, including fresh SVGs.
+      const children = [element, ...element.querySelectorAll("*")].filter(child => !child.closest("svg"));
       const sizes = children.map(child => parseFloat(getComputedStyle(child).fontSize) * 2);
       children.forEach((child, i) => { child.style.fontSize = sizes[i] + "px"; });
     });
+    await page.evaluate(() => document.documentElement.style.fontSize = "200%");
+    await activate(graph().getByRole("button", { name: "変更前の図", exact: true }));
+    await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
+    await activate(graph().getByRole("button", { name: "変更後の図", exact: true }));
+    await expect(svgNode("C")).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(async () => (await graphSize()).width / graphAt100.width).toBeCloseTo(2, 1);
+    await expect.poll(async () => (await graphSize()).labelWidth / graphAt100.labelWidth).toBeCloseTo(2, 1);
+    await svgNode("B").focus(); await page.keyboard.press("Enter");
+    await expect(graphChoice()).toHaveValue("B");
+    await graphChoice().selectOption("C"); await rootChoice().selectOption("A");
+    await expect(selectedPath()).toContainText(/A\s*→\s*B\s*→\s*C/);
     const button = dialog().getByRole("button", { name: "比較.mdをダウンロード", exact: true });
     await button.focus(); await expect(button).toBeFocused();
     await page.keyboard.press("Tab");
@@ -2405,6 +2522,7 @@ async function exerciseSavedRecordComparison(prefix) {
     await button.scrollIntoViewIfNeeded(); await expect(button).toBeInViewport();
     await screenshot(prefix + "-saved-record-comparison-" + theme + "-200-percent", currentScenario.width, false);
     assert.equal(await raw(), themeRaw);
+    await page.evaluate(value => { document.documentElement.style.fontSize = value; }, originalRootFont);
     await close(); await expect(detail().getByRole("button", { name: "計算記録を開く", exact: true })).toBeFocused();
     await closeDetail();
   }

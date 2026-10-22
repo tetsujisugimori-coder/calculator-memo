@@ -1,13 +1,15 @@
 "use client";
 import { useState, type ReactNode } from 'react';
 import type { EvidenceImpact } from '../lib/evidence-impact';
+import { EvidenceImpactGraph } from './EvidenceImpactGraph';
 import { impactEdgeLabel } from '../lib/evidence-impact-markdown';
 
-export function EvidenceImpactView({ impact, renderDetails }: { impact: EvidenceImpact; renderDetails: (id: string) => ReactNode }) {
+export function EvidenceImpactView({ impact, renderDetails, generationKey }: { generationKey?: string; impact: EvidenceImpact; renderDetails: (id: string) => ReactNode }) {
   const [opened, setOpened] = useState(false);
   return <section aria-label="保存記録の変更影響分析"><details onToggle={event => setOpened(event.currentTarget.open)}>
     <summary>変更影響分析</summary>
     {opened && <>
+      <EvidenceImpactGraph key={generationKey} impact={impact} renderDetails={renderDetails} />
       <p>直接変更（観測差分） {impact.counts.direct} / 波及変更候補 {impact.counts.propagation} / 結果差分 {impact.counts.result} / 順序差分 {impact.counts.order} / 判定不能 {impact.counts.unknown}</p>
       <p>直接変更は保存項目の差です。実使用値の変化を、利用者の直接編集や最初の原因とは断定しません。波及変更候補と結果差分は独立し、複数の起点を単一原因に決めつけません。</p>
       <p>変更前・変更後の実使用入力だけを別々に追跡します。各起点の代表経路で、全経路ではありません。依存経路は数値的な因果関係や数学的証明ではありません。未保存編集・試算・現在の依存図は使用しません。</p>

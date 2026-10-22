@@ -57,6 +57,7 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
   const selectionHelpId = useId();
   const [state, setState] = useState(() => initial(memoId));
   const { snapshot, error, detailId, beforeId, afterId } = state;
+  const [generation, setGeneration] = useState(0);
   const [changedElsewhere, setChangedElsewhere] = useState(false);
   const [notice, setNotice] = useState<{ text: string; failed: boolean } | null>(null);
   const [copying, setCopying] = useState(false);
@@ -86,6 +87,7 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
   }, [snapshot]);
   const refresh = () => {
     if (copying) return;
+    setGeneration(value => value + 1);
     try {
       const next = readSavedRecords(memoId);
       const exists = (id: string) => next.records.some(record => record.id === id);
@@ -144,7 +146,7 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
               <div className="evidence-pair"><section><h4>変更前</h4>{row.before ? <BlockInfo {...row.before} record={comparison.before} /> : <p>この記録に存在しません。</p>}</section><section><h4>変更後</h4>{row.after ? <BlockInfo {...row.after} record={comparison.after} /> : <p>この記録に存在しません。</p>}</section></div>
             </LazyDetails>)}
           </section>}
-          {impact && comparison && <EvidenceImpactView impact={impact} renderDetails={id => {
+          {impact && comparison && <EvidenceImpactView generationKey={JSON.stringify([generation, beforeId, afterId])} impact={impact} renderDetails={id => {
             const row = comparison.rows.find(item => item.blockId === id)!;
             return <div className="evidence-pair"><section><h4>変更前</h4>{row.before ? <BlockInfo {...row.before} record={comparison.before} /> : <p>この記録に存在しません。</p>}</section><section><h4>変更後</h4>{row.after ? <BlockInfo {...row.after} record={comparison.after} /> : <p>この記録に存在しません。</p>}</section></div>;
           }} />}

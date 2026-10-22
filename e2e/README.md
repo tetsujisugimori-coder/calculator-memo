@@ -406,7 +406,7 @@ No current memo block is used to fill historical information.
 Three added geometry checkpoints per context cover the expanded comparison and
 both themes at 200% text; keyboard containment and restored trigger focus are
 asserted. No additional success PNG is retained. The expected complete contract is
-576 acceptance checks, 526 geometry checkpoints, and 799 observed touch
+594 acceptance checks, 538 geometry checkpoints, and 824 observed touch
 activations per mobile context. The six contexts, 114 representative PNGs, two
 workers, time limits, and zero exported success traces remain unchanged. These
 counts specify required coverage, not a claim that every context has already run;
@@ -429,3 +429,34 @@ One additional geometry checkpoint per context checks expanded impact paths.
 There is no extra success PNG, timeout extension, trace retention, or browser
 matrix reduction. Counts above are required coverage; completed runs are recorded
 separately in LOG.
+
+
+## Saved-record impact path graph
+
+Three additional acceptance groups per context exercise the historical graph,
+not the current memo graph. The fixture keeps the A 100→120 / B 150→170 /
+C 300→340 chain, with B reading two separately named inputs from A in
+`@{1}+@{2}-@{2}+50`. Selecting C exposes A→B→C and B→C as distinct
+representative paths. The path filter must show three and then two nodes without
+changing the complete comparison Markdown. SVG node touch/click, Enter and Space
+selection are checked, including both input names in B's historical details.
+
+The retarget record changes C's actual source to A (result 240). A B-root path
+exists only before; switching sides must preserve the selected C and B IDs while
+showing the path's absence after, never joining before/after edges. A separate
+record lacks C, and another records C's inconsistent input 999; the graph must
+respectively explain absence and unknown evidence without replacement or false
+highlighting. Pair changes and swapping clear the old graph selection, whereas
+side changes retain IDs. External saves leave the frozen graph and Markdown
+unchanged until explicit refresh, which removes vanished selections. All these
+operations retain exact storage bytes and issue zero writes.
+
+Two geometry-only checkpoints cover selected paths and an absent-side block.
+The existing light/dark 200%-text checkpoints now include graph selection,
+side switching, keyboard activation and contained controls. No successful PNG,
+trace, timeout, retry or browser-matrix budget is added. The expected complete
+contract is 594 named checks, 538 geometry checkpoints and 824 observed touch
+activations in each mobile context. These are fail-closed required counts, not
+claims of a completed run. Renderer fault/cap and broader graph topology cases
+are additionally covered by unit tests; physical iPhone Safari and VoiceOver are
+not exercised by this synthetic Playwright harness.

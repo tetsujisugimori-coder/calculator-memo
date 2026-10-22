@@ -6,6 +6,7 @@ import { SavedEvidenceModal } from '../components/SavedEvidenceModal';
 import * as evidence from '../lib/calculation-evidence';
 import * as report from '../lib/markdown-report';
 import * as comparison from '../lib/evidence-comparison';
+import * as renderer from '../lib/dependency-renderer';
 import * as impactAnalysis from '../lib/evidence-impact';
 import { STORAGE_KEY } from '../lib/storage';
 import type { PlainCalculationNote } from '../lib/types';
@@ -172,4 +173,64 @@ it('keeps existing comparison and blocks incomplete export if analysis alone fai
   expect(host.querySelector('.evidence-diff-row')).not.toBeNull();
   expect(button('比較Markdown全文をコピー')).toBeUndefined();
   expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+
+const openNamed = async (label: string) => act(async () => { const summary = [...host.querySelectorAll('summary')].find(item => item.textContent === label)!; const detail = summary.parentElement as HTMLDetailsElement; detail.open = true; detail.dispatchEvent(new Event('toggle')); });
+const openGraph = async () => { await openNamed('変更影響分析'); await openNamed('変更影響を図でたどる'); };
+function fakeRender() {
+  return vi.spyOn(renderer, 'renderDependencyGraph').mockImplementation(async (_text, ids) => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for (const id of ids) { const node = document.createElementNS(svg.namespaceURI, 'g'); node.setAttribute('data-block-id', id); node.setAttribute('tabindex', '0'); svg.append(node); }
+    return svg;
+  });
+}
+it('historical graph selects frozen C paths and actual values without writes or Markdown filtering', async () => {
+  fakeRender(); await show(); const raw = localStorage.getItem(STORAGE_KEY), markdown = md(), writes = vi.spyOn(Storage.prototype, 'setItem');
+  await openGraph(); await change('図で選択するブロック', 'C'); await change('代表経路の起点', 'A');
+  expect(host.querySelector('[data-evidence-path]')?.textContent).toContain('A → B → C');
+  await click('選択経路だけ表示'); expect(host.querySelectorAll('.historical-graph-svg [data-block-id]')).toHaveLength(3);
+  await click('変更前の図'); expect(select('図で選択するブロック').value).toBe('C'); expect(select('代表経路の起点').value).toBe('A');
+  const details = host.querySelector('[aria-label="図で選択した保存ブロックの詳細"]')!.textContent;
+  expect(details).toContain('150'); expect(details).toContain('170'); expect(details).toContain('300'); expect(details).toContain('340'); expect(details).not.toContain('999');
+  await change('代表経路の起点', 'B'); expect(host.querySelector('[data-evidence-path]')?.textContent).toContain('B → C');
+  expect(host.querySelectorAll('.historical-graph-svg [data-block-id]')).toHaveLength(2);
+  expect(md()).toBe(markdown); expect(writes).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+it('graph uses keyboard selection, retains ID on absent side, and never substitutes another block', async () => {
+  fakeRender(); const n = note(); n.calculationEvidence!.records[0].blocks.pop(); save(n); await show(); await openGraph();
+  await act(async () => host.querySelector('.historical-graph-svg [data-block-id="C"]')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })));
+  expect(select('図で選択するブロック').value).toBe('C'); expect(host.querySelector('.historical-graph-svg [data-block-id="C"]')?.getAttribute('aria-pressed')).toBe('true');
+  await click('変更前の図'); expect(select('図で選択するブロック').value).toBe('C'); expect(host.textContent).toContain('変更前の記録に存在しません');
+});
+it('graph resets selection and pending renderer on pair swap and same-ID explicit refresh', async () => {
+  const rendering = fakeRender(); await show(); await openGraph(); await change('図で選択するブロック', 'C'); await change('代表経路の起点', 'A');
+  await click('前後を入れ替える'); await openNamed('変更影響を図でたどる'); expect(select('図で選択するブロック').value).toBe(''); expect(select('代表経路の起点').value).toBe('');
+  await change('図で選択するブロック', 'C'); save(note([record('old'), record('new', 500)])); await click('最新の保存内容を再取得'); await openNamed('変更影響を図でたどる');
+  expect(select('図で選択するブロック').value).toBe(''); expect(host.querySelector('[data-evidence-path]')).toBeNull(); expect(rendering).toHaveBeenCalled();
+});
+it('renderer failure preserves historical details and complete export; no analysis failure claim', async () => {
+  vi.spyOn(renderer, 'renderDependencyGraph').mockRejectedValue(new Error('renderer failure')); await show(); const markdown = md(); await openGraph();
+  expect(host.textContent).toContain('図の描画に失敗'); await change('図で選択するブロック', 'C'); expect(host.textContent).toContain('340'); expect(md()).toBe(markdown); expect(button('比較.mdをダウンロード')).toBeTruthy();
+});
+it('oversized valid historical drawing does not mark records invalid and list/export remain available', async () => {
+  const records = [record('old'), record('new', 120)]; for (const rec of records) for (let i = 4; i <= 129; i++) rec.blocks.push({ blockId: 'extra' + i, position: i, expression: '1', inputs: [], result: '1', resultText: '1', status: 'success' });
+  save(note(records)); const render = fakeRender(); await show(); const markdown = md(); await openGraph(); expect(host.textContent).toContain('描画上限'); expect(host.textContent).toContain('保存記録は不正ではありません'); expect(render).not.toHaveBeenCalled();
+  await change('図で選択するブロック', 'C'); await change('代表経路の起点', 'A'); await click('選択経路だけ表示'); expect(render).toHaveBeenCalled(); expect(host.querySelectorAll('.historical-graph-svg [data-block-id]')).toHaveLength(3); expect(md()).toBe(markdown);
+});
+it('late historical renderer completion cannot replace a newer side', async () => {
+  let complete!: (svg: SVGSVGElement) => void;
+  const render = fakeRender(); const normal = render.getMockImplementation()!; render.mockImplementationOnce(() => new Promise(resolve => { complete = resolve; }));
+  await show(); await openGraph(); await click('変更前の図'); const active = host.querySelector('.historical-graph-svg svg');
+  await act(async () => complete((await normal('', [], () => false))!)); expect(host.querySelector('.historical-graph-svg svg')).toBe(active); expect(active?.getAttribute('aria-label')).toBe('変更前の保存記録の図');
+});
+
+it('late redraw does not steal focus after the user tabs to another control', async () => {
+  const rendering = fakeRender(); await show(); await openGraph();
+  const node = host.querySelector<SVGGElement>('.historical-graph-svg [data-block-id="C"]')!; node.focus();
+  let complete!: (svg: SVGSVGElement) => void; const normal = rendering.getMockImplementation()!;
+  rendering.mockImplementationOnce(() => new Promise(resolve => { complete = resolve; }));
+  await act(async () => node.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })));
+  const other = select('代表経路の起点'); other.focus();
+  await act(async () => complete((await normal('', ['A', 'B', 'C'], () => false))!));
+  expect(document.activeElement).toBe(other);
 });
