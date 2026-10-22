@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 (JST): PR #52 根拠スナップショット正式6条件成功
+- [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52)、実装・同期修正HEAD `dd298ab071cefe086f94f99c973d8f2c3fdd4de7` の [CI 39695357161](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39695357161) が全工程成功。追加91件を含む929単体/41files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages build成功。
+- 全6条件のexpected/served/actual SHA一致、errors=[]。510 GUI検査、502横幅checkpoint、モバイル4条件それぞれ754touch。実使用値の確定保存、旧記録保持、同式再計算の新ID、preview/draft/失敗/取消での不追記、容量/保存競合拒否、原本読取レポートと明示再現検証を確認した。前述の非同期保存baseline競合も最終差分で解消。
+- [artifact 12391262641](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39695357161/artifacts/12391262641): ZIP33,281,240 bytes、SHA256 `f3169bceb04ac9c78e2f3e392c564bc2ce326cdf12803b1939344ddc4d37bf28`。PNG114枚32,393,226 bytes、成功trace0、GUI769.339秒。代表375px WebKitダーク拡大画面を確認。6条件/timeout/画像予算/worker数は変更していない。
+- 独立レビュー: 25逆境テストを含む保存・UI・レポートの検証と追補49件、最終GUI同期差分のレビューを完了し阻害指摘なし。保存された記録の範囲で式・実使用内部値・参照元・結果・順序を追跡できるが、履歴なし過去値の復元、暗号学的真正性、数学的証明は保証しない。
+- ローカルWebKitはOSライブラリ不足のまま、正式CIの両条件成功で補完。実iPhone Safari/VoiceOver、OS物理保存、旧版/外部非協調writerとの完全排他、Memo Nexus実画面は未検証。既存audit指摘は依存変更なしで未解消。上限100回/500,000 bytes到達時は黙って削除せず拒否する。
+- この追記は文書のみ。記録commit自身の最終HEADとReady切替後の同一HEADの正式CIも別途確認し、PR本文と完了報告へ実在URLを記す。mainへマージしない。
+
 ## 2026-10-22 (JST): 非同期保存後のGUI比較基点を厳密化
 - [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52) の HEAD `6cd35cf990b16229db44309cae6fb54cd13f4e77` はローカルChromium4条件339checks/334geometry/mobile各754touch成功。WebKitはOSライブラリ不足で起動不可。
 - 同HEADの正式 [CI 39693381832](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39693381832) は単体929/契約26/lint/型/両build成功、WebKit2条件171checks成功。一方Chromium4条件は、直前の明示計算の非同期保存が不変比較基点の取得後に完了するテスト競合で失敗した。全体成功とは扱わない。旧HEADのCI 39692397713は新HEADに伴い自動cancelled。
