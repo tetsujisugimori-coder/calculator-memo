@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 09:18 JST: 保存完了・比較図切替のGUI同期を補完（Issue #51 / PR #52）
+
+- 文書追記HEAD `17acbfea0afe05c70fedb10a9d00d09866868219` の正式CI `39697349680` は、単体929件・CI契約26件・lint・型検査・両ビルド成功、GUI4条件成功/2条件失敗。成功扱いせず、失敗traceを独立に確認した。
+- desktopは明示的な第2メモ保存の完了前に試験がstorage比較基点を採取したため、再読込後の正しい保存済み原本との差を誤判定。保存成功後のdialog閉鎖を観測してから比較基点を取る。
+- Chromium mobile390は通常図の初期描画によるレイアウト変動中に比較ボタンへtouchし、切替が成立しないまま比較SVGを待っていた。通常図準備完了後のtouchと比較選択状態を確認する。図の描画・保存製品コード、最終SVG/原本不変assertion、timeout、6条件、画像予算は変えない。
+- 既存の全6条件成功記録 `39695357161` はその実装HEADの実測であり、本追記後HEADの成功を意味しない。本変更の最終HEAD、独立レビュー、正式CI結果はPR本文に実測で記録する。
+
+
 ## 2026-10-22 (JST): PR #52 根拠スナップショット正式6条件成功
 - [PR #52](https://github.com/tetsujisugimori-coder/calculator-memo/pull/52)、実装・同期修正HEAD `dd298ab071cefe086f94f99c973d8f2c3fdd4de7` の [CI 39695357161](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39695357161) が全工程成功。追加91件を含む929単体/41files、26 CI契約、lintエラー0（既存warning1）、型検査、通常/Pages build成功。
 - 全6条件のexpected/served/actual SHA一致、errors=[]。510 GUI検査、502横幅checkpoint、モバイル4条件それぞれ754touch。実使用値の確定保存、旧記録保持、同式再計算の新ID、preview/draft/失敗/取消での不追記、容量/保存競合拒否、原本読取レポートと明示再現検証を確認した。前述の非同期保存baseline競合も最終差分で解消。

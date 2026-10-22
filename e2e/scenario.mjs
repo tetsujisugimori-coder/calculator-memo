@@ -842,6 +842,11 @@ async function exerciseVariables(prefix) {
   await add("price = 2", "2");
   await add("price * 5", "10");
   await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
+  // Explicit save completes asynchronously; baseline only the persisted second scope.
+  await expect(dialog).toHaveCount(0);
+  await expect.poll(async () => (await storage()).notes.find(note => note.title === "Synthetic isolated variables")?.blocks).toMatchObject([
+    { expression: "price = 2", result: 2 }, { expression: "price * 5", result: 10 },
+  ]);
   const before = (await storage()).notes;
   await page.reload();
   await selectPanel("notes");
@@ -1629,7 +1634,13 @@ async function exerciseCalculationTrials(prefix) {
   const openComparison = async () => {
     await activate(dialog.getByText("依存関係の図を開く", { exact: true }));
     await expect(dialog.locator(".dependency-graph-panel")).toHaveAttribute("open", "");
-    await activate(graph().getByRole("button", { name: "変更前後・試算", exact: true }));
+    // Initial Mermaid insertion can move the touch target. Even an empty current
+    // graph has an SVG; wait for that render before switching to the comparison.
+    await expect(graph().locator(".dependency-graph-svg > svg")).toHaveCount(1);
+    await expect(graph()).not.toContainText("図を準備しています…");
+    const comparisonButton = graph().getByRole("button", { name: "変更前後・試算", exact: true });
+    await activate(comparisonButton);
+    await expect(comparisonButton).toHaveAttribute("aria-pressed", "true");
     await expect(graphNode("a")).toBeVisible();
   };
   const trial = async () => {
