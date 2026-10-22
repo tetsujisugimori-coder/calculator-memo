@@ -66,7 +66,7 @@ export function sanitizeDependencySvg(source: string, ids: readonly string[], do
 
 /** Only fixed placeholders enter the layout grammar. User text is restored with
  * textContent after sanitization, never interpreted as Mermaid, Markdown or HTML. */
-export function prepareDependencyLayout(source: string): { text: string; labels: Map<string, string[]> } {
+export function prepareDependencyLayout(source: string, historical = false): { text: string; labels: Map<string, string[]> } {
   const labels = new Map<string, string[]>();
   const decode = (encoded: string) => encoded.replace(/#(\d+);/g, (_, number) => String.fromCodePoint(Number(number)));
   const text = source.replace(/(block_[0-9a-f]+)\["((?:#\d+;)*)"\]/g, (_, id: string, encoded: string) => {
@@ -84,6 +84,7 @@ export function prepareDependencyLayout(source: string): { text: string; labels:
     // out of layout too. Their full meaning remains in the export and legend.
     const text = decode(encoded);
     const change = text.includes('＋追加') ? '＋追加 ' : text.includes('−削除') ? '−削除 ' : text.includes('変更不明') ? '変更不明 ' : '';
+    if (historical) return `|${text.includes('ID参照') ? 'ID参照（実使用）' : '旧変数（実使用）'}${text.includes('不確定') ? '・不整合' : ''}|`;
     return `|${change}${text.includes('ID参照') ? 'ID参照' : '旧変数候補'}|`;
   });
   return { text, labels };

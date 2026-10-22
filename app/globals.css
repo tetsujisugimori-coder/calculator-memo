@@ -329,7 +329,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 
 /* Identification is presentation-only. Native inputs and error messages are untouched. */
 .identification-settings { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
-.identification-settings label { display: grid; gap: 4px; flex: 1; min-width: 0; }
+.identification-settings label { display: grid; grid-template-columns: minmax(0, 1fr); overflow-wrap: anywhere; gap: 4px; flex: 1; min-width: 0; }
 .identification-settings select { min-width: 0; width: 100%; min-height: 44px; background: var(--surface); color: var(--ink); }
 .identification-settings > button { min-width: 44px; min-height: 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); }
 .identity-item { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 8px 10px; border-radius: 5px; overflow-wrap: anywhere; color: var(--ink); }
@@ -481,3 +481,14 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .saved-evidence .evidence-toggle input { flex: 0 0 auto; }
 .evidence-diff-row { margin: .65rem 0; }
 @media (max-width: 720px) { .saved-evidence .evidence-pair { grid-template-columns: minmax(0, 1fr); } }
+
+/* Historical graphs never navigate into the current editor. */
+.evidence-impact-graph { margin: .8rem 0; }
+.historical-graph-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .8rem; }
+.historical-graph-canvas, .historical-graph-inspector { min-width: 0; overflow-wrap: anywhere; }
+.historical-graph-inspector .evidence-pair { grid-template-columns: minmax(0, 1fr); }
+.historical-graph-svg .historical-path rect { stroke-width: 4px; }
+.historical-graph-svg .historical-selected rect { stroke: var(--brand); stroke-width: 6px; }
+.historical-graph-svg .node:focus-visible rect { stroke: var(--ink); stroke-width: 6px; stroke-dasharray: 8 3; }
+.evidence-impact-graph button[aria-pressed="true"] { outline: 2px solid var(--brand); outline-offset: -2px; }
+@media (max-width: 900px) { .historical-graph-workspace { grid-template-columns: minmax(0, 1fr); } }

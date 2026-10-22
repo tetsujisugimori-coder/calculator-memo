@@ -1,5 +1,29 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-22 20:20 JST: 保存記録の影響経路図（Issue #57）
+
+- PR #56 merged と最新 main `2c1b55db104afa60ab1fb61ab2b73507de4043af`、作業ツリーcleanを確認し `feat/saved-impact-graph` を作成。関連Issue/PRを照合しIssue #57に目的/範囲/受入条件を記録した。
+- 既存分析を唯一の判断元とし、前後別実使用辺/代表経路の表示アダプタと専用UIを追加する方針を実装前に報告。現在メモの編集移動を持つUI全体再利用ではなく、安全なMermaid直列描画/SVG再構築だけの共有を採用。分類/探索/engine/schemaは変更しない。
+- 図選択・起点別経路・全体/経路表示・前後詳細・世代取消を実装。描画上限は分析上限と別表示し、小さな選択経路と既存一覧/Markdownへ退避。非破壊性と数値精度を維持する。
+- 予備検証: 新規表示モデル20件、既存/追加UI32件、SVG12件成功。型検査とPagesビルド成功。全単体・通常ビルド・実GUI6条件・独立レビュー・最終HEAD CIは後続に実測記録し、現時点で完了としない。
+
+
+- 20:30 JST追記: 全単体1071件、CI契約28件、lint（エラー0・既存aria-description警告1）、型検査、通常/Pagesビルド成功。独立レビューの遅延SVG完了によるフォーカス奪取を修正し回帰追加。空経路/描画失敗で古い成功状態・件数を残さないよう修正。レビュー再検証66件成功、残存阻害指摘なし（最終GUI/CI成功を条件とする）。
+- GUI検証の判断変更: 最初の文字拡大試験は既存DOMだけを拡大し、側切替で再生成したSVGが拡大対象から外れるとレビューで判明。root文字サイズと再生成後の図幅/文字幅2倍の実測を組み合わせた試験へ補強。Chromium desktopの対象操作は成功、WebKit375は200%時のページ横幅465pxで厳格検査失敗、原因調査中。成功として記録せず、条件/上限を緩めない。
+
+
+- 20:34 JST追記: 横幅超過を既存の識別表示selectに特定。WebKit375/root200%の空画面でもlabel幅299px/scrollWidth453px、document465pxを再現。図の不具合という見立ては採用しない。grid/max-widthだけでは解消せず、native外観変更と切捨てを避け、既定選択肢を「初期設定」に短縮して意味を可視説明/aria-describedbyへ分離する次善策を採用。実ブラウザ試作でdocument375px/label scroll299px。設定値・保存は変更せず回帰試験を追加し、最終全条件を再実行する。
+
+- 20:37 JST追記: 修正後の全単体1072件/47ファイル、lint（既存警告1のみ）、型検査、通常/Pagesビルド成功。新規識別表示UI1件の独立レビュー成功。製品ビルドのfocused Chromium desktop/WebKit375が両テーマ・root200%で成功し、再生成SVG/文字の2倍拡大とページ幅375px、フォーカス、図操作、コピー/ダウンロード、取得世代の非混入を確認。正式6条件と最終HEAD CIは確認待ち。
+
+
+- 21:20 JST追記: [PR #58](https://github.com/tetsujisugimori-coder/calculator-memo/pull/58)をDraft作成、[Issue #57](https://github.com/tetsujisugimori-coder/calculator-memo/issues/57)へ紐付け。ローカル検証HEAD `4e375e56ac8be574b4aa40a7229d312c0eeafa7a` と公開HEAD `7ec1420c01b22c38d66abb1733fc00dd068efe6f` はtree `bf033bb6cf5fde5d40c4992a7092a9ba2dbba017` が完全一致（commit作成日時等のみ異なる）。CLI pushは資格情報なしで未実行終了、一括tree送信は応答不明で停止後に存在確認404。小分けblobとSHA照合で公開を完了し、main/保存データには変更なし。
+- ローカル正式GUIは上記検証HEADでChromium/WebKit6条件すべて成功: 594検査、横幅538地点、19画像×6=114枚、モバイル各824タッチ、ブラウザ/ネットワークエラー0。並列2で27分9秒、既存30分枠・画像予算・成功trace非保存を維持。375/390px、デスクトップ、両テーマ、root200%文字と再生成SVG2倍、タッチ/キーボード、原本不変・世代切替・旧経路非混入を確認。
+- 独立レビューはモデル20/UI33/SVG13/識別UI1=67件を独立実行し成功。フォーカス/非同期取消/世代境界を再確認し阻害指摘なし、最終公開HEADの正式CI成功を条件にマージ可との推奨。全GUIの実行は実装側であり、独立実行と混同しない。
+- 代表画面（PCのA→B→C/当時B使用値150・C結果300、Chromium390経路全体、WebKit375暗色200%詳細）は実画素を確認し、人工保存fixture・期待値・検証集計とともに利用者へレビュー資料として用意。fixture/期待値のリポジトリ内参照は[設計文書](docs/agent/saved-impact-graph.md)に記載。図の縮小は既存50〜200%操作で行い画像内容は加工していない。
+- 正式リモートCI: 初回公開HEADの[run 39777291797](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39777291797)開始を確認。このLOG追記コミット自身のCIは未確認で、最終結果はPR Checks/本文とIssueへ実測後に記載する。以前のHEADやローカル成功を最終リモート成功としない。実機iPhone Safari/VoiceOver/native OS文字拡大、全経路の列挙/原因証明は未検証または対象外。マージ/本番公開は行わず人間のレビュー待ちとする。
+
+
 ## 2026-10-22 17:30 JST: 保存済み計算記録の変更影響分析（Issue #55）
 
 - PR #54 mergeとmain e9601e43e68f32328b4a42296e868cd84c7071c0を確認。従来作業場所がこの環境にないため既存の別作業ツリーを変更せずfresh cloneし、clean mainからfeat/saved-record-impactを作成。Issue #55を目的/範囲/完了条件とともに作成した。
