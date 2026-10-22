@@ -425,10 +425,10 @@ async function exerciseBasicMath(prefix) {
     assert.deepEqual((await storage()).history, before, "Typing does not create history");
     await activate(button("計算する"));
     await expect(result).toHaveText(text);
-    await expect.poll(async () => {
-      const latest = (await storage()).history[0];
-      return { isNew: Boolean(latest?.id && latest.id !== before[0]?.id), expression: latest?.expression, resultText: latest?.resultText };
-    }).toEqual({ isNew: true, expression, resultText: text });
+    // Identical calculations within two seconds legitimately reuse the history
+    // entry. Await any pending save without requiring a new record for that case.
+    await expect.poll(async () => (await storage()).history[0]).toMatchObject({ expression, resultText: text });
+    await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     near((await storage()).history[0].result, value, expression);
     await expect(button("単独計算メモを作成")).toBeEnabled();
   }
