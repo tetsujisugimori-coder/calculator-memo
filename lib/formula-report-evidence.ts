@@ -75,7 +75,9 @@ export function formulaReportAssessment(report: FormulaReport, formula: Register
     : { status: 'unknown', reason: '旧形式の確認式は保全していますが、確認日時・変数定義が未記録のため新基準で比較できません。' };
   try { readReportEvidence(evidence, report.formulaId); } catch { return { status: 'unknown', reason: '根拠情報の構造を確認できません。' }; }
   const last = evidence.confirmations.at(-1);
-  if (!last) return { status: 'unconfirmed', reason: '明示的な確認履歴がありません。' };
+  if (!last) return report.confirmedExpression === null
+    ? { status: 'unconfirmed', reason: '明示的な確認履歴がありません。' }
+    : { status: 'unknown', reason: '旧形式の確認式は保全していますが、確認日時・変数定義が未記録のため新基準で比較できません。' };
   if (last.title !== report.title || last.body !== report.body || JSON.stringify(last.links) !== JSON.stringify(evidence.links)) return { status: 'unconfirmed', reason: '確認後にレポートまたは根拠参照を編集しています。過去の確認履歴は保全されています。' };
   if (hasUnknownFormulaDefinition(formula) || extra(evidence, ['version', 'links', 'confirmations']) || extra(last, ['id', 'formulaId', 'confirmedAt', 'evidenceSignature', 'definition', 'title', 'body', 'links']) || extra(last.definition, ['version', 'expression', 'variables'])) return { status: 'unknown', reason: '未対応の定義・確認情報があり、意味を推測して一致扱いにしません。' };
   if (evidence.links.length && (!notes || resolveReportEvidence(notes, evidence.links).some(item => item.status !== 'available'))) return { status: 'unknown', reason: '根拠不足：参照記録を取得できないか、欠落・破損しています。' };

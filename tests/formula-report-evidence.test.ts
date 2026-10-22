@@ -44,6 +44,14 @@ describe('report confirmation evidence', () => {
     expect(next.confirmedExpression).toBe('legacy'); expect(next.evidence!.confirmations).toHaveLength(1);
     expect(formulaReportAssessment(next, formula, notes).status).toBe('confirmed');
   });
+  it('keeps legacy confirmation comparison unknown after ordinary save initializes empty evidence', () => {
+    const old = { id: 'r', formulaId: 'f', title: '説明', body: '本文', createdAt: now, updatedAt: now, confirmedExpression: 'x+y' };
+    const saved = saveFormulaReport(wrapped(old), library, request(old, { confirm: false, links: [], expectedEvidence: reportEvidenceSignature(notes, []) }), now, notes).entries[0];
+    expect(saved.evidence!.confirmations).toEqual([]);
+    expect(saved.confirmedExpression).toBe('x+y');
+    expect(formulaReportAssessment(saved, formula, notes)).toMatchObject({ status: 'unknown' });
+    expect(formulaReportAssessment(saved, formula, notes).reason).toContain('未記録');
+  });
   it('never invents confirmation by viewing or plain saving', () => {
     const report = saveFormulaReport(emptyFormulaReports(), library, request(undefined, { confirm: false }), now, notes).entries[0];
     expect(report.evidence!.confirmations).toEqual([]); expect(formulaReportAssessment(report, formula, notes).status).toBe('unconfirmed');

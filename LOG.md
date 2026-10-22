@@ -4,6 +4,8 @@
 
 ## 2026-10-23 08:42 JST: 登録計算式レポートの根拠追跡と変更検知（Issue #61）
 
+- 08:55 JST追記: [PR #62](https://github.com/tetsujisugimori-coder/calculator-memo/pull/62) をDraft作成。CLI pushは資格情報がなく未実行終了したため、接続済みGitHubの各blob SHAとtree `0630d3c17a4ae310825d319b98ce3a3dd8d138d9` 完全一致を確認して公開。初期公開HEAD `367ce9930877eba58fd21c6531dbee07350fc995`。旧確認情報に通常保存だけで空の新領域が追加されても、日時/変数不足の判定不能を維持する追加回帰を実施。追加後の単体1160件・型・lint・両buildも成功。この追記を含む最終HEADのCI結果はPR Checks/コメントへ記録し、未確認の成功を先取りしない。
+
 - PR #60 の merge と最新 main `4b87b370e348740c090c0ed7ec4a9a1c6f8067d8`、作業ツリー clean を確認し `feat/formula-report-evidence` を作成。関連 Issue/PR を照合し、[Issue #61](https://github.com/tetsujisugimori-coder/calculator-memo/issues/61) に依頼本文2,542文字を改変せず掲載し読戻し完全一致を確認。初回依頼正本は変更しない。
 - AGENTS、README、LOG、登録式/レポート/保存保護/保存記録比較、GUI/CI運用を調査。登録式に独立した変数定義欄はないため、既存構文解析の参照変数を式定義の一部としてversion付きで保存し、実行入力値とは分離する。式名称変更は意味変更と区別する。
 - 第一希望: 既存レポートの optional 根拠領域に安定したメモID+記録IDと追記確認履歴を保持し、保存原本を固定して閲覧する。確認履歴には式・変数・本文/タイトル・選択根拠・日時・確認IDを保持。本文変更でも旧確認履歴を消さず、現在の本文を以前の確認で承認しない。旧確認式だけのデータは日時/変数を推測せず新基準で比較不能とする。
