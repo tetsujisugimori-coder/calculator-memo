@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { loadData, STORAGE_KEY } from "../lib/storage";
 import { validCalculationEvidence, type EvidenceRecord, type EvidenceBlock } from "../lib/calculation-evidence";
 import { compareEvidenceRecords, buildEvidenceComparisonMarkdown, EVIDENCE_CHANGE_LABELS, evidenceInputLabel } from "../lib/evidence-comparison";
@@ -24,7 +24,6 @@ function initial(memoId: string) {
     return { snapshot: null, error: cause instanceof Error ? cause.message : "保存記録を取得できませんでした。", detailId: "", beforeId: "", afterId: "" };
   }
 }
-const shortId = (id: string) => id.length > 36 ? `${id.slice(0, 36)}…` : id;
 function LazyDetails({ summary, children, className, blockId }: { summary: ReactNode; children: ReactNode; className?: string; blockId?: string }) {
   const [open, setOpen] = useState(false);
   return <details className={className} data-block-id={blockId} onToggle={event => setOpen(event.currentTarget.open)}><summary>{summary}</summary>{open ? children : null}</details>;
@@ -52,6 +51,7 @@ function BlockInfo({ block, executionOrder, record }: { block: EvidenceBlock; ex
 
 /** Only an explicit opening/refresh reads persistence. Everything else uses one snapshot. */
 export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClose: () => void }) {
+  const selectionHelpId = useId();
   const [state, setState] = useState(() => initial(memoId));
   const { snapshot, error, detailId, beforeId, afterId } = state;
   const [changedElsewhere, setChangedElsewhere] = useState(false);
@@ -107,7 +107,7 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
     try { downloadMarkdownReport(comparisonResult.report); setNotice({ text: "ダウンロードを要求しました。実際の保存先と完了はブラウザで確認してください。", failed: false }); }
     catch { setNotice({ text: "ダウンロードを開始できませんでした。原本は変更していません。", failed: true }); }
   };
-  const options = records.map((record, index) => <option key={record.id} value={record.id}>追記 {index + 1}：{shortId(record.id)} / {record.calculatedAt} / {record.blocks.length}ブロック</option>);
+  const options = records.map((record, index) => <option key={record.id} value={record.id}>記録 {index + 1}</option>);
   const { comparison, report } = comparisonResult;
   return <Modal title="保存済み計算記録" onClose={onClose} wide>
     <div className="saved-evidence markdown-report">
@@ -120,10 +120,11 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
       {snapshot && !records.length && <p>保存済み計算記録は0件です。履歴がないため比較できません。過去の使用値は確認不能です。</p>}
       {!!records.length && <>
         <details className="evidence-record-list"><summary>保存済み記録の一覧（{records.length}件・追記順）</summary><ol>{records.map((record, index) => <li key={record.id}><p>追記 {index + 1}</p><RecordInfo record={record} /></li>)}</ol></details>
-        <label>記録の詳細<select aria-label="記録の詳細" disabled={copying} value={detailId} onChange={event => select("detailId", event.target.value)}><option value="">記録を選択</option>{options}</select></label>
-        {detail && <LazyDetails className="evidence-record-detail" summary="選択した記録の詳細"><RecordInfo record={detail} />{detail.blocks.map((block, index) => <LazyDetails key={block.blockId} summary={<>本文 {block.position} / 実行 {index + 1} / ID：{block.blockId}</>}><BlockInfo block={block} executionOrder={index + 1} record={detail} /></LazyDetails>)}</LazyDetails>}
+        <p id={selectionHelpId}>選択肢の番号は取得した記録の追記順です。日時・完全な記録ID・件数は一覧と選択した記録の情報で確認できます。</p>
+        <label>記録の詳細<select aria-describedby={selectionHelpId} aria-label="記録の詳細" disabled={copying} value={detailId} onChange={event => select("detailId", event.target.value)}><option value="">記録を選択</option>{options}</select></label>
+        {detail && <><section aria-label="選択した記録の情報"><RecordInfo record={detail} /></section><LazyDetails className="evidence-record-detail" summary="選択した記録の詳細">{detail.blocks.map((block, index) => <LazyDetails key={block.blockId} summary={<>本文 {block.position} / 実行 {index + 1} / ID：{block.blockId}</>}><BlockInfo block={block} executionOrder={index + 1} record={detail} /></LazyDetails>)}</LazyDetails></>}
         {records.length === 1 ? <p>比較には異なる2件の保存記録が必要です。現在は1件の詳細のみ確認できます。</p> : <>
-          <div className="evidence-pair"><label>変更前の記録<select aria-label="変更前の記録" disabled={copying} value={beforeId} onChange={event => select("beforeId", event.target.value)}><option value="">記録を選択</option>{options}</select></label><label>変更後の記録<select aria-label="変更後の記録" disabled={copying} value={afterId} onChange={event => select("afterId", event.target.value)}><option value="">記録を選択</option>{options}</select></label></div>
+          <div className="evidence-pair"><label>変更前の記録<select aria-describedby={selectionHelpId} aria-label="変更前の記録" disabled={copying} value={beforeId} onChange={event => select("beforeId", event.target.value)}><option value="">記録を選択</option>{options}</select></label><label>変更後の記録<select aria-describedby={selectionHelpId} aria-label="変更後の記録" disabled={copying} value={afterId} onChange={event => select("afterId", event.target.value)}><option value="">記録を選択</option>{options}</select></label></div>
           <button type="button" className="button-secondary" disabled={copying || !beforeId || !afterId} onClick={() => { setState(current => ({ ...current, beforeId: current.afterId, afterId: current.beforeId })); setNotice(null); }}>前後を入れ替える</button>
           {(!beforeId || !afterId) && <p>比較する2記録を選択してください。</p>}
           {comparisonResult.error && <p role="alert" className="field-error">{comparisonResult.error}</p>}

@@ -112,3 +112,35 @@ it('lazily mounts per-block details for a capacity-valid large history', async (
   await act(async () => { const row = host.querySelector<HTMLDetailsElement>('.evidence-diff-row')!; row.open = true; row.dispatchEvent(new Event('toggle')); });
   expect(host.querySelectorAll('.evidence-block-values')).toHaveLength(2); expect(md()).toContain('b1499');
 });
+
+
+it('uses compact unique append-order options while preserving complete IDs and metadata', async () => {
+  const prefix = 'same-prefix-'.repeat(4);
+  const records = Array.from({ length: 100 }, (_, i) => record(`${prefix}${i}`));
+  save(note(records)); const raw = localStorage.getItem(STORAGE_KEY); await show();
+  for (const label of ['記録の詳細', '変更前の記録', '変更後の記録']) {
+    const control = select(label);
+    expect([...control.options].slice(1).map(option => option.textContent)).toEqual(records.map((_, i) => `記録 ${i + 1}`));
+    expect([...control.options].slice(1).map(option => option.value)).toEqual(records.map(record => record.id));
+    expect(document.getElementById(control.getAttribute('aria-describedby')!)?.textContent).toContain('追記順');
+  }
+  expect(host.querySelector('.evidence-record-list')?.textContent).toContain(records[0].id);
+  expect(host.textContent).toContain(records[99].id); expect(host.textContent).toContain(records[99].persistedAt);
+  await change('記録の詳細', records[0].id); expect(select('記録の詳細').value).toBe(records[0].id);
+  const info = host.querySelector('section[aria-label="選択した記録の情報"]')!;
+  expect(info.textContent).toContain(records[0].id); expect(info.textContent).toContain(records[0].calculatedAt);
+  expect(info.textContent).toContain('保存要求時刻'); expect(info.textContent).toContain('計算ブロック数3');
+  expect(info.closest('details')).toBeNull();
+  await click('前後を入れ替える'); expect(select('変更前の記録').value).toBe(records[99].id);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+
+it('retains record identity when explicit refresh changes append-index labels', async () => {
+  save(note([record('a'), record('b'), record('c')])); await show();
+  expect(select('変更前の記録').selectedOptions[0].textContent).toBe('記録 2');
+  save(note([record('b'), record('c')])); await click('最新の保存内容を再取得');
+  expect(select('変更前の記録').value).toBe('b'); expect(select('変更前の記録').selectedOptions[0].textContent).toBe('記録 1');
+  expect(select('変更後の記録').value).toBe('c'); expect(select('変更後の記録').selectedOptions[0].textContent).toBe('記録 2');
+  save(note([record('c')])); await click('最新の保存内容を再取得');
+  expect(host.textContent).toContain('選択していた記録が再取得した原本にありません'); expect(md()).toBeUndefined();
+});

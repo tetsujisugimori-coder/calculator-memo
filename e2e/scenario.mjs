@@ -2323,7 +2323,7 @@ async function exerciseSavedRecordComparison(prefix) {
   await expect(dialog()).toContainText(/比較には2件|比較には.*2.*件/);
   await expect(source()).toHaveCount(0);
   await activate(dialog().locator(".evidence-record-detail > summary"));
-  await expect(dialog().locator(".evidence-record-detail")).toContainText(sameRecord.id);
+  await expect(dialog().getByRole("region", { name: "選択した記録の情報", exact: true })).toContainText(sameRecord.id);
   await close();
   await page.evaluate(() => {
     const data = JSON.parse(localStorage.getItem("calculation-memo:data")); delete data.notes[0].calculationEvidence;
