@@ -57,9 +57,9 @@ attempt1 は libflite1 13.6 MB を20:23:09から取得、20:30:50に Ign。attem
 
 ## 実装と安全境界
 
-`e2e/configure-ci-apt.mjs` は root / GitHub Actions / Ubuntu24.04 を確認してから動く。既存 .list/.sources の正確な Azure Ubuntu URI のみを読み替え、suite/component/options/Signed-By と他社・security既存sourceを保持。Azureの noble-security 単独 stanza は公式 security.ubuntu.com へ、それ以外の既知 noble suites は archive.ubuntu.com へ。未知URI/混合security/未対応wrapped URIs・Suitesは失敗、全candidateを検査してから書く。既存Azure sourceが消えた新imageも確認を要求するため失敗する。fresh hosted runnerを前提とし、同じ変更済runnerへの再適用は保証しない。
+`e2e/configure-ci-apt.mjs` は root / GitHub Actions / Ubuntu24.04 を確認してから動く。既存 .list/.sources の正確な Azure Ubuntu URI または `mirror+file:/etc/apt/apt-mirrors.txt` のみを読み替え、suite/component/options/Signed-By と他社・security既存sourceを保持。Azureの noble-security 単独 stanza は公式 security.ubuntu.com へ、それ以外の既知 noble suites は archive.ubuntu.com へ。未知URI/混合security/未対応wrapped URIs・Suitesは失敗、全candidateを検査してから書く。既知のAzure/mirror+file sourceが消えた新imageも確認を要求するため失敗する。fresh hosted runnerを前提とし、同じ変更済runnerへの再適用は保証しない。
 
-専用 apt.conf.d snippet は HTTP/HTTPS無通信timeout20秒、取得retry1回、update error-mode any。TLS/署名検証を緩めず、鍵・権限・認証設定は変更しない。読戻しと apt-config の実効値を照合する。システム変更は破棄されるGitHubrunnerだけで、利用者PC/本番へは適用しない。
+専用 `zzzz-calculator-ci` apt.conf.d snippet（既存 `zz-retries` より後順）は HTTP/HTTPS無通信timeout20秒、取得retry1回、update error-mode any。TLS/署名検証を緩めず、鍵・権限・認証設定は変更しない。読戻しと apt-config の実効値を照合する。システム変更は破棄されるGitHubrunnerだけで、利用者PC/本番へは適用しない。
 
 OSは固定Playwright CLI `install-deps chromium webkit` を root-owned GNU timeout 300秒で実行し、TERM後10秒でKILL。root timeout が root APT 子孫へシグナルを送れるようにする。browserは通常ユーザーで `install chromium webkit`、180秒+10秒。同じ1.56.1が選ぶpackage集合・browser revisionを利用し、独自package一覧や未検証な削減はしない。旧 `install --with-deps` と同じ二段階を明示分離したものである。
 
@@ -71,7 +71,7 @@ OSは固定Playwright CLI `install-deps chromium webkit` を root-owned GNU time
 
 独立レビューで folded Suites の未知/混合suiteが見落とされる指摘を受け、該当fieldの継続行を明示拒否し回帰fixtureを追加した。Signed-By等他fieldの継続行を一律破壊しない。
 
-ローカル Node24.19.0: 単体1127件/50files、CI契約36件、lint 0error（既存warning1）、型、通常/Pages両build、js-yaml構文解析が成功。CIの固定Node22.13.0は維持。正式な修正後HEADでのAPT導入・全6条件GUI・実行時間・artifact件数/容量の結果は PR #60 Checks/コメントへ記録する。未実行の成功を先取りしない。文書コミット後の最終HEADを照合する。
+ローカル Node24.19.0: 単体1127件/50files、CI契約37件、lint 0error（既存warning1）、型、通常/Pages両build、js-yaml構文解析が成功。CIの固定Node22.13.0は維持。正式な修正後HEADでのAPT導入・全6条件GUI・実行時間・artifact件数/容量の結果は PR #60 Checks/コメントへ記録する。未実行の成功を先取りしない。文書コミット後の最終HEADを照合する。
 
 実機iPhone Safari/VoiceOver/native OS文字拡大は引き続き未検証。1回の成功は外部配布元の恒久復旧や全地域経路の健全性を証明しない。正規archive自体の停止、runnerimage drift、browserCDN、30分総予算超過のリスクは残る。失敗時は新しいログを調べ、無根拠なwhole-job rerunはしない。
 
@@ -84,3 +84,14 @@ CI限定差分を作業ブランチ上でrevertし、既存の `install --with-d
 - 固定npm packageの `playwright-core/lib/server/registry/dependencies.js` / `nativeDeps.js` / `cli/program.js`（1.56.1）。`apt-get update` と `apt-get install -y --no-install-recommends`、Chromium/WebKit集合の重複排除を確認。
 - [Playwright CI](https://playwright.dev/docs/ci)、[公式Docker説明](https://playwright.dev/docs/docker)。online最新版を導入版と混同しない。
 - [APT設定仕様](https://manpages.debian.org/bookworm/apt/apt.conf.5.en.html)、[公式Ubuntu archive](https://archive.ubuntu.com/ubuntu/)。Ubuntu manpage取得は今回timeoutのためAPT上流manpageを補助参照。
+
+
+## 初回修正CIの失敗と訂正（07:48 JST）
+
+[CI #120](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39867226720) / HEAD `9c4a1085c100287aa917292019787fa59af24a3f` はapp全検査後、APT設定で「直接Azure sourceなし」として非zero停止し、OS/browser/GUIは未開始。失敗artifactの保存は成功。これは初回修正の実runner source形式への適合不足であり、ネットワーク障害や製品不具合ではない。
+
+[runner-imagesの公式source設定](https://github.com/actions/runner-images/blob/c87f6f636fffa43205bc05328efe9958af0f984f/images/ubuntu/scripts/build/configure-apt-sources.sh) では Ubuntu source を `mirror+file:/etc/apt/apt-mirrors.txt` へ向け、リストにAzureと公式archive/securityの優先度を置く。直接Azure URIだけを前提とした初案を訂正し、この正確な既知URIだけも認識して公式archive/securityへ置換する。任意mirrorファイルを読み込んだり無差別に置換せず、未知URIは引き続き失敗する。
+
+同じ公式repositoryのconfigure-apt.shに `zz-retries` があるため、snippet名をそれより後の `zzzz-calculator-ci` とし実効値照合も維持。元の失敗runで実効APT全設定を採取していないため、当時の具体的timeout/retry値は未確認のまま。公式sourceコードと実runner設定が常に完全一致するとは仮定しない。
+
+mirror+file回帰を追加し、このコード修正に伴う新HEAD CIを実行する。無変更で#120を再実行して通す対処ではない。初回ローカルGUIも既存browser cacheの環境変数未指定で起動失敗したため記録を保全し、既存 `/tmp` cacheを明示して再検証中。利用者PC/本番に変更なし。

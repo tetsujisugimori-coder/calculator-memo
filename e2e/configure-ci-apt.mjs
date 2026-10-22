@@ -5,7 +5,8 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const azure = /^https?:\/\/azure\.archive\.ubuntu\.com\/ubuntu\/?$/;
-const containsAzure = /azure\.archive\.ubuntu\.com/;
+const mirrorFile = 'mirror+file:/etc/apt/apt-mirrors.txt';
+const containsTarget = /azure\.archive\.ubuntu\.com|mirror\+file:/;
 export const aptSettings = {
   'Acquire::http::Timeout': '20',
   'Acquire::https::Timeout': '20',
@@ -22,8 +23,8 @@ export function rewriteUbuntuSources(text, format) {
     return security ? 'https://security.ubuntu.com/ubuntu' : 'https://archive.ubuntu.com/ubuntu';
   };
   const replaceUris = (uris, suites) => uris.split(/(\s+)/).map(uri => {
-    if (!containsAzure.test(uri)) return uri;
-    assert.ok(azure.test(uri), 'Unrecognized Azure archive URI; refusing source rewrite');
+    if (!containsTarget.test(uri)) return uri;
+    assert.ok(azure.test(uri) || uri === mirrorFile, 'Unrecognized Ubuntu archive URI; refusing source rewrite');
     changed++;
     return endpoint(suites);
   }).join('');
@@ -31,7 +32,7 @@ export function rewriteUbuntuSources(text, format) {
   if (format === 'sources') {
     result = text.split(/(\n\s*\n)/).map(stanza => {
       const active = stanza.split('\n').filter(line => !/^\s*#/.test(line)).join('\n');
-      if (!containsAzure.test(active)) return stanza;
+      if (!containsTarget.test(active)) return stanza;
       let field;
       for (const line of active.split('\n')) {
         const header = line.match(/^([^\s:]+):/);
@@ -45,13 +46,13 @@ export function rewriteUbuntuSources(text, format) {
       assert.equal(uris.length, 1, 'Expected one URIs field');
       assert.equal(suites.length, 1, 'Expected one Suites field');
       const updated = stanza.replace(/^(URIs:[ \t]*)(.+)$/m, (_, prefix, value) => prefix + replaceUris(value, suites[0][1]));
-      assert.ok(!containsAzure.test(updated.split('\n').filter(line => !/^\s*#/.test(line)).join('\n')), 'Unsupported wrapped source field');
+      assert.ok(!containsTarget.test(updated.split('\n').filter(line => !/^\s*#/.test(line)).join('\n')), 'Unsupported wrapped source field');
       return updated;
     }).join('');
   } else {
     assert.equal(format, 'list');
     result = text.split('\n').map(line => {
-      if (/^\s*#/.test(line) || !containsAzure.test(line)) return line;
+      if (/^\s*#/.test(line) || !containsTarget.test(line)) return line;
       const match = line.match(/^(\s*deb(?:-src)?\s+(?:\[[^\]]+\]\s+)?)(\S+)(\s+)(\S+)(.*)$/);
       assert.ok(match, 'Unsupported legacy source line');
       return match[1] + replaceUris(match[2], match[4]) + match[3] + match[4] + match[5];
@@ -77,14 +78,14 @@ async function configure() {
     const rewritten = rewriteUbuntuSources(original, path.endsWith('.sources') ? 'sources' : 'list');
     if (rewritten.changed) changes.push({ path, ...rewritten });
   }
-  assert.ok(changes.length, 'Expected Azure Ubuntu archive source not found; inspect runner image before proceeding');
+  assert.ok(changes.length, 'Expected Azure or known mirror+file Ubuntu source not found; inspect runner image before proceeding');
   for (const item of changes) {
     await writeFile(item.path, item.text);
     assert.equal(await readFile(item.path, 'utf8'), item.text);
-    console.log(`Replaced ${item.changed} exact Ubuntu archive URI(s) in ${item.path}; suites/components/signing options retained.`);
+    console.log(`Replaced ${item.changed} exact Azure/mirror+file Ubuntu URI(s) in ${item.path}; suites/components/signing options retained.`);
   }
   const config = Object.entries(aptSettings).map(([key, value]) => `${key} "${value}";`).join('\n') + '\n';
-  await writeFile('/etc/apt/apt.conf.d/99zz-calculator-ci', config);
+  await writeFile('/etc/apt/apt.conf.d/zzzz-calculator-ci', config);
   const effective = execFileSync('apt-config', ['dump'], { encoding: 'utf8' });
   for (const [key, value] of Object.entries(aptSettings)) {
     assert.ok(effective.split('\n').includes(`${key} "${value}";`), `APT setting not effective: ${key}`);

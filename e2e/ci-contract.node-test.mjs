@@ -245,3 +245,12 @@ test('bounded acquisition timeout fails and preserves its stage log and timing',
     assert.match(await readFile(join(cwd, 'gui-evidence/os-install.log'), 'utf8'), /synthetic stalled acquisition/);
   } finally { await rm(cwd, { recursive: true, force: true }); }
 });
+
+
+test('official hosted-runner mirror+file indirection preserves signed source semantics', () => {
+  const source = 'Types: deb\nURIs: mirror+file:/etc/apt/apt-mirrors.txt\nSuites: noble noble-updates noble-backports\nComponents: main universe\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n';
+  assert.deepEqual(rewriteUbuntuSources(source, 'sources'), { text: source.replace('mirror+file:/etc/apt/apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu'), changed: 1 });
+  const security = source.replace('noble noble-updates noble-backports', 'noble-security');
+  assert.equal(rewriteUbuntuSources(security, 'sources').text, security.replace('mirror+file:/etc/apt/apt-mirrors.txt', 'https://security.ubuntu.com/ubuntu'));
+  assert.throws(() => rewriteUbuntuSources(source.replace('apt-mirrors.txt', 'unknown-mirrors.txt'), 'sources'));
+});

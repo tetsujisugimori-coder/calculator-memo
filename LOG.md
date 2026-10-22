@@ -7,6 +7,7 @@
 - 従来はOS/browser一括準備が30分全体予算まで待てた。第一希望の同runner/正規全依存維持を採用し、Azureの正確なUbuntu URIだけ公式HTTPS archive/securityへ変更、APT timeout/retry有界化、OS5分/browser3分の段階別log/timingへ分離する。公式containerは環境差とimage取得検証が必要な次善策、cacheではAPT問題を代替できず今回は未採用。[比較・根拠・安全境界・復旧](docs/agent/ci-environment-acquisition.md)。
 - 変更はCI準備script/workflow/契約テスト/文書のみ。製品、lockfile、30分、6条件624検査/550配置/mobile各855touch、114PNG、trace/7日artifact方針を維持。署名/TLS検証を緩めず未知source構造は停止する。
 - 独立レビューのSuite継続行見落としを修正し回帰fixtureを追加、再レビューでコード上の阻害指摘なし（実CI成功は別条件）。CI契約36件成功（既存28+追加8）。単体1127件/50files、lint 0error（既存warning1）、型、通常/Pages両build、YAML構文検査が成功。修正後実GitHub Actions全完走は未確認であり、最終HEADの成功はPR Checks/コメントで確認する。模擬timeoutは実ネットワーク障害の再現とは別。
+- 07:48 JST追記: 初回修正HEAD `9c4a1085c100287aa917292019787fa59af24a3f` / [CI #120](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39867226720) は直接Azure URIを前提にした設定ガードで失敗。公式runner-imageのmirror+file構造を確認し、正確な既知URIだけへの対応と設定優先順を修正。未知構造拒否は維持、外部障害と区別して記録。37契約で回帰し、新HEAD実CIを確認する。
 - Issue #59本文は保持、既存PR #60/作業branchにのみ反映する。main直接push/merge/本番公開なし。rollbackはCI限定差分revertとfresh runnerで行い、保存原本に変更不要。1回の成功で外部通信の恒久的解消を断定しない。
 
 ## 2026-10-23 04:26 JST: 登録式の関連数学レポート（Issue #59）
