@@ -920,7 +920,7 @@ async function exerciseVariables(prefix) {
   await activate(dialog.getByRole("button", { name: "保存する", exact: true }));
   const saved = page.locator(".note-card").filter({ hasText: title });
   const readNote = async () => (await storage()).notes.find((note) => note.title === title);
-  await expect.poll(async () => (await readNote()).blocks.filter((block) => block.type === "calculation").map((block) => block.result)).toEqual([1200, 5, 6000, 0.1, 6000 * (1 + 0.1), 10, 20, 20, 1200]);
+  await expect.poll(async () => (await readNote())?.blocks.filter((block) => block.type === "calculation").map((block) => block.result)).toEqual([1200, 5, 6000, 0.1, 6000 * (1 + 0.1), 10, 20, 20, 1200]);
   await expect(saved.locator(".calculation-variable").first()).toContainText("変数 price");
   await expect(saved.locator(".calculation-expression").nth(2)).toContainText("price * quantity");
   await passed(prefix + ": ordered definitions, reassignment snapshots, upstream edits/reorder/removal, errors and prose isolation");
@@ -2213,9 +2213,14 @@ async function exerciseSavedRecordComparison(prefix) {
   const beforeRecord = recordsFor("record-before", 100, "2026-10-22T02:00:00.000Z");
   const afterRecord = recordsFor("record-after", 120, "2026-10-22T01:00:00.000Z");
   const sameRecord = { ...structuredClone(beforeRecord), id: "record-identical" };
+  const retargetRecord = { ...structuredClone(afterRecord), id: "record-retarget" };
+  Object.assign(retargetRecord.blocks[2], { expression: "@{1}*2", inputs: [{ kind: "id", name: "ReferenceValue1", sourceBlockId: "A", value: "120" }], references: { version: 1, entries: [{ slot: 1, blockId: "A" }] }, result: "240", resultText: "240" });
+  const inconsistentRecord = { ...structuredClone(afterRecord), id: "record-inconsistent" };
+  inconsistentRecord.blocks[2].inputs[0].value = "999"; // Shape-valid, but contradicts the recorded source result.
+
   const note = { id: "comparison-note", type: "plain-calculation", title: "Synthetic / comparison", content: "", createdAt: at, updatedAt: at,
     calculationPolicy: { version: 1, mode: "manual" }, blocks: [{ id: "present-only", type: "text", content: "CURRENT_ONLY_NOT_HISTORY" }],
-    calculationEvidence: { version: 1, records: [sameRecord, beforeRecord, afterRecord] }, opaque: { retain: "unchanged" } };
+    calculationEvidence: { version: 1, records: [inconsistentRecord, retargetRecord, sameRecord, beforeRecord, afterRecord] }, opaque: { retain: "unchanged" } };
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: [note] });
   await page.reload(); await selectPanel("notes");
   const card = page.locator(".note-card").filter({ hasText: note.title });
@@ -2244,7 +2249,7 @@ async function exerciseSavedRecordComparison(prefix) {
   await expect(dialog()).toContainText("保存完了時刻ではありません");
   await activate(dialog().locator(".evidence-help > summary"));
   await activate(dialog().locator(".evidence-record-list > summary"));
-  await expect(dialog().locator(".evidence-record-list")).toContainText("追記 3");
+  await expect(dialog().locator(".evidence-record-list")).toContainText("追記 5");
   await activate(dialog().locator(".evidence-record-detail > summary"));
   await activate(dialog().locator(".evidence-record-detail > details").filter({ hasText: "ID：B" }).locator("summary"));
   await expect(dialog().locator(".evidence-record-detail")).toContainText("120");
@@ -2267,6 +2272,47 @@ async function exerciseSavedRecordComparison(prefix) {
   assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
   await screenshot(prefix + "-saved-record-comparison", currentScenario.width, false);
   await passed(prefix + ": saved-record comparison defaults to append order despite reversed clocks and exposes historical chain inputs without current memo enrichment");
+
+  const impact = () => dialog().getByRole("region", { name: "保存記録の変更影響分析", exact: true });
+  const impactRow = id => impact().locator(`[data-impact-block-id="${id}"]`);
+  await activate(dialog().getByText("変更影響分析", { exact: true }));
+  await expect(impact()).toContainText("波及変更候補");
+  await expect(impactRow("A")).toContainText("直接変更");
+  await expect(impactRow("B")).toContainText("波及変更候補");
+  await expect(impactRow("B")).toContainText("結果差分");
+  await activate(impactRow("C").locator("summary").first());
+  await expect(impactRow("C")).toContainText("変更前の経路");
+  await expect(impactRow("C")).toContainText("変更後の経路");
+  await expect(impactRow("C")).toContainText(/A\s*→\s*B\s*→\s*C/);
+  assert.ok(markdown.includes("変更影響分析") && markdown.includes("波及変更候補"));
+  assert.ok(/A\s*→\s*B\s*→\s*C/.test(markdown));
+  assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await screenshot(prefix + "-saved-record-impact", currentScenario.width, false);
+  await passed(prefix + ": saved impact separates observed direct changes propagation candidates and result differences with historical multi-hop evidence");
+
+  await after().selectOption(retargetRecord.id);
+  await expect(impactRow("C")).toContainText("実使用参照元");
+  const beforePath = () => impactRow("C").getByRole("heading", { name: "変更前の経路", exact: true }).locator("..");
+  const afterPath = () => impactRow("C").getByRole("heading", { name: "変更後の経路", exact: true }).locator("..");
+  await expect(beforePath()).toContainText(/A\s*→\s*B\s*→\s*C/);
+  await expect(afterPath()).toContainText(/A\s*→\s*C/);
+  await expect(afterPath()).not.toContainText(/A\s*→\s*B\s*→\s*C/);
+  const retargetMarkdown = await source().inputValue();
+  assert.ok(/A\s*→\s*B\s*→\s*C/.test(retargetMarkdown) && /A\s*→\s*C/.test(retargetMarkdown));
+  await activate(impact().getByText("実使用依存関係の追加・削除", { exact: true }));
+  await expect(impact().getByRole("heading", { name: "追加", exact: true }).locator("..")).toContainText(/A\s*→\s*C/);
+  await expect(impact().getByRole("heading", { name: "削除", exact: true }).locator("..")).toContainText(/B\s*→\s*C/);
+  assert.equal(await raw(), savedRaw);
+  await passed(prefix + ": reference retargeting keeps before and after propagation paths separate and exposes added and removed dependencies");
+
+  await after().selectOption(inconsistentRecord.id);
+  await expect(impactRow("C")).toContainText("判定不能");
+  await expect(afterPath()).not.toContainText(/A\s*→\s*B\s*→\s*C/);
+  assert.ok((await source().inputValue()).includes("判定不能"));
+  assert.equal(await raw(), savedRaw); assert.equal(await page.evaluate(() => window.__comparisonWrites), 0);
+  await after().selectOption(afterRecord.id);
+  assert.equal(await source().inputValue(), markdown);
+  await passed(prefix + ": inconsistent recorded used value is unknown rather than certified historical propagation and viewing leaves the original intact");
 
   await activate(dialog().getByRole("button", { name: "前後を入れ替える", exact: true }));
   await expect(before()).toHaveValue(afterRecord.id); await expect(after()).toHaveValue(beforeRecord.id);
@@ -2307,7 +2353,7 @@ async function exerciseSavedRecordComparison(prefix) {
   // External persistence changes while the reader stays open. Do not mix acquisition times.
   await page.evaluate(() => {
     const data = JSON.parse(localStorage.getItem("calculation-memo:data"));
-    data.notes[0].calculationEvidence.records = [data.notes[0].calculationEvidence.records[0]];
+    data.notes[0].calculationEvidence.records = [data.notes[0].calculationEvidence.records[2]];
     window.__comparisonOriginalSetItem.call(localStorage, "calculation-memo:data", JSON.stringify(data));
     window.dispatchEvent(new StorageEvent("storage", { key: "calculation-memo:data", newValue: JSON.stringify(data), storageArea: localStorage }));
     window.__comparisonWrites = 0;
@@ -2344,6 +2390,9 @@ async function exerciseSavedRecordComparison(prefix) {
     await expect(page.getByTestId("unsaved-changes")).toHaveCount(0);
     const themeRaw = await raw();
     await openDetail(); await open();
+    await activate(dialog().getByText("変更影響分析", { exact: true }));
+    await activate(impactRow("C").locator("summary").first());
+    await expect(impactRow("C")).toContainText(/A\s*→\s*B\s*→\s*C/);
     await dialog().locator(".saved-evidence").evaluate(element => {
       const children = [element, ...element.querySelectorAll("*")];
       const sizes = children.map(child => parseFloat(getComputedStyle(child).fontSize) * 2);

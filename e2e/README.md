@@ -406,8 +406,26 @@ No current memo block is used to fill historical information.
 Three added geometry checkpoints per context cover the expanded comparison and
 both themes at 200% text; keyboard containment and restored trigger focus are
 asserted. No additional success PNG is retained. The expected complete contract is
-558 acceptance checks, 520 geometry checkpoints, and 792 observed touch
+576 acceptance checks, 526 geometry checkpoints, and 799 observed touch
 activations per mobile context. The six contexts, 114 representative PNGs, two
 workers, time limits, and zero exported success traces remain unchanged. These
 counts specify required coverage, not a claim that every context has already run;
 actual execution and final-HEAD CI results belong in LOG and the PR checks.
+
+
+## Saved-record change impact analysis
+
+Three further acceptance groups per context check independent observed-direct,
+propagation-candidate and result-difference labels on the recorded A → B → C
+chain; retargeting C from B to A with distinct before/after routes and edge
+addition/removal; and a shape-valid but inconsistent captured input that must
+remain unknown. The latest default pair still follows append order, not clocks.
+Preview/copy/download byte equality now includes the impact Markdown. External
+refresh, zero/one record, unsupported format, and no-storage-write assertions
+remain active. The impact details are expanded in the existing light/dark 200%
+text checks, including keyboard containment and trigger focus restoration.
+
+One additional geometry checkpoint per context checks expanded impact paths.
+There is no extra success PNG, timeout extension, trace retention, or browser
+matrix reduction. Counts above are required coverage; completed runs are recorded
+separately in LOG.

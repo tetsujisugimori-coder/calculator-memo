@@ -5,6 +5,9 @@ import { loadData, STORAGE_KEY } from "../lib/storage";
 import { validCalculationEvidence, type EvidenceRecord, type EvidenceBlock } from "../lib/calculation-evidence";
 import { compareEvidenceRecords, buildEvidenceComparisonMarkdown, EVIDENCE_CHANGE_LABELS, evidenceInputLabel } from "../lib/evidence-comparison";
 import { downloadMarkdownReport } from "../lib/markdown-report";
+import { analyzeEvidenceImpact } from "../lib/evidence-impact";
+import { appendEvidenceImpactMarkdown } from "../lib/evidence-impact-markdown";
+import { EvidenceImpactView } from "./EvidenceImpactView";
 import { Modal } from "./Modal";
 
 type Snapshot = { id: string; title: string; raw: string; records: EvidenceRecord[]; fetchedAt: string };
@@ -67,8 +70,11 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
       const after = snapshot.records.find(record => record.id === afterId);
       if (!before || !after) throw new Error("選択した記録が取得時点の原本にありません。選択し直してください。");
       const comparison = compareEvidenceRecords(before, after);
-      try { return { comparison, report: buildEvidenceComparisonMarkdown(snapshot, comparison), error: "" }; }
-      catch (cause) { return { comparison, report: null, error: cause instanceof Error ? cause.message : "Markdown出力を生成できませんでした。" }; }
+      let impact;
+      try { impact = analyzeEvidenceImpact(comparison); }
+      catch { return { comparison, impact: null, report: null, error: "影響分析を生成できませんでした。既存の記録比較は表示しています。不完全な分析を含むMarkdown出力は停止しました。" }; }
+      try { return { comparison, impact, report: appendEvidenceImpactMarkdown(buildEvidenceComparisonMarkdown(snapshot, comparison), comparison, impact), error: "" }; }
+      catch (cause) { return { comparison, impact, report: null, error: cause instanceof Error ? cause.message : "Markdown出力を生成できませんでした。" }; }
     } catch (cause) { return { comparison: null, report: null, error: cause instanceof Error ? cause.message : "記録を比較できませんでした。" }; }
   }, [snapshot, beforeId, afterId]);
   useEffect(() => {
@@ -109,6 +115,7 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
   };
   const options = records.map((record, index) => <option key={record.id} value={record.id}>記録 {index + 1}</option>);
   const { comparison, report } = comparisonResult;
+  const impact = "impact" in comparisonResult ? comparisonResult.impact : null;
   return <Modal title="保存済み計算記録" onClose={onClose} wide>
     <div className="saved-evidence markdown-report">
       <p>保存済みの過去の計算記録を閲覧・比較します。現在の未保存編集、試算、未保存の記録候補は含みません。</p>
@@ -137,6 +144,10 @@ export function SavedEvidenceModal({ memoId, onClose }: { memoId: string; onClos
               <div className="evidence-pair"><section><h4>変更前</h4>{row.before ? <BlockInfo {...row.before} record={comparison.before} /> : <p>この記録に存在しません。</p>}</section><section><h4>変更後</h4>{row.after ? <BlockInfo {...row.after} record={comparison.after} /> : <p>この記録に存在しません。</p>}</section></div>
             </LazyDetails>)}
           </section>}
+          {impact && comparison && <EvidenceImpactView impact={impact} renderDetails={id => {
+            const row = comparison.rows.find(item => item.blockId === id)!;
+            return <div className="evidence-pair"><section><h4>変更前</h4>{row.before ? <BlockInfo {...row.before} record={comparison.before} /> : <p>この記録に存在しません。</p>}</section><section><h4>変更後</h4>{row.after ? <BlockInfo {...row.after} record={comparison.after} /> : <p>この記録に存在しません。</p>}</section></div>;
+          }} />}
           {report && <><label>比較Markdownの全文確認<textarea className="code-input" aria-label="比較Markdown全文" value={report.markdown} readOnly rows={16} /></label><p>ファイル名：{report.filename}</p><div className="modal-actions report-detail-actions"><button type="button" className="button-secondary" disabled={copying} onClick={copy}>比較Markdown全文をコピー</button><button type="button" className="button-primary" disabled={copying} onClick={download}>比較.mdをダウンロード</button></div></>}
         </>}
       </>}
