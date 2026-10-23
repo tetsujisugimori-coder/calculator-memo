@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { formulaDefinitionSignature, formulaReportAssessment, readReportEvidence, reportEvidenceSignature, resolveReportEvidence } from '../lib/formula-report-evidence';
-import { emptyFormulaReports, formulaReportSignature, readFormulaReports, saveFormulaReport, type FormulaReportSaveRequest } from '../lib/formula-reports';
-import { loadData, defaultData } from '../lib/storage';
+import { emptyFormulaReports, formulaReportCorrespondence, formulaReportSignature, readFormulaReports, saveFormulaReport, type FormulaReportSaveRequest } from '../lib/formula-reports';
+import { loadData, defaultData, saveData, saveDataChecked } from '../lib/storage';
 import type { FormulaLibrary, FormulaReport, FormulaReports, Memo } from '../lib/types';
 const now = '2026-10-23T00:00:00.000Z';
 const formula = { id: 'f', title: '式', expression: 'x+y', createdAt: now, updatedAt: now };
@@ -77,12 +77,13 @@ describe('report confirmation evidence', () => {
     const value = { ...confirmed(), evidence }; const raw = JSON.stringify({ ...defaultData, formulaReports: wrapped(value as FormulaReport) });
     expect(loadData({ getItem: () => raw })).toMatchObject({ status: 'error', raw });
   });
-  it('retains unknown metadata but refuses confirmation rather than interpreting it', () => {
+  it('protects unknown evidence metadata in the raw original instead of accepting an editable object', () => {
     const report = confirmed(); const evidence = { ...report.evidence!, futurePolicy: 'unsupported' };
-    const loaded = readFormulaReports(wrapped({ ...report, evidence }));
-    expect(loaded.entries[0].evidence).toMatchObject({ futurePolicy: 'unsupported' });
-    expect(formulaReportAssessment(loaded.entries[0], formula, notes).status).toBe('unknown');
-    expect(() => saveFormulaReport(loaded, library, request(loaded.entries[0]), now, notes)).toThrow('未対応');
+    const unsupported = { ...report, evidence };
+    const raw = JSON.stringify({ ...defaultData, formulaReports: wrapped(unsupported) });
+    expect(loadData({ getItem: () => raw })).toMatchObject({ status: 'error', raw });
+    expect(formulaReportAssessment(unsupported, formula, notes).status).toBe('unknown');
+    expect(() => saveFormulaReport(wrapped(unsupported), library, request(unsupported), now, notes)).toThrow('未対応');
   });
   it('rejects duplicate confirmation identity and malformed variables', () => {
     const evidence = confirmed().evidence!;
@@ -126,5 +127,63 @@ describe('read-only stable evidence links', () => {
     const rescued = saveFormulaReport(wrapped(report), library, request(report, { body: 'rescue', confirm: false, expectedEvidence: reportEvidenceSignature([], [link]) }), now, []).entries[0];
     expect(rescued.evidence!.links).toEqual([link]);
     expect(() => saveFormulaReport(emptyFormulaReports(), library, request(undefined, { confirm: false, expectedEvidence: reportEvidenceSignature([], [link]) }), now, [])).toThrow('根拠参照');
+  });
+});
+
+
+describe('PR #62 review: saved evidence assessment and unsupported fields', () => {
+  it('allows the compatibility helper to forward saved notes without changing either input', () => {
+    const report = confirmed(), before = JSON.stringify({ report, notes });
+    expect(formulaReportCorrespondence(report, formula, notes)).toBe('confirmed');
+    expect(formulaReportCorrespondence(report, formula)).toBe('unknown');
+    expect(formulaReportAssessment(report, formula).reason).toContain('根拠未照合');
+    expect(formulaReportAssessment(report, formula, []).reason).toContain('欠落');
+    expect(JSON.stringify({ report, notes })).toBe(before);
+  });
+  it('does not require saved notes when the confirmation has no evidence links', () => {
+    const report = saveFormulaReport(emptyFormulaReports(), library, request(undefined, { links: [], expectedEvidence: '[]' }), now, notes).entries[0];
+    expect(formulaReportCorrespondence(report, formula)).toBe('confirmed');
+    expect(formulaReportAssessment(report, formula, []).status).toBe('confirmed');
+  });
+  const locations = ['evidence', 'link', 'confirmation', 'definition', 'historical-link', 'older-confirmation'] as const;
+  function unsupported(location: typeof locations[number]) {
+    const report = confirmed(), evidence = report.evidence!;
+    const target = location === 'evidence' ? evidence : location === 'link' ? evidence.links[0]
+      : location === 'definition' ? evidence.confirmations[0].definition : location === 'historical-link' ? evidence.confirmations[0].links[0]
+      : evidence.confirmations[0];
+    Object.assign(target, { futureMeaning: { policy: 'must not discard' } });
+    if (location === 'older-confirmation') evidence.confirmations.push({ ...structuredClone(confirmed().evidence!.confirmations[0]), id: 'newer' });
+    return report;
+  }
+  it.each(locations)('protects unsupported %s at load, ordinary save and explicit confirmation', location => {
+    const report = unsupported(location), original = JSON.stringify(report);
+    const raw = JSON.stringify({ ...defaultData, formulaLibrary: library, formulaReports: wrapped(report) });
+    const storage = { getItem: () => raw, setItem: vi.fn() };
+    expect(loadData(storage)).toMatchObject({ status: 'error', raw });
+    expect(formulaReportAssessment(report, formula, notes).status).toBe('unknown');
+    expect(() => readFormulaReports(wrapped(report))).toThrow('未対応');
+    for (const confirm of [false, true]) {
+      // Even an explicit link removal must not normalize away an unknown meaning.
+      expect(() => saveFormulaReport(wrapped(report), library, request(report, { confirm, links: [], expectedEvidence: '[]' }), now, notes)).toThrow('未対応');
+    }
+    expect(saveData(defaultData, storage)).toBe(false);
+    expect(saveDataChecked(defaultData, raw, storage)).toEqual({ ok: false, reason: 'invalid' });
+    expect(storage.setItem).not.toHaveBeenCalled();
+    expect(storage.getItem()).toBe(raw); expect(JSON.stringify(report)).toBe(original);
+  });
+  it('does not remove an unknown current link during ordinary save', () => {
+    const report = unsupported('link');
+    expect(() => saveFormulaReport(wrapped(report), library, request(report, { confirm: false, links: [], expectedEvidence: '[]' }), now, notes)).toThrow('未対応');
+  });
+  it('does not supersede an unsupported confirmation with a new supported confirmation', () => {
+    const report = unsupported('confirmation');
+    expect(() => saveFormulaReport(wrapped(report), library, request(report), now, notes)).toThrow('未対応');
+  });
+  it.each(locations)('rejects unsupported %s in a save candidate without writing', location => {
+    const raw = JSON.stringify(defaultData), storage = { getItem: () => raw, setItem: vi.fn() };
+    const candidate = { ...defaultData, formulaReports: wrapped(unsupported(location)) };
+    expect(saveData(candidate, storage)).toBe(false);
+    expect(saveDataChecked(candidate, raw, storage)).toEqual({ ok: false, reason: 'invalid' });
+    expect(storage.setItem).not.toHaveBeenCalled();
   });
 });

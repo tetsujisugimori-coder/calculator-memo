@@ -81,6 +81,8 @@ export function saveFormulaReport(reports: FormulaReports, library: FormulaLibra
   return readFormulaReports({ ...checked, entries: original ? checked.entries.map(item => item.id === original.id ? entry : item) : [...checked.entries, entry] });
 }
 export type FormulaReportCorrespondence = "confirmed" | "unconfirmed" | "changed" | "orphan" | "unknown";
-export function formulaReportCorrespondence(report: FormulaReport, formula: RegisteredFormula | undefined): FormulaReportCorrespondence {
-  return formulaReportAssessment(report, formula).status;
+/** Compatibility status-only helper. Pass an explicitly loaded saved snapshot, never editor drafts.
+ * Linked evidence without that snapshot remains unknown; use assessment for the reason. */
+export function formulaReportCorrespondence(report: FormulaReport, formula: RegisteredFormula | undefined, savedNotes?: Memo[]): FormulaReportCorrespondence {
+  return formulaReportAssessment(report, formula, savedNotes).status;
 }

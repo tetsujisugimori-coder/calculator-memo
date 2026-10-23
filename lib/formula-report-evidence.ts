@@ -12,6 +12,7 @@ export function readReportEvidenceLinks(value: unknown): FormulaReportEvidenceLi
   const seen = new Set<string>();
   for (const link of value) {
     if (!object(link) || !id(link.memoId) || !id(link.recordId)) throw new Error('根拠参照のIDが不正です。');
+    if (extra(link, ['memoId', 'recordId'])) throw new Error('未対応の根拠参照情報です。元データを保護するため保存を停止しました。');
     const key = reportEvidenceLinkKey(link as FormulaReportEvidenceLink);
     if (seen.has(key)) throw new Error('根拠参照のIDが重複しています。');
     seen.add(key);
@@ -20,6 +21,7 @@ export function readReportEvidenceLinks(value: unknown): FormulaReportEvidenceLi
 }
 export function readReportEvidence(value: unknown, formulaId: string): FormulaReportEvidence {
   if (!object(value) || value.version !== 1 || !Array.isArray(value.confirmations) || value.confirmations.length > REPORT_EVIDENCE_LIMITS.confirmations) throw new Error('未対応または不正なレポート根拠情報です。確認履歴は20件以内です。');
+  if (extra(value, ['version', 'links', 'confirmations'])) throw new Error('未対応のレポート根拠情報です。元データを保護するため保存を停止しました。');
   readReportEvidenceLinks(value.links);
   const ids = new Set<string>();
   for (const item of value.confirmations) {
@@ -29,6 +31,7 @@ export function readReportEvidence(value: unknown, formulaId: string): FormulaRe
       || !object(item.definition) || item.definition.version !== 1 || typeof item.definition.expression !== 'string' || !item.definition.expression.trim() || item.definition.expression.length > 2000
       || !Array.isArray(item.definition.variables) || item.definition.variables.length > 2000 || !item.definition.variables.every(name => typeof name === 'string' && /^[A-Za-z][A-Za-z0-9_]*$/.test(name))
       || new Set(item.definition.variables).size !== item.definition.variables.length) throw new Error('確認履歴の構造が不正です。');
+    if (extra(item, ['id', 'formulaId', 'confirmedAt', 'evidenceSignature', 'definition', 'title', 'body', 'links']) || extra(item.definition, ['version', 'expression', 'variables'])) throw new Error('未対応の確認履歴情報です。元データを保護するため保存を停止しました。');
     inspectFormulaDefinition(item.definition.expression);
     readReportEvidenceLinks(item.links); ids.add(item.id);
   }
@@ -80,7 +83,8 @@ export function formulaReportAssessment(report: FormulaReport, formula: Register
     : { status: 'unknown', reason: '旧形式の確認式は保全していますが、確認日時・変数定義が未記録のため新基準で比較できません。' };
   if (last.title !== report.title || last.body !== report.body || JSON.stringify(last.links) !== JSON.stringify(evidence.links)) return { status: 'unconfirmed', reason: '確認後にレポートまたは根拠参照を編集しています。過去の確認履歴は保全されています。' };
   if (hasUnknownFormulaDefinition(formula) || extra(evidence, ['version', 'links', 'confirmations']) || extra(last, ['id', 'formulaId', 'confirmedAt', 'evidenceSignature', 'definition', 'title', 'body', 'links']) || extra(last.definition, ['version', 'expression', 'variables'])) return { status: 'unknown', reason: '未対応の定義・確認情報があり、意味を推測して一致扱いにしません。' };
-  if (evidence.links.length && (!notes || resolveReportEvidence(notes, evidence.links).some(item => item.status !== 'available'))) return { status: 'unknown', reason: '根拠不足：参照記録を取得できないか、欠落・破損しています。' };
+  if (evidence.links.length && !notes) return { status: 'unknown', reason: '根拠未照合：保存済み原本をまだ取得していません。根拠不一致とは断定できません。' };
+  if (evidence.links.length && notes && resolveReportEvidence(notes, evidence.links).some(item => item.status !== 'available')) return { status: 'unknown', reason: '根拠不足：参照記録を取得できないか、欠落・破損しています。' };
   if (notes && last.evidenceSignature !== reportEvidenceSignature(notes, evidence.links)) return { status: 'unknown', reason: '確認時と根拠記録の内容が一致しません。同じIDでも差し替えられた可能性があり、当時の値とみなしません。' };
   try {
     return JSON.stringify(last.definition) === JSON.stringify(formulaDefinitionSnapshot(formula)) && last.formulaId === formula.id

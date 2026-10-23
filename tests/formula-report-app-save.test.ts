@@ -96,3 +96,19 @@ it('failed confirmation writes never publish appended confirmation history', asy
   await save(); expect(result).toContain('保存できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   expect(host.querySelector('output')?.textContent).toBe('null');
 });
+
+it('unsupported evidence protects the loaded original and blocks all ordinary writes', async () => {
+  const raw = JSON.stringify({ ...original, formulaReports: { version: 1, entries: [{
+    id: 'r', formulaId: 'f', title: '説明', body: '原本', createdAt: '2026-10-23', updatedAt: '2026-10-23', confirmedExpression: null,
+    evidence: { version: 1, links: [], confirmations: [], futureMeaning: { retain: true } },
+  }] } });
+  localStorage.setItem(STORAGE_KEY, raw);
+  const writes = vi.spyOn(Storage.prototype, 'setItem');
+  await act(async () => root.render(createElement(CalculatorApp)));
+  await act(async () => { await new Promise(resolve => setTimeout(resolve, 10)); });
+  expect(host.textContent).toContain('関連レポートを読み取れませんでした');
+  expect(host.textContent).toContain('原本');
+  await act(async () => button('登録式ライブラリ').click());
+  await save(); expect(result).toContain('保存保護中');
+  expect(writes).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
