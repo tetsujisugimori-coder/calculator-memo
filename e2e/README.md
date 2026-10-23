@@ -510,3 +510,7 @@ geometry checkpoints; the expected mobile activation count is 866. All prior
 checks remain. The 30-minute CI limit, six engines/viewports, 114 PNG ceiling,
 successful trace discard and failure artifacts remain unchanged. Actual complete
 execution is recorded by the final PR head's CI, not inferred from focused runs.
+
+## Issue #63 saved formula detail
+
+The library now uses local selection without saving. Each of the same six conditions checks saved-only formula/report/history display, safe Markdown, keyboard history disclosure, refresh, exact Markdown copy/download, same-name ID separation, raw-storage invariance, both themes and 200% text fit. This adds one acceptance check and six mobile touch activations per context: 642 checks, 872 touches per mobile context; 562 screenshot checkpoints and the 114 PNG cap remain unchanged. No workflow, dependency, timeout, or trace-policy change.

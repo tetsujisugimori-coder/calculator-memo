@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-23 12:28 JST: Issue #63 登録式詳細の保存済み原本閲覧
+
+- PR #60 / #62 のマージと最新main `e1714b7ff9b9ed64df894f16e750cf32f0e91957` を確認し、cleanな作業領域から `feat/63-formula-detail` を作成。既存Issue #63は依頼と同じ要件が見出し・箇条書きで整形されていたため重複Issueを作らず本文を保持する。
+- 第一希望の小規模な既存ライブラリ統合を採用。保存済み原本のみを読む詳細、既存assessment/Markdown/履歴根拠/出力の再利用、ローカル選択による閲覧時autosave除去を追加。新保存形式・計算エンジン・再計算・明示確認の保存経路は変更しない。
+- 次善の別画面・選択状態の追加永続化は不要。変数説明は現行保存形式にないため推測せず不在を表示。原本更新時は未照合へ戻し、未保存propsを根拠へ混入させない。詳細は取得時点の表示で、再取得は読み取りのみ。
+- 新規UI単体23件と既存report UI25件を独立実行し48件成功、独立レビューで阻害指摘なし。初回全体実行の追加fixture文言不一致1件は正しい表示文言へ修正（既存製品期待値の緩和なし）。全単体1200件、CI契約37件、TypeScript、lint、通常/Pages build成功。実GUI・最終HEAD CI結果は後続記録へ追記する。
+- GUI受入を1件/条件追加（642件）、タップ6回/条件追加（872回）。6条件・562スクリーンショット幾何チェック・114PNG上限・trace・30分は維持。実機Safari/VoiceOverは未検証。原本JSON保全を維持し、ロールバックはUI/テスト/文書コミットのrevertのみ。
+
+
 ## 2026-10-23 10:38 JST: PR #62 実GUIの識別子衝突による誤検出修正
 
 - [CI #125](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39882922876) / `0d1f2ed9e8974d479d84d6c6fdfca6f0d187253b` は準備・単体・型・lint・両build成功、GUI 6条件中Chromium mobile390だけ失敗。全体約21分、GUI18分30秒で30分timeoutではない。artifactは101PNG/失敗trace1件（947,993 bytes）、ZIP29,951,289 bytesで既存上限/失敗時保存方針内。

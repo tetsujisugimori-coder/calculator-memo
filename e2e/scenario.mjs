@@ -249,6 +249,31 @@ async function exerciseFormulaReports(prefix) {
   assert.deepEqual((await storage()).notes, fixtureNotes);
   await closeReport();
   await expect(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true })).toBeFocused();
+  const detail = library().getByRole("region", { name: "保存済み登録式の詳細", exact: true });
+  const beforeDetail = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
+  await expect(detail.locator(".katex")).not.toHaveCount(0);
+  assert.equal(await detail.locator("script,img,input,textarea").count(), 0);
+  await detail.getByText("確認履歴（1件）", { exact: true }).focus(); await page.keyboard.press("Enter");
+  await activate(detail.getByText(/確認日時：.*最後の確認記録/));
+  await expect(detail).toContainText(confirmed.evidence.confirmations[0].id);
+  await activate(detail.getByRole("button", { name: "保存済み詳細を再取得", exact: true }));
+  await page.evaluate(() => Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__formulaReportCopy = text; } } }));
+  await activate(detail.getByRole("button", { name: "保存済みレポート本文をコピー", exact: true }));
+  assert.equal(await page.evaluate(() => window.__formulaReportCopy), body);
+  const detailDownloadPromise = page.waitForEvent("download");
+  await activate(detail.getByRole("button", { name: "保存済みレポート.mdをダウンロード", exact: true }));
+  assert.equal(await readFile(await (await detailDownloadPromise).path(), "utf8"), body);
+  await activate(library().getByRole("button", { name: "Same named formula", exact: true }).nth(1));
+  await expect(library().getByRole("region", { name: "保存済み登録式の詳細", exact: true })).toContainText("関連レポートは未登録");
+  await activate(library().getByRole("button", { name: "Same named formula", exact: true }).first());
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeDetail);
+  await passed(prefix + ": saved formula detail safely renders report and history, preserves raw storage during selection refresh copy download, and fits both themes at 200 percent text");
   await editFormula("Renamed report formula", "x * 2");
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
   await expect(report()).toContainText("確認済み・式一致");
