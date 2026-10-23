@@ -514,3 +514,7 @@ execution is recorded by the final PR head's CI, not inferred from focused runs.
 ## Issue #63 saved formula detail
 
 The library now uses local selection without saving. Each of the same six conditions checks saved-only formula/report/history display, safe Markdown, keyboard history disclosure, refresh, exact Markdown copy/download, same-name ID separation, raw-storage invariance, both themes and 200% text fit. This adds one acceptance check and six mobile touch activations per context: 642 checks, 872 touches per mobile context; 562 screenshot checkpoints and the 114 PNG cap remain unchanged. No workflow, dependency, timeout, or trace-policy change.
+
+### PR #64 additional refresh verification
+
+Existing same-tab report scenarios additionally assert the detail immediately after formula rename/edit and report save/close. A synthetic fixture checks canceled formula and report edits against exact raw storage, then uses a real second page in the same browser context to edit and save formula/report through the application UI. The first page must retain its labeled old snapshot, become unverified, and refresh to the new saved text without lifting application conflict protection or writing. Both pages use the existing touch activation checks. Two acceptance groups and 16 activations per context are added: 654 checks, 888 mobile activations. The six conditions, 562 screenshot checkpoints, 114 PNG cap, 30-minute limit and trace policy are unchanged. No production data or browser profile is used.

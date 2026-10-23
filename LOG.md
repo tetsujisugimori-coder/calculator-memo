@@ -1,5 +1,18 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-10-23 13:34 JST: PR #64 更新検知・未知データ保護の追加検証
+
+- 検証開始時の PR #64 は未マージ、HEAD `251ebd7c8355d717f891a477d55213ee6eee7236`、同じ `feat/63-formula-detail` で clean。Issue #63 本文は変更しない。
+- 同一タブは storage event に依存せず、登録式編集終了と pendingSave の遷移で詳細を再マウント、レポート終了では detailRevision で再取得する。名称変更／式・変数変更／本文保存／明示確認成功／編集破棄を実UIと保存処理を通して検証した。
+- 他タブ保存時は取得時点の古い内容を明示し「根拠未照合」に移行、明示再取得で新しい式・本文・状態になる。詳細の再取得はアプリ全体の競合保護を解除しない。実ブラウザの同一context内の2ページで双方のUI保存を行う検証を追加した。
+- loadData → readFormulaReports → readReportEvidence の検証により、不正な confirmation.definition / links / confirmations は描画前に拒否する。未知version、不正構造、欠落根拠で例外・確認済みへの格上げ・原本変更がない。対応済versionの追加report metadataと登録式の未知属性は通常保存でも保持される。未知属性を含む式は判定不能を維持する。
+- 第一希望「再現時のみ最小修正」に従い、製品不具合は再現しなかったため製品コードを変更しない。代替の防御ロジック追加や重複判定は不要。保存形式・計算・再計算・確認保存条件・CI環境・時間上限・PNG/trace方針は無変更。
+- 回帰テスト20件追加。単体1220件/53ファイル、CI契約37件、型検査、lint成功（既存warning1件/error0）。独立再レビューで阻害指摘なし、詳細UIと更新経路43件および契約37件を独立実行して成功。
+- ローカルChromium375px全109確認が成功（約171秒、合成データ、製品は開始HEADで未コミットの検証差分を実行）。最終HEADの成功とは別証拠。GUIは各条件2確認追加で6条件654確認、mobile888操作へ増加、既存114 PNG・成功trace0・30分上限を維持。最終HEADの全6条件と両ビルドを含む正式CIは、この記録を含むコミットのPR Checksと追加結果コメントで追跡する。
+- 未検証: 実機iPhone Safari、VoiceOver、外部配布元障害の恒久的解消。ロールバックは今回の検証・文書差分のみrevert可能で、保存データの移行・復旧操作は不要。
+- 関連: [PR #64](https://github.com/tetsujisugimori-coder/calculator-memo/pull/64)、[Issue #63](https://github.com/tetsujisugimori-coder/calculator-memo/issues/63)。修正不要の根拠と最終CIはPRコメントに残し、人間の再レビュー待ちとする。
+
 ## 2026-10-23 12:28 JST: Issue #63 登録式詳細の保存済み原本閲覧
 
 - PR #60 / #62 のマージと最新main `e1714b7ff9b9ed64df894f16e750cf32f0e91957` を確認し、cleanな作業領域から `feat/63-formula-detail` を作成。既存Issue #63は依頼と同じ要件が見出し・箇条書きで整形されていたため重複Issueを作らず本文を保持する。

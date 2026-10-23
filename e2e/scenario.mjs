@@ -275,10 +275,13 @@ async function exerciseFormulaReports(prefix) {
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeDetail);
   await passed(prefix + ": saved formula detail safely renders report and history, preserves raw storage during selection refresh copy download, and fits both themes at 200 percent text");
   await editFormula("Renamed report formula", "x * 2");
+  await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
   await expect(report()).toContainText("確認済み・式一致");
   await closeReport();
   await editFormula("Renamed report formula", "x * 3");
+  await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("要再確認・式変更あり");
+  await expect(detail).toContainText("x * 3");
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
   await expect(report()).toContainText("式変更あり");
   assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
@@ -293,6 +296,8 @@ async function exerciseFormulaReports(prefix) {
   await expect(report()).toContainText("未確認");
   await passed(prefix + ": explicit report confirmation binds expression and content while rename remains distinct from expression changes and body edits invalidate confirmation");
   await closeReport();
+  await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("未確認");
+  await expect(detail.getByRole("region", { name: "保存済み関連レポート", exact: true })).toContainText("編集");
   await activate(library().getByRole("button", { name: "Same named formula", exact: true }));
   await expect(library().getByRole("button", { name: "レポートを作成", exact: true })).toHaveCount(1);
   await activate(library().getByRole("button", { name: "Renamed report formula", exact: true }));
@@ -343,6 +348,70 @@ async function exerciseFormulaReports(prefix) {
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload();
   await passed(prefix + ": formula report and orphan survive reload without altering existing calculation notes history or registered execution data");
+}
+
+async function exerciseFormulaDetailRefresh(prefix) {
+  await stage(prefix + ": formula-detail-refresh-and-cancel");
+  const original = await storage();
+  const now = "2026-10-23T00:00:00.000Z";
+  const formula = { id: "refresh-formula", title: "Refresh fixture", expression: "x * 2", createdAt: now, updatedAt: now };
+  const reportValue = { id: "refresh-report", formulaId: formula.id, title: "Refresh report", body: "保存済み本文", createdAt: now, updatedAt: now, confirmedExpression: formula.expression,
+    evidence: { version: 1, links: [], confirmations: [{ id: "refresh-confirmation", formulaId: formula.id, confirmedAt: now, definition: { version: 1, expression: formula.expression, variables: ["x"] }, title: "Refresh report", body: "保存済み本文", links: [], evidenceSignature: "[]" }] } };
+  await page.evaluate(value => localStorage.setItem("calculation-memo:data", JSON.stringify(value)), { ...original, formulaLibrary: { version: 1, entries: [formula], selectedId: formula.id }, formulaReports: { version: 1, entries: [reportValue] } });
+  await page.reload();
+  const library = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  const report = () => page.getByRole("dialog", { name: "登録式の関連レポート", exact: true });
+  await activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+  await expect(library().getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
+  const raw = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await activate(library().getByRole("button", { name: "登録式を編集", exact: true }));
+  await library().getByLabel("登録する計算式", { exact: true }).fill("x * 999");
+  await activate(library().getByRole("button", { name: "編集をキャンセル", exact: true }));
+  await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
+  await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
+  await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill("破棄する未保存本文");
+  await activate(report().getByRole("button", { name: "レポートを閉じる", exact: true }));
+  await activate(page.getByRole("dialog", { name: "未保存のレポート編集を破棄しますか？", exact: true }).getByRole("button", { name: "未保存の編集を破棄して閉じる", exact: true }));
+  await expect(library().getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), raw);
+  await passed(prefix + ": canceled formula and report edits preserve exact raw original confirmation and history on return to detail");
+  const firstPage = page;
+  const secondPage = await context.newPage(); secondPage.setDefaultTimeout(10000);
+  secondPage.on("pageerror", error => browserErrors.push({ type: "second-tab-pageerror", message: error.message }));
+  secondPage.on("console", message => { if (message.type() === "error") browserErrors.push({ type: "second-tab-console", message: message.text() }); });
+  secondPage.on("response", response => { if (response.status() >= 400) browserErrors.push({ type: "second-tab-http", status: response.status(), url: response.url() }); });
+  try {
+    page = secondPage;
+    await page.goto(base);
+    await activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+    await activate(library().getByRole("button", { name: "登録式を編集", exact: true }));
+    await library().getByLabel("登録する計算式", { exact: true }).fill("x * 3");
+    await activate(library().getByRole("button", { name: "登録する", exact: true }));
+    await expect(library().getByTestId("library-unsaved-changes")).toHaveCount(0);
+    await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
+    await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
+    await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill("別タブで保存した本文");
+    await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
+    await expect.poll(async () => (await storage()).formulaReports.entries[0].body).toBe("別タブで保存した本文");
+    await activate(report().getByRole("button", { name: "レポートを閉じる", exact: true }));
+    await expect(library().getByTestId("formula-detail-assessment")).toHaveText("未確認");
+    page = firstPage;
+    const detail = library().getByRole("region", { name: "保存済み登録式の詳細", exact: true });
+    await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("根拠未照合（原本更新後）");
+    await expect(detail).toContainText("取得時点"); await expect(detail).toContainText("x * 2");
+    await expect(detail).not.toContainText("別タブで保存した本文");
+    const changed = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+    await activate(detail.getByRole("button", { name: "保存済み詳細を再取得", exact: true }));
+    await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("未確認");
+    await expect(detail).toContainText("x * 3"); await expect(detail).toContainText("別タブで保存した本文");
+    await expect(library().getByRole("button", { name: "登録式を編集", exact: true })).toBeDisabled();
+    assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), changed);
+    await assertHorizontalFit();
+    await passed(prefix + ": real second-tab formula and report saves invalidate first-tab snapshot and explicit refresh preserves original without lifting app conflict protection");
+    await activate(library().getByRole("button", { name: "閉じる", exact: true }));
+  } finally { page = firstPage; await secondPage.close(); }
+  await page.evaluate(value => localStorage.setItem("calculation-memo:data", JSON.stringify(value)), original);
+  await page.reload();
 }
 
 async function exerciseIdentification(prefix) {
@@ -3316,6 +3385,7 @@ async function exercise(scenario) {
   await exerciseVariables(prefix);
   await exerciseFormulaLibrary(prefix);
   await exerciseFormulaReports(prefix);
+  await exerciseFormulaDetailRefresh(prefix);
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);
   await exerciseBlockExtraFields(prefix);
