@@ -31,8 +31,9 @@ it('persists exact text before publishing, does not auto-confirm, and retains al
   expect(stored().formulaReports.entries[0].confirmedExpression).toBeNull();
   const rest = stored(); delete rest.formulaReports; expect(rest).toEqual(original);
   expect(host.querySelector('output')?.textContent).toContain('User text');
-  request = { ...request, expectedReport: formulaReportSignature(result as FormulaReport), confirm: true }; await save();
+  request = { ...request, expectedReport: formulaReportSignature(result as FormulaReport), confirm: true, confirmationRemarks: '保存・読戻し後の申告' }; await save();
   expect(stored().formulaReports.entries[0].confirmedExpression).toBe('a+1');
+  expect(stored().formulaReports.entries[0].evidence.confirmations[0].remarks).toBe('保存・読戻し後の申告');
 });
 it('quota failure keeps report out of React and autosave, allowing a safe explicit retry', async () => {
   await open(); const raw = localStorage.getItem(STORAGE_KEY); const writes = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
@@ -41,13 +42,13 @@ it('quota failure keeps report out of React and autosave, allowing a safe explic
 });
 it.each(['expression', 'report', 'invalid'])('refuses external %s replacement without a storage event', async change => {
   await open(); const external = change === 'invalid' ? '{broken' : JSON.stringify({ ...original, ...(change === 'expression' ? { formulaLibrary: { ...original.formulaLibrary, entries: [{ ...formula, expression: 'a+2' }] } } : { formulaReports: { version: 1, entries: [{ id: 'remote', formulaId: 'f', title: 'Remote', body: 'other', createdAt: '2026-10-22', updatedAt: '2026-10-22', confirmedExpression: null }] } }) });
-  vi.spyOn(console, 'error').mockImplementation(() => undefined); localStorage.setItem(STORAGE_KEY, external); request.confirm = true;
+  vi.spyOn(console, 'error').mockImplementation(() => undefined); localStorage.setItem(STORAGE_KEY, external); request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立';
   await save(); expect(typeof result).toBe('string'); expect(localStorage.getItem(STORAGE_KEY)).toBe(external); expect(host.querySelector('output')?.textContent).toBe('null');
 });
 it('does not expose confirmed state while queued behind a lock, then checks changed destination', async () => {
   await open(); let release!: () => void;
   vi.stubGlobal('navigator', { locks: { request: (_name: string, operation: () => unknown) => new Promise(resolve => { release = () => resolve(operation()); }) } });
-  request.confirm = true; await save(); expect(result).toBeUndefined(); expect(host.querySelector('output')?.textContent).toBe('null');
+  request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立'; await save(); expect(result).toBeUndefined(); expect(host.querySelector('output')?.textContent).toBe('null');
   const remote = JSON.stringify({ ...original, formulaLibrary: { ...original.formulaLibrary, entries: [{ ...formula, expression: 'a+9' }] } }); localStorage.setItem(STORAGE_KEY, remote);
   await act(async () => release()); expect(result).toContain('競合'); expect(localStorage.getItem(STORAGE_KEY)).toBe(remote);
 });
@@ -55,7 +56,7 @@ it('readback uncertainty stops retry and never publishes confirmation in React',
   await open(); const get = Storage.prototype.getItem, set = Storage.prototype.setItem; let written = false;
   const writes = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) { set.call(this, key, value); written = true; });
   vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (this: Storage, key) { if (written) throw new Error('readback'); return get.call(this, key); });
-  request.confirm = true; await save(); expect(result).toContain('保存された可能性'); expect(host.querySelector('output')?.textContent).toBe('null');
+  request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立'; await save(); expect(result).toContain('保存された可能性'); expect(host.querySelector('output')?.textContent).toBe('null');
   await save(); expect(writes).toHaveBeenCalledTimes(1); expect(result).toContain('保存保護中');
 });
 it('a rejected lock leaves storage and report display unchanged', async () => {
@@ -66,7 +67,7 @@ it('a rejected lock leaves storage and report display unchanged', async () => {
 it('a local state change during lock wait invalidates the candidate instead of merging stale confirmation', async () => {
   await open(); const raw = localStorage.getItem(STORAGE_KEY); const releases: Array<() => void> = [];
   vi.stubGlobal('navigator', { locks: { request: (_name: string, operation: () => unknown) => new Promise(resolve => { releases.push(() => resolve(operation())); }) } });
-  request.confirm = true; await save();
+  request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立'; await save();
   await act(async () => { const theme = host.querySelector<HTMLSelectElement>('.theme-select select')!; theme.value = 'dark'; theme.dispatchEvent(new Event('change', { bubbles: true })); });
   await act(async () => releases[0]()); expect(result).toContain('アプリ状態が変わりました'); expect(host.querySelector('output')?.textContent).toBe('null'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   await act(async () => releases[1]()); expect(stored().formulaReports).toBeUndefined(); expect(stored().settings.theme).toBe('dark');
@@ -90,7 +91,7 @@ it('checks persisted evidence again inside the lock and never confirms a same-ID
   expect(localStorage.getItem(STORAGE_KEY)).toBe(external); expect(host.querySelector('output')?.textContent).toBe('null');
 });
 it('failed confirmation writes never publish appended confirmation history', async () => {
-  await open(); request.confirm = true;
+  await open(); request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立';
   const raw = localStorage.getItem(STORAGE_KEY);
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
   await save(); expect(result).toContain('保存できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);

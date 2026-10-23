@@ -21,6 +21,8 @@ Each scenario actively exercises:
 
 - Issue #5 Backspace acceptance: the visible `⌫ 戻す` button is at least as tall as a standard key in every context; touch contexts at 375px and 390px also require a 44×44px minimum target. Existing click/tap and keyboard deletion checks remain active. This adds one named acceptance check per context without adding a touch activation or screenshot.
 
+- Optional confirmation remarks: 500 UTF-16 units (including Japanese, emoji, newlines and HTML/Markdown-looking text), visible 501-unit rejection without truncation, canceled-close and ordinary-save draft retention, injected quota failure with unchanged raw storage, retry held at the Web Locks boundary with disabled input, and clearing only after successful explicit confirmation. Timeline checks distinguish absent legacy remarks from newly saved empty remarks, preserve exact plain text and line breaks, and retain the existing two-theme 200% layout/read-only checks. These extend existing checks without adding screenshots or changing successful-trace policy.
+
 - Calculation evidence: preview/cancel cannot persist records; two explicit recalculations append two batches only after save; actual legacy/ID inputs, old records after source edits, failed rollback, explicit trial apply and save, report copy/download and read-only reproduction verification. Existing six engines/viewports and screenshot/trace budgets are unchanged.
 
 - Header guide text stays on one line inside its button; wordmark/actions fit the header and viewport without overlap, with unobstructed hit-test centers

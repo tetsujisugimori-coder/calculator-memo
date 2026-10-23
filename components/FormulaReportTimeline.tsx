@@ -2,6 +2,7 @@
 
 import { formulaReportTimeline } from "../lib/formula-report-timeline";
 import type { FormulaReport, Memo, RegisteredFormula } from "../lib/types";
+import { ConfirmationRemarks } from "./ConfirmationRemarks";
 import { HistoricalReportEvidence } from "./FormulaReportEvidence";
 
 /** Only the parent's validated saved snapshot is accepted; no drafts or writer are used. */
@@ -22,6 +23,7 @@ export function FormulaReportTimeline({ report, formula, notes, stale, fetchedAt
           <p>当時の記録：利用者の明示確認の保存記録あり。当時の判定結果そのものは記録なし。数学的正しさや原本の真正性を保証しません。履歴は現在の確認への自動承認ではありません。</p>
           <p>確認ID：{confirmation.id}　登録式ID：{confirmation.formulaId}</p><p>関連レポートID：{report.id}　保存配列位置：{savedPosition}</p>
           <p>式・レポートの版番号は記録なし。確認IDと以下の保存済み内容で対象を識別します。</p>
+          <ConfirmationRemarks remarks={confirmation.remarks} />
           <section aria-label="取得原本との相違">
             <p>現在の内容との対応：{stale ? "根拠未照合" : assessment.status === "confirmed" ? "取得原本と一致（この履歴を現在の確認へ昇格しません）" : assessment.status === "changed" ? "要再確認・式変更あり" : assessment.status === "unconfirmed" ? "未確認（レポートまたは参照が相違）" : "根拠不足または判定不能"}</p>
             {!stale && <><p>{assessment.reason}</p><ul><li>式定義：{definitionMatches === null ? "判定不能" : definitionMatches ? "一致" : "相違あり"}</li><li>レポート本文・タイトル：{reportMatches ? "一致" : "相違あり"}</li><li>根拠参照：{linksMatch ? "一致" : "相違あり"}</li></ul><p>相違は取得原本との文字列・変数・ID参照の比較です。変更の時点・理由や数学的同値性は判定しません。</p></>}

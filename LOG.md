@@ -1,15 +1,21 @@
 # Calculator Memo 開発履歴・設計判断
 
 
-## 2026-10-24 04:30 JST: Issue #5 Backspace寸法のGUI回帰契約
+## 2026-10-24 07:15 JST: PR #71 Backspace表示寸法回帰検証とPR #70統合
 
-- GitHub `main` の最新HEAD `07f7e259c621685a30b587c957259da876bddbe9` を取得。開始時の作業ツリーはcleanだったが、ローカルmainは139コミット遅れ。最新main基準の専用枝 `fix/5-backspace-regression` で調査。
-- [Issue #5](https://github.com/tetsujisugimori-coder/calculator-memo/issues/5) はopen。過去の [PR #4](https://github.com/tetsujisugimori-coder/calculator-memo/pull/4) がBackspaceを「⌫ 戻す」と表示し、通常キー以上の高さ・強調スタイルとモバイルスクリーンショットを追加済み。現行CSSもdesktop60px、375/390px touchで通常キー以上かつ44px以上。計算処理・表示コード変更は不要。
-- 既存GUIは6条件（Chromium desktop/narrow/mobile、WebKit mobile 375/390px）で画面ボタン操作を使い、モバイルでは実tap、キーボードBackspaceも検証する。一方、表示ラベルと実描画高さ・最小タップ領域の寸法assertionがなかったため、全6条件に高さ比較、表示ラベル、touchでは44×44pxを確認する1 assertion groupを追加。契約カウントは各条件+1、総計690→696。touch回数・geometry/PNG数・CI上限は不変。Issue本文とPR #70は変更しない。
-- 変更ファイル: `e2e/scenario.mjs`, `e2e/ci-contract.mjs`, `e2e/ci-contract.node-test.mjs`, `e2e/README.md`, `LOG.md`。アプリコード、依存定義、計算・保存形式は変更なし。
-- 検証: 電卓入力単体50件、lint、TypeScript、更新後の6条件CI契約（696 checks/562 geometry）、JS構文検査は成功。全単体は1266/1267件成功、無関係なMarkdown例とのバイト比較1件がWindows CRLF checkoutで失敗（生成LF、期待fixture CRLF）。CI契約node:testの全件実行もこのWindows環境でbash未提供/CRLF依存により既存Linux runner前提のテストが失敗し、今回の変更に関係する完了6条件契約は単独実行して成功。CI Linuxで再検証する。
-- 最終HEADのGitHub ActionsはPR作成後に確認する。ローカルChromium/WebKit GUI未実行、実機iPhone Safari/VoiceOver未検証。保存データ移行・ロールバック操作は不要。
+- PR #70マージ後のmainを基準にPR #71の差分を統合。競合時はPR #70の備考・確認履歴・テスト仕様を優先し、既存記録を保持。
+- Issue #5の「⌫ 戻す」表示と通常キー以上の高さを6ブラウザ条件で、タッチ環境では44×44 CSS px以上も検査する。製品コード・保存形式・計算処理は変更しない。
+- E2E契約ではPR #70のタッチ操作期待値907を維持、PR #71の追加検査により受け入れ検査数690→696、配置検証562は据え置き。CI最終結果はPR #71のActionsで別途確認する。
 
+## 2026-10-23 21:00 JST: 明示確認時の任意備考（Issue #69）
+
+- PR #68 merge済みの最新main `07f7e259c621685a30b587c957259da876bddbe9` とcleanを確認。[既存Issue #69](https://github.com/tetsujisugimori-coder/calculator-memo/issues/69) の本文は依頼原文と照合し変更せず、専用枝 `feat/69-confirmation-remarks` を作成。
+- 第一希望の確認レコード optional `remarks` を採用。旧version 1のまま旧欠落/新空欄を区別し、500 UTF-16コード単位を厳格検査。備考は利用者の申告であり、変更イベント/数学的保証/現在状態の照合条件ではない。[設計・変更範囲・互換性・ロールバック](docs/agent/formula-confirmation-remarks.md)。
+- 通常保存は備考を渡さず、明示確認だけ新規履歴へ付加。既存共有ロック・競合検知・checked読戻しを再利用。保存待ちは入力固定、失敗/保護/キャンセル/通常保存後は備考を保持、確認成功時だけクリア。閉じる警告も備考を含む。過去の履歴は変更せず通常テキストとしてタイムライン/既存履歴へ表示。
+- 未知フィールド保護、履歴20件、全体1MBは不変。空欄remarksも旧版では未知キーとして保護停止する。コードrevertのみでは旧版編集へ戻らないため、全原本JSONを退避し備考の削除や初期化で回避しない。
+- 検証: この変更ツリーで単体1285件/57ファイル、lint、TypeScript、通常/Pagesビルド、CI契約37件成功。独立レビューが104件を実行。追加GUIのstatusセレクター重複を阻害指摘として修正し再レビューで解消、製品コードに阻害なし。GUIは初回ブラウザ未配置で起動前停止、公式ブラウザ取得後の再試験中（WebKit OS依存不足を確認）。[Draft PR #70](https://github.com/tetsujisugimori-coder/calculator-memo/pull/70) を作成。公開ツリーSHAはローカルと一致。ローカル再試験はChromiumの2マウス条件を完走したが、並行commitによるHEAD変更で後続4条件はSHA整合チェック停止（実装側の検証進行ミス）。全条件成功とは扱わない。固定最終HEADの実CI結果はPR Checksを参照し、この記録コミットの成功は先取りしない。
+- GUIは既存6条件を維持し確認失敗→再試行・備考境界/Unicode/文字列表示を追加。操作増加に合わせtouch期待数906→907（検査緩和ではない）。PNG114、成功traceなし、30分上限は変更しない。
+- 未検証: 実機iPhone SafariとVoiceOver。WebKit自動試験とは区別。マージ/本番公開/mainへのpushは行わない。
 
 ## 2026-10-23 19:10 JST: 根拠・確認履歴タイムライン（Issue #67）
 

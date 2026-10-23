@@ -8,6 +8,7 @@ import { MarkdownContent } from "./MarkdownContent";
 import { loadData, STORAGE_KEY } from "../lib/storage";
 import { formulaDefinitionSignature, formulaDefinitionSnapshot, formulaReportAssessment, reportEvidenceSignature, resolveReportEvidence } from "../lib/formula-report-evidence";
 import { FormulaReportEvidence, HistoricalReportEvidence } from "./FormulaReportEvidence";
+import { ConfirmationRemarks } from "./ConfirmationRemarks";
 import { Modal } from "./Modal";
 
 type Props = {
@@ -34,18 +35,21 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   const [generation, setGeneration] = useState(0);
   const [evidenceChanged, setEvidenceChanged] = useState(false);
   const [preview, setPreview] = useState(Boolean(report));
+  const [remarks, setRemarks] = useState("");
+  const remarksInvalid = remarks.length > 500;
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
   const [discard, setDiscard] = useState(false);
   const [notice, setNotice] = useState<{ text: string; failed: boolean } | null>(null);
   const dirty = !baseline.report || title !== baseline.report.title || body !== baseline.report.body || JSON.stringify(links) !== JSON.stringify(baseline.report?.evidence?.links ?? []);
+  const unsaved = dirty || remarks.length > 0;
   const conflict = formulaReportSignature(report) !== formulaReportSignature(baseline.report) || formulaDefinitionSignature(formula) !== baseline.definition;
   const invalid = !title.trim() || title.length > 120 || body.length > 100_000;
   useEffect(() => {
-    const warn = (event: BeforeUnloadEvent) => { if (dirty || savingRef.current) { event.preventDefault(); event.returnValue = ""; } };
+    const warn = (event: BeforeUnloadEvent) => { if (unsaved || savingRef.current) { event.preventDefault(); event.returnValue = ""; } };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  }, [unsaved]);
   useEffect(() => {
     const observe = (event: StorageEvent) => { if ((event.key === STORAGE_KEY || event.key === null) && event.newValue !== evidence.raw) setEvidenceChanged(true); };
     window.addEventListener("storage", observe);
@@ -53,14 +57,15 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   }, [evidence.raw]);
   const refreshEvidence = () => { setEvidence(acquireEvidence()); setGeneration(value => value + 1); setEvidenceChanged(false); };
   const unavailable = Boolean(evidence.error) || resolveReportEvidence(evidence.notes, links).some(item => item.status !== "available");
-  const close = () => { if (savingRef.current) return; if (dirty) setDiscard(true); else onClose(); };
+  const close = () => { if (savingRef.current) return; if (unsaved) setDiscard(true); else onClose(); };
   const save = async (confirm: boolean) => {
-    if (!writable || savingRef.current || conflict || invalid || evidenceChanged || (confirm && (!formula || unavailable))) return;
+    if (!writable || savingRef.current || conflict || invalid || evidenceChanged || (confirm && (!formula || unavailable || remarksInvalid))) return;
     savingRef.current = true; setSaving(true); setNotice(null);
     try {
-      const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm });
+      const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm, ...(confirm ? { confirmationRemarks: remarks } : {}) });
       if (typeof result === "string") { setNotice({ text: result, failed: true }); return; }
       setBaseline({ report: structuredClone(result), expression: baseline.expression, definition: baseline.definition });
+      if (confirm) setRemarks("");
       setNotice({ text: confirm ? "内容の確認と保存が完了しました。" : "レポートを保存しました。", failed: false });
     } catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "保存に失敗しました。編集内容は保持しています。", failed: true }); }
     finally { savingRef.current = false; setSaving(false); }
@@ -88,7 +93,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
       <p>登録式ID：{formulaId}</p><p>レポートID：{id}</p>
       {formula ? <div><strong>現在の登録式（変更できません）</strong><pre>{formula.expression}</pre><p>現在の変数定義：{currentVariables}</p></div> : <p>登録式が見つからないため、本文だけを保全しています。閲覧・編集・コピー・ファイル出力ができますが、式との対応は確認できません。</p>}
       {baseline.report?.confirmedExpression != null && <details><summary>互換用に保持した確認式（この項目単独では日時・変数情報なし）</summary><pre>{baseline.report.confirmedExpression}</pre></details>}
-      {baseline.report?.evidence?.confirmations.length ? <details><summary>確認時の式・本文・根拠の履歴（{baseline.report.evidence.confirmations.length}件）</summary>{baseline.report.evidence.confirmations.map(confirmation => <details key={confirmation.id}><summary>確認日時：{confirmation.confirmedAt}</summary><p>確認ID：{confirmation.id}　登録式ID：{confirmation.formulaId}</p><p>定義比較形式：v{confirmation.definition.version}</p><pre>{confirmation.definition.expression}</pre><p>確認時の変数定義：{confirmation.definition.variables.join("、") || "なし"}</p><p>確認したタイトル：{confirmation.title}</p><details><summary>確認した本文（生Markdown）</summary><pre>{confirmation.body}</pre></details><p>当時の関連付け：{confirmation.links.length}件</p>{confirmation.links.map(link => <p key={JSON.stringify(link)}>メモID：{link.memoId}　記録ID：{link.recordId}</p>)}{confirmation.links.length > 0 && <HistoricalReportEvidence key={generation} confirmation={confirmation} notes={evidence.notes} />}</details>)}</details> : null}
+      {baseline.report?.evidence?.confirmations.length ? <details><summary>確認時の式・本文・根拠の履歴（{baseline.report.evidence.confirmations.length}件）</summary>{baseline.report.evidence.confirmations.map(confirmation => <details key={confirmation.id}><summary>確認日時：{confirmation.confirmedAt}</summary><p>確認ID：{confirmation.id}　登録式ID：{confirmation.formulaId}</p><p>定義比較形式：v{confirmation.definition.version}</p><pre>{confirmation.definition.expression}</pre><p>確認時の変数定義：{confirmation.definition.variables.join("、") || "なし"}</p><p>確認したタイトル：{confirmation.title}</p><details><summary>確認した本文（生Markdown）</summary><pre>{confirmation.body}</pre></details><ConfirmationRemarks remarks={confirmation.remarks} /><p>当時の関連付け：{confirmation.links.length}件</p>{confirmation.links.map(link => <p key={JSON.stringify(link)}>メモID：{link.memoId}　記録ID：{link.recordId}</p>)}{confirmation.links.length > 0 && <HistoricalReportEvidence key={generation} confirmation={confirmation} notes={evidence.notes} />}</details>)}</details> : null}
       <details><summary>根拠となる保存済み計算記録</summary>
         <p>原本取得日時：{evidence.fetchedAt}</p><button type="button" disabled={saving} onClick={refreshEvidence}>保存済み根拠を再取得</button>
         {evidenceChanged && <p role="alert">保存原本の更新を検知しました。表示は取得時点の内容です。再取得して根拠を確認するまで保存を停止します。</p>}
@@ -106,9 +111,13 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
       <p>コピー・ファイル出力は現在表示中の本文です。未保存の編集も含み、保存は行いません。</p>
       {notice && <p role={notice.failed ? "alert" : "status"}>{notice.text}</p>}
       <div className="modal-actions"><button type="button" disabled={saving} onClick={close}>レポートを閉じる</button><button type="button" onClick={() => void exportBody(false)}>レポート本文をコピー</button><button type="button" onClick={() => void exportBody(true)}>レポート.mdをダウンロード</button></div>
-      <div className="modal-actions"><button type="button" disabled={!writable || saving || conflict || invalid || evidenceChanged} onClick={() => void save(false)}>レポートを保存</button><button type="button" className="button-primary" disabled={!formula || !writable || saving || conflict || invalid || evidenceChanged || unavailable} onClick={() => void save(true)}>現在の式に対する内容を確認して保存</button></div>
+      <label htmlFor="formula-report-remarks">確認時の備考（任意）</label>
+      <textarea id="formula-report-remarks" rows={3} value={remarks} disabled={saving} aria-describedby="formula-report-remarks-help formula-report-remarks-count" aria-invalid={remarksInvalid} onChange={event => { if (!savingRef.current) setRemarks(event.target.value); }} />
+      <p id="formula-report-remarks-help">利用者の確認時の申告です。変更日時・変更理由の客観的記録や数学的正しさの保証ではありません。明示確認の保存成功時だけ履歴へ記録します。通常保存では備考は保存されません。</p>
+      <p id="formula-report-remarks-count" role={remarksInvalid ? "alert" : undefined}>{remarks.length}/500 UTF-16コード単位（絵文字などは2単位）。{remarksInvalid && "上限超過のため確認できません。入力は切り捨てていません。"}</p>
+      <div className="modal-actions"><button type="button" disabled={!writable || saving || conflict || invalid || evidenceChanged} onClick={() => void save(false)}>レポートを保存</button><button type="button" className="button-primary" disabled={!formula || !writable || saving || conflict || invalid || evidenceChanged || unavailable || remarksInvalid} onClick={() => void save(true)}>現在の式に対する内容を確認して保存</button></div>
       {saving && <p role="status">保存結果を確認しています。まだ保存済みではありません。</p>}
-      {discard && <Modal title="未保存のレポート編集を破棄しますか？" onClose={() => setDiscard(false)}><p>保存していない本文は失われます。必要なら戻ってコピーしてください。</p><div className="modal-actions"><button onClick={() => setDiscard(false)}>編集に戻る</button><button className="button-danger" onClick={onClose}>未保存の編集を破棄して閉じる</button></div></Modal>}
+      {discard && <Modal title="未保存のレポート編集を破棄しますか？" onClose={() => setDiscard(false)}><p>保存していない本文・備考は失われます。必要なら戻ってコピーしてください。</p><div className="modal-actions"><button onClick={() => setDiscard(false)}>編集に戻る</button><button className="button-danger" onClick={onClose}>未保存の編集を破棄して閉じる</button></div></Modal>}
     </div>
   </Modal>;
 }

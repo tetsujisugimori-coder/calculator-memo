@@ -204,11 +204,25 @@ async function exerciseFormulaReports(prefix) {
   const body = '# 証明と導出\n\n$x^2$\n\n$$\n\\frac{1}{2}\n$$\n\n```html\n<script>alert("no")</script>\n```\n\n<img src=x onerror="window.reportExecuted=true">\n\n参考資料は未記入。\n' + '長い説明と識別情報'.repeat(50);
   await report().getByLabel("レポートタイトル", { exact: true }).fill("Synthetic report / math");
   await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill(body);
+  const remarks = report().getByLabel("確認時の備考（任意）", { exact: true });
+  const confirmReport = report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true });
+  const remarksPrefix = '導出式と参考文献を照合 😀\n**太字にはしない** <img src=x onerror="window.remarksExecuted=true">\n';
+  const confirmationRemarks = remarksPrefix + "境".repeat(500 - remarksPrefix.length);
+  assert.equal(confirmationRemarks.length, 500, "Boundary uses UTF-16 code units, including a surrogate-pair emoji");
+  await remarks.fill(confirmationRemarks);
+  await expect(remarks).toHaveAttribute("id", "formula-report-remarks");
+  await expect(remarks).toHaveAttribute("aria-invalid", "false");
   await page.keyboard.press("Escape");
   const discard = page.getByRole("dialog", { name: "未保存のレポート編集を破棄しますか？", exact: true });
   await expect(discard).toBeVisible();
   await activate(discard.getByRole("button", { name: "編集に戻る", exact: true }));
   await expect(report().getByLabel("レポート本文（Markdown）", { exact: true })).toHaveValue(body);
+  await expect(remarks).toHaveValue(confirmationRemarks);
+  await remarks.fill(confirmationRemarks + "超");
+  await expect(remarks).toHaveValue(confirmationRemarks + "超");
+  await expect(remarks).toHaveAttribute("aria-invalid", "true");
+  await expect(report().getByRole("alert")).toContainText("501/500 UTF-16");
+  await expect(confirmReport).toBeDisabled();
   await activate(report().getByRole("button", { name: "レポートをプレビュー", exact: true }));
   await expect(report().locator(".katex")).not.toHaveCount(0);
   await expect(report().locator(".katex-display")).toHaveCount(1);
@@ -218,7 +232,11 @@ async function exerciseFormulaReports(prefix) {
   assert.equal(await page.evaluate(() => window.reportExecuted), undefined);
   await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
   await expect.poll(async () => (await storage()).formulaReports.entries[0]).toMatchObject({ formulaId: formulas[0].id, body, confirmedExpression: null });
-  await passed(prefix + ": formula report renders safe Markdown math fences and HTML text without execution and ordinary save never confirms automatically");
+  await expect(remarks).toHaveValue(confirmationRemarks + "超");
+  assert.deepEqual((await storage()).formulaReports.entries[0].evidence?.confirmations ?? [], []);
+  await remarks.fill(confirmationRemarks);
+  await expect(confirmReport).toBeEnabled();
+  await passed(prefix + ": formula report renders safe Markdown math fences and HTML text; optional UTF-16 remarks reject overflow without truncation, survive canceled close and ordinary save without confirmation");
   const beforeLink = await storage();
   await activate(report().getByText("根拠となる保存済み計算記録", { exact: true }));
   const choices = report().getByLabel("関連付ける保存済み計算記録", { exact: true });
@@ -240,12 +258,45 @@ async function exerciseFormulaReports(prefix) {
     await screenshot(prefix + "-report-evidence-" + theme + "-200-percent", currentScenario.width, false);
   }
   await page.evaluate(() => document.documentElement.style.fontSize = "");
-  await activate(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true }));
+  const beforeFailedConfirmation = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  // Fail only the synthetic storage write. Checked persistence must retain the
+  // draft, leave the exact raw original intact, and permit a corrected retry.
+  await page.evaluate(() => {
+    const setItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (this === localStorage && key === "calculation-memo:data") throw new DOMException("Synthetic quota failure", "QuotaExceededError");
+      return setItem.call(this, key, value);
+    };
+    window.__restoreRemarksWrite = () => { Storage.prototype.setItem = setItem; };
+  });
+  await activate(confirmReport);
+  await expect(report().getByRole("alert")).toContainText("レポートを保存できませんでした");
+  await expect(remarks).toHaveValue(confirmationRemarks);
+  await expect(remarks).toBeEnabled();
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeFailedConfirmation);
+  await page.evaluate(() => {
+    window.__restoreRemarksWrite();
+    const locks = navigator.locks;
+    const request = locks.request.bind(locks);
+    let release;
+    const gate = new Promise(resolve => { release = resolve; });
+    locks.request = (...args) => gate.then(() => request(...args));
+    window.__releaseRemarksSave = () => { locks.request = request; release(); };
+  });
+  await activate(confirmReport);
+  await expect(remarks).toBeDisabled();
+  await expect(confirmReport).toBeDisabled();
+  await expect(report().getByRole("status").filter({ hasText: "保存結果を確認しています" })).toHaveText("保存結果を確認しています。まだ保存済みではありません。");
+  await expect(remarks).toHaveValue(confirmationRemarks);
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeFailedConfirmation);
+  await page.evaluate(() => window.__releaseRemarksSave());
   await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBe("x * 2");
+  await expect(remarks).toHaveValue("");
   const confirmed = (await storage()).formulaReports.entries[0];
   assert.deepEqual(confirmed.evidence.links, [{ memoId: evidenceMemo.id, recordId: evidenceRecord.id }]);
   assert.deepEqual(confirmed.evidence.confirmations[0].definition.variables, ["x"]);
   assert.equal(confirmed.evidence.confirmations[0].body, body);
+  assert.equal(confirmed.evidence.confirmations[0].remarks, confirmationRemarks);
   assert.deepEqual((await storage()).notes, fixtureNotes);
   await closeReport();
   await expect(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true })).toBeFocused();
@@ -257,6 +308,10 @@ async function exerciseFormulaReports(prefix) {
   await detail.getByText(/^確認履歴（1件）/).focus(); await page.keyboard.press("Enter");
   await activate(detail.getByText(/確認日時：.*最後の確認記録/));
   await expect(detail).toContainText(confirmed.evidence.confirmations[0].id);
+  const savedRemarks = detail.locator("[data-confirmation-id]").getByRole("region", { name: "確認時の備考", exact: true });
+  assert.equal(await savedRemarks.locator("p").nth(1).textContent(), confirmationRemarks);
+  assert.equal(await savedRemarks.locator("img,script,strong").count(), 0);
+  assert.equal(await page.evaluate(() => window.remarksExecuted), undefined);
   await activate(detail.getByRole("button", { name: "保存済み詳細を再取得", exact: true }));
   await page.evaluate(() => Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__formulaReportCopy = text; } } }));
   await activate(detail.getByRole("button", { name: "保存済みレポート本文をコピー", exact: true }));
@@ -289,12 +344,17 @@ async function exerciseFormulaReports(prefix) {
   assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
   await activate(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true }));
   await expect.poll(async () => (await storage()).formulaReports.entries[0].evidence.confirmations.at(-1).definition.expression).toBe("x * 3");
+  assert.equal((await storage()).formulaReports.entries[0].evidence.confirmations.at(-1).remarks, "");
   await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
   await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill(body + "\n編集");
+  await remarks.fill("通常保存では履歴へ記録しない備考");
   await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
   await expect.poll(async () => (await storage()).formulaReports.entries[0].body).toBe(body + "\n編集");
   assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
   assert.equal((await storage()).formulaReports.entries[0].evidence.confirmations.length, 2);
+  await expect(remarks).toHaveValue("通常保存では履歴へ記録しない備考");
+  assert.deepEqual((await storage()).formulaReports.entries[0].evidence.confirmations[0], confirmed.evidence.confirmations[0]);
+  await remarks.fill(""); // The user may explicitly clear an unsaved draft before closing.
   await expect(report()).toContainText("未確認");
   await passed(prefix + ": explicit report confirmation binds expression and content while rename remains distinct from expression changes and body edits invalidate confirmation");
   await closeReport();
@@ -536,12 +596,13 @@ async function exerciseFormulaTimeline(prefix) {
     id, formulaId: formula.id, confirmedAt, definition: { version: 1, expression, variables: ["x"] },
     title: "Timeline report", body, links: [], evidenceSignature: "[]",
   });
+  const timelineRemarks = '確認した条件 😀\n**Markdownではない** <script>window.timelineRemarksExecuted=true</script>\n' + "長い識別子".repeat(70);
   // Saved order intentionally differs from clock order. Equal clocks must retain saved order.
   const confirmations = [
     confirmation("timeline-both", "2026-10-23T02:00:00.000Z", "x * 3", "過去の本文"),
     confirmation("timeline-expression", now, "x * 3", "保存済み本文"),
-    confirmation("timeline-report", now, "x * 2", "過去の本文"),
-    confirmation("timeline-current", "2026-10-23T01:00:00.000Z", "x * 2", "保存済み本文"),
+    { ...confirmation("timeline-report", now, "x * 2", "過去の本文"), remarks: "" },
+    { ...confirmation("timeline-current", "2026-10-23T01:00:00.000Z", "x * 2", "保存済み本文"), remarks: timelineRemarks },
   ];
   const reportValue = { id: "timeline-report-id", formulaId: formula.id, title: "Timeline report", body: "保存済み本文", createdAt: now, updatedAt: now,
     confirmedExpression: formula.expression, evidence: { version: 1, links: [], confirmations } };
@@ -569,6 +630,13 @@ async function exerciseFormulaTimeline(prefix) {
     await summary.focus(); await page.keyboard.press("Enter");
     await expect(summary).toBeFocused();
   }
+  await expect(entries.nth(0).getByRole("region", { name: "確認時の備考", exact: true })).toContainText("備考の記録なし");
+  await expect(entries.nth(1).getByRole("region", { name: "確認時の備考", exact: true })).toContainText("備考は入力されていません");
+  const timelineRemarkText = entries.nth(2).getByRole("region", { name: "確認時の備考", exact: true }).locator("p").nth(1);
+  assert.equal(await timelineRemarkText.textContent(), timelineRemarks);
+  await expect(timelineRemarkText).toHaveCSS("white-space", "pre-wrap");
+  assert.equal(await timelineRemarkText.locator("script,strong").count(), 0);
+  assert.equal(await page.evaluate(() => window.timelineRemarksExecuted), undefined);
   await expect(entries.nth(2)).toContainText("最後の確認記録");
   await expect(entries.nth(2)).toContainText("保存配列位置：4");
   await expect(entries.nth(3)).toContainText("過去の確認記録");
