@@ -7,6 +7,7 @@
 - AGENTS、README、LOG、保存/根拠/詳細/GUI/CI方針と実装を調査。第一希望の小規模統合を採用し、PR #64 の読み取り専用snapshotを共通化。一覧と詳細が同一原本・更新検知を使い、既存 formulaReportAssessment の結果だけを表示分類へ写像する。根拠なしと未確認を区別し、5グループの絞り込みをローカル状態で提供する。
 - 未保存編集・試算は根拠へ渡さず、保存成功後の取得と外部更新後の明示再取得を区別。取得失敗/未知/不正原本を確認済みへ格上げしない。式の計算・保存形式・writer・確認条件・削除後の原本保全は変更しない。[設計・次善策・復旧](docs/agent/formula-status-list.md)。
 - 実装・検証・独立レビュー・PR・最終HEAD CIはこの記録時点で未完了。実測を後続記録へ追記する。main push・merge・公開なし。
+- 15:20 JST追記: [PR #66](https://github.com/tetsujisugimori-coder/calculator-memo/pull/66) をDraft作成。接続済みGitHubで全13blobとtree `9bf8dcad1fb73c995c9d367e9207b78592441cf3` の同一性を確認して公開。最終HEADの実CI結果はPR本文/コメント/Checksへ記録し、この文書commit自身の成功を先取りしない。
 - 15:14 JST追記: 一覧専用回帰25件を追加、全単体1245件/54files、CI契約37件、型、lint、通常/Pages buildが成功。独立レビューは6関連suite149件を実行し阻害指摘なし。状態の読み上げ説明をvisible labelのaria-describedbyで補強。
 - 作業ツリーの重点GUIはChromium desktop15チェック・375px touch16チェック/80操作、両テーマ200%文字、実2ページ更新・全状態絞り込み・保存原本不変が成功。全6条件は672チェック/562幾何確認/mobile各903操作を要求し、114PNG・30分・trace方針を維持。正式最終HEADの実Actionsは未確認。実機iPhone Safari/VoiceOverは未検証。
 
