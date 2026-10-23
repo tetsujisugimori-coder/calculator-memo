@@ -5,7 +5,14 @@ export const FORMULA_REPORT_LIMIT = 200;
 export const FORMULA_REPORT_TITLE_LIMIT = 120;
 export const FORMULA_REPORT_BODY_LIMIT = 100_000;
 export const FORMULA_REPORT_BYTES_LIMIT = 1_000_000;
-export const FORMULA_REPORT_TEMPLATE = "## 証明\n\n## 導出\n\n## 適用条件\n\n## 由緒・歴史\n\n## 出典・参考資料\n";
+export const FORMULA_REPORT_TEMPLATE = "## 概要\n\nこの式の目的と説明の範囲を記述します。\n\n## 定義・前提条件\n\n記号の定義、適用条件、仮定を記述します。\n\n## 導出・証明\n\n導出の手順や証明を記述します。未検証の点は区別してください。\n\n## 計算例\n\n入力例、計算手順、結果と解釈を記述します。\n\n## 由緒・歴史\n\n確認できた背景や歴史を記述します。不明な事項は不明とします。\n\n## 参考文献・出典\n\n参照した資料と該当箇所を記述します。\n";
+
+/** Append without normalizing or replacing any existing byte of the draft. */
+export function appendFormulaReportTemplate(body: string): string {
+  const next = body + (body ? (body.endsWith("\n\n") ? "" : body.endsWith("\n") ? "\n" : "\n\n") : "") + FORMULA_REPORT_TEMPLATE;
+  if (next.length > FORMULA_REPORT_BODY_LIMIT) throw new Error("テンプレート追加後の本文が100,000文字を超えるため追加しませんでした。元の本文は保持しています。");
+  return next;
+}
 
 export function emptyFormulaReports(): FormulaReports { return { version: 1, entries: [] }; }
 function object(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === "object" && !Array.isArray(value); }

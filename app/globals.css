@@ -516,3 +516,11 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .formula-confirmation-timeline > li { min-width: 0; padding: .25rem 0 .75rem .5rem; overflow-wrap: anywhere; }
 .formula-confirmation-timeline > li + li { border-top: 1px solid var(--line); }
 .formula-timeline time { overflow-wrap: anywhere; }
+
+/* Report navigation is local to the scrollable dialog, never a wide sidebar. */
+.report-heading-navigation ol { margin: 0; padding: 0; list-style: none; max-height: 20rem; overflow-y: auto; }
+.report-heading-navigation li { min-width: 0; }
+.report-heading-navigation button { width: 100%; min-height: 44px; text-align: start; }
+.report-template-tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+.report-template-tools p { flex-basis: 100%; }
+.formula-report-preview :is(h1,h2,h3,h4,h5,h6):focus { outline: 2px solid var(--brand); outline-offset: 2px; }

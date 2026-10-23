@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { FormulaReport, RegisteredFormula, FormulaReportEvidenceLink, Memo } from "../lib/types";
-import { formulaReportSignature, FORMULA_REPORT_TEMPLATE, type FormulaReportSaveRequest } from "../lib/formula-reports";
+import { formulaReportSignature, FORMULA_REPORT_TEMPLATE, appendFormulaReportTemplate, type FormulaReportSaveRequest } from "../lib/formula-reports";
 import { downloadMarkdownReport, reportFilename } from "../lib/markdown-report";
 import { MarkdownContent } from "./MarkdownContent";
 import { loadData, STORAGE_KEY } from "../lib/storage";
 import { formulaDefinitionSignature, formulaDefinitionSnapshot, formulaReportAssessment, reportEvidenceSignature, resolveReportEvidence } from "../lib/formula-report-evidence";
 import { FormulaReportEvidence, HistoricalReportEvidence } from "./FormulaReportEvidence";
 import { ConfirmationRemarks } from "./ConfirmationRemarks";
+import { extractMarkdownHeadings, markdownHeadingDomId, type MarkdownHeading } from "../lib/markdown-blocks";
 import { Modal } from "./Modal";
 
 type Props = {
@@ -30,6 +31,36 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   const [id] = useState(() => report?.id ?? crypto.randomUUID());
   const [title, setTitle] = useState(report?.title ?? formula?.title ?? "関連レポート");
   const [body, setBody] = useState(report?.body ?? FORMULA_REPORT_TEMPLATE);
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const headingPrefix = useId();
+  const headings = useMemo(() => body.length <= 100_000 ? extractMarkdownHeadings(body) : [], [body]);
+  const [templateUndo, setTemplateUndo] = useState<{ before: string; after: string } | null>(null);
+  const navigateHeading = (heading: MarkdownHeading) => {
+    if (preview) {
+      const target = document.getElementById(markdownHeadingDomId(headingPrefix, heading.id));
+      target?.focus(); target?.scrollIntoView({ block: "nearest" });
+    } else {
+      editorRef.current?.focus();
+      const offset = (position: number) => body.slice(0, position).replace(/\r\n?/g, "\n").length;
+      editorRef.current?.setSelectionRange(offset(heading.start), offset(heading.end));
+      const editor = editorRef.current;
+      if (editor) {
+        // Selection alone does not consistently scroll a textarea in every engine.
+        // Measure the wrapped prefix with identical typography; never modify the draft.
+        const mirror = document.createElement("div");
+        const style = getComputedStyle(editor);
+        for (const property of ["font", "line-height", "letter-spacing", "padding", "text-indent", "tab-size"]) mirror.style.setProperty(property, style.getPropertyValue(property));
+        Object.assign(mirror.style, { position: "fixed", top: "0", left: "0", visibility: "hidden", pointerEvents: "none", width: `${editor.clientWidth}px`, boxSizing: "border-box", whiteSpace: "pre-wrap", overflowWrap: "break-word" });
+        mirror.setAttribute("aria-hidden", "true");
+        mirror.textContent = editor.value.slice(0, offset(heading.start));
+        const marker = document.createElement("span"); marker.textContent = "|"; mirror.append(marker);
+        document.body.append(mirror);
+        editor.scrollTop = Math.max(0, marker.offsetTop - editor.clientHeight / 2);
+        mirror.remove();
+        editor.scrollIntoView({ block: "nearest" });
+      }
+    }
+  };
   const [links, setLinks] = useState<FormulaReportEvidenceLink[]>(() => structuredClone(report?.evidence?.links ?? []));
   const [evidence, setEvidence] = useState(acquireEvidence);
   const [generation, setGeneration] = useState(0);
@@ -64,6 +95,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     try {
       const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm, ...(confirm ? { confirmationRemarks: remarks } : {}) });
       if (typeof result === "string") { setNotice({ text: result, failed: true }); return; }
+      setTemplateUndo(null);
       setBaseline({ report: structuredClone(result), expression: baseline.expression, definition: baseline.definition });
       if (confirm) setRemarks("");
       setNotice({ text: confirm ? "内容の確認と保存が完了しました。" : "レポートを保存しました。", failed: false });
@@ -105,7 +137,23 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
       {conflict && <p role="alert">編集中に式またはレポートが変更されました。上書きを停止しました。本文を控えてから閉じて開き直してください。</p>}
       <label htmlFor="formula-report-title">レポートタイトル</label><input id="formula-report-title" value={title} disabled={saving} onChange={event => setTitle(event.target.value)} />
       <div className="modal-actions"><button type="button" aria-pressed={!preview} onClick={() => setPreview(false)}>Markdownを編集</button><button type="button" aria-pressed={preview} onClick={() => setPreview(true)}>レポートをプレビュー</button></div>
-      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => setBody(event.target.value)} /></>}
+      {!preview && <div className="report-template-tools">
+        <p id="report-template-help">6章のMarkdownを本文の末尾に追加します。既存本文は保持します。章は自由に編集・削除でき、追加だけでは保存・確認されません。直後は専用の取消ができますが、その後の編集・保存で取消は終了します。</p>
+        <button type="button" disabled={saving || !writable || conflict || evidenceChanged} aria-describedby="report-template-help" onClick={() => {
+          if (savingRef.current) return;
+          try { const next = appendFormulaReportTemplate(body); setTemplateUndo({ before: body, after: next }); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
+          catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "追加できませんでした。本文は保持しています。", failed: true }); }
+        }}>テンプレートを挿入（末尾に追加）</button>
+        <button type="button" disabled={saving || !templateUndo || body !== templateUndo.after} onClick={() => {
+          if (savingRef.current || !templateUndo || body !== templateUndo.after) return;
+          setBody(templateUndo.before); setTemplateUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
+        }}>直前のテンプレート追加を取り消す</button>
+      </div>}
+      <details className="report-heading-navigation"><summary>章一覧（{headings.length}件）</summary>
+        <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
+        {body.length > 100_000 ? <p>上限超過のため章一覧を停止しています。本文は保持しています。</p> : headings.length ? <nav aria-label="レポートの章一覧"><ol>{headings.map(heading => <li key={heading.id} style={{ paddingInlineStart: `${(heading.level - 1) * .5}rem` }}><button type="button" disabled={saving} onClick={() => navigateHeading(heading)}>H{heading.level}：{heading.text}</button></li>)}</ol></nav> : <p>見出しがありません。行頭の #〜###### と空白で見出しを作成できます。</p>}
+      </details>
+      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { setBody(event.target.value); setTemplateUndo(null); }} /></>}
       <p>タイトル {title.length}/120文字、本文 {body.length}/100,000文字。見出しは編集用テンプレートです。未記入の証明・史実・出典は補いません。</p>
       {invalid && <p role="alert">タイトルは1〜120文字、本文は100,000文字以内にしてください。超過分は切り捨てません。</p>}
       <p>コピー・ファイル出力は現在表示中の本文です。未保存の編集も含み、保存は行いません。</p>
