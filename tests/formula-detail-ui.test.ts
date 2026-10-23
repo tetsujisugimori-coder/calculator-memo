@@ -98,3 +98,17 @@ it('shows all 20 retained confirmation IDs without mutating or truncating histor
 it('keeps an oversized report source intact while stopping unsafe reading', async () => {
   const raw = seed(data({ ...report, body: 'x'.repeat(100001) })); const write = vi.spyOn(Storage.prototype, 'setItem'); await render(); expect(host.textContent).toContain('安全に取得できません'); expect(status()).not.toContain('確認済み'); expect(write).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });
+
+it('timeline suppresses comparisons while stale and displays shared acquisition time without writes', async () => {
+  const raw = seed(data(confirmed())); await render();
+  const timeline = () => host.querySelector('[aria-label="根拠・確認履歴タイムライン"]')!;
+  expect(timeline().textContent).toContain('比較対象の原本取得日時');
+  expect(timeline().textContent).toContain('式定義：一致');
+  expect(timeline().textContent).toContain('当時の判定結果そのものは記録なし');
+  await act(async () => window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY })));
+  expect(timeline().textContent).toContain('根拠未照合');
+  expect(timeline().textContent).not.toContain('式定義：一致');
+  expect(timeline().textContent).not.toContain('取得原本と一致');
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+  await click('保存済み詳細を再取得'); expect(timeline().textContent).toContain('式定義：一致');
+});

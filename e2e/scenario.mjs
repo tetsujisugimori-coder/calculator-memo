@@ -254,7 +254,7 @@ async function exerciseFormulaReports(prefix) {
   await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
   await expect(detail.locator(".katex")).not.toHaveCount(0);
   assert.equal(await detail.locator("script,img,input,textarea").count(), 0);
-  await detail.getByText("確認履歴（1件）", { exact: true }).focus(); await page.keyboard.press("Enter");
+  await detail.getByText(/^確認履歴（1件）/).focus(); await page.keyboard.press("Enter");
   await activate(detail.getByText(/確認日時：.*最後の確認記録/));
   await expect(detail).toContainText(confirmed.evidence.confirmations[0].id);
   await activate(detail.getByRole("button", { name: "保存済み詳細を再取得", exact: true }));
@@ -397,6 +397,12 @@ async function exerciseFormulaStatusFilters(prefix) {
   await activate(rows.getByRole("button", { name: "Same status title", exact: true }).nth(1));
   const detail = library.getByRole("region", { name: "保存済み登録式の詳細", exact: true });
   await expect(detail).toContainText("関連レポートは未登録");
+  await expect(detail.locator(".formula-confirmation-timeline")).toHaveCount(0);
+  await activate(rows.getByRole("button", { name: "Status unconfirmed", exact: true }));
+  const emptyHistory = detail.locator(".formula-timeline");
+  await emptyHistory.locator(":scope > summary").focus(); await page.keyboard.press("Enter");
+  await expect(emptyHistory).toContainText("確認履歴はありません");
+  await expect(emptyHistory.locator("[data-confirmation-id]")).toHaveCount(0);
   await activate(rows.getByRole("button", { name: "Same status title", exact: true }).first());
   await expect(detail).toContainText("Saved body status-confirmed");
   await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
@@ -418,6 +424,8 @@ async function exerciseFormulaStatusFilters(prefix) {
   await activate(library.getByRole("button", { name: "保存済み一覧を再取得", exact: true }));
   await expect(rows.getByText("確認済み", { exact: true })).toHaveCount(0);
   await expect(rows.getByText("状態判定不能", { exact: true })).toHaveCount(5);
+  await expect(detail).toContainText("判定不能：保存済み原本を安全に取得できません");
+  await expect(detail.locator("[data-confirmation-id]")).toHaveCount(0);
   await expect.poll(() => browserErrors.length).toBe(expectedErrorStart + 1);
   const expectedReadError = browserErrors[expectedErrorStart];
   assert.equal(expectedReadError.type, "console");
@@ -462,6 +470,12 @@ async function exerciseFormulaDetailRefresh(prefix) {
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), raw);
   await expect(library().locator(".formula-library-list > li").first().getByText("確認済み", { exact: true })).toBeVisible();
   await passed(prefix + ": canceled formula and report edits preserve exact raw original confirmation and history on return to detail");
+  const history = library().locator(".formula-timeline");
+  await history.locator(":scope > summary").focus(); await page.keyboard.press("Enter");
+  await history.locator("[data-confirmation-id] > details > summary").focus(); await page.keyboard.press("Enter");
+  await expect(history).toContainText("式定義：一致");
+  await expect(history).toContainText("レポート本文・タイトル：一致");
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), raw);
   const firstPage = page;
   const secondPage = await context.newPage(); secondPage.setDefaultTimeout(10000);
   secondPage.on("pageerror", error => browserErrors.push({ type: "second-tab-pageerror", message: error.message }));
@@ -487,6 +501,9 @@ async function exerciseFormulaDetailRefresh(prefix) {
     await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("根拠未照合（原本更新後）");
     await expect(detail).toContainText("取得時点"); await expect(detail).toContainText("x * 2");
     await expect(detail).not.toContainText("別タブで保存した本文");
+    await expect(history).toContainText("現在の内容との対応：根拠未照合");
+    await expect(history).not.toContainText("式定義：一致");
+    await expect(history).not.toContainText("レポート本文・タイトル：一致");
     const changed = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
     const row = library().locator(".formula-library-list > li").first();
     await expect(row.getByText("根拠未照合", { exact: true })).toBeVisible();
@@ -497,12 +514,83 @@ async function exerciseFormulaDetailRefresh(prefix) {
     await activate(detail.getByRole("button", { name: "保存済み詳細を再取得", exact: true }));
     await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("未確認");
     await expect(detail).toContainText("x * 3"); await expect(detail).toContainText("別タブで保存した本文");
+    await expect(history).toContainText("式定義：相違あり");
+    await expect(history).toContainText("レポート本文・タイトル：相違あり");
+    await expect(history.locator("[data-confirmation-id]")).toHaveCount(1);
     await expect(library().getByRole("button", { name: "登録式を編集", exact: true })).toBeDisabled();
     assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), changed);
     await assertHorizontalFit();
     await passed(prefix + ": real second-tab formula and report saves invalidate first-tab snapshot and explicit refresh preserves original without lifting app conflict protection");
     await activate(library().getByRole("button", { name: "閉じる", exact: true }));
   } finally { page = firstPage; await secondPage.close(); }
+  await page.evaluate(value => localStorage.setItem("calculation-memo:data", JSON.stringify(value)), original);
+  await page.reload();
+}
+
+async function exerciseFormulaTimeline(prefix) {
+  await stage(prefix + ": formula-confirmation-timeline");
+  const original = await storage();
+  const now = "2026-10-23T00:00:00.000Z";
+  const formula = { id: "timeline-formula", title: "Timeline fixture", expression: "x * 2", createdAt: now, updatedAt: now };
+  const confirmation = (id, confirmedAt, expression, body) => ({
+    id, formulaId: formula.id, confirmedAt, definition: { version: 1, expression, variables: ["x"] },
+    title: "Timeline report", body, links: [], evidenceSignature: "[]",
+  });
+  // Saved order intentionally differs from clock order. Equal clocks must retain saved order.
+  const confirmations = [
+    confirmation("timeline-both", "2026-10-23T02:00:00.000Z", "x * 3", "過去の本文"),
+    confirmation("timeline-expression", now, "x * 3", "保存済み本文"),
+    confirmation("timeline-report", now, "x * 2", "過去の本文"),
+    confirmation("timeline-current", "2026-10-23T01:00:00.000Z", "x * 2", "保存済み本文"),
+  ];
+  const reportValue = { id: "timeline-report-id", formulaId: formula.id, title: "Timeline report", body: "保存済み本文", createdAt: now, updatedAt: now,
+    confirmedExpression: formula.expression, evidence: { version: 1, links: [], confirmations } };
+  await page.evaluate(value => localStorage.setItem("calculation-memo:data", JSON.stringify(value)), {
+    ...original, formulaLibrary: { version: 1, entries: [formula], selectedId: formula.id }, formulaReports: { version: 1, entries: [reportValue] },
+  });
+  await page.reload();
+  const raw = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+  const library = page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  const timeline = library.locator(".formula-timeline");
+  await expect(timeline).toHaveAttribute("aria-label", "根拠・確認履歴タイムライン");
+  const heading = timeline.locator(":scope > summary");
+  await heading.focus(); await page.keyboard.press("Enter");
+  await expect(timeline).toHaveAttribute("open", "");
+  const entries = timeline.locator(".formula-confirmation-timeline > li");
+  assert.deepEqual(await entries.evaluateAll(elements => elements.map(element => element.dataset.confirmationId)),
+    ["timeline-expression", "timeline-report", "timeline-current", "timeline-both"]);
+  await expect(timeline).toContainText("同一日時は保存配列順");
+  await expect(timeline).toContainText("確認日時は変更日時ではありません");
+  await expect(timeline).toContainText("変更日時・変更理由・確認間の変更経過は記録なし");
+  await expect(timeline).toContainText("比較対象の原本取得日時");
+  for (let index = 0; index < 4; index++) {
+    const summary = entries.nth(index).locator(":scope > details > summary");
+    await summary.focus(); await page.keyboard.press("Enter");
+    await expect(summary).toBeFocused();
+  }
+  await expect(entries.nth(2)).toContainText("最後の確認記録");
+  await expect(entries.nth(2)).toContainText("保存配列位置：4");
+  await expect(entries.nth(3)).toContainText("過去の確認記録");
+  await expect(entries.nth(3)).toContainText("保存配列位置：1");
+  await passed(prefix + ": timeline preserves stable tied-clock order and saved identity without inventing change dates or treating maximum clock as latest confirmation");
+  for (const [index, expression, report] of [[0, "相違あり", "一致"], [1, "一致", "相違あり"], [2, "一致", "一致"], [3, "相違あり", "相違あり"]]) {
+    await expect(entries.nth(index)).toContainText("式定義：" + expression);
+    await expect(entries.nth(index)).toContainText("レポート本文・タイトル：" + report);
+    await expect(entries.nth(index)).toContainText("根拠参照：一致");
+    await expect(entries.nth(index)).toContainText("当時の判定結果そのものは記録なし");
+  }
+  await expect(library.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
+  await expect(entries.nth(2)).toContainText("この履歴を現在の確認へ昇格しません");
+  await passed(prefix + ": historical expression-only report-only and combined differences remain separate from the latest saved confirmation and mathematical correctness");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), raw);
+  await passed(prefix + ": expanded read-only timeline fits both themes at 200 percent text and keyboard expansion preserves exact saved JSON");
+  await activate(library.getByRole("button", { name: "閉じる", exact: true }));
   await page.evaluate(value => localStorage.setItem("calculation-memo:data", JSON.stringify(value)), original);
   await page.reload();
 }
@@ -3480,6 +3568,7 @@ async function exercise(scenario) {
   await exerciseFormulaReports(prefix);
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
+  await exerciseFormulaTimeline(prefix);
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);
   await exerciseBlockExtraFields(prefix);

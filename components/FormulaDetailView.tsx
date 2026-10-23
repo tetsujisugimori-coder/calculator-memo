@@ -5,7 +5,7 @@ import { useFormulaSavedSnapshot, type FormulaSavedSnapshot } from "./useFormula
 import { formulaDefinitionSnapshot, formulaReportAssessment, type FormulaReportAssessment } from "../lib/formula-report-evidence";
 import { downloadMarkdownReport, reportFilename } from "../lib/markdown-report";
 import { MarkdownContent } from "./MarkdownContent";
-import { HistoricalReportEvidence } from "./FormulaReportEvidence";
+import { FormulaReportTimeline } from "./FormulaReportTimeline";
 
 function label(status: FormulaReportAssessment["status"]) {
   return status === "confirmed" ? "確認済み・式一致" : status === "changed" ? "要再確認・式変更あり" : status === "unconfirmed" ? "未確認" : status === "orphan" ? "登録式が見つからない" : "根拠不足または判定不能";
@@ -57,19 +57,7 @@ function SavedFormulaDetail({ formulaId, pendingSave = false, source }: { formul
         <div className="modal-actions"><button type="button" onClick={() => void exportBody(false)}>保存済みレポート本文をコピー</button><button type="button" onClick={() => void exportBody(true)}>保存済みレポート.mdをダウンロード</button></div>
         {notice && <p role="status">{notice}</p>}
         <p>作成日時：{report.createdAt}　更新日時：{report.updatedAt}</p>
-        <details><summary>確認履歴（{report.evidence?.confirmations.length ?? 0}件）</summary>
-          {!report.evidence?.confirmations.length && <p>日時・変数・根拠を含む確認履歴はありません。旧形式の確認式だけでは現在の対応を確定できません。</p>}
-          {report.evidence?.confirmations.map((confirmation, index) => {
-            const historical = formulaReportAssessment({ ...report, evidence: { version: 1, links: report.evidence!.links, confirmations: [confirmation] } }, formula, data!.notes);
-            return <details key={confirmation.id}><summary>確認日時：{confirmation.confirmedAt}（{index === report.evidence!.confirmations.length - 1 ? "最後の確認記録" : "過去の確認記録"}）</summary>
-              <p>履歴は現在の確認への自動承認ではありません。</p><p>確認ID：{confirmation.id}　登録式ID：{confirmation.formulaId}</p>
-              <p>現在の内容との対応：{stale ? "根拠未照合" : label(historical.status)}</p>{!stale && <p>{historical.reason}</p>}
-              <p>定義比較形式：v{confirmation.definition.version}</p><pre>{confirmation.definition.expression}</pre><p>確認時の変数：{confirmation.definition.variables.join("、") || "なし"}</p>
-              <p>確認したタイトル：{confirmation.title}</p><details><summary>確認した本文（生Markdown）</summary><pre>{confirmation.body}</pre></details>
-              {confirmation.links.length ? <HistoricalReportEvidence confirmation={confirmation} notes={data!.notes} /> : <p>根拠計算記録の関連付けはありません。</p>}
-            </details>;
-          })}
-        </details>
+        <FormulaReportTimeline report={report} formula={formula} notes={data!.notes} stale={stale} fetchedAt={fetchedAt} />
       </>}
     </>}
   </section>;

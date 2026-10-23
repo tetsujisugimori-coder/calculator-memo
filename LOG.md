@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-10-23 19:10 JST: 根拠・確認履歴タイムライン（Issue #67）
+
+- PR #66 merge と最新main `5cfee354167c51bf6d1021ef9df337bbae338291`、cleanを確認。重複検索後 [Issue #67](https://github.com/tetsujisugimori-coder/calculator-memo/issues/67) へ依頼原文2421文字を掲載し読戻し一致。本文は変更しない。専用枝 `feat/confirmation-timeline`。
+- 変更日時/理由/途中経過/当時の判定結果は保存されていない。第一希望の変更イベント込み表示は推測なしでは成立しないため、確認履歴中心+取得原本との差分という依頼内の次善策を採用。[事実/条件付き/不足・設計](docs/agent/formula-confirmation-timeline.md)。保存形式拡張と過去イベント生成は不要。
+- 式・本文タイトル・リンクの独立差分を表示し、判定は既存formulaReportAssessmentを再利用。過去一致を現在承認へ格上げせず、snapshotのstale/取得失敗/未知不正保護と取得日時を共有。時差付き日時昇順/同時刻保存順、時差なしは全保存順で限界明示。保存配列末尾の既存最新判定は不変。
+- ローカル全単体1267件/56ファイル成功（追加12件）。CI契約37件成功。独立レビューは製品差分に阻害指摘なし、関連54件を独立実行し成功。通常/Pagesビルド・GUI・最終HEAD CIは進行中で、実測結果をPRへ記録する。
+- CI環境/30分/6条件/114PNG/trace方針・計算エンジン・writer・保存形式・明示確認条件は変更しない。実機iPhone Safari/VoiceOver未検証。revertはUI/表示投影/テスト/文書のみ、データ移行なし。
+
 ## 2026-10-23 16:16 JST: PR #66 保存原本取得の順序追加検証
 
 - 開始HEAD `f1e488f8ab598d4a08d348ee93bad7180bd36498`、同じ `feat/65-formula-evidence-status`、Ready・未マージ・cleanを確認。Issue #65 原文は変更せず、新規PRを作らない。
