@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-23 10:38 JST: PR #62 実GUIの識別子衝突による誤検出修正
+
+- [CI #125](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39882922876) / `0d1f2ed9e8974d479d84d6c6fdfca6f0d187253b` は準備・単体・型・lint・両build成功、GUI 6条件中Chromium mobile390だけ失敗。全体約21分、GUI18分30秒で30分timeoutではない。artifactは101PNG/失敗trace1件（947,993 bytes）、ZIP29,951,289 bytesで既存上限/失敗時保存方針内。
+- worker logの実際値を確認すると、過去の選択記録は式z=-0・内部値-0のままであり、選択候補の別記録UUID `30e3bdc3-011f-4c1f-99ba-99936dfbc9af` が広すぎる「根拠section全体に999がない」検査に一致していた。未保存値混入や環境取得障害ではなく、受入検査の対象範囲の誤り。
+- 第一希望の実使用値検査を維持し、次善の無条件再実行や期待値削除は採用しない。選択記録の詳細1件へ同じnot999検査を限定し、候補ID `unselected-record-999` を固定fixtureへ追加して衝突を毎回検証する。実使用値/-0確認、保存原本のdeepEqualは維持。製品コード・条件数・timeout・画像/trace予算は変更しない。
+- ローカルChromiumのDOM再現で旧selector失敗、新selector成功、選択詳細に実999を注入すれば新selectorも失敗を確認。既存GUI固定fixtureにも同衝突を組み込み、実6条件の再実行は新HEADで実施する。構文/CI契約37件成功。実機Safari/VoiceOverは未実施。初回ローカル起動は既定cacheにbrowserがなく未実行、既存の専用browser保存先を指定して再現を実施した。
+- この追補の独立再レビューで阻害指摘なし。追加ローカル全scenario起動はbuild provenance未作成のため開始前停止し、実GUI成功とは数えない。新HEAD実CIは後続PRコメントに結果を記録する。旧失敗を削除せず、成功を先取りしない。
+
 ## 2026-10-23 10:13 JST: PR #62 根拠照合経路・未知フィールド保護のレビュー修正
 
 - 対象 [review 5622765828](https://github.com/tetsujisugimori-coder/calculator-memo/pull/62#pullrequestreview-5622765828) / HEAD `0cb3251e554fa9a73f6eff594d931d9db91dc4a2` と既存作業枝・clean状態を照合。mainは `4b87b370e348740c090c0ed7ec4a9a1c6f8067d8` のまま。Issue #61依頼原文は変更しない。

@@ -183,7 +183,7 @@ async function exerciseFormulaReports(prefix) {
   ] };
   const evidenceMemo = { id: "report-evidence-memo", type: "plain-calculation", title: "Synthetic historical evidence", content: "Current edit is not past evidence", createdAt: now, updatedAt: now,
     blocks: [{ id: "saved-source", type: "calculation", expression: "z = 999", displayExpression: "z = 999", result: 999, resultText: "999", error: null, evaluationMode: "note-variables" }],
-    calculationEvidence: { version: 1, records: [evidenceRecord] } };
+    calculationEvidence: { version: 1, records: [evidenceRecord, { ...evidenceRecord, id: "unselected-record-999" }] } };
   const fixtureNotes = [...original.notes, evidenceMemo];
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: fixtureNotes, formulaLibrary: { version: 1, entries: formulas, selectedId: formulas[0].id }, formulaReports: { version: 1, entries: [] } });
   await page.reload();
@@ -226,7 +226,11 @@ async function exerciseFormulaReports(prefix) {
   await activate(report().getByRole("button", { name: "根拠に追加", exact: true }));
   await activate(report().getByText("計算記録の詳細：Synthetic historical evidence", { exact: true }));
   await activate(report().getByText("ブロック saved-result", { exact: true }));
-  const past = report().locator(".formula-report-evidence");
+  // Unselected record IDs may legitimately contain the current-value sentinel.
+  // Assert values only in the selected record detail, never the options list.
+  await expect(choices).toContainText("unselected-record-999");
+  const past = report().locator(".formula-report-evidence-item > details");
+  await expect(past).toHaveCount(1);
   await expect(past).toContainText("実使用内部値"); await expect(past).toContainText("-0");
   await expect(past).not.toContainText("999");
   assert.deepEqual(await storage(), beforeLink);
