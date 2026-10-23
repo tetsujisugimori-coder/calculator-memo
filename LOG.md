@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-23 16:16 JST: PR #66 保存原本取得の順序追加検証
+
+- 開始HEAD `f1e488f8ab598d4a08d348ee93bad7180bd36498`、同じ `feat/65-formula-evidence-status`、Ready・未マージ・cleanを確認。Issue #65 原文は変更せず、新規PRを作らない。
+- 先に formula-snapshot-ordering.test.ts へ10件追加。pendingSave/外部通知/完了の別commitと同一バッチ両順序、同期refresh前後の通知、取得失敗から両再取得ボタンで復帰、原本・履歴不変を検証。製品未変更で成功し、再現した製品不具合なし。
+- 実保存の競合拒否は既存CalculatorAppテストと区別して確認。同期getItem内にstorageイベントを直接dispatchする人工的再入を実障害扱いしない。第一希望を維持し製品修正不要、予防的な状態判定や保存経路の追加は行わない。詳細と限界は [設計](docs/agent/formula-status-list.md) に追記。
+- 独立再レビューは追加10件と実保存12件の計22件成功、阻害指摘なし。jsdom順序模擬と実ブラウザ配送、全Reactスケジューリング網羅、Web Locks非参加クライアント、実機Safari/VoiceOverは区別して未保証とする。
+- ローカル全単体1255件/55ファイル、CI契約37件、TypeScript、lint（警告0）、通常/Pagesビルド成功。
+- 最終コミットの全CI・GUI結果はPR #66 Checksと結果コメントへ記録する。30分・6条件・114PNG・trace方針、製品コード・保存形式・計算・明示確認条件は変更しない。ロールバックは今回のテストと文書差分のみrevert、データ移行不要。
+
 
 ## 2026-10-23 15:08 JST: 登録式の根拠状態一覧・絞り込み（Issue #65）
 
