@@ -13,3 +13,10 @@ it('cannot promote an earlier matching record over the last saved confirmation',
 it.each([undefined, { version: 1 as const, links: [], confirmations: [] }])('does not fabricate events for absent history', evidence => { const r = report(); r.evidence = evidence; expect(formulaReportTimeline(r, formula, []).entries).toEqual([]); });
 it('fails closed for malformed or unknown history instead of dropping fields', () => { for (const mutation of [(r: FormulaReport) => Object.assign(r.evidence!, { future: true }), (r: FormulaReport) => Object.assign(r.evidence!.confirmations[0], { definition: null })]) { const r = report(); mutation(r); const before = JSON.stringify(r); expect(() => formulaReportTimeline(r, formula, [])).toThrow(); expect(JSON.stringify(r)).toBe(before); } });
 it('reports unverified/missing linked evidence without inventing values', () => { const r = report(); r.evidence!.links = [{ memoId: 'm', recordId: 'missing' }]; r.evidence!.confirmations[0].links = [...r.evidence!.links]; expect(formulaReportTimeline(r, formula).entries[0].assessment.status).toBe('unknown'); expect(formulaReportTimeline(r, formula, []).entries[0].assessment.status).toBe('unknown'); });
+it('keeps remarks associated with stable IDs and tie order without changing assessment', () => {
+  const r = report(), c = r.evidence!.confirmations[0];
+  r.evidence!.confirmations = [{ ...c, id: 'legacy' }, { ...c, id: 'empty', remarks: '' }, { ...c, id: 'text', remarks: '照合\n😀<script>' }];
+  const before = JSON.stringify(r), t = formulaReportTimeline(r, formula, []);
+  expect(t.entries.map(e => [e.confirmation.id, e.confirmation.remarks])).toEqual([['legacy', undefined], ['empty', ''], ['text', '照合\n😀<script>']]);
+  expect(t.entries.every(e => e.assessment.status === 'confirmed')).toBe(true); expect(JSON.stringify(r)).toBe(before);
+});

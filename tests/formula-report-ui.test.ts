@@ -123,3 +123,28 @@ it('past confirmation links remain inspectable after current links are removed, 
   await act(async () => { details.open = true; details.dispatchEvent(new Event('toggle')); });
   expect(host.textContent).toContain('実使用内部値'); expect(host.textContent).toContain('-0'); expect(saved).not.toHaveBeenCalled(); expect(historical.evidence!.links).toEqual([]);
 });
+
+it('keeps remarks through normal save, failure, cancel and clears only confirmed success', async () => {
+  saved.mockResolvedValue(report); await render(); await input('formula-report-remarks', '照合\n😀');
+  await click('レポートを保存'); expect(saved).toHaveBeenLastCalledWith(expect.not.objectContaining({ confirmationRemarks: expect.anything() }));
+  const value = () => (host.querySelector('#formula-report-remarks') as HTMLTextAreaElement).value;
+  expect(value()).toBe('照合\n😀'); await click('レポートを閉じる'); await click('編集に戻る'); expect(value()).toBe('照合\n😀');
+  saved.mockResolvedValue('保存・読戻し失敗'); await click('現在の式に対する内容を確認して保存'); expect(value()).toBe('照合\n😀');
+  saved.mockResolvedValue(report); await click('現在の式に対する内容を確認して保存');
+  expect(saved).toHaveBeenLastCalledWith(expect.objectContaining({ confirmationRemarks: '照合\n😀', confirm: true })); expect(value()).toBe('');
+});
+it('blocks overflow confirmation without truncation but allows ordinary report save', async () => {
+  await render(); await input('formula-report-remarks', '😀'.repeat(250) + 'a');
+  expect((host.querySelector('#formula-report-remarks') as HTMLTextAreaElement).value.length).toBe(501);
+  expect(button('現在の式に対する内容を確認して保存').disabled).toBe(true); expect(button('レポートを保存').disabled).toBe(false);
+  expect(host.textContent).toContain('501/500 UTF-16');
+  await input('formula-report-remarks', '😀'.repeat(250)); expect(button('現在の式に対する内容を確認して保存').disabled).toBe(false);
+});
+it('freezes pending remarks and does not publish success until save/readback resolves', async () => {
+  let finish!: (value: string) => void; saved.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+  await render(); await input('formula-report-remarks', 'captured'); await click('現在の式に対する内容を確認して保存');
+  expect((host.querySelector('#formula-report-remarks') as HTMLTextAreaElement).disabled).toBe(true);
+  await input('formula-report-remarks', 'late'); expect(saved).toHaveBeenLastCalledWith(expect.objectContaining({ confirmationRemarks: 'captured' }));
+  await act(async () => finish('競合')); expect((host.querySelector('#formula-report-remarks') as HTMLTextAreaElement).value).toBe('captured');
+  expect(host.textContent).not.toContain('内容の確認と保存が完了');
+});

@@ -1,4 +1,4 @@
-import { formulaDefinitionSignature, formulaDefinitionSnapshot, formulaReportAssessment, hasUnknownFormulaDefinition, readReportEvidence, readReportEvidenceLinks, reportEvidenceSignature, resolveReportEvidence } from "./formula-report-evidence";
+import { formulaDefinitionSignature, formulaDefinitionSnapshot, formulaReportAssessment, hasUnknownFormulaDefinition, readReportEvidence, readReportEvidenceLinks, reportEvidenceSignature, resolveReportEvidence, validateConfirmationRemarks } from "./formula-report-evidence";
 import type { FormulaLibrary, FormulaReport, FormulaReports, FormulaReportEvidenceLink, Memo, RegisteredFormula } from "./types";
 
 export const FORMULA_REPORT_LIMIT = 200;
@@ -42,6 +42,7 @@ export type FormulaReportSaveRequest = {
   expectedReport: string | null;
   expectedExpression: string | null;
   confirm: boolean;
+  confirmationRemarks?: string;
   expectedDefinition?: string | null;
   links?: FormulaReportEvidenceLink[];
   expectedEvidence?: string;
@@ -69,7 +70,11 @@ export function saveFormulaReport(reports: FormulaReports, library: FormulaLibra
   let evidence = original?.evidence;
   if (evidence || request.links !== undefined || request.confirm) {
     evidence = { ...evidence, version: 1, links, confirmations: [...(evidence?.confirmations ?? [])] };
-    if (request.confirm) evidence.confirmations.push({ id: crypto.randomUUID(), formulaId: request.formulaId, confirmedAt: now, evidenceSignature: reportEvidenceSignature(notes, links), definition: formulaDefinitionSnapshot(formula!), title: request.title, body: request.body, links: structuredClone(links) });
+    if (request.confirm) {
+      const remarks = request.confirmationRemarks === undefined ? "" : request.confirmationRemarks;
+      validateConfirmationRemarks(remarks);
+      evidence.confirmations.push({ remarks, id: crypto.randomUUID(), formulaId: request.formulaId, confirmedAt: now, evidenceSignature: reportEvidenceSignature(notes, links), definition: formulaDefinitionSnapshot(formula!), title: request.title, body: request.body, links: structuredClone(links) });
+    }
     evidence = readReportEvidence(evidence, request.formulaId);
   }
   const entry: FormulaReport = {

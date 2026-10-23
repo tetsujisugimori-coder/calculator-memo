@@ -1,6 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
 
+## 2026-10-23 21:00 JST: 明示確認時の任意備考（Issue #69）
+
+- PR #68 merge済みの最新main `07f7e259c621685a30b587c957259da876bddbe9` とcleanを確認。[既存Issue #69](https://github.com/tetsujisugimori-coder/calculator-memo/issues/69) の本文は依頼原文と照合し変更せず、専用枝 `feat/69-confirmation-remarks` を作成。
+- 第一希望の確認レコード optional `remarks` を採用。旧version 1のまま旧欠落/新空欄を区別し、500 UTF-16コード単位を厳格検査。備考は利用者の申告であり、変更イベント/数学的保証/現在状態の照合条件ではない。[設計・変更範囲・互換性・ロールバック](docs/agent/formula-confirmation-remarks.md)。
+- 通常保存は備考を渡さず、明示確認だけ新規履歴へ付加。既存共有ロック・競合検知・checked読戻しを再利用。保存待ちは入力固定、失敗/保護/キャンセル/通常保存後は備考を保持、確認成功時だけクリア。閉じる警告も備考を含む。過去の履歴は変更せず通常テキストとしてタイムライン/既存履歴へ表示。
+- 未知フィールド保護、履歴20件、全体1MBは不変。空欄remarksも旧版では未知キーとして保護停止する。コードrevertのみでは旧版編集へ戻らないため、全原本JSONを退避し備考の削除や初期化で回避しない。
+- 検証: この変更ツリーで単体1285件/57ファイル、lint、TypeScript、通常/Pagesビルド、CI契約37件成功。独立レビューが104件を実行。追加GUIのstatusセレクター重複を阻害指摘として修正し再レビューで解消、製品コードに阻害なし。GUIは初回ブラウザ未配置で起動前停止、公式ブラウザ取得後の再試験中（WebKit OS依存不足を確認）。実GitHub CI/PRは未作成。以下の結果は後続追記とPR Checksで最終HEADを確認する。
+- GUIは既存6条件を維持し確認失敗→再試行・備考境界/Unicode/文字列表示を追加。操作増加に合わせtouch期待数906→907（検査緩和ではない）。PNG114、成功traceなし、30分上限は変更しない。
+- 未検証: 実機iPhone SafariとVoiceOver。WebKit自動試験とは区別。マージ/本番公開/mainへのpushは行わない。
+
 ## 2026-10-23 19:10 JST: 根拠・確認履歴タイムライン（Issue #67）
 
 - PR #66 merge と最新main `5cfee354167c51bf6d1021ef9df337bbae338291`、cleanを確認。重複検索後 [Issue #67](https://github.com/tetsujisugimori-coder/calculator-memo/issues/67) へ依頼原文2421文字を掲載し読戻し一致。本文は変更しない。専用枝 `feat/confirmation-timeline`。
