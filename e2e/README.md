@@ -518,3 +518,22 @@ The library now uses local selection without saving. Each of the same six condit
 ### PR #64 additional refresh verification
 
 Existing same-tab report scenarios additionally assert the detail immediately after formula rename/edit and report save/close. A synthetic fixture checks canceled formula and report edits against exact raw storage, then uses a real second page in the same browser context to edit and save formula/report through the application UI. The first page must retain its labeled old snapshot, become unverified, and refresh to the new saved text without lifting application conflict protection or writing. Both pages use the existing touch activation checks. Two acceptance groups and 16 activations per context are added: 654 checks, 888 mobile activations. The six conditions, 562 screenshot checkpoints, 114 PNG cap, 30-minute limit and trace policy are unchanged. No production data or browser profile is used.
+
+## Issue #65 evidence status list and filters
+
+Three additional acceptance groups per context cover saved-only row labels,
+all five filter options and their original entry order, same-title ID separation,
+both themes at 200% text, successful-save status transitions, and a synthetic
+storage-read failure followed by explicit recovery. Browse/filter/list-refresh
+must preserve the exact serialized original and issue zero storage writes.
+The existing cancel and real-second-tab scenarios now additionally assert list
+status preservation, immediate stale downgrade, and shared list/detail refresh.
+Legacy confirmation without sufficient evidence stays unknown, and missing
+reports remain distinct from reports without confirmation.
+
+The expected complete contract becomes 672 acceptance checks and 903 observed
+touch activations per mobile context. The 562 geometry checkpoints, all six
+contexts, 114 retained PNGs, two workers, 30-minute CI limit and successful-trace
+discard are unchanged. These are required counts, not execution results; final
+head CI and LOG retain the actual verification result. Synthetic read failure
+is injected only in a fresh test context and restored before leaving the fixture.

@@ -507,3 +507,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .formula-report details, .formula-report summary { min-width: 0; overflow-wrap: anywhere; }
 .formula-report summary { padding-block: .65rem; cursor: pointer; }
 .formula-report summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.formula-status-filter { display: grid; gap: 6px; min-width: 0; }
+.formula-status-filter select { min-height: 44px; max-width: 100%; min-width: 0; color: var(--ink); background: var(--surface); }
+.formula-list-status { display: block; padding: 4px 10px; overflow-wrap: anywhere; }

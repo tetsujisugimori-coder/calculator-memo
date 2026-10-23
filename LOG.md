@@ -1,6 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
 
+## 2026-10-23 15:08 JST: 登録式の根拠状態一覧・絞り込み（Issue #65）
+
+- PR #64 の merge と最新 main `f77ae781a2d5e033db40beadd42c0e6bb41d43ae`、clean を確認。関連Issue/PR検索で同一依頼なし、[Issue #65](https://github.com/tetsujisugimori-coder/calculator-memo/issues/65) に初期依頼2140文字を原文掲載し読戻し完全一致。本文は変更しない。専用枝 `feat/65-formula-evidence-status`。
+- AGENTS、README、LOG、保存/根拠/詳細/GUI/CI方針と実装を調査。第一希望の小規模統合を採用し、PR #64 の読み取り専用snapshotを共通化。一覧と詳細が同一原本・更新検知を使い、既存 formulaReportAssessment の結果だけを表示分類へ写像する。根拠なしと未確認を区別し、5グループの絞り込みをローカル状態で提供する。
+- 未保存編集・試算は根拠へ渡さず、保存成功後の取得と外部更新後の明示再取得を区別。取得失敗/未知/不正原本を確認済みへ格上げしない。式の計算・保存形式・writer・確認条件・削除後の原本保全は変更しない。[設計・次善策・復旧](docs/agent/formula-status-list.md)。
+- 実装・検証・独立レビュー・PR・最終HEAD CIはこの記録時点で未完了。実測を後続記録へ追記する。main push・merge・公開なし。
+- 15:14 JST追記: 一覧専用回帰25件を追加、全単体1245件/54files、CI契約37件、型、lint、通常/Pages buildが成功。独立レビューは6関連suite149件を実行し阻害指摘なし。状態の読み上げ説明をvisible labelのaria-describedbyで補強。
+- 作業ツリーの重点GUIはChromium desktop15チェック・375px touch16チェック/80操作、両テーマ200%文字、実2ページ更新・全状態絞り込み・保存原本不変が成功。全6条件は672チェック/562幾何確認/mobile各903操作を要求し、114PNG・30分・trace方針を維持。正式最終HEADの実Actionsは未確認。実機iPhone Safari/VoiceOverは未検証。
+
 ## 2026-10-23 13:34 JST: PR #64 更新検知・未知データ保護の追加検証
 
 - 検証開始時の PR #64 は未マージ、HEAD `251ebd7c8355d717f891a477d55213ee6eee7236`、同じ `feat/63-formula-detail` で clean。Issue #63 本文は変更しない。
