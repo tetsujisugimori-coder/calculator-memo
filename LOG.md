@@ -8,7 +8,7 @@
 - 独立レビューで、段落直後の字下げ付き独立数式境界の既存不整合を発見。共通parserの段落終了条件を修正し、数式内の # を章にしない回帰試験を追加。長文の編集行移動は選択だけに頼らず、同じ文字組みの一時要素で表示位置を測定する。
 - 検証: 単体1336件/59ファイル、lint、型、通常/Pagesビルドを実施して成功。37契約は初回成功、最終再試験では36/37。未変更の0.1秒合成timeout試験が子Nodeの出力前に終了し期待ログ不一致（独立レビュー環境でも同じ症状）。期待値や期限は緩和せず、実CIで別途確認する。独立レビューの51重点試験成功、数式境界修正を再確認し残るソース上の阻害なし。最終HEADの結果はPR Checksと完了コメントを参照し、この記録時点で成功は先取りしない。GUIは既存6条件と全既存検査を維持し、新規操作群1件/条件を追加。期待計696チェック、562geometry、mobile915操作、PNG114・成功trace0・30分上限は維持。
 - 初回npm ciは既定cacheの書込不可で失敗。専用/tmp cacheへ変更して723依存の取得成功。依存version/lock変更なし。
-- 未検証: 実機iPhone Safari・VoiceOver。ローカルブラウザはsocket権限でページ起動前停止。実GUIは既存GitHub Actionsで確認する。Draft PRは未作成。マージ/公開/main pushは行わない。
+- 未検証: 実機iPhone Safari・VoiceOver。ローカルブラウザはsocket権限でページ起動前停止。実GUIは既存GitHub Actionsで確認する。[Draft PR #73](https://github.com/tetsujisugimori-coder/calculator-memo/pull/73) を作成。CLI認証不足のためGitHubコネクタで公開し、ローカルとGitHub tree一致を検証。マージ/公開/main pushは行わない。
 
 
 
