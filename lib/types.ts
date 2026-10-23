@@ -90,6 +90,8 @@ export type FormulaReportConfirmation = {
   formulaId: string;
   confirmedAt: string;
   evidenceSignature: string;
+  /** User declaration at confirmation, not an objective change reason. Absent in legacy records. */
+  remarks?: string;
   definition: { version: 1; expression: string; variables: string[] };
   title: string;
   body: string;

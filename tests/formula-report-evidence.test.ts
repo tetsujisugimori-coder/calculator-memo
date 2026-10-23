@@ -187,3 +187,40 @@ describe('PR #62 review: saved evidence assessment and unsupported fields', () =
     expect(storage.setItem).not.toHaveBeenCalled();
   });
 });
+
+describe('optional confirmation remarks', () => {
+  it.each(['', '導出式と参考文献を照合\n日本語😀 <script>alert(1)</script>', 'a'.repeat(500), '😀'.repeat(250)])('retains exact bounded remarks %s', remarks => {
+    const report = saveFormulaReport(emptyFormulaReports(), library, request(undefined, { confirmationRemarks: remarks }), now, notes).entries[0];
+    expect(report.evidence!.confirmations[0].remarks).toBe(remarks);
+    expect(formulaReportAssessment(report, formula, notes).status).toBe('confirmed');
+    const before = JSON.stringify(report);
+    expect(readFormulaReports(wrapped(report)).entries[0]).toEqual(report);
+    expect(JSON.stringify(report)).toBe(before);
+  });
+  it.each(['x'.repeat(501), '😀'.repeat(250) + 'x', null, 4, {}, []])('rejects invalid remarks without altering source', remarks => {
+    const report = confirmed(), before = JSON.stringify(report);
+    expect(() => saveFormulaReport(wrapped(report), library, request(report, { confirmationRemarks: remarks as string }), now, notes)).toThrow('500 UTF-16');
+    expect(JSON.stringify(report)).toBe(before);
+    const malformed = structuredClone(report); Object.assign(malformed.evidence!.confirmations[0], { remarks });
+    expect(() => readFormulaReports(wrapped(malformed))).toThrow('500 UTF-16');
+    expect(formulaReportAssessment(malformed, formula, notes).status).toBe('unknown');
+  });
+  it('distinguishes legacy absence from new empty without changing history or normal saves', () => {
+    const legacy = confirmed(); delete legacy.evidence!.confirmations[0].remarks;
+    const before = JSON.stringify(legacy);
+    const normal = saveFormulaReport(wrapped(legacy), library, request(legacy, { confirm: false, confirmationRemarks: 'not saved' }), now, notes).entries[0];
+    expect(normal.evidence!.confirmations).toEqual(legacy.evidence!.confirmations);
+    const next = saveFormulaReport(wrapped(normal), library, request(normal), now, notes).entries[0];
+    expect(next.evidence!.confirmations[0]).toEqual(legacy.evidence!.confirmations[0]);
+    expect(Object.hasOwn(next.evidence!.confirmations[0], 'remarks')).toBe(false);
+    expect(next.evidence!.confirmations[1].remarks).toBe('');
+    expect(JSON.stringify(legacy)).toBe(before);
+  });
+  it('still rejects unknown confirmation keys alongside recognized remarks', () => {
+    const report = confirmed(); Object.assign(report.evidence!.confirmations[0], { futureRemarks: 'retain me' });
+    const before = JSON.stringify(report);
+    expect(() => readFormulaReports(wrapped(report))).toThrow('未対応');
+    expect(() => saveFormulaReport(wrapped(report), library, request(report, { confirm: false }), now, notes)).toThrow('未対応');
+    expect(JSON.stringify(report)).toBe(before);
+  });
+});

@@ -22,7 +22,7 @@ export function validateScenarioCoverage(record, expectedSha, requireSuccess = t
     assert.equal(record.screenshotCheckpoints.length, checkpoints[index], 'All historical screenshot geometry checkpoints must execute');
     assert.equal(new Set(record.screenshotCheckpoints.map(check => check.name)).size, checkpoints[index], "Duplicate geometry checkpoint");
     assert.ok(record.screenshotCheckpoints.every(check => check.horizontalFit === 'passed'));
-    if (observed.hasTouch) assert.equal(observed.touchActivations, 906);
+    if (observed.hasTouch) assert.equal(observed.touchActivations, 907);
   return observed.id;
 }
 /** Fail closed: exit codes alone cannot certify complete, correctly identified coverage. */
