@@ -1,6 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
 
+## 2026-10-24 07:15 JST: PR #71 Backspace表示寸法回帰検証とPR #70統合
+
+- PR #70マージ後のmainを基準にPR #71の差分を統合。競合時はPR #70の備考・確認履歴・テスト仕様を優先し、既存記録を保持。
+- Issue #5の「⌫ 戻す」表示と通常キー以上の高さを6ブラウザ条件で、タッチ環境では44×44 CSS px以上も検査する。製品コード・保存形式・計算処理は変更しない。
+- E2E契約ではPR #70のタッチ操作期待値907を維持、PR #71の追加検査により受け入れ検査数690→696、配置検証562は据え置き。CI最終結果はPR #71のActionsで別途確認する。
+
 ## 2026-10-23 21:00 JST: 明示確認時の任意備考（Issue #69）
 
 - PR #68 merge済みの最新main `07f7e259c621685a30b587c957259da876bddbe9` とcleanを確認。[既存Issue #69](https://github.com/tetsujisugimori-coder/calculator-memo/issues/69) の本文は依頼原文と照合し変更せず、専用枝 `feat/69-confirmation-remarks` を作成。

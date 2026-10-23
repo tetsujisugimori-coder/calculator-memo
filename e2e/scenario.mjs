@@ -3281,6 +3281,16 @@ async function exercise(scenario) {
   await passed(prefix + ": browser fetched exact SHA/branch/run provenance from built output");
   await expect.poll(storage).toMatchObject({ notes: [], history: [] });
   await assertHorizontalFit();
+  const backspace = button("1文字削除");
+  const standardKey = page.locator(".key-grid .calc-key.number").first();
+  const [backspaceBounds, standardKeyBounds] = await Promise.all([backspace.boundingBox(), standardKey.boundingBox()]);
+  assert.ok(backspaceBounds && standardKeyBounds, "Backspace and standard calculator keys must be visible");
+  await expect(backspace).toHaveText("⌫ 戻す");
+  assert.ok(backspaceBounds.height >= standardKeyBounds.height, "Backspace must be at least as tall as a standard key");
+  if (hasTouch) {
+    assert.ok(backspaceBounds.width >= 44 && backspaceBounds.height >= 44, "Mobile Backspace must meet the minimum 44px touch target");
+  }
+  await passed(prefix + ": backspace label and rendered touch target match standard key height");
   record.environment = await page.evaluate(() => ({ userAgent: navigator.userAgent, maxTouchPoints: navigator.maxTouchPoints, coarsePointer: matchMedia("(pointer: coarse)").matches, innerWidth, devicePixelRatio }));
   assert.equal(record.environment.innerWidth, width, "Viewport meta must preserve CSS width");
   if (hasTouch) {
