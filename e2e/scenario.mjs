@@ -177,7 +177,15 @@ async function exerciseFormulaReports(prefix) {
   const original = await storage();
   const now = "2026-10-23T00:00:00.000Z";
   const formulas = ["report-formula-a", "report-formula-b"].map(id => ({ id, title: "Same named formula", expression: "x * 2", createdAt: now, updatedAt: now }));
-  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, formulaLibrary: { version: 1, entries: formulas, selectedId: formulas[0].id }, formulaReports: { version: 1, entries: [] } });
+  const evidenceRecord = { id: "report-evidence-record", calculatedAt: now, persistedAt: now, evaluator: "calculator-memo-v1", status: "confirmed", blocks: [
+    { blockId: "saved-source", position: 1, expression: "z = -0", evaluationMode: "note-variables", inputs: [], result: "-0", resultText: "0", status: "success" },
+    { blockId: "saved-result", position: 2, expression: "z * 2", evaluationMode: "note-variables", inputs: [{ kind: "variable", name: "z", sourceBlockId: "saved-source", value: "-0" }], result: "-0", resultText: "0", status: "success" },
+  ] };
+  const evidenceMemo = { id: "report-evidence-memo", type: "plain-calculation", title: "Synthetic historical evidence", content: "Current edit is not past evidence", createdAt: now, updatedAt: now,
+    blocks: [{ id: "saved-source", type: "calculation", expression: "z = 999", displayExpression: "z = 999", result: 999, resultText: "999", error: null, evaluationMode: "note-variables" }],
+    calculationEvidence: { version: 1, records: [evidenceRecord, { ...evidenceRecord, id: "unselected-record-999" }] } };
+  const fixtureNotes = [...original.notes, evidenceMemo];
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), { ...original, notes: fixtureNotes, formulaLibrary: { version: 1, entries: formulas, selectedId: formulas[0].id }, formulaReports: { version: 1, entries: [] } });
   await page.reload();
   const library = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
   const report = () => page.getByRole("dialog", { name: "登録式の関連レポート", exact: true });
@@ -211,24 +219,53 @@ async function exerciseFormulaReports(prefix) {
   await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
   await expect.poll(async () => (await storage()).formulaReports.entries[0]).toMatchObject({ formulaId: formulas[0].id, body, confirmedExpression: null });
   await passed(prefix + ": formula report renders safe Markdown math fences and HTML text without execution and ordinary save never confirms automatically");
+  const beforeLink = await storage();
+  await activate(report().getByText("根拠となる保存済み計算記録", { exact: true }));
+  const choices = report().getByLabel("関連付ける保存済み計算記録", { exact: true });
+  await activate(choices); await choices.selectOption(JSON.stringify([evidenceMemo.id, evidenceRecord.id]));
+  await activate(report().getByRole("button", { name: "根拠に追加", exact: true }));
+  await activate(report().getByText("計算記録の詳細：Synthetic historical evidence", { exact: true }));
+  await activate(report().getByText("ブロック saved-result", { exact: true }));
+  // Unselected record IDs may legitimately contain the current-value sentinel.
+  // Assert values only in the selected record detail, never the options list.
+  await expect(choices).toContainText("unselected-record-999");
+  const past = report().locator(".formula-report-evidence-item > details");
+  await expect(past).toHaveCount(1);
+  await expect(past).toContainText("実使用内部値"); await expect(past).toContainText("-0");
+  await expect(past).not.toContainText("999");
+  assert.deepEqual(await storage(), beforeLink);
+  await passed(prefix + ": report evidence selection and historical actual inputs preserve negative zero without saving recalculating or using current memo values");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await screenshot(prefix + "-report-evidence-" + theme + "-200-percent", currentScenario.width, false);
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
   await activate(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true }));
   await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBe("x * 2");
+  const confirmed = (await storage()).formulaReports.entries[0];
+  assert.deepEqual(confirmed.evidence.links, [{ memoId: evidenceMemo.id, recordId: evidenceRecord.id }]);
+  assert.deepEqual(confirmed.evidence.confirmations[0].definition.variables, ["x"]);
+  assert.equal(confirmed.evidence.confirmations[0].body, body);
+  assert.deepEqual((await storage()).notes, fixtureNotes);
   await closeReport();
   await expect(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true })).toBeFocused();
   await editFormula("Renamed report formula", "x * 2");
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
-  await expect(report()).toContainText("式との対応を確認済み");
+  await expect(report()).toContainText("確認済み・式一致");
   await closeReport();
   await editFormula("Renamed report formula", "x * 3");
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
-  await expect(report()).toContainText("要確認");
+  await expect(report()).toContainText("式変更あり");
   assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
   await activate(report().getByRole("button", { name: "現在の式に対する内容を確認して保存", exact: true }));
-  await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBe("x * 3");
+  await expect.poll(async () => (await storage()).formulaReports.entries[0].evidence.confirmations.at(-1).definition.expression).toBe("x * 3");
   await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
   await report().getByLabel("レポート本文（Markdown）", { exact: true }).fill(body + "\n編集");
   await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
-  await expect.poll(async () => (await storage()).formulaReports.entries[0].confirmedExpression).toBeNull();
+  await expect.poll(async () => (await storage()).formulaReports.entries[0].body).toBe(body + "\n編集");
+  assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
+  assert.equal((await storage()).formulaReports.entries[0].evidence.confirmations.length, 2);
+  await expect(report()).toContainText("未確認");
   await passed(prefix + ": explicit report confirmation binds expression and content while rename remains distinct from expression changes and body edits invalidate confirmation");
   await closeReport();
   await activate(library().getByRole("button", { name: "Same named formula", exact: true }));
@@ -265,7 +302,18 @@ async function exerciseFormulaReports(prefix) {
   await activate(library().getByRole("button", { name: /Synthetic report \/ math/ }));
   await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
   await expect(report().getByLabel("レポート本文（Markdown）", { exact: true })).toHaveValue(saved.body);
-  assert.deepEqual((await storage()).notes, original.notes); assert.deepEqual((await storage()).history, original.history);
+  assert.deepEqual((await storage()).notes, fixtureNotes); assert.deepEqual((await storage()).history, original.history);
+  await closeReport(); await activate(library().getByRole("button", { name: "閉じる", exact: true }).first());
+  await openLibrary();
+  await activate(library().getByRole("button", { name: /Synthetic report \/ math/ }));
+  await activate(report().getByText("根拠となる保存済み計算記録", { exact: true }));
+  const missing = await storage(); missing.notes = missing.notes.filter(note => note.id !== evidenceMemo.id);
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), missing);
+  await activate(report().getByRole("button", { name: "保存済み根拠を再取得", exact: true }));
+  await expect(report()).toContainText("参照不能");
+  await expect(report().getByText("計算記録の詳細：Synthetic historical evidence", { exact: true })).toHaveCount(0);
+  assert.deepEqual(await storage(), missing);
+  await passed(prefix + ": explicit evidence refresh shows missing stable IDs without stale values or writes and retained confirmation history survives content edits");
   await closeReport(); await activate(library().getByRole("button", { name: "閉じる", exact: true }).first());
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload();

@@ -84,6 +84,19 @@ export type RegisteredFormula = {
 };
 export type FormulaLibrary = { version: 1; entries: RegisteredFormula[]; selectedId: string | null };
 
+export type FormulaReportEvidenceLink = { memoId: string; recordId: string };
+export type FormulaReportConfirmation = {
+  id: string;
+  formulaId: string;
+  confirmedAt: string;
+  evidenceSignature: string;
+  definition: { version: 1; expression: string; variables: string[] };
+  title: string;
+  body: string;
+  links: FormulaReportEvidenceLink[];
+};
+export type FormulaReportEvidence = { version: 1; links: FormulaReportEvidenceLink[]; confirmations: FormulaReportConfirmation[] };
+
 /** User-authored explanation, never numeric evidence or an automatically verified proof. */
 export type FormulaReport = {
   id: string;
@@ -93,6 +106,7 @@ export type FormulaReport = {
   createdAt: string;
   updatedAt: string;
   confirmedExpression: string | null;
+  evidence?: FormulaReportEvidence;
 };
 export type FormulaReports = { version: 1; entries: FormulaReport[] };
 

@@ -1,4 +1,5 @@
-import type { FormulaLibrary, FormulaReport, FormulaReports } from "./types";
+import { formulaDefinitionSignature, formulaDefinitionSnapshot, formulaReportAssessment, hasUnknownFormulaDefinition, readReportEvidence, readReportEvidenceLinks, reportEvidenceSignature, resolveReportEvidence } from "./formula-report-evidence";
+import type { FormulaLibrary, FormulaReport, FormulaReports, FormulaReportEvidenceLink, Memo, RegisteredFormula } from "./types";
 
 export const FORMULA_REPORT_LIMIT = 200;
 export const FORMULA_REPORT_TITLE_LIMIT = 120;
@@ -23,6 +24,7 @@ export function readFormulaReports(value: unknown): FormulaReports {
       || !date(item.createdAt) || !date(item.updatedAt)
       || !(item.confirmedExpression === null || (typeof item.confirmedExpression === "string" && !!item.confirmedExpression.trim() && item.confirmedExpression.length <= 2000))) throw new Error("関連レポートの項目またはIDが不正です。");
     validateFormulaReportContent(item.title as string, item.body as string);
+    if (item.evidence !== undefined) readReportEvidence(item.evidence, item.formulaId);
     ids.add(item.id); formulaIds.add(item.formulaId);
     return { ...item } as FormulaReport;
   });
@@ -40,30 +42,47 @@ export type FormulaReportSaveRequest = {
   expectedReport: string | null;
   expectedExpression: string | null;
   confirm: boolean;
+  expectedDefinition?: string | null;
+  links?: FormulaReportEvidenceLink[];
+  expectedEvidence?: string;
 };
 /** Pure candidate creation. Caller must check current storage under its shared write lock,
  * persist with expected bytes and read back successfully before showing confirmation. */
-export function saveFormulaReport(reports: FormulaReports, library: FormulaLibrary, request: FormulaReportSaveRequest, now: string): FormulaReports {
+export function saveFormulaReport(reports: FormulaReports, library: FormulaLibrary, request: FormulaReportSaveRequest, now: string, notes: Memo[] = []): FormulaReports {
   const checked = readFormulaReports(reports);
   const original = checked.entries.find(item => item.formulaId === request.formulaId);
   const formula = library.entries.find(item => item.id === request.formulaId);
-  if (formulaReportSignature(original) !== request.expectedReport || (formula?.expression ?? null) !== request.expectedExpression)
+  if (formulaReportSignature(original) !== request.expectedReport || (formula?.expression ?? null) !== request.expectedExpression
+    || (request.expectedDefinition !== undefined && formulaDefinitionSignature(formula) !== request.expectedDefinition))
     throw new Error("式または関連レポートが変更されています。再取得して内容を確認してください。");
   if (original && original.id !== request.id) throw new Error("レポートIDを変更できません。");
   if (!original && !formula) throw new Error("登録式が見つからないためレポートを作成できません。");
   if (request.confirm && !formula) throw new Error("登録式が見つからないため式との対応を確認できません。");
   validateFormulaReportContent(request.title, request.body);
-  const changed = !original || original.title !== request.title || original.body !== request.body;
+  const links = readReportEvidenceLinks(request.links ?? original?.evidence?.links ?? []);
+  if (request.expectedEvidence !== undefined && reportEvidenceSignature(notes, links) !== request.expectedEvidence) throw new Error("保存済み根拠が変更されています。再取得して確認してください。");
+  const previousLinks = original?.evidence?.links ?? [];
+  const added = links.filter(link => !previousLinks.some(item => item.memoId === link.memoId && item.recordId === link.recordId));
+  if (resolveReportEvidence(notes, request.confirm ? links : added).some(item => item.status !== "available")) throw new Error("根拠参照が欠落または不正です。確認済みとして保存できません。");
+  if (request.confirm && original?.evidence && Object.keys(original.evidence).some(key => !["version", "links", "confirmations"].includes(key))) throw new Error("未対応の根拠情報があるため確認できません。");
+  if (request.confirm && hasUnknownFormulaDefinition(formula!)) throw new Error("未対応の式定義があるため確認できません。");
+  let evidence = original?.evidence;
+  if (evidence || request.links !== undefined || request.confirm) {
+    evidence = { ...evidence, version: 1, links, confirmations: [...(evidence?.confirmations ?? [])] };
+    if (request.confirm) evidence.confirmations.push({ id: crypto.randomUUID(), formulaId: request.formulaId, confirmedAt: now, evidenceSignature: reportEvidenceSignature(notes, links), definition: formulaDefinitionSnapshot(formula!), title: request.title, body: request.body, links: structuredClone(links) });
+    evidence = readReportEvidence(evidence, request.formulaId);
+  }
   const entry: FormulaReport = {
     ...original, id: request.id, formulaId: request.formulaId, title: request.title, body: request.body,
     createdAt: original?.createdAt ?? now, updatedAt: now,
-    confirmedExpression: request.confirm ? formula!.expression : changed ? null : original!.confirmedExpression,
+    confirmedExpression: original?.confirmedExpression ?? (request.confirm ? formula!.expression : null),
+    ...(evidence ? { evidence } : {}),
   };
   return readFormulaReports({ ...checked, entries: original ? checked.entries.map(item => item.id === original.id ? entry : item) : [...checked.entries, entry] });
 }
-export type FormulaReportCorrespondence = "confirmed" | "unconfirmed" | "changed" | "orphan";
-export function formulaReportCorrespondence(report: FormulaReport, formula: { expression: string } | undefined): FormulaReportCorrespondence {
-  if (!formula) return "orphan";
-  if (report.confirmedExpression === null) return "unconfirmed";
-  return report.confirmedExpression === formula.expression ? "confirmed" : "changed";
+export type FormulaReportCorrespondence = "confirmed" | "unconfirmed" | "changed" | "orphan" | "unknown";
+/** Compatibility status-only helper. Pass an explicitly loaded saved snapshot, never editor drafts.
+ * Linked evidence without that snapshot remains unknown; use assessment for the reason. */
+export function formulaReportCorrespondence(report: FormulaReport, formula: RegisteredFormula | undefined, savedNotes?: Memo[]): FormulaReportCorrespondence {
+  return formulaReportAssessment(report, formula, savedNotes).status;
 }

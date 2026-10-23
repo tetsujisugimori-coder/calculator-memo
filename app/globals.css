@@ -500,3 +500,10 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .formula-report .modal-actions { flex-wrap: wrap; }
 .formula-report button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
 .formula-report-preview { border: 1px solid var(--border); padding: 1rem; border-radius: .5rem; }
+
+.formula-report-evidence { min-width: 0; }
+.formula-report-evidence select { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+.formula-report-evidence-item { border-top: 1px solid var(--border); padding-block: .6rem; min-width: 0; }
+.formula-report details, .formula-report summary { min-width: 0; overflow-wrap: anywhere; }
+.formula-report summary { padding-block: .65rem; cursor: pointer; }
+.formula-report summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
