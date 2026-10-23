@@ -1,6 +1,8 @@
 "use client";
 import { VariableIdentification } from "./Identification";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { useFormulaSavedSnapshot } from "./useFormulaSavedSnapshot";
+import { formulaReportAssessment } from "../lib/formula-report-evidence";
 import { FormulaReportModal } from "./FormulaReportModal";
 import type { FormulaReportSaveRequest } from "../lib/formula-reports";
 import { Modal } from "./Modal";
@@ -16,7 +18,26 @@ export function FormulaLibraryModal({ library, reports, onSaveReport, onChange, 
   const [pendingDelete, setPendingDelete] = useState<RegisteredFormula | null>(null);
   const [removed, setRemoved] = useState<RegisteredFormula | null>(null);
   const [selectedId, setSelectedId] = useState(library.selectedId);
-  const [detailRevision, setDetailRevision] = useState(0);
+  const source = useFormulaSavedSnapshot();
+  const { stale, refresh } = source;
+  const statusId = useId();
+  const wasPending = useRef(pendingSave);
+  useEffect(() => {
+    if (wasPending.current && !pendingSave && !stale) refresh();
+    wasPending.current = pendingSave;
+  }, [pendingSave, stale, refresh]);
+  const [filter, setFilter] = useState("all");
+  const saved = source.loaded.status === "ok" ? source.loaded.data : undefined;
+  const rows = library.entries.map(entry => {
+    const formula = saved?.formulaLibrary?.entries.find(item => item.id === entry.id);
+    const report = saved?.formulaReports?.entries.find(item => item.formulaId === entry.id);
+    if (!saved) return { entry, group: "unknown", label: "状態判定不能" };
+    if (source.stale || !formula) return { entry, group: "unknown", label: "根拠未照合" };
+    if (!report) return { entry, group: "unconfirmed", label: "根拠なし（レポート未登録）" };
+    const assessment = formulaReportAssessment(report, formula, saved.notes);
+    return { entry, group: assessment.status, label: assessment.status === "confirmed" ? "確認済み" : assessment.status === "changed" ? "要再確認" : assessment.status === "unconfirmed" ? "未確認" : "状態判定不能" };
+  });
+  const visibleRows = rows.filter(row => filter === "all" || row.group === filter);
   const selected = library.entries.find((entry) => entry.id === selectedId) ?? library.entries.find((entry) => entry.id === library.selectedId);
   const close = () => { if (draft) setError("編集中です。登録するか、編集をキャンセルしてから閉じてください。"); else onClose(); };
   const submit = (event: React.FormEvent) => {
@@ -49,15 +70,24 @@ export function FormulaLibraryModal({ library, reports, onSaveReport, onChange, 
       </form> : <>
         <button className="button-primary" disabled={!writable} onClick={() => { setDraft({ title: "", expression: "" }); setError(""); }}>計算式を登録</button>
         {library.entries.length === 0 && <p>登録式はまだありません。</p>}
-        <ul className="formula-library-list" aria-label="登録式一覧">{library.entries.map((entry) => <li key={entry.id}><button aria-label={entry.title} aria-description="登録式" aria-pressed={selected?.id === entry.id} onClick={() => setSelectedId(entry.id)}><span className="identity-item identity-registered"><span className="identity-label">登録式</span><span>{entry.title}</span></span></button></li>)}</ul>
+        <label className="formula-status-filter">根拠状態で絞り込み<select aria-label="根拠状態で絞り込み" value={filter} onChange={event => setFilter(event.target.value)}><option value="all">すべて</option><option value="confirmed">確認済み</option><option value="changed">要再確認</option><option value="unconfirmed">未確認・根拠なし</option><option value="unknown">未照合・判定不能</option></select></label>
+        <button type="button" onClick={source.refresh}>保存済み一覧を再取得</button>
+        <p>根拠状態は保存済み原本の取得時点の情報です。編集中の式名・内容とは区別します。</p>
+        {source.stale && <p role="alert">保存原本の更新を検知しました。一覧・詳細は根拠未照合です。明示的に再取得してください。</p>}
+        {source.loaded.status === "error" && <p role="alert">状態判定不能：保存原本を安全に取得できません。原本JSONを保全し、設定の復旧手順を利用してください。</p>}
+        <details><summary>一覧の根拠状態について</summary><p>確認済みは利用者が明示確認して保存した内容との一致であり、数学的正しさの保証ではありません。要再確認は式・変数定義の変更、未確認は確認履歴なしまたは本文等の編集、根拠なしはレポート未登録です。根拠未照合は原本更新後または未保存の式、状態判定不能は取得失敗・根拠欠落・未対応形式等を示します。絞り込みや閲覧では保存・再計算しません。</p></details>
+        <p role="status">表示 {visibleRows.length} / {rows.length} 件</p>
+        {rows.length > 0 && visibleRows.length === 0 && <p>この状態に該当する登録式はありません。</p>}
+        <ul className="formula-library-list" aria-label="登録式一覧">{visibleRows.map(({ entry, label }, index) => <li key={entry.id}><button aria-label={entry.title} aria-describedby={`${statusId}-${index}`} aria-pressed={selected?.id === entry.id} onClick={() => setSelectedId(entry.id)}><span className="identity-item identity-registered"><span className="identity-label">登録式</span><span>{entry.title}</span></span><span className="formula-list-status" id={`${statusId}-${index}`} data-testid="formula-list-status">{label}</span></button></li>)}</ul>
+        {selected && !visibleRows.some(row => row.entry.id === selected.id) && <p>選択中の登録式は現在の絞り込み対象外です。詳細の選択は保持しています。</p>}
         {selected && <section className="formula-library-detail" aria-label="選択した登録式">
-          <FormulaDetailView key={`${selected.id}:${pendingSave}:${detailRevision}`} formulaId={selected.id} pendingSave={pendingSave} />
+          <FormulaDetailView key={selected.id} source={source} formulaId={selected.id} pendingSave={pendingSave} />
           {onSaveReport && <section aria-label="関連レポート"><h4>関連レポート</h4><p>登録式とは別に、証明・導出・適用条件・由緒・参考資料を記述できます。</p><button onClick={() => setReportFormulaId(selected.id)}>{reports?.entries.some(report => report.formulaId === selected.id) ? "関連レポートを閲覧・編集" : "レポートを作成"}</button></section>}
           <div className="modal-actions"><button className="button-primary" onClick={() => onExecute(selected.id)}>登録式を実行</button><button disabled={!writable} onClick={() => { setDraft({ id: selected.id, title: selected.title, expression: selected.expression }); setError(""); }}>登録式を編集</button><button disabled={!writable} onClick={() => setPendingDelete(selected)}>登録式を削除</button></div>
         </section>}
       </>}
       {onSaveReport && reports?.entries.some(report => !library.entries.some(formula => formula.id === report.formulaId)) && <section aria-label="登録式が見つからないレポート"><h3>登録式が見つからないレポート</h3><p>削除された登録式の説明を保全しています。内容を閲覧・編集・コピー・ファイル出力できます。</p><ul>{reports.entries.filter(report => !library.entries.some(formula => formula.id === report.formulaId)).map(report => <li key={report.id}><button onClick={() => setReportFormulaId(report.formulaId)}>{report.title}：閲覧・救出</button></li>)}</ul></section>}
-      {reportFormulaId && onSaveReport && <FormulaReportModal key={reportFormulaId} formulaId={reportFormulaId} formula={library.entries.find(formula => formula.id === reportFormulaId)} report={reports?.entries.find(report => report.formulaId === reportFormulaId)} writable={writable && !pendingSave} onSave={onSaveReport} onClose={() => { setReportFormulaId(null); setDetailRevision(value => value + 1); }} />}
+      {reportFormulaId && onSaveReport && <FormulaReportModal key={reportFormulaId} formulaId={reportFormulaId} formula={library.entries.find(formula => formula.id === reportFormulaId)} report={reports?.entries.find(report => report.formulaId === reportFormulaId)} writable={writable && !pendingSave} onSave={onSaveReport} onClose={() => { setReportFormulaId(null); if (!source.stale) source.refresh(); }} />}
       {removed && !draft && <div role="status">「{removed.title}」を削除しました。<button disabled={!writable} onClick={() => { try { onChange(saveFormula(library, removed)); setSelectedId(removed.id); setRemoved(null); setError(""); } catch (cause) { setError(String(cause)); } }}>直前の削除を取り消す</button><p>取り消しはこの画面を閉じるまで有効です。</p></div>}
       {pendingDelete && <Modal title="登録式を削除しますか？" onClose={() => setPendingDelete(null)}><p>「{pendingDelete.title}」を削除します。メモや履歴には影響しません。関連レポートは削除せず、「登録式が見つからないレポート」に保全します。</p><div className="modal-actions"><button onClick={() => setPendingDelete(null)}>キャンセル</button><button className="button-danger" disabled={!writable} onClick={() => { onChange(removeFormula(library, pendingDelete.id)); setRemoved(pendingDelete); setPendingDelete(null); }}>削除する</button></div></Modal>}
     </div>

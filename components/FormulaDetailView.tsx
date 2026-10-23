@@ -1,29 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { loadData, STORAGE_KEY } from "../lib/storage";
+import { useState } from "react";
+import { useFormulaSavedSnapshot, type FormulaSavedSnapshot } from "./useFormulaSavedSnapshot";
 import { formulaDefinitionSnapshot, formulaReportAssessment, type FormulaReportAssessment } from "../lib/formula-report-evidence";
 import { downloadMarkdownReport, reportFilename } from "../lib/markdown-report";
 import { MarkdownContent } from "./MarkdownContent";
 import { HistoricalReportEvidence } from "./FormulaReportEvidence";
 
-function readSnapshot() { return { loaded: loadData(), fetchedAt: new Date().toISOString() }; }
 function label(status: FormulaReportAssessment["status"]) {
   return status === "confirmed" ? "確認済み・式一致" : status === "changed" ? "要再確認・式変更あり" : status === "unconfirmed" ? "未確認" : status === "orphan" ? "登録式が見つからない" : "根拠不足または判定不能";
 }
 
 /** Read-only saved snapshot. No draft props, evaluator, or storage writer enters this view. */
-export function FormulaDetailView({ formulaId, pendingSave = false }: { formulaId: string; pendingSave?: boolean }) {
-  const [snapshot, setSnapshot] = useState(readSnapshot);
-  const [stale, setStale] = useState(false);
+export function FormulaDetailView(props: { formulaId: string; pendingSave?: boolean; source?: FormulaSavedSnapshot }) {
+  return props.source ? <SavedFormulaDetail {...props} source={props.source} /> : <StandaloneFormulaDetail {...props} />;
+}
+function StandaloneFormulaDetail(props: { formulaId: string; pendingSave?: boolean }) {
+  const source = useFormulaSavedSnapshot();
+  return <SavedFormulaDetail {...props} source={source} />;
+}
+function SavedFormulaDetail({ formulaId, pendingSave = false, source }: { formulaId: string; pendingSave?: boolean; source: FormulaSavedSnapshot }) {
   const [notice, setNotice] = useState("");
-  const { loaded, fetchedAt } = snapshot;
-  useEffect(() => {
-    const observe = (event: StorageEvent) => { if (event.key === STORAGE_KEY || event.key === null) setStale(true); };
-    window.addEventListener("storage", observe);
-    return () => window.removeEventListener("storage", observe);
-  }, []);
-  const refresh = () => { setSnapshot(readSnapshot()); setStale(false); setNotice(""); };
+  const { loaded, fetchedAt, stale } = source;
+  const refresh = () => { source.refresh(); setNotice(""); };
   const data = loaded.status === "ok" ? loaded.data : undefined;
   const formula = data?.formulaLibrary?.entries.find(item => item.id === formulaId);
   const report = data?.formulaReports?.entries.find(item => item.formulaId === formulaId);

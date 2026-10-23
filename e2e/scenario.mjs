@@ -274,6 +274,7 @@ async function exerciseFormulaReports(prefix) {
   await page.evaluate(() => document.documentElement.style.fontSize = "");
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeDetail);
   await passed(prefix + ": saved formula detail safely renders report and history, preserves raw storage during selection refresh copy download, and fits both themes at 200 percent text");
+  await expect(library().locator(".formula-library-list > li").first().getByText("確認済み", { exact: true })).toBeVisible();
   await editFormula("Renamed report formula", "x * 2");
   await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
@@ -282,6 +283,7 @@ async function exerciseFormulaReports(prefix) {
   await editFormula("Renamed report formula", "x * 3");
   await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("要再確認・式変更あり");
   await expect(detail).toContainText("x * 3");
+  await expect(library().locator(".formula-library-list > li").first().getByText("要再確認", { exact: true })).toBeVisible();
   await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
   await expect(report()).toContainText("式変更あり");
   assert.equal((await storage()).formulaReports.entries[0].confirmedExpression, "x * 2");
@@ -298,6 +300,8 @@ async function exerciseFormulaReports(prefix) {
   await closeReport();
   await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("未確認");
   await expect(detail.getByRole("region", { name: "保存済み関連レポート", exact: true })).toContainText("編集");
+  await expect(library().locator(".formula-library-list > li").first().getByText("未確認", { exact: true })).toBeVisible();
+  await passed(prefix + ": list assessments follow successful formula and report saves without treating old confirmation history as current confirmation");
   await activate(library().getByRole("button", { name: "Same named formula", exact: true }));
   await expect(library().getByRole("button", { name: "レポートを作成", exact: true })).toHaveCount(1);
   await activate(library().getByRole("button", { name: "Renamed report formula", exact: true }));
@@ -350,6 +354,88 @@ async function exerciseFormulaReports(prefix) {
   await passed(prefix + ": formula report and orphan survive reload without altering existing calculation notes history or registered execution data");
 }
 
+async function exerciseFormulaStatusFilters(prefix) {
+  await stage(prefix + ": formula-evidence-status-filters");
+  const original = await storage();
+  const now = "2026-10-23T00:00:00.000Z";
+  const formulas = ["confirmed", "missing", "changed", "unconfirmed", "unknown"].map(status => ({
+    id: "status-" + status, title: status === "confirmed" || status === "missing" ? "Same status title" : "Status " + status,
+    expression: status === "changed" ? "x * 3" : "x * 2", createdAt: now, updatedAt: now,
+  }));
+  const reports = formulas.filter(formula => formula.id !== "status-missing").map(formula => ({
+    id: "report-" + formula.id, formulaId: formula.id, title: "Saved " + formula.id, body: "Saved body " + formula.id,
+    createdAt: now, updatedAt: now, confirmedExpression: formula.id === "status-unconfirmed" ? null : "x * 2",
+    ...(formula.id === "status-unknown" ? {} : { evidence: { version: 1, links: [], confirmations: formula.id === "status-unconfirmed" ? [] : [{
+      id: "confirmation-" + formula.id, formulaId: formula.id, confirmedAt: now, definition: { version: 1, expression: "x * 2", variables: ["x"] },
+      title: "Saved " + formula.id, body: "Saved body " + formula.id, links: [], evidenceSignature: "[]",
+    }] } }),
+  }));
+  await page.evaluate(value => localStorage.setItem("calculation-memo:data", JSON.stringify(value)), {
+    ...original, formulaLibrary: { version: 1, entries: formulas, selectedId: formulas[0].id }, formulaReports: { version: 1, entries: reports },
+  });
+  await page.reload();
+  const raw = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await page.evaluate(() => {
+    window.__statusWrites = 0; window.__statusSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (...args) { window.__statusWrites++; return window.__statusSetItem.apply(this, args); };
+  });
+  await activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+  const library = page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  const rows = library.locator(".formula-library-list > li");
+  const filter = library.getByRole("combobox", { name: "根拠状態で絞り込み", exact: true });
+  const labels = ["確認済み", "根拠なし（レポート未登録）", "要再確認", "未確認", "状態判定不能"];
+  await expect(rows).toHaveCount(5);
+  for (let i = 0; i < labels.length; i++) await expect(rows.nth(i).getByText(labels[i], { exact: true })).toBeVisible();
+  for (const [value, titles] of [
+    ["confirmed", ["Same status title"]], ["changed", ["Status changed"]],
+    ["unconfirmed", ["Same status title", "Status unconfirmed"]], ["unknown", ["Status unknown"]],
+    ["all", formulas.map(formula => formula.title)],
+  ]) {
+    await activate(filter); await filter.selectOption(value);
+    assert.deepEqual(await rows.getByRole("button").evaluateAll(buttons => buttons.map(button => button.getAttribute("aria-label"))), titles);
+  }
+  await activate(rows.getByRole("button", { name: "Same status title", exact: true }).nth(1));
+  const detail = library.getByRole("region", { name: "保存済み登録式の詳細", exact: true });
+  await expect(detail).toContainText("関連レポートは未登録");
+  await activate(rows.getByRole("button", { name: "Same status title", exact: true }).first());
+  await expect(detail).toContainText("Saved body status-confirmed");
+  await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await activate(filter); await filter.selectOption(theme === "light" ? "unknown" : "all");
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await activate(library.getByRole("button", { name: "保存済み一覧を再取得", exact: true }));
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), raw);
+  assert.equal(await page.evaluate(() => window.__statusWrites), 0);
+  await passed(prefix + ": saved evidence labels and every filter preserve entry order and exact storage, separate same-name IDs and fit both themes at 200 percent text");
+  const expectedErrorStart = browserErrors.length;
+  await page.evaluate(() => {
+    window.__statusGetItem = Storage.prototype.getItem;
+    Storage.prototype.getItem = function (key) { if (key === "calculation-memo:data") throw new Error("Synthetic status acquisition failure"); return window.__statusGetItem.call(this, key); };
+  });
+  await activate(library.getByRole("button", { name: "保存済み一覧を再取得", exact: true }));
+  await expect(rows.getByText("確認済み", { exact: true })).toHaveCount(0);
+  await expect(rows.getByText("状態判定不能", { exact: true })).toHaveCount(5);
+  await expect.poll(() => browserErrors.length).toBe(expectedErrorStart + 1);
+  const expectedReadError = browserErrors[expectedErrorStart];
+  assert.equal(expectedReadError.type, "console");
+  assert.match(expectedReadError.message, /^ローカル保存領域へアクセスできませんでした.*Synthetic status acquisition failure/s);
+  metadata.expectedInjectedErrors = [...(metadata.expectedInjectedErrors || []), expectedReadError];
+  browserErrors.splice(expectedErrorStart, 1); // Only the asserted injected read failure is expected.
+  assert.equal(await page.evaluate(() => window.__statusGetItem.call(localStorage, "calculation-memo:data")), raw);
+  assert.equal(await page.evaluate(() => window.__statusWrites), 0);
+  await page.evaluate(() => { Storage.prototype.getItem = window.__statusGetItem; });
+  await activate(library.getByRole("button", { name: "保存済み一覧を再取得", exact: true }));
+  await expect(rows.first().getByText("確認済み", { exact: true })).toBeVisible();
+  assert.equal(await page.evaluate(() => window.__statusWrites), 0);
+  await passed(prefix + ": failed saved-source acquisition never certifies list entries or writes storage and explicit retry restores the saved assessment");
+  await activate(library.getByRole("button", { name: "閉じる", exact: true }));
+  await page.evaluate(value => { Storage.prototype.setItem = window.__statusSetItem; localStorage.setItem("calculation-memo:data", JSON.stringify(value)); }, original);
+  await page.reload();
+}
+
 async function exerciseFormulaDetailRefresh(prefix) {
   await stage(prefix + ": formula-detail-refresh-and-cancel");
   const original = await storage();
@@ -374,6 +460,7 @@ async function exerciseFormulaDetailRefresh(prefix) {
   await activate(page.getByRole("dialog", { name: "未保存のレポート編集を破棄しますか？", exact: true }).getByRole("button", { name: "未保存の編集を破棄して閉じる", exact: true }));
   await expect(library().getByTestId("formula-detail-assessment")).toHaveText("確認済み・式一致");
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), raw);
+  await expect(library().locator(".formula-library-list > li").first().getByText("確認済み", { exact: true })).toBeVisible();
   await passed(prefix + ": canceled formula and report edits preserve exact raw original confirmation and history on return to detail");
   const firstPage = page;
   const secondPage = await context.newPage(); secondPage.setDefaultTimeout(10000);
@@ -401,6 +488,12 @@ async function exerciseFormulaDetailRefresh(prefix) {
     await expect(detail).toContainText("取得時点"); await expect(detail).toContainText("x * 2");
     await expect(detail).not.toContainText("別タブで保存した本文");
     const changed = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+    const row = library().locator(".formula-library-list > li").first();
+    await expect(row.getByText("根拠未照合", { exact: true })).toBeVisible();
+    await expect(row.getByText("確認済み", { exact: true })).toHaveCount(0);
+    await activate(library().getByRole("button", { name: "保存済み一覧を再取得", exact: true }));
+    await expect(row.getByText("未確認", { exact: true })).toBeVisible();
+    await expect(detail).toContainText("別タブで保存した本文");
     await activate(detail.getByRole("button", { name: "保存済み詳細を再取得", exact: true }));
     await expect(detail.getByTestId("formula-detail-assessment")).toHaveText("未確認");
     await expect(detail).toContainText("x * 3"); await expect(detail).toContainText("別タブで保存した本文");
@@ -3385,6 +3478,7 @@ async function exercise(scenario) {
   await exerciseVariables(prefix);
   await exerciseFormulaLibrary(prefix);
   await exerciseFormulaReports(prefix);
+  await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
   await exerciseIdentification(prefix);
   await exerciseFormulaExecution(prefix);

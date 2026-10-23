@@ -99,17 +99,17 @@ const { validateCoverage } = await import('./ci-contract.mjs');
 const { scenarios } = await import('./scenario-config.mjs');
 const sha = 'a'.repeat(40);
 function completedContexts() {
-  const counts = [109, 108, 109, 109, 109, 110], checkpointCounts = [95, 93, 93, 93, 93, 95];
+  const counts = [112, 111, 112, 112, 112, 113], checkpointCounts = [95, 93, 93, 93, 93, 95];
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 888 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 903 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
 }
-test('complete six-context contract preserves 654 checks and 562 geometry checkpoints', () => {
-  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 654, horizontalCheckpoints: 562 });
+test('complete six-context contract preserves 672 checks and 562 geometry checkpoints', () => {
+  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 672, horizontalCheckpoints: 562 });
 });
 const mutations = {
   'one scenario never ran': records => records.pop(),

@@ -1,5 +1,24 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-23 16:16 JST: PR #66 保存原本取得の順序追加検証
+
+- 開始HEAD `f1e488f8ab598d4a08d348ee93bad7180bd36498`、同じ `feat/65-formula-evidence-status`、Ready・未マージ・cleanを確認。Issue #65 原文は変更せず、新規PRを作らない。
+- 先に formula-snapshot-ordering.test.ts へ10件追加。pendingSave/外部通知/完了の別commitと同一バッチ両順序、同期refresh前後の通知、取得失敗から両再取得ボタンで復帰、原本・履歴不変を検証。製品未変更で成功し、再現した製品不具合なし。
+- 実保存の競合拒否は既存CalculatorAppテストと区別して確認。同期getItem内にstorageイベントを直接dispatchする人工的再入を実障害扱いしない。第一希望を維持し製品修正不要、予防的な状態判定や保存経路の追加は行わない。詳細と限界は [設計](docs/agent/formula-status-list.md) に追記。
+- 独立再レビューは追加10件と実保存12件の計22件成功、阻害指摘なし。jsdom順序模擬と実ブラウザ配送、全Reactスケジューリング網羅、Web Locks非参加クライアント、実機Safari/VoiceOverは区別して未保証とする。
+- ローカル全単体1255件/55ファイル、CI契約37件、TypeScript、lint（警告0）、通常/Pagesビルド成功。
+- 最終コミットの全CI・GUI結果はPR #66 Checksと結果コメントへ記録する。30分・6条件・114PNG・trace方針、製品コード・保存形式・計算・明示確認条件は変更しない。ロールバックは今回のテストと文書差分のみrevert、データ移行不要。
+
+
+## 2026-10-23 15:08 JST: 登録式の根拠状態一覧・絞り込み（Issue #65）
+
+- PR #64 の merge と最新 main `f77ae781a2d5e033db40beadd42c0e6bb41d43ae`、clean を確認。関連Issue/PR検索で同一依頼なし、[Issue #65](https://github.com/tetsujisugimori-coder/calculator-memo/issues/65) に初期依頼2140文字を原文掲載し読戻し完全一致。本文は変更しない。専用枝 `feat/65-formula-evidence-status`。
+- AGENTS、README、LOG、保存/根拠/詳細/GUI/CI方針と実装を調査。第一希望の小規模統合を採用し、PR #64 の読み取り専用snapshotを共通化。一覧と詳細が同一原本・更新検知を使い、既存 formulaReportAssessment の結果だけを表示分類へ写像する。根拠なしと未確認を区別し、5グループの絞り込みをローカル状態で提供する。
+- 未保存編集・試算は根拠へ渡さず、保存成功後の取得と外部更新後の明示再取得を区別。取得失敗/未知/不正原本を確認済みへ格上げしない。式の計算・保存形式・writer・確認条件・削除後の原本保全は変更しない。[設計・次善策・復旧](docs/agent/formula-status-list.md)。
+- 実装・検証・独立レビュー・PR・最終HEAD CIはこの記録時点で未完了。実測を後続記録へ追記する。main push・merge・公開なし。
+- 15:20 JST追記: [PR #66](https://github.com/tetsujisugimori-coder/calculator-memo/pull/66) をDraft作成。接続済みGitHubで全13blobとtree `9bf8dcad1fb73c995c9d367e9207b78592441cf3` の同一性を確認して公開。最終HEADの実CI結果はPR本文/コメント/Checksへ記録し、この文書commit自身の成功を先取りしない。
+- 15:14 JST追記: 一覧専用回帰25件を追加、全単体1245件/54files、CI契約37件、型、lint、通常/Pages buildが成功。独立レビューは6関連suite149件を実行し阻害指摘なし。状態の読み上げ説明をvisible labelのaria-describedbyで補強。
+- 作業ツリーの重点GUIはChromium desktop15チェック・375px touch16チェック/80操作、両テーマ200%文字、実2ページ更新・全状態絞り込み・保存原本不変が成功。全6条件は672チェック/562幾何確認/mobile各903操作を要求し、114PNG・30分・trace方針を維持。正式最終HEADの実Actionsは未確認。実機iPhone Safari/VoiceOverは未検証。
 
 ## 2026-10-23 13:34 JST: PR #64 更新検知・未知データ保護の追加検証
 
