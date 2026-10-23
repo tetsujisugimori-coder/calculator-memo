@@ -19,6 +19,8 @@ These are explicitly configured browser contexts, not certified device models. R
 
 Each scenario actively exercises:
 
+- Issue #5 Backspace acceptance: the visible `⌫ 戻す` button is at least as tall as a standard key in every context; touch contexts at 375px and 390px also require a 44×44px minimum target. Existing click/tap and keyboard deletion checks remain active. This adds one named acceptance check per context without adding a touch activation or screenshot.
+
 - Calculation evidence: preview/cancel cannot persist records; two explicit recalculations append two batches only after save; actual legacy/ID inputs, old records after source edits, failed rollback, explicit trial apply and save, report copy/download and read-only reproduction verification. Existing six engines/viewports and screenshot/trace budgets are unchanged.
 
 - Header guide text stays on one line inside its button; wordmark/actions fit the header and viewport without overlap, with unobstructed hit-test centers

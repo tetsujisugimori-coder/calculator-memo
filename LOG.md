@@ -1,6 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
 
+## 2026-10-24 04:30 JST: Issue #5 Backspace寸法のGUI回帰契約
+
+- GitHub `main` の最新HEAD `07f7e259c621685a30b587c957259da876bddbe9` を取得。開始時の作業ツリーはcleanだったが、ローカルmainは139コミット遅れ。最新main基準の専用枝 `fix/5-backspace-regression` で調査。
+- [Issue #5](https://github.com/tetsujisugimori-coder/calculator-memo/issues/5) はopen。過去の [PR #4](https://github.com/tetsujisugimori-coder/calculator-memo/pull/4) がBackspaceを「⌫ 戻す」と表示し、通常キー以上の高さ・強調スタイルとモバイルスクリーンショットを追加済み。現行CSSもdesktop60px、375/390px touchで通常キー以上かつ44px以上。計算処理・表示コード変更は不要。
+- 既存GUIは6条件（Chromium desktop/narrow/mobile、WebKit mobile 375/390px）で画面ボタン操作を使い、モバイルでは実tap、キーボードBackspaceも検証する。一方、表示ラベルと実描画高さ・最小タップ領域の寸法assertionがなかったため、全6条件に高さ比較、表示ラベル、touchでは44×44pxを確認する1 assertion groupを追加。契約カウントは各条件+1、総計690→696。touch回数・geometry/PNG数・CI上限は不変。Issue本文とPR #70は変更しない。
+- 変更ファイル: `e2e/scenario.mjs`, `e2e/ci-contract.mjs`, `e2e/ci-contract.node-test.mjs`, `e2e/README.md`, `LOG.md`。アプリコード、依存定義、計算・保存形式は変更なし。
+- 検証: 電卓入力単体50件、lint、TypeScript、更新後の6条件CI契約（696 checks/562 geometry）、JS構文検査は成功。全単体は1266/1267件成功、無関係なMarkdown例とのバイト比較1件がWindows CRLF checkoutで失敗（生成LF、期待fixture CRLF）。CI契約node:testの全件実行もこのWindows環境でbash未提供/CRLF依存により既存Linux runner前提のテストが失敗し、今回の変更に関係する完了6条件契約は単独実行して成功。CI Linuxで再検証する。
+- 最終HEADのGitHub ActionsはPR作成後に確認する。ローカルChromium/WebKit GUI未実行、実機iPhone Safari/VoiceOver未検証。保存データ移行・ロールバック操作は不要。
+
+
 ## 2026-10-23 19:10 JST: 根拠・確認履歴タイムライン（Issue #67）
 
 - PR #66 merge と最新main `5cfee354167c51bf6d1021ef9df337bbae338291`、cleanを確認。重複検索後 [Issue #67](https://github.com/tetsujisugimori-coder/calculator-memo/issues/67) へ依頼原文2421文字を掲載し読戻し一致。本文は変更しない。専用枝 `feat/confirmation-timeline`。

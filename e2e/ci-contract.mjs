@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { scenarios } from './scenario-config.mjs';
-const counts = [115, 114, 115, 115, 115, 116];
+const counts = [116, 115, 116, 116, 116, 117];
 const checkpoints = [95, 93, 93, 93, 93, 95];
 /** Validate before a successful worker discards its live trace, and again when aggregating. */
 export function validateScenarioCoverage(record, expectedSha, requireSuccess = true) {
