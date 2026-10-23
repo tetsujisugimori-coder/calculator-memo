@@ -8,6 +8,7 @@
 - 式・本文タイトル・リンクの独立差分を表示し、判定は既存formulaReportAssessmentを再利用。過去一致を現在承認へ格上げせず、snapshotのstale/取得失敗/未知不正保護と取得日時を共有。時差付き日時昇順/同時刻保存順、時差なしは全保存順で限界明示。保存配列末尾の既存最新判定は不変。
 - ローカル全単体1267件/56ファイル成功（追加12件）。CI契約37件成功。独立レビューは製品差分に阻害指摘なし、関連54件を独立実行し成功。通常/Pagesビルド・GUI・最終HEAD CIは進行中で、実測結果をPRへ記録する。
 - CI環境/30分/6条件/114PNG/trace方針・計算エンジン・writer・保存形式・明示確認条件は変更しない。実機iPhone Safari/VoiceOver未検証。revertはUI/表示投影/テスト/文書のみ、データ移行なし。
+- 19:15 JST追記: [PR #68](https://github.com/tetsujisugimori-coder/calculator-memo/pull/68) をDraft作成。13blob/tree一致を確認し認証済みGitHub経由で公開。型/lint/通常・Pagesビルド成功。重点GUIはChromium/WebKit各desktop1365/375/390、両テーマ200%文字とkeyboard、他タブ更新/失敗/再取得、原本不変の計42確認成功。正式最終HEADの6条件CIは未確認でPR Checks/結果コメントへ記録する。
 
 ## 2026-10-23 16:16 JST: PR #66 保存原本取得の順序追加検証
 
