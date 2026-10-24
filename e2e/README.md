@@ -543,3 +543,7 @@ is injected only in a fresh test context and restored before leaving the fixture
 ### Issue #67 確認履歴タイムライン
 
 既存6条件へ3確認ずつ追加し、総計690確認（115/114/115/115/115/116）、mobile906操作を要求する。同一時刻と逆順記録、式/本文/両方差分、履歴なし、実他タブ更新と再取得失敗、原本不変、両テーマ200%文字とキーボード展開を検査。幾何562確認、PNG114枚、30分、成功trace0の既存契約は維持する。これらは期待条件であり、実行結果は各runのsummaryを確認する。
+
+## Issue #72 template and heading navigation
+
+Each existing context adds one acceptance group for append/explicit undo, duplicate headings, fenced-code exclusion, edit selection, preview focus and exact raw storage invariance. Eight real activations are added per context (mobile 915), making 696 checks. Existing 562 geometry points, 114 PNG cap, successful trace suppression and 30-minute budget remain unchanged. Existing two-theme 200% report layout checks also require the chapter disclosure. No dependency on unmerged PR #71.

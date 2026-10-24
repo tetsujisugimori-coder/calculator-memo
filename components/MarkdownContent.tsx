@@ -2,79 +2,7 @@
 
 import type { ReactNode } from "react";
 import { KatexFormula } from "./KatexFormula";
-
-type Block =
-  | { kind: "heading"; level: number; text: string }
-  | { kind: "paragraph"; text: string }
-  | { kind: "quote"; text: string }
-  | { kind: "list"; ordered: boolean; items: string[] }
-  | { kind: "code"; language: string; text: string }
-  | { kind: "math"; text: string }
-  | { kind: "rule" };
-
-function parseBlocks(markdown: string): Block[] {
-  const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
-  const blocks: Block[] = [];
-  let index = 0;
-  while (index < lines.length) {
-    const line = lines[index];
-    if (!line.trim()) { index += 1; continue; }
-    if (line.startsWith("```")) {
-      const language = line.slice(3).trim();
-      const body: string[] = [];
-      index += 1;
-      while (index < lines.length && !lines[index].startsWith("```")) body.push(lines[index++]);
-      index += index < lines.length ? 1 : 0;
-      blocks.push({ kind: "code", language, text: body.join("\n") });
-      continue;
-    }
-    if (line.trim() === "$$") {
-      const body: string[] = [];
-      index += 1;
-      while (index < lines.length && lines[index].trim() !== "$$") body.push(lines[index++]);
-      index += index < lines.length ? 1 : 0;
-      blocks.push({ kind: "math", text: body.join("\n") });
-      continue;
-    }
-    const heading = line.match(/^(#{1,6})\s+(.+)$/);
-    if (heading) {
-      blocks.push({ kind: "heading", level: heading[1].length, text: heading[2] });
-      index += 1;
-      continue;
-    }
-    if (/^\s*([-*_])(?:\s*\1){2,}\s*$/.test(line)) {
-      blocks.push({ kind: "rule" });
-      index += 1;
-      continue;
-    }
-    if (/^>\s?/.test(line)) {
-      const body: string[] = [];
-      while (index < lines.length && /^>\s?/.test(lines[index])) body.push(lines[index++].replace(/^>\s?/, ""));
-      blocks.push({ kind: "quote", text: body.join("\n") });
-      continue;
-    }
-    const list = line.match(/^\s*(?:(\d+)\.|[-*+])\s+(.+)$/);
-    if (list) {
-      const ordered = Boolean(list[1]);
-      const items: string[] = [];
-      while (index < lines.length) {
-        const item = lines[index].match(/^\s*(?:(\d+)\.|[-*+])\s+(.+)$/);
-        if (!item || Boolean(item[1]) !== ordered) break;
-        items.push(item[2]);
-        index += 1;
-      }
-      blocks.push({ kind: "list", ordered, items });
-      continue;
-    }
-    const paragraph = [line];
-    index += 1;
-    while (index < lines.length && lines[index].trim() && !/^(#{1,6})\s+|^```|^\$\$|^>\s?|^\s*(?:(?:\d+)\.|[-*+])\s+/.test(lines[index])) {
-      paragraph.push(lines[index++]);
-    }
-    blocks.push({ kind: "paragraph", text: paragraph.join("\n") });
-  }
-  return blocks;
-}
+import { markdownHeadingDomId, parseMarkdownBlocks } from "../lib/markdown-blocks";
 
 function safeHref(value: string): string | undefined {
   const href = value.trim();
@@ -105,16 +33,24 @@ function inline(text: string): ReactNode[] {
   return nodes;
 }
 
-export function MarkdownContent({ content, compact = false }: { content: string; compact?: boolean }) {
+export function MarkdownContent({ content, compact = false, headingIdPrefix }: { content: string; compact?: boolean; headingIdPrefix?: string }) {
   if (!content.trim()) return <p className="markdown-empty">本文はまだありません。</p>;
-  const blocks = parseBlocks(content);
+  const blocks = parseMarkdownBlocks(content);
   return (
     <div className={`markdown-content ${compact ? "markdown-compact" : ""}`}>
       {blocks.map((block, index) => {
         const key = `${block.kind}-${index}`;
         if (block.kind === "heading") {
           const Heading = `h${block.level}` as keyof React.JSX.IntrinsicElements;
-          return <Heading key={key}>{inline(block.text)}</Heading>;
+          return (
+            <Heading
+              key={key}
+              id={headingIdPrefix === undefined ? undefined : markdownHeadingDomId(headingIdPrefix, block.id)}
+              tabIndex={headingIdPrefix === undefined ? undefined : -1}
+            >
+              {inline(block.text)}
+            </Heading>
+          );
         }
         if (block.kind === "paragraph") return <p key={key}>{inline(block.text)}</p>;
         if (block.kind === "quote") return <blockquote key={key}>{inline(block.text)}</blockquote>;
