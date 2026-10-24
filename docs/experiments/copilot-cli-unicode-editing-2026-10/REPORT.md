@@ -109,4 +109,4 @@ Comparison data to hold constant: candidate commit, Unicode/ASCII/space expressi
 - Physical iPhone Safari, software keyboard, IME, and touch-device behavior were not tested.
 - Final PR-head CI must be checked after push; no CI success is claimed here.
 
-The experiment issue is [#79](https://github.com/tetsujisugimori-coder/calculator-memo/issues/79). The Draft PR URL and final commit/CI status are added after publication.
+The experiment issue is [#79](https://github.com/tetsujisugimori-coder/calculator-memo/issues/79); the artifact-only [Draft PR is #80](https://github.com/tetsujisugimori-coder/calculator-memo/pull/80). The final report commit's CI result remains pending and is not inferred from an earlier SHA.

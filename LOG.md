@@ -4,8 +4,8 @@
 
 - 変更内容: 修正前候補を独立worktreeで再現し、原因分析・回帰テスト・隔離修正を含むdiffと実測を [`実験報告`](docs/experiments/copilot-cli-unicode-editing-2026-10/REPORT.md) に保存する。実験コードはpatch artifactのみで、製品ソースへ適用しない。
 - 変更理由: Copilot CLIの自力再現・診断・修正能力を、既存製品変更と分離して記録する。
-- 検証結果: 候補 `d453a9d4eb3b6f12897b3d83e6cdd5724dbba67f` で追加unit 4件失敗、Chromium GUIでCE後の式置換を再現。隔離修正後はunit 58件、lint、型検査、通常/Pages build、Chromium/WebKit focused GUI成功。Node 24.20.0で実施、指定Node 22.13.0およびGitHub CIは未確認。最終CIはDraft PR Checksで確認する。
-- 関連 Issue・PR: [Issue #79](https://github.com/tetsujisugimori-coder/calculator-memo/issues/79)。Draft PR未作成。
+- 検証結果: 候補 `d453a9d4eb3b6f12897b3d83e6cdd5724dbba67f` で追加unit 4件失敗、Chromium GUIでCE後の式置換を再現。隔離修正後はunit 58件、lint、型検査、通常/Pages build、Chromium/WebKit focused GUI成功。Node 24.20.0で実施、指定Node 22.13.0およびGitHub CIは未確認。最終HEADのCIはDraft PR Checksで確認する。
+- 関連 Issue・PR: [Issue #79](https://github.com/tetsujisugimori-coder/calculator-memo/issues/79)、[Draft PR #80](https://github.com/tetsujisugimori-coder/calculator-memo/pull/80)。
 - 未解決事項: 現行README/e2e docsと過去Issue題名を見たため情報汚染あり。禁止対象の修正PR/diff/修正後製品ソースは閲覧していない。候補が厳密な修正直前commitかは未証明。実験patchを製品コードに無条件適用しない。
 
 ## 2026-10-24 JST: 固定引用と明示選択した保存記録の比較（Issue #76）
