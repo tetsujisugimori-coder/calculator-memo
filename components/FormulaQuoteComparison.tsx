@@ -7,20 +7,26 @@ import { quoteComparisonTargets, compareQuoteToRecord } from "../lib/formula-quo
 import { reportEvidenceLinkKey } from "../lib/formula-report-evidence";
 import { evidenceRowLabel } from "../lib/evidence-comparison";
 import { BlockInfo, RecordInfo } from "./EvidenceRecordDetails";
+import { MarkdownContent } from "./MarkdownContent";
 import { Modal } from "./Modal";
 
 export type QuoteSource = { notes: Memo[]; fetchedAt: string; error?: string; stale?: boolean };
-export function FormulaQuoteComparison({ quote, formulaId, body, links, source, onRefresh, onClose }: {
+export type DifferenceInsertion = { key: string; reportId: string; title: string; disabled: boolean; prepare: (quote: QuoteAssessment, targetKey: string) => { markdown: string; start: number; end: number; insert: () => void } };
+export function FormulaQuoteComparison({ quote, formulaId, body, links, source, onRefresh, onClose, insertion }: {
   quote: QuoteAssessment; formulaId: string; body: string; links: FormulaReportEvidenceLink[]; source: QuoteSource;
-  onRefresh?: () => void; onClose: () => void;
+  onRefresh?: () => void; onClose: () => void; insertion?: DifferenceInsertion;
 }) {
   const id = useId();
   const [selection, setSelection] = useState<{ notes: Memo[]; links: FormulaReportEvidenceLink[]; body: string; fetchedAt: string; quoteKey: string; choice: string; blockId: string } | null>(null);
   const [invalidated, setInvalidated] = useState(false);
+  const [prepared, setPrepared] = useState<{ selection: typeof selection; key: string; plan: ReturnType<DifferenceInsertion["prepare"]> } | null>(null);
+  const [insertionError, setInsertionError] = useState("");
   const quoteKey = JSON.stringify([formulaId, quote.start, quote.end, quote.snapshot?.quoteId]);
   const blocked = !!source.error || !!source.stale;
   const active = !blocked && selection?.notes === source.notes && selection.links === links && selection.body === body && selection.fetchedAt === source.fetchedAt && selection.quoteKey === quoteKey;
   if (selection && !active) { setSelection(null); setInvalidated(true); }
+  const validPreview = !!prepared && active && prepared.selection === selection && !!insertion && !insertion.disabled && prepared.key === insertion.key;
+  if (prepared && !validPreview) { setPrepared(null); setInsertionError("挿入条件が変わったためプレビューを破棄しました。比較対象を確認して生成し直してください。"); }
   const choice = active ? selection.choice : "";
   const result = useMemo(() => {
     if (blocked) return { targets: [], comparison: null, error: source.error ? '原本取得失敗：比較先を取得できません。欠落とは断定しません。' : '根拠未照合：原本の更新を検知しました。明示再取得が必要です。' };
@@ -55,6 +61,22 @@ export function FormulaQuoteComparison({ quote, formulaId, body, links, source, 
       <ul>{comparison.rows.map(row => <li key={row.blockId}>ブロックID：{row.blockId} / {evidenceRowLabel(row)}</li>)}</ul>
       {selectedRow && <section aria-label="選択ブロックの差分"><h4>ブロックID：{selectedRow.blockId}</h4><p>{evidenceRowLabel(selectedRow)}</p><div className="evidence-pair"><section><h4>引用時</h4>{selectedRow.before ? <BlockInfo {...selectedRow.before} record={comparison.before} /> : <p>引用時の記録には存在しません。</p>}</section><section><h4>比較先</h4>{selectedRow.after ? <BlockInfo {...selectedRow.after} record={comparison.after} /> : <p>比較先の記録には存在しません。</p>}</section></div></section>}
     </section>}
+    {insertion && <button type="button" disabled={!comparison || blocked || insertion.disabled} onClick={() => {
+      try { const plan = insertion.prepare(quote, choice); setPrepared({ selection, key: insertion.key, plan }); setInsertionError(""); }
+      catch (cause) { setPrepared(null); setInsertionError(cause instanceof Error ? cause.message : "差分文を準備できません。本文は保持しています。"); }
+    }}>差分をレポートに挿入</button>}
+    {insertionError && <p role="alert">{insertionError}</p>}
+    {validPreview && prepared && insertion && <Modal title="差分の挿入前プレビュー" onClose={() => setPrepared(null)} wide>
+      <section className="formula-report quote-tools">
+        <p>挿入先：{insertion.title}（レポートID：{insertion.reportId}）</p>
+        <p>本文の位置 {prepared.plan.start}（0始まり）へ追加します。選択範囲 {prepared.plan.start}〜{prepared.plan.end} の文章も保持し、置換・削除しません。編集欄が閉じている場合は末尾です。</p>
+        <p>以下が追加予定のMarkdown全文です。既存引用・追跡情報は更新しません。保存と確認は別操作です。差分文は新しい本文編集であり、数学的証明ではありません。</p>
+        <section aria-label="差分の挿入前プレビュー"><MarkdownContent content={prepared.plan.markdown} /></section>
+        <details><summary>追加予定のMarkdown原文全文</summary><pre>{prepared.plan.markdown}</pre></details>
+        <button type="button" onClick={() => { try { prepared.plan.insert(); setPrepared(null); onClose(); } catch (cause) { setPrepared(null); setInsertionError(cause instanceof Error ? cause.message : "挿入できませんでした。本文は保持しています。"); } }}>この差分を本文へ挿入</button>
+        <button type="button" onClick={() => setPrepared(null)}>差分挿入をキャンセル</button>
+      </section>
+    </Modal>}
     <button type="button" onClick={onClose}>比較表示を閉じる</button>
   </section></Modal>;
 }

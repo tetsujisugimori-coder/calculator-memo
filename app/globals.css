@@ -537,3 +537,6 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .formula-report-preview code[data-language="text"],
 .formula-report-preview code[data-language^="calculator-memo-evidence"] { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
 .quote-tools .markdown-content pre code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+/* Generated comparison data is not a fixed-quote marker; keep exact values readable. */
+.formula-report-preview pre:has(> code[data-language="calculation-difference-value"]),
+.formula-report-preview code[data-language="calculation-difference-value"] { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }

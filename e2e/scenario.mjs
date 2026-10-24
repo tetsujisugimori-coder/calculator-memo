@@ -594,14 +594,78 @@ async function exerciseFormulaQuotes(prefix) {
   await editor().fill(quotedBody);
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
   await passed(prefix + ": explicit quote comparison excludes unrelated and unlinked records, preserves embedded negative zero and full block differences, edited citation notice and two-theme 200 percent layout without saving");
+  const insertionPreview = () => page.getByRole("dialog", { name: "差分の挿入前プレビュー", exact: true });
+  const prepareDifference = async () => {
+    await activate(comparison().getByRole("button", { name: "差分をレポートに挿入", exact: true }));
+    await expect(insertionPreview()).toContainText("quote-report");
+    await expect(insertionPreview()).toContainText(record.id);
+    await expect(insertionPreview()).toContainText(comparisonRecord.id);
+    await expect(insertionPreview()).toContainText("保存と確認は別操作");
+    await expect(editor()).toHaveValue(quotedBody);
+    assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  };
+  await editor().evaluate(element => { element.focus(); element.setSelectionRange(0, 3); });
   await openComparison();
+  await prepareDifference();
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+    for (const code of await insertionPreview().locator('pre > code').all()) {
+      assert.ok(await code.evaluate(element => element.scrollWidth <= element.clientWidth + 1), "Difference data must wrap inside the preview at 200 percent");
+    }
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await activate(insertionPreview().getByRole("button", { name: "差分挿入をキャンセル", exact: true }));
+  await expect(comparison().getByRole("button", { name: "差分をレポートに挿入", exact: true })).toBeFocused();
+  await prepareDifference();
+  await insertionPreview().getByRole("button", { name: "差分挿入をキャンセル", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(insertionPreview().getByRole("button", { name: "閉じる", exact: true })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(insertionPreview()).toHaveCount(0);
+  await expect(comparison().getByRole("button", { name: "差分をレポートに挿入", exact: true })).toBeFocused();
+  await prepareDifference();
+  await activate(insertionPreview().getByRole("button", { name: "この差分を本文へ挿入", exact: true }));
+  await expect(comparison()).toHaveCount(0); await expect(editor()).toBeFocused();
+  const differenceBody = await editor().inputValue();
+  assert.ok(differenceBody.length > quotedBody.length && differenceBody.endsWith(quotedBody), "Difference insertion at selected start preserves the complete original quote and selected text");
+  assert.equal(differenceBody.split("calculator-memo-evidence-v1").length, quotedBody.split("calculator-memo-evidence-v1").length, "Difference must not create or replace quote metadata");
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await expect(report().getByRole("button", { name: "直前の引用を取り消す", exact: true })).toBeDisabled();
+  await activate(report().getByRole("button", { name: "レポートをプレビュー", exact: true }));
+  const reportPreview = report().getByRole("region", { name: "関連レポートのプレビュー", exact: true });
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+    for (const code of await reportPreview.locator('pre > code').all()) assert.ok(await code.evaluate(element => element.scrollWidth <= element.clientWidth + 1), "Inserted difference data and quote must wrap in ordinary report preview");
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
+  await expect(editor()).toHaveValue(differenceBody);
+  await activate(report().getByRole("button", { name: "直前の差分挿入を取り消す", exact: true }));
+  await expect(editor()).toHaveValue(quotedBody);
+  await editor().evaluate(element => { element.focus(); element.setSelectionRange(0, 3); });
+  await openComparison(); await prepareDifference();
+  await activate(insertionPreview().getByRole("button", { name: "この差分を本文へ挿入", exact: true }));
+  const afterSecondInsert = await editor().inputValue();
+  await editor().fill(afterSecondInsert + "\n利用者の後続編集");
+  await expect(report().getByRole("button", { name: "直前の差分挿入を取り消す", exact: true })).toBeDisabled();
+  await expect(editor()).toHaveValue(afterSecondInsert + "\n利用者の後続編集");
+  await editor().fill(quotedBody);
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await passed(prefix + ": diff preview cancel and Escape preserve storage, explicit cursor insertion preserves quote and selection, exact undo cannot erase later edits, both themes 200 percent fit and keyboard focus return");
+  await openComparison();
+  await prepareDifference();
   const changed = await storage();
   changed.notes.find(item => item.id === memo.id).calculationEvidence.records[0].blocks[1].resultText = "changed saved display";
   // Synthetic notification ordering is controlled here; real second-tab save is covered by the adjacent refresh scenario.
   await page.evaluate(data => { const key = "calculation-memo:data"; const oldValue = localStorage.getItem(key); const newValue = JSON.stringify(data); localStorage.setItem(key, newValue); dispatchEvent(new StorageEvent("storage", { key, oldValue, newValue, storageArea: localStorage })); }, changed);
+  await expect(insertionPreview()).toHaveCount(0);
   await expect(differences()).toHaveCount(0);
   await expect(target()).toBeDisabled();
-  await expect(comparison().getByRole("alert")).toContainText("根拠未照合");
+  await expect(comparison().getByRole("alert").filter({ hasText: "根拠未照合" })).toBeVisible();
+  await expect(comparison().getByRole("button", { name: "差分をレポートに挿入", exact: true })).toBeDisabled();
+  await passed(prefix + ": diff preview is discarded on storage update and cannot insert until fresh target selection and generation");
   await activate(comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }));
   await expect(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true })).toBeDisabled();
   await expect(report().getByRole("button", { name: "レポートを保存", exact: true })).toBeDisabled();

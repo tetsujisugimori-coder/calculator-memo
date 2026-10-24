@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useId, useMemo, useRef, useState } from "react";
 import type { FormulaReport, RegisteredFormula, FormulaReportEvidenceLink, Memo } from "../lib/types";
-import { formulaReportSignature, FORMULA_REPORT_TEMPLATE, appendFormulaReportTemplate, type FormulaReportSaveRequest } from "../lib/formula-reports";
+import { readFormulaReports, formulaReportSignature, FORMULA_REPORT_TEMPLATE, appendFormulaReportTemplate, type FormulaReportSaveRequest } from "../lib/formula-reports";
 import { downloadMarkdownReport, reportFilename } from "../lib/markdown-report";
 import { MarkdownContent } from "./MarkdownContent";
 import { loadData, STORAGE_KEY } from "../lib/storage";
@@ -12,6 +12,8 @@ import { ConfirmationRemarks } from "./ConfirmationRemarks";
 import { extractMarkdownHeadings, markdownHeadingDomId, type MarkdownHeading } from "../lib/markdown-blocks";
 import { FormulaQuotePicker, FormulaQuoteStatus } from "./FormulaReportQuotes";
 import { insertQuoteAtCursor } from "../lib/formula-report-quotes";
+import { buildQuoteDifferenceMarkdown, insertDifferenceAtCursor } from "../lib/formula-report-diff";
+import type { DifferenceInsertion } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
 
 type Props = {
@@ -30,6 +32,7 @@ function acquireEvidence(formulaId: string) {
 /** Expectations are frozen when opened; prop changes never silently rebase a draft. */
 export function FormulaReportModal({ formulaId, formula, report, writable, onClose, onSave }: Props) {
   const [baseline, setBaseline] = useState(() => ({ report: report ? structuredClone(report) : undefined, expression: formula?.expression ?? null, definition: formulaDefinitionSignature(formula) }));
+  const [openedFormulaId] = useState(formulaId);
   const [id] = useState(() => report?.id ?? crypto.randomUUID());
   const [title, setTitle] = useState(report?.title ?? formula?.title ?? "関連レポート");
   const [body, setBody] = useState(report?.body ?? FORMULA_REPORT_TEMPLATE);
@@ -38,6 +41,9 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   const [quotePicker, setQuotePicker] = useState(false);
   const [quoteUndo, setQuoteUndo] = useState<{ before: string; after: string } | null>(null);
   const quoteSelection = useRef({ start: 0, end: 0 });
+  const diffSelection = useRef({ start: 0, end: 0 });
+  const [differenceUndo, setDifferenceUndo] = useState<{ before: string; after: string } | null>(null);
+  const insertionKeyRef = useRef("");
 
   const headings = useMemo(() => body.length <= 100_000 ? extractMarkdownHeadings(body) : [], [body]);
   const [templateUndo, setTemplateUndo] = useState<{ before: string; after: string } | null>(null);
@@ -80,7 +86,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   const [notice, setNotice] = useState<{ text: string; failed: boolean } | null>(null);
   const dirty = !baseline.report || title !== baseline.report.title || body !== baseline.report.body || JSON.stringify(links) !== JSON.stringify(baseline.report?.evidence?.links ?? []);
   const unsaved = dirty || remarks.length > 0;
-  const conflict = formulaReportSignature(report) !== formulaReportSignature(baseline.report) || formulaDefinitionSignature(formula) !== baseline.definition;
+  const conflict = openedFormulaId !== formulaId || (report && report.id !== id) || formulaReportSignature(report) !== formulaReportSignature(baseline.report) || formulaDefinitionSignature(formula) !== baseline.definition;
   const invalid = !title.trim() || title.length > 120 || body.length > 100_000;
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => { if (unsaved || savingRef.current) { event.preventDefault(); event.returnValue = ""; } };
@@ -101,13 +107,51 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     try {
       const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm, ...(confirm ? { confirmationRemarks: remarks } : {}) });
       if (typeof result === "string") { setNotice({ text: result, failed: true }); return; }
-      setTemplateUndo(null); setQuoteUndo(null);
+      setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
       setEvidence(acquireEvidence(formulaId));
       setBaseline({ report: structuredClone(result), expression: baseline.expression, definition: baseline.definition });
       if (confirm) setRemarks("");
       setNotice({ text: confirm ? "内容の確認と保存が完了しました。" : "レポートを保存しました。", failed: false });
     } catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "保存に失敗しました。編集内容は保持しています。", failed: true }); }
     finally { savingRef.current = false; setSaving(false); }
+  };
+  const insertionKey = JSON.stringify([id, formulaId, title, body, links, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, saving]);
+  useLayoutEffect(() => { insertionKeyRef.current = insertionKey; }, [insertionKey]);
+  if (differenceUndo && conflict) setDifferenceUndo(null);
+  const checkInsertionSource = () => {
+    const loaded = loadData();
+    if (loaded.status !== "ok" || loaded.raw !== evidence.raw) {
+      setEvidenceChanged(true);
+      throw new Error("差分挿入前に原本の変更または取得失敗を検知しました。本文は保持しています。保存済み根拠を再取得し、比較対象を選び直してください。");
+    }
+    return loaded.data;
+  };
+  const differenceInsertion: DifferenceInsertion = {
+    key: insertionKey, reportId: id, title,
+    disabled: saving || !writable || !!conflict || evidenceChanged || !!evidence.error,
+    prepare: (quote, targetKey) => {
+      if (savingRef.current || !writable || conflict || evidenceChanged || evidence.error) throw new Error("現在は差分を挿入できません。本文は保持しています。");
+      const data = checkInsertionSource();
+      const markdown = buildQuoteDifferenceMarkdown(quote, formulaId, evidence.notes, evidence.links, targetKey);
+      const { start, end } = diffSelection.current;
+      const next = insertDifferenceAtCursor(body, markdown, formulaId, start, end);
+      // Validate the complete report collection without invoking any save/confirmation writer.
+      const preflight = (current: typeof data) => {
+        const reports = current.formulaReports;
+        const original = reports?.entries.find(item => item.id === id && item.formulaId === formulaId);
+        if (!reports || !original || formulaReportSignature(original) !== formulaReportSignature(baseline.report)) throw new Error("挿入先レポートを同じ保存原本で確認できません。本文は保持しています。");
+        readFormulaReports({ ...reports, entries: reports.entries.map(item => item === original ? { ...item, title, body: next.body, ...(item.evidence ? { evidence: { ...item.evidence, links } } : {}) } : item) });
+      };
+      preflight(data);
+      return { markdown, start, end, insert: () => {
+        if (insertionKeyRef.current !== insertionKey || savingRef.current || !writable || conflict || evidenceChanged || evidence.error) throw new Error("本文・レポート・取得世代が変わりました。古いプレビューは挿入しません。生成し直してください。");
+        preflight(checkInsertionSource());
+        setDifferenceUndo({ before: body, after: next.body }); setQuoteUndo(null); setTemplateUndo(null);
+        setBody(next.body); setPreview(false);
+        setNotice({ text: "比較差分を本文へ追加しました。既存引用はそのままです。未保存・未確認です。", failed: false });
+        requestAnimationFrame(() => { editorRef.current?.focus(); editorRef.current?.setSelectionRange(next.caret, next.caret); });
+      } };
+    },
   };
   const exportBody = async (download: boolean) => {
     try {
@@ -148,12 +192,12 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
         <p id="report-template-help">6章のMarkdownを本文の末尾に追加します。既存本文は保持します。章は自由に編集・削除でき、追加だけでは保存・確認されません。直後は専用の取消ができますが、その後の編集・保存で取消は終了します。</p>
         <button type="button" disabled={saving || !writable || conflict || evidenceChanged} aria-describedby="report-template-help" onClick={() => {
           if (savingRef.current) return;
-          try { const next = appendFormulaReportTemplate(body); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
+          try { const next = appendFormulaReportTemplate(body); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setDifferenceUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
           catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "追加できませんでした。本文は保持しています。", failed: true }); }
         }}>テンプレートを挿入（末尾に追加）</button>
         <button type="button" disabled={saving || !templateUndo || body !== templateUndo.after} onClick={() => {
           if (savingRef.current || !templateUndo || body !== templateUndo.after) return;
-          setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
+          setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
         }}>直前のテンプレート追加を取り消す</button>
       </div>}
       {!preview && <div className="quote-tools">
@@ -169,7 +213,16 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
           setNotice({ text: "直前の引用を取り消しました。保存は行っていません。", failed: false });
         }}>直前の引用を取り消す</button>
       </div>}
-      <FormulaQuoteStatus onRefresh={refreshEvidence} body={body} formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || conflict }} />
+      <div className="quote-tools"><button type="button" disabled={saving || !!conflict || !differenceUndo || body !== differenceUndo.after} onClick={() => {
+        if (savingRef.current || conflict || !differenceUndo || body !== differenceUndo.after) return;
+        setBody(differenceUndo.before); setDifferenceUndo(null); setQuoteUndo(null); setTemplateUndo(null);
+        setNotice({ text: "直前の差分挿入を取り消しました。保存は行っていません。", failed: false });
+      }}>直前の差分挿入を取り消す</button></div>
+      <FormulaQuoteStatus insertion={differenceInsertion} onCompareOpen={() => {
+        const editor = editorRef.current;
+        const end = body.replace(/\r\n?/g, "\n").length;
+        diffSelection.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end };
+      }} onRefresh={refreshEvidence} body={body} formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || conflict }} />
       {quotePicker && <FormulaQuotePicker formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged }} disabled={saving || !writable || conflict} onClose={() => setQuotePicker(false)} onInsert={markdown => {
         if (savingRef.current || !writable || conflict || evidenceChanged || evidence.error) return;
         const latest = loadData();
@@ -178,7 +231,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
         }
         try {
           const next = insertQuoteAtCursor(body, markdown, quoteSelection.current.start, quoteSelection.current.end);
-          setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setBody(next.body); setQuotePicker(false);
+          setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setDifferenceUndo(null); setBody(next.body); setQuotePicker(false);
           setNotice({ text: "計算根拠を引用しました。未保存です。", failed: false });
           requestAnimationFrame(() => { editorRef.current?.focus(); editorRef.current?.setSelectionRange(next.caret, next.caret); });
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
@@ -187,7 +240,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
         <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
         {body.length > 100_000 ? <p>上限超過のため章一覧を停止しています。本文は保持しています。</p> : headings.length ? <nav aria-label="レポートの章一覧"><ol>{headings.map(heading => <li key={heading.id} style={{ paddingInlineStart: `${(heading.level - 1) * .5}rem` }}><button type="button" disabled={saving} onClick={() => navigateHeading(heading)}>H{heading.level}：{heading.text}</button></li>)}</ol></nav> : <p>見出しがありません。行頭の #〜###### と空白で見出しを作成できます。</p>}
       </details>
-      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); }} /></>}
+      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); }} /></>}
       <p>タイトル {title.length}/120文字、本文 {body.length}/100,000文字。見出しは編集用テンプレートです。未記入の証明・史実・出典は補いません。</p>
       {invalid && <p role="alert">タイトルは1〜120文字、本文は100,000文字以内にしてください。超過分は切り捨てません。</p>}
       <p>コピー・ファイル出力は現在表示中の本文です。未保存の編集も含み、保存は行いません。</p>
