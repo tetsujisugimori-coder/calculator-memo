@@ -555,3 +555,24 @@ Two new acceptance groups in each existing context cover saved-linked record/blo
 Required totals are 708 checks (118/117/118/118/118/119), 936 mobile touch activations per context, and the unchanged 562 screenshot checkpoints and 114 PNG cap. The six conditions, 30-minute CI limit and successful trace discard remain unchanged. These counts describe the acceptance contract, not a claim of execution. Real iPhone Safari and VoiceOver are not covered by browser emulation.
 
 Citation layout uses a 113-character record ID and an unbroken 203-character expression. In both themes at 200% text, picker preview, reloaded report preview and saved detail must each expose both citation code blocks with computed `white-space: pre-wrap`, and both code/pre `scrollWidth <= clientWidth + 1`. This specifically catches internal horizontal scrolling that document/dialog width checks alone miss; it adds no PNG or acceptance-group count.
+
+
+## Issue #76 fixed-quote versus explicit saved-record comparison
+
+Two added acceptance groups in each unchanged context exercise the distinct
+comparison entry, initially empty target selection, same-memo saved-link-only
+candidates (excluding the quoted ID, unlinked records and another linked memo),
+full-record changed/added rows and initially selected quoted block, negative-zero
+actual inputs, and edited-citation disclosure. Both themes at 200% text retain
+horizontal-fit checks without adding screenshots. The saved source is then changed
+while comparison is open: stale results must disappear, and explicit refresh and
+reopening require a fresh target selection. The original embedded snapshot remains
+the before side, never the updated source or current memo blocks. Raw storage,
+report text and confirmation history remain unchanged by comparison.
+
+Required totals become 720 checks (120/119/120/120/120/121) and 945 mobile
+activations per context. The focused Chromium 375px touch run observed 30
+activations in this quote fixture, nine more than its previous 21. Existing 562
+geometry checkpoints, six conditions, 114 retained PNGs, two workers, 30-minute limit and zero successful trace exports
+remain unchanged. These counts are acceptance requirements, not execution results;
+the exact final-head CI establishes completed coverage.

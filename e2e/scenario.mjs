@@ -461,12 +461,19 @@ async function exerciseFormulaQuotes(prefix) {
     { blockId: "quote-source", position: 1, expression: "z = -0", evaluationMode: "note-variables", inputs: [], result: "-0", resultText: "0", status: "success" },
     { blockId: "quote-result", position: 2, expression: "z*2" + "+0".repeat(100), evaluationMode: "note-variables", inputs: [{ kind: "variable", name: "z", sourceBlockId: "quote-source", value: "-0" }], result: "-0", resultText: "0", status: "success" },
   ] };
+  const comparisonRecord = { ...structuredClone(record), id: "quote-comparison-record", blocks: [
+    { ...structuredClone(record.blocks[0]), expression: "z = 6", result: "6", resultText: "6" },
+    { ...structuredClone(record.blocks[1]), inputs: [{ kind: "variable", name: "z", sourceBlockId: "quote-source", value: "6" }], result: "12", resultText: "12" },
+    { blockId: "quote-added", position: 3, expression: "8", evaluationMode: "note-variables", inputs: [], result: "8", resultText: "8", status: "success" },
+  ] };
+  const unlinkedRecord = { ...structuredClone(comparisonRecord), id: "quote-unlinked-record" };
   const memo = { id: "quote-memo", type: "plain-calculation", title: "Quote saved source", content: "Current draft is not historical evidence", createdAt: now, updatedAt: now,
-    blocks: [{ id: "quote-source", type: "calculation", expression: "z = 999", displayExpression: "z = 999", result: 999, resultText: "999", error: null, evaluationMode: "note-variables" }], calculationEvidence: { version: 1, records: [record] } };
+    blocks: [{ id: "quote-source", type: "calculation", expression: "z = 999", displayExpression: "z = 999", result: 999, resultText: "999", error: null, evaluationMode: "note-variables" }], calculationEvidence: { version: 1, records: [record, comparisonRecord, unlinkedRecord] } };
+  const otherMemo = { ...structuredClone(memo), id: "quote-other-memo", title: "Unrelated linked memo" };
   const body = "前文\n選択した文章も残す\n後文";
   const savedReport = { id: "quote-report", formulaId: formula.id, title: "Quote report", body, createdAt: now, updatedAt: now, confirmedExpression: null,
-    evidence: { version: 1, links: [{ memoId: memo.id, recordId: record.id }], confirmations: [] } };
-  const seeded = { ...original, notes: [...original.notes, memo], formulaLibrary: { version: 1, entries: [formula], selectedId: formula.id }, formulaReports: { version: 1, entries: [savedReport] } };
+    evidence: { version: 1, links: [{ memoId: memo.id, recordId: record.id }, { memoId: memo.id, recordId: comparisonRecord.id }, { memoId: otherMemo.id, recordId: comparisonRecord.id }], confirmations: [] } };
+  const seeded = { ...original, notes: [...original.notes, memo, otherMemo], formulaLibrary: { version: 1, entries: [formula], selectedId: formula.id }, formulaReports: { version: 1, entries: [savedReport] } };
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), seeded);
   await page.reload();
   const library = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
@@ -544,10 +551,58 @@ async function exerciseFormulaQuotes(prefix) {
   await activate(source.getByRole("button", { name: "引用元表示を閉じる", exact: true }));
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
   await passed(prefix + ": saved calculation quote cancel insertion undo preview ordinary save reload and source block viewing preserve selected text negative zero and confirmation history in both themes at 200 percent");
+  const comparison = () => page.getByRole("dialog", { name: "引用時の記録と別の保存記録を比較", exact: true });
+  const differences = () => comparison().getByRole("region", { name: "引用時と比較先の差分", exact: true });
+  const selectedDifference = () => comparison().getByRole("region", { name: "選択ブロックの差分", exact: true });
+  const comparisonTrigger = () => tracking().getByRole("button", { name: "別の保存記録と比較", exact: true });
+  const target = () => comparison().getByLabel("比較先の保存記録", { exact: true });
+  const targetKey = JSON.stringify([memo.id, comparisonRecord.id]);
+  const openComparison = async () => {
+    await comparisonTrigger().focus();
+    await activate(comparisonTrigger());
+    await expect(target()).toHaveValue("");
+    await expect(differences()).toHaveCount(0);
+    assert.deepEqual(await target().locator("option").evaluateAll(options => options.map(option => option.value)), ["", targetKey], "Only another explicitly linked record from the quoted memo may be selected");
+    await target().selectOption(targetKey);
+    await expect(differences()).toContainText("変更 2 / 追加 1 / 削除 0");
+    await expect(selectedDifference()).toContainText("quote-result");
+    await expect(selectedDifference()).toContainText("-0");
+    await expect(selectedDifference()).toContainText("12");
+    await expect(comparison()).not.toContainText("999");
+  };
+  await openComparison();
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(comparison().getByRole("button", { name: "閉じる", exact: true })).toBeFocused();
+  await differences().getByLabel("詳細を確認するブロック", { exact: true }).selectOption("quote-added");
+  await expect(selectedDifference()).toContainText("引用時の記録には存在しません");
+  await activate(comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }));
+  await expect(comparisonTrigger()).toBeFocused();
+  const editedBody = quotedBody.replace("z*2", "manually edited citation");
+  assert.notEqual(editedBody, quotedBody);
+  await editor().fill(editedBody);
+  await openComparison();
+  await expect(comparison().getByRole("status")).toContainText("引用本文は編集されています");
+  await expect(selectedDifference()).toContainText(record.blocks[1].expression);
+  await expect(selectedDifference()).not.toContainText("manually edited citation");
+  await activate(comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }));
+  await editor().fill(quotedBody);
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await passed(prefix + ": explicit quote comparison excludes unrelated and unlinked records, preserves embedded negative zero and full block differences, edited citation notice and two-theme 200 percent layout without saving");
+  await openComparison();
   const changed = await storage();
   changed.notes.find(item => item.id === memo.id).calculationEvidence.records[0].blocks[1].resultText = "changed saved display";
   // Synthetic notification ordering is controlled here; real second-tab save is covered by the adjacent refresh scenario.
   await page.evaluate(data => { const key = "calculation-memo:data"; const oldValue = localStorage.getItem(key); const newValue = JSON.stringify(data); localStorage.setItem(key, newValue); dispatchEvent(new StorageEvent("storage", { key, oldValue, newValue, storageArea: localStorage })); }, changed);
+  await expect(differences()).toHaveCount(0);
+  await expect(target()).toBeDisabled();
+  await expect(comparison().getByRole("alert")).toContainText("根拠未照合");
+  await activate(comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }));
   await expect(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true })).toBeDisabled();
   await expect(report().getByRole("button", { name: "レポートを保存", exact: true })).toBeDisabled();
   await expect(editor()).toHaveValue(quotedBody);
@@ -557,6 +612,16 @@ async function exerciseFormulaQuotes(prefix) {
   await expect(tracking().getByRole("status")).toContainText("変更");
   await expect(editor()).toHaveValue(quotedBody);
   assert.deepEqual(await storage(), changed);
+  await openComparison();
+  await expect(selectedDifference()).not.toContainText("changed saved display");
+  await activate(comparison().getByRole("button", { name: "比較用の保存原本を再取得", exact: true }));
+  await expect(target()).toHaveValue("");
+  await expect(differences()).toHaveCount(0);
+  await target().selectOption(targetKey);
+  await expect(selectedDifference()).toContainText("-0");
+  await activate(comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }));
+  assert.deepEqual(await storage(), changed);
+  await passed(prefix + ": quote comparison hides stale results and requires explicit fresh selection while retaining the original embedded snapshot after source changes");
   const missing = structuredClone(changed); missing.notes = missing.notes.filter(item => item.id !== memo.id);
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), missing);
   await activate(report().getByRole("button", { name: "保存済み根拠を再取得", exact: true }));
