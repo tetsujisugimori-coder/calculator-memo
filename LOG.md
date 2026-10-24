@@ -10,6 +10,7 @@
 - 検証: 全単体1419件（61ファイル）、引用専用64件とUI19件を含む。lint・型検査・通常/Pagesビルド・CI契約37件成功。独立レビューの阻害2件（引用コード折返しのCSS優先度、未閉鎖コード/数式末尾への挿入）を修正し、83件再実行と再レビューで解消。既存Markdown parserは変更せず、閉じたブロック外への挿入だけを許す。
 - GUIは既存6条件に引用の保存/再読込/変更/欠落と長いID・式の両テーマ200%折返し検査を追加。契約708確認・モバイル936操作・既存幾何562確認、PNG114枚と成功時traceなし・30分上限を維持。実ブラウザは最終HEADのGitHub Actionsで検証する。現時点で実CI成功は先取りしない。実機iPhone Safari/VoiceOver、OSクリップボードは未検証。
 - [Draft PR #75](https://github.com/tetsujisugimori-coder/calculator-memo/pull/75)、初回実CI [40061627915](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40061627915) はGUI失敗。6条件とも新規テストが通常レポートに孤立レポート用のタイトルボタンを誤指定し、引用操作前にタイムアウト。正規の「関連レポートを閲覧・編集」へセレクターを修正。製品不具合とは断定せず、検査/操作数を維持して全条件を再実行する。
+- 2回目の実CI [40062438140](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40062438140) はChromium4条件が完走、WebKit375/390で引用候補の200%表示が横幅超過。引用コードの折返し検査は成功し、長いnative optionの幅が親へ漏れる挙動と推定。候補表示を番号+短いIDにし、全文は既存詳細へ保持、既存selectのappearance描画を共用する修正を追加。外側全体のoverflow隠しや検査緩和は行わない。長いID/式の選択詳細・metadata保持をUI単体へ追加し、引用64+UI20件、全単体1420件となる。
 - Draft PRで人間のレビュー待ちとする。最終コミットの実CI結果はPR Checksと完了コメントに記録し、この記録自体に将来の成功を捏造しない。
 
 

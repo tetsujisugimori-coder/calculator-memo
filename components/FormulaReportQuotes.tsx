@@ -37,11 +37,12 @@ export function FormulaQuotePicker({ formulaId, links, source, disabled, onInser
       <p>この登録式のレポートに保存済みの根拠リンクだけを候補にします。未保存の関連付けは、まずレポートを保存してください。式名・式文字列から対応を推測しません。</p>
       <p>取得日時：{source.fetchedAt}。成功した確定計算記録だけが保存される既存形式です。未確認・エラー・結果なし・状態不明の値を確定記録へ補完しません。</p>
       {blocked && <p role="alert">根拠未照合または操作不可です。保存済み根拠を再取得してください。{source.error}</p>}
+      <p>選択欄の識別子は短縮表示です。選択すると全文・式・値を下に表示します。</p>
       <label htmlFor={`${prefix}-record`}>引用する保存済み計算記録</label>
-      <select id={`${prefix}-record`} value={candidate ? choice : ""} disabled={blocked} onChange={event => { setChoice(event.target.value); setBlockId(""); setPrepared(null); }}><option value="">記録を選択</option>{candidates.map(item => <option key={reportEvidenceLinkKey(item.link)} value={reportEvidenceLinkKey(item.link)}>{item.memoTitle} / {item.link.recordId}</option>)}</select>
+      <select id={`${prefix}-record`} value={candidate ? choice : ""} disabled={blocked} onChange={event => { setChoice(event.target.value); setBlockId(""); setPrepared(null); }}><option value="">記録を選択</option>{candidates.map((item, index) => <option key={reportEvidenceLinkKey(item.link)} value={reportEvidenceLinkKey(item.link)}>記録{index + 1}：{item.link.recordId.slice(0, 8)}{item.link.recordId.length > 8 ? "…" : ""}</option>)}</select>
       {!candidates.length && <p>引用可能な関連記録はありません。保存済み根拠の関連付け・欠落・保護状態を確認してください。</p>}
-      {record && <><RecordInfo record={record} /><label htmlFor={`${prefix}-block`}>引用するブロック</label><select id={`${prefix}-block`} value={block ? blockId : ""} disabled={blocked} onChange={event => { setBlockId(event.target.value); setPrepared(null); }}><option value="">ブロックを選択</option>{record.blocks.map(item => <option key={item.blockId} value={item.blockId}>{item.blockId} / {item.expression}</option>)}</select></>}
-      {block && record && <BlockInfo block={block} executionOrder={record.blocks.indexOf(block) + 1} record={record} />}
+      {record && <><p>選択したメモ：{candidate?.memoTitle}（メモID：{candidate?.link.memoId}）</p><RecordInfo record={record} /><label htmlFor={`${prefix}-block`}>引用するブロック</label><select id={`${prefix}-block`} value={block ? blockId : ""} disabled={blocked} onChange={event => { setBlockId(event.target.value); setPrepared(null); }}><option value="">ブロックを選択</option>{record.blocks.map((item, index) => <option key={item.blockId} value={item.blockId}>ブロック{index + 1}：{item.blockId.slice(0, 8)}{item.blockId.length > 8 ? "…" : ""}</option>)}</select></>}
+      {block && record && <><p>選択ブロックID：{block.blockId}</p><BlockInfo block={block} executionOrder={record.blocks.indexOf(block) + 1} record={record} /></>}
       <button type="button" disabled={blocked || !block} onClick={prepare}>引用の挿入前プレビュー</button>
       {error && <p role="alert">{error}</p>}
       {prepared && <><p>引用時点の記録全体を追跡用に含めます。カーソル位置（範囲選択時は先頭）へ追加し、選択した文章も消しません。挿入だけでは保存・確認・再計算しません。</p><section aria-label="引用の挿入前プレビュー"><MarkdownContent content={prepared.markdown} /></section><button type="button" disabled={blocked} onClick={() => onInsert(prepared.markdown)}>この引用を本文へ挿入</button></>}

@@ -132,3 +132,21 @@ it('read failure between preview and insertion preserves raw protected data and 
   seed(); await render(); await click('Markdownを編集'); await prepare(); vi.spyOn(console, 'error').mockImplementation(() => {}); localStorage.setItem(STORAGE_KEY, '{invalid'); await click('この引用を本文へ挿入');
   expect(editor().value).toBe(report.body); expect(localStorage.getItem(STORAGE_KEY)).toBe('{invalid'); expect(host.textContent).toContain('本文は変更していません'); expect(saved).not.toHaveBeenCalled();
 });
+it('compact native options retain full long identifiers and expression in selected details and quote metadata', async () => {
+  const memoId = 'memo-' + 'm'.repeat(80), recordId = 'record-' + 'r'.repeat(80), blockId = 'block-' + 'b'.repeat(80);
+  const expression = '1+'.repeat(100) + '1', title = '長い保存メモ名'.repeat(30);
+  const longRecord: EvidenceRecord = { ...record, id: recordId, blocks: [{ ...record.blocks[0], blockId, expression }] };
+  const longNotes: Memo[] = [{ id: memoId, type: 'plain-calculation', title, content: '', createdAt: at, updatedAt: at, calculationEvidence: { version: 1, records: [longRecord] } }];
+  const r: FormulaReport = { ...report, evidence: { version: 1, links: [{ memoId, recordId }], confirmations: [] } };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...defaultData, notes: longNotes, formulaLibrary: { version: 1, selectedId: 'f1', entries: [formula] }, formulaReports: { version: 1, entries: [r] } }));
+  await render(r); await click('Markdownを編集'); await click('計算根拠を引用'); await select('引用する保存済み計算記録', JSON.stringify([memoId, recordId])); await select('引用するブロック', blockId);
+  const picker = [...host.querySelectorAll('[role="dialog"]')].find(dialog => dialog.querySelector('h2')?.textContent === '計算根拠を引用')!;
+  const options = [...picker.querySelectorAll('option')];
+  expect(options.find(option => option.value === JSON.stringify([memoId, recordId]))!.textContent).toBe('記録1：' + recordId.slice(0, 8) + '…');
+  expect(options.find(option => option.value === blockId)!.textContent).toBe('ブロック1：' + blockId.slice(0, 8) + '…');
+  expect(host.textContent).toContain(title); expect(host.textContent).toContain(memoId); expect(host.textContent).toContain(recordId); expect(host.textContent).toContain(blockId); expect(host.textContent).toContain(expression);
+  await click('引用の挿入前プレビュー'); const preview = host.querySelector('[aria-label="引用の挿入前プレビュー"]')!;
+  const metadata = [...preview.querySelectorAll('code')].map(node => node.textContent ?? '').find(text => text.startsWith('{"version":1'))!;
+  expect(JSON.parse(metadata)).toMatchObject({ memoId, blockId, record: { id: recordId, blocks: [{ blockId, expression }] } });
+  expect(saved).not.toHaveBeenCalled();
+});
