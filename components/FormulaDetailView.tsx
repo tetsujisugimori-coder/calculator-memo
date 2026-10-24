@@ -5,6 +5,7 @@ import { useFormulaSavedSnapshot, type FormulaSavedSnapshot } from "./useFormula
 import { formulaDefinitionSnapshot, formulaReportAssessment, type FormulaReportAssessment } from "../lib/formula-report-evidence";
 import { downloadMarkdownReport, reportFilename } from "../lib/markdown-report";
 import { MarkdownContent } from "./MarkdownContent";
+import { FormulaQuoteStatus } from "./FormulaReportQuotes";
 import { FormulaReportTimeline } from "./FormulaReportTimeline";
 
 function label(status: FormulaReportAssessment["status"]) {
@@ -57,6 +58,7 @@ function SavedFormulaDetail({ formulaId, pendingSave = false, source }: { formul
         <div className="modal-actions"><button type="button" onClick={() => void exportBody(false)}>保存済みレポート本文をコピー</button><button type="button" onClick={() => void exportBody(true)}>保存済みレポート.mdをダウンロード</button></div>
         {notice && <p role="status">{notice}</p>}
         <p>作成日時：{report.createdAt}　更新日時：{report.updatedAt}</p>
+        <FormulaQuoteStatus body={report.body} formulaId={formulaId} links={report.evidence?.links ?? []} source={{ notes: data!.notes, fetchedAt, stale }} />
         <FormulaReportTimeline report={report} formula={formula} notes={data!.notes} stale={stale} fetchedAt={fetchedAt} />
       </>}
     </>}

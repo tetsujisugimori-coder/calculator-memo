@@ -10,6 +10,8 @@ import { formulaDefinitionSignature, formulaDefinitionSnapshot, formulaReportAss
 import { FormulaReportEvidence, HistoricalReportEvidence } from "./FormulaReportEvidence";
 import { ConfirmationRemarks } from "./ConfirmationRemarks";
 import { extractMarkdownHeadings, markdownHeadingDomId, type MarkdownHeading } from "../lib/markdown-blocks";
+import { FormulaQuotePicker, FormulaQuoteStatus } from "./FormulaReportQuotes";
+import { insertQuoteAtCursor } from "../lib/formula-report-quotes";
 import { Modal } from "./Modal";
 
 type Props = {
@@ -18,11 +20,11 @@ type Props = {
   onSave: (request: FormulaReportSaveRequest) => Promise<FormulaReport | string>;
 };
 
-function acquireEvidence() {
+function acquireEvidence(formulaId: string) {
   const loaded = loadData();
   return loaded.status === "error"
-    ? { notes: [] as Memo[], raw: loaded.raw, error: "保存済み原本を安全に取得できません。根拠は参照不能です。現在の編集で補完しません。", fetchedAt: new Date().toISOString() }
-    : { notes: structuredClone(loaded.data.notes), raw: loaded.status === "ok" ? loaded.raw : null, error: "", fetchedAt: new Date().toISOString() };
+    ? { links: [] as FormulaReportEvidenceLink[], notes: [] as Memo[], raw: loaded.raw, error: "保存済み原本を安全に取得できません。根拠は参照不能です。現在の編集で補完しません。", fetchedAt: new Date().toISOString() }
+    : { links: structuredClone(loaded.data.formulaReports?.entries.find(item => item.formulaId === formulaId)?.evidence?.links ?? []), notes: structuredClone(loaded.data.notes), raw: loaded.status === "ok" ? loaded.raw : null, error: "", fetchedAt: new Date().toISOString() };
 }
 
 /** Expectations are frozen when opened; prop changes never silently rebase a draft. */
@@ -33,6 +35,10 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   const [body, setBody] = useState(report?.body ?? FORMULA_REPORT_TEMPLATE);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const headingPrefix = useId();
+  const [quotePicker, setQuotePicker] = useState(false);
+  const [quoteUndo, setQuoteUndo] = useState<{ before: string; after: string } | null>(null);
+  const quoteSelection = useRef({ start: 0, end: 0 });
+
   const headings = useMemo(() => body.length <= 100_000 ? extractMarkdownHeadings(body) : [], [body]);
   const [templateUndo, setTemplateUndo] = useState<{ before: string; after: string } | null>(null);
   const navigateHeading = (heading: MarkdownHeading) => {
@@ -62,7 +68,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     }
   };
   const [links, setLinks] = useState<FormulaReportEvidenceLink[]>(() => structuredClone(report?.evidence?.links ?? []));
-  const [evidence, setEvidence] = useState(acquireEvidence);
+  const [evidence, setEvidence] = useState(() => acquireEvidence(formulaId));
   const [generation, setGeneration] = useState(0);
   const [evidenceChanged, setEvidenceChanged] = useState(false);
   const [preview, setPreview] = useState(Boolean(report));
@@ -86,7 +92,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     window.addEventListener("storage", observe);
     return () => window.removeEventListener("storage", observe);
   }, [evidence.raw]);
-  const refreshEvidence = () => { setEvidence(acquireEvidence()); setGeneration(value => value + 1); setEvidenceChanged(false); };
+  const refreshEvidence = () => { setEvidence(acquireEvidence(formulaId)); setGeneration(value => value + 1); setEvidenceChanged(false); };
   const unavailable = Boolean(evidence.error) || resolveReportEvidence(evidence.notes, links).some(item => item.status !== "available");
   const close = () => { if (savingRef.current) return; if (unsaved) setDiscard(true); else onClose(); };
   const save = async (confirm: boolean) => {
@@ -95,7 +101,8 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     try {
       const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm, ...(confirm ? { confirmationRemarks: remarks } : {}) });
       if (typeof result === "string") { setNotice({ text: result, failed: true }); return; }
-      setTemplateUndo(null);
+      setTemplateUndo(null); setQuoteUndo(null);
+      setEvidence(acquireEvidence(formulaId));
       setBaseline({ report: structuredClone(result), expression: baseline.expression, definition: baseline.definition });
       if (confirm) setRemarks("");
       setNotice({ text: confirm ? "内容の確認と保存が完了しました。" : "レポートを保存しました。", failed: false });
@@ -141,19 +148,46 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
         <p id="report-template-help">6章のMarkdownを本文の末尾に追加します。既存本文は保持します。章は自由に編集・削除でき、追加だけでは保存・確認されません。直後は専用の取消ができますが、その後の編集・保存で取消は終了します。</p>
         <button type="button" disabled={saving || !writable || conflict || evidenceChanged} aria-describedby="report-template-help" onClick={() => {
           if (savingRef.current) return;
-          try { const next = appendFormulaReportTemplate(body); setTemplateUndo({ before: body, after: next }); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
+          try { const next = appendFormulaReportTemplate(body); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
           catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "追加できませんでした。本文は保持しています。", failed: true }); }
         }}>テンプレートを挿入（末尾に追加）</button>
         <button type="button" disabled={saving || !templateUndo || body !== templateUndo.after} onClick={() => {
           if (savingRef.current || !templateUndo || body !== templateUndo.after) return;
-          setBody(templateUndo.before); setTemplateUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
+          setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
         }}>直前のテンプレート追加を取り消す</button>
       </div>}
+      {!preview && <div className="quote-tools">
+        <p>カーソル位置へ引用を追加します。範囲選択時は選択範囲の先頭へ挿入し、選択した文章も保持します。直後だけ専用取消ができます。</p>
+        <button type="button" disabled={saving || !writable || conflict || evidenceChanged || Boolean(evidence.error)} onClick={() => {
+          const editor = editorRef.current;
+          quoteSelection.current = { start: editor?.selectionStart ?? body.length, end: editor?.selectionEnd ?? body.length };
+          setQuotePicker(true);
+        }}>計算根拠を引用</button>
+        <button type="button" disabled={saving || !quoteUndo || body !== quoteUndo.after} onClick={() => {
+          if (savingRef.current || !quoteUndo || body !== quoteUndo.after) return;
+          setBody(quoteUndo.before); setQuoteUndo(null); setTemplateUndo(null);
+          setNotice({ text: "直前の引用を取り消しました。保存は行っていません。", failed: false });
+        }}>直前の引用を取り消す</button>
+      </div>}
+      <FormulaQuoteStatus body={body} formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || conflict }} />
+      {quotePicker && <FormulaQuotePicker formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged }} disabled={saving || !writable || conflict} onClose={() => setQuotePicker(false)} onInsert={markdown => {
+        if (savingRef.current || !writable || conflict || evidenceChanged || evidence.error) return;
+        const latest = loadData();
+        if (latest.status === "error" || (latest.status === "ok" ? latest.raw : null) !== evidence.raw) {
+          setEvidenceChanged(true); setQuotePicker(false); setNotice({ text: "引用前に原本の変更または取得失敗を検知しました。本文は変更していません。保存済み根拠を再取得してください。", failed: true }); return;
+        }
+        try {
+          const next = insertQuoteAtCursor(body, markdown, quoteSelection.current.start, quoteSelection.current.end);
+          setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setBody(next.body); setQuotePicker(false);
+          setNotice({ text: "計算根拠を引用しました。未保存です。", failed: false });
+          requestAnimationFrame(() => { editorRef.current?.focus(); editorRef.current?.setSelectionRange(next.caret, next.caret); });
+        } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
+      }} />}
       <details className="report-heading-navigation"><summary>章一覧（{headings.length}件）</summary>
         <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
         {body.length > 100_000 ? <p>上限超過のため章一覧を停止しています。本文は保持しています。</p> : headings.length ? <nav aria-label="レポートの章一覧"><ol>{headings.map(heading => <li key={heading.id} style={{ paddingInlineStart: `${(heading.level - 1) * .5}rem` }}><button type="button" disabled={saving} onClick={() => navigateHeading(heading)}>H{heading.level}：{heading.text}</button></li>)}</ol></nav> : <p>見出しがありません。行頭の #〜###### と空白で見出しを作成できます。</p>}
       </details>
-      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { setBody(event.target.value); setTemplateUndo(null); }} /></>}
+      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); }} /></>}
       <p>タイトル {title.length}/120文字、本文 {body.length}/100,000文字。見出しは編集用テンプレートです。未記入の証明・史実・出典は補いません。</p>
       {invalid && <p role="alert">タイトルは1〜120文字、本文は100,000文字以内にしてください。超過分は切り捨てません。</p>}
       <p>コピー・ファイル出力は現在表示中の本文です。未保存の編集も含み、保存は行いません。</p>

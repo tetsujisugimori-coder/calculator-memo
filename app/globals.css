@@ -524,3 +524,16 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .report-template-tools { display: flex; flex-wrap: wrap; gap: .5rem; }
 .report-template-tools p { flex-basis: 100%; }
 .formula-report-preview :is(h1,h2,h3,h4,h5,h6):focus { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Evidence citations retain long IDs/values without widening small screens. */
+.quote-tools { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.quote-tools pre, .quote-tools code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.quote-tools select { width: 100%; min-width: 0; max-width: 100%; }
+.quote-tools li { min-width: 0; }
+.quote-tools button { max-width: 100%; white-space: normal; }
+/* Citation snapshots remain readable without horizontal scrolling in saved previews. */
+.formula-report-preview pre:has(> code[data-language="text"]),
+.formula-report-preview pre:has(> code[data-language^="calculator-memo-evidence"]) { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.formula-report-preview code[data-language="text"],
+.formula-report-preview code[data-language^="calculator-memo-evidence"] { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.quote-tools .markdown-content pre code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }

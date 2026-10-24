@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-24 JST: 計算根拠の固定引用（Issue #74）
+
+- 最新main `e46c5e2`（PR #73 merge）を新規checkoutで確認し、専用枝 `feat/74-calculation-evidence-quotes` を作成。[Issue #74](https://github.com/tetsujisugimori-coder/calculator-memo/issues/74) に初回依頼原文を掲載・読戻し確認、本文は以後保持する。
+- 調査: EvidenceRecordには登録式IDがない。既存レポートの保存済み `evidence.links` だけが確実な関連付けであり、式文字列・名前による推測はしない。既存の `resolveReportEvidence`、RecordInfo/BlockInfo、Markdown共通parserと保存/競合/読戻し経路を再利用する。
+- 第一希望: 引用本文とversion付きスナップショットを通常Markdown内の安全なコードフェンスで保持する。別metadata/既存link拡張は保存schemaと旧版の未知フィールド保護に影響するため不採用。現行JSON version1、本文100,000文字・全体1MB・確認20件を変更しない。大きな引用は切り捨てず挿入を拒否する。
+- 比較範囲: 保存リンク先の記録全体と選択ブロック。計算記録は既存契約上、全件成功の確定記録だけであり、未保存試算やエラー記録を捏造しない。原本変更/欠落/取得不能、本文とmetadataの不一致を別表示する。引用は真正性・数学的証明を保証しない。
+- 変更対象: `lib/formula-report-quotes.ts`、引用UI部品、FormulaReportModal/FormulaDetailView、CSS、単体/GUI回帰、READMEと設計文書。本体評価器・保存validator・assessmentは原則変更しない。
+- 検証: 全単体1419件（61ファイル）、引用専用64件とUI19件を含む。lint・型検査・通常/Pagesビルド・CI契約37件成功。独立レビューの阻害2件（引用コード折返しのCSS優先度、未閉鎖コード/数式末尾への挿入）を修正し、83件再実行と再レビューで解消。既存Markdown parserは変更せず、閉じたブロック外への挿入だけを許す。
+- GUIは既存6条件に引用の保存/再読込/変更/欠落と長いID・式の両テーマ200%折返し検査を追加。契約708確認・モバイル936操作・既存幾何562確認、PNG114枚と成功時traceなし・30分上限を維持。実ブラウザは最終HEADのGitHub Actionsで検証する。現時点で実CI成功は先取りしない。実機iPhone Safari/VoiceOver、OSクリップボードは未検証。
+- Draft PRで人間のレビュー待ちとする。最終コミットの実CI結果はPR Checksと完了コメントに記録し、この記録自体に将来の成功を捏造しない。
+
+
 ## 2026-10-24 JST: 数学レポートのテンプレートと章一覧（Issue #72）
 
 - 最新main `bdadd3dede1f15857fc0217bfe09147e46ba9666`（PR #70 merge）から専用枝。PR #71 は未マージで依存しない。[Issue #72](https://github.com/tetsujisugimori-coder/calculator-memo/issues/72) へ初回依頼原文3510文字を掲載し読戻し一致、本文は変更しない。
