@@ -6,6 +6,7 @@ import { resolveReportEvidence, reportEvidenceLinkKey } from "../lib/formula-rep
 import { createQuoteMarkdown, quoteCandidates, readQuoteAssessments, type QuoteSnapshot } from "../lib/formula-report-quotes";
 import { RecordInfo, BlockInfo } from "./EvidenceRecordDetails";
 import { MarkdownContent } from "./MarkdownContent";
+import { FormulaQuoteComparison } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
 
 type Source = { notes: Memo[]; fetchedAt: string; error?: string; stale?: boolean };
@@ -52,9 +53,10 @@ export function FormulaQuotePicker({ formulaId, links, source, disabled, onInser
 }
 
 /** Shared read-only tracking for draft Markdown and saved detail, using only the supplied snapshot. */
-export function FormulaQuoteStatus({ body, formulaId, links, source }: { body: string; formulaId: string; links: FormulaReportEvidenceLink[]; source: Source }) {
+export function FormulaQuoteStatus({ body, formulaId, links, source, onRefresh }: { body: string; formulaId: string; links: FormulaReportEvidenceLink[]; source: Source; onRefresh?: () => void }) {
   const assessments = useMemo(() => readQuoteAssessments(body, formulaId, source.notes, { error: source.error, stale: source.stale }), [body, formulaId, source.notes, source.error, source.stale]);
   const [opened, setOpened] = useState<number | null>(null);
+  const [comparing, setComparing] = useState<number | null>(null);
   const selected = opened === null ? undefined : assessments[opened];
   const snapshot = selected?.snapshot;
   const current = snapshot && !source.error && !source.stale ? resolveReportEvidence(source.notes, [{ memoId: snapshot.memoId, recordId: snapshot.record.id }])[0] : undefined;
@@ -68,8 +70,10 @@ export function FormulaQuoteStatus({ body, formulaId, links, source }: { body: s
       <p role="status">引用{index + 1}：{item.reason}</p>
       {item.snapshot && <><p>引用ID：{item.snapshot.quoteId}　引用日時：{item.snapshot.citedAt}</p><p>メモID：{item.snapshot.memoId}　記録ID：{item.snapshot.record.id}　ブロックID：{item.snapshot.blockId}</p>
         {!links.some(link => link.memoId === item.snapshot!.memoId && link.recordId === item.snapshot!.record.id) && <p>現在の保存済み根拠リンクにはありません。引用時点の本文は保持しています。</p>}
-        <button type="button" disabled={!!source.error || !!source.stale || resolveReportEvidence(source.notes, [{ memoId: item.snapshot.memoId, recordId: item.snapshot.record.id }])[0].status !== "available"} onClick={() => setOpened(index)}>引用元の保存記録・ブロックを開く</button></>}
+        <button type="button" disabled={!!source.error || !!source.stale || resolveReportEvidence(source.notes, [{ memoId: item.snapshot.memoId, recordId: item.snapshot.record.id }])[0].status !== "available"} onClick={() => setOpened(index)}>引用元の保存記録・ブロックを開く</button>
+        <button type="button" disabled={item.status === "invalid"} onClick={() => setComparing(index)}>別の保存記録と比較</button></>}
     </li>)}</ol>
+    {comparing !== null && assessments[comparing] && <FormulaQuoteComparison quote={assessments[comparing]} formulaId={formulaId} body={body} links={links} source={source} onRefresh={onRefresh} onClose={() => setComparing(null)} />}
     {opened !== null && <Modal title="引用元の保存記録・ブロック" onClose={() => setOpened(null)} wide><section className="formula-report quote-tools"><p>現在取得した保存原本です。引用時点の内容と一致するとは限りません。取得日時：{source.fetchedAt}</p>{current?.record && currentBlock ? <><RecordInfo record={current.record} /><p>ブロックID：{currentBlock.blockId}</p><BlockInfo block={currentBlock} executionOrder={current.record.blocks.indexOf(currentBlock) + 1} record={current.record} /></> : <p role="alert">対象ブロックが欠落・参照不能、または根拠未照合です。別の記録で代用しません。</p>}<button type="button" onClick={() => setOpened(null)}>引用元表示を閉じる</button></section></Modal>}
   </section>;
 }

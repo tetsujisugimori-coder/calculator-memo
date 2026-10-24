@@ -1,5 +1,18 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-24 JST: 固定引用と明示選択した保存記録の比較（Issue #76）
+
+- 着手: 最新main `1f2e90267ec8832dca9f4b77b6b9ae83bf91cba3`、PR #75 merge済みを確認。cleanな新規cloneから `feat/76-quote-record-comparison`。PR #71には依存しない。[Issue #76](https://github.com/tetsujisugimori-coder/calculator-memo/issues/76) に依頼原文を保存し、本文を保持する。
+- 調査: 固定引用はMarkdown内の検証済み全記録snapshotを保持し、既存 `compareEvidenceRecords` は安定ブロックID、式/モード/実使用元/内部値/表示値/順序を比較できる。根拠候補は保存済みリンクからだけ解決できる。元記録の取得成功を比較元の条件とせず、同じメモIDの別記録だけを利用者が選ぶ。
+- 採用案: 既存比較関数とRecordInfo/BlockInfo表示を再利用する読み取り専用比較モーダル。別メモの推測対応、日時順の自動選択、新しい影響分析、独立した再取得経路は追加しない。親の原本取得経路を共有し、世代変更/未照合時は選択・差分を失効させる。本文編集時は追跡snapshot比較と明示する。
+- 変更予定: `lib/formula-quote-comparison.ts`、引用状態/比較UI、既存editor/detailの再取得接続、必要なCSS、単体/GUI境界回帰、README・設計文書。本体評価器、保存schema/version/制限、assessment、確認履歴の条件は変更しない。
+- 検証: ローカル全単体1453件/63ファイル（追加境界/UI33件）、lint・型検査・通常/Pages build成功。独立レビューで引用切替時の選択失効と選択解除通知を修正し、33件再確認で阻害指摘なし。既存CI契約は36/37、未変更の100ms合成timeout試験がNode24の起動中に終了し期待ログを取得できず失敗。期限や期待値は緩めず、固定Node22の実CIで確認する。
+- GUIは既存6条件に各2検査群と9操作を追加し、720検査・mobile945操作・geometry562、30分・114PNG・成功trace非保存を維持。最終結果はPR Checksへ記録する。ローカルWebKitは必要なOSライブラリ不足で起動不可、実機iPhone Safari/VoiceOverは未検証。
+- ローカル重点GUI: 隔離Playwright Chromium desktop1365と375px touchで引用4群（既存2+新規2）成功、touch30操作（従来21+追加9）を実測。両テーマ200%、モーダルTab/復帰、本文編集の説明、stale/再取得、原本不変を確認。WebKitローカル未実行を成功と混同しない。
+- [Draft PR #77](https://github.com/tetsujisugimori-coder/calculator-memo/pull/77) を作成。Git CLI pushは認証不足で失敗したため、認証済みGitHub経由のblob/tree/commit/refで公開しローカル検証ツリーとの一致を確認。最終HEADの実CIはPR Checksと完了コメントへ記録する。この文書更新後の成功を先取りしない。
+- Issue原文は読戻し一致を確認。保存schema/version/制限・確認履歴・assessment・計算エンジン変更なし。比較表示は読み取り専用で、rollbackはコードのみrevert、データ移行不要。
+
+
 ## 2026-10-24 JST: 計算根拠の固定引用（Issue #74）
 
 - 最新main `e46c5e2`（PR #73 merge）を新規checkoutで確認し、専用枝 `feat/74-calculation-evidence-quotes` を作成。[Issue #74](https://github.com/tetsujisugimori-coder/calculator-memo/issues/74) に初回依頼原文を掲載・読戻し確認、本文は以後保持する。

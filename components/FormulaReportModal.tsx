@@ -169,7 +169,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
           setNotice({ text: "直前の引用を取り消しました。保存は行っていません。", failed: false });
         }}>直前の引用を取り消す</button>
       </div>}
-      <FormulaQuoteStatus body={body} formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || conflict }} />
+      <FormulaQuoteStatus onRefresh={refreshEvidence} body={body} formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || conflict }} />
       {quotePicker && <FormulaQuotePicker formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged }} disabled={saving || !writable || conflict} onClose={() => setQuotePicker(false)} onInsert={markdown => {
         if (savingRef.current || !writable || conflict || evidenceChanged || evidence.error) return;
         const latest = loadData();
