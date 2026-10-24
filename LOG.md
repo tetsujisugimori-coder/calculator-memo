@@ -1,5 +1,21 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-24 JST: 比較差分を関連レポートへ挿入（Issue #78）
+
+- 着手: cleanな新規clone、最新main `2087868b572b707de86635a88306dc010a2a544f`（PR #77 merge）から `feat/78-report-diff-insertion`。本人の添付全文を [Issue #78](https://github.com/tetsujisugimori-coder/calculator-memo/issues/78) に原文で保存。PR #71には依存しない。
+- 調査・予定: `compareQuoteToRecord` / `compareEvidenceRecords`、検証済み固定引用snapshot、既存Markdown parser/renderer・挿入境界・保存原本取得を再利用。新規 `lib/formula-report-diff.ts`、比較/引用状態/レポート編集UI、単体・GUI境界テスト、README/関連設計文書を変更予定。
+- 整合性: 引用時snapshotは不変。差分説明は通常Markdownの未保存本文編集。プレビューを本文/引用/選択/取得世代/レポート識別に結び付け、明示挿入前に保存原本を再照合する。引用全範囲を保護し、専用取消は挿入直後の完全一致だけ許可。保存schema/version/容量/確認履歴/計算エンジンは変更しない。
+- 実装: 全文プレビューから明示挿入、取得条件失効、全引用範囲の保護、専用取消、全レポート容量preflight、通常Markdownのコピー/出力保持を実装。日時欠落は現行v1 validatorが不正として拒否するため部分生成しない。次善策とrollbackは `docs/agent/formula-report-diff-insertion.md`。
+- ローカル検証: 全単体1512件/65ファイル成功（新規純粋32件・UI27件）。型検査・lint・通常/Pages build成功。lintのrender中ref更新指摘はlayout effectへ修正し、UI27件とlint/型を再確認。UI試験の初回fixture誤り（閉鎖フェンス直後への改行欠落）はfixture修正で解消し、製品期待値は緩めていない。
+- CI契約は36/37成功。未変更の100ms合成timeout検査がローカルNode24の起動ログ前に終了した。検査削減・上限延長は行わず、固定Node22の実CIで確認する。通常buildの既存chunk-size警告は残る。
+- 独立レビュー: 固定snapshot、原本取得時点、古いpreview、専用取消、保存境界、未知/容量/敵対文字列を確認しP0/P1阻害指摘なし。独立実行の新規57件も成功。
+- GUIは既存6条件へ2検査群を追加し、732検査・mobile958操作・geometry562、30分・114PNG・成功trace非保存を維持。最終HEAD実CIは確認中。実機iPhone Safari/VoiceOver/OSソフトキーボードは未検証。
+- 実ブラウザ初回: Chromium desktopで記録ID/日時のバックスラッシュ表示を発見。既存rendererを変更せず、動的値専用コードフェンスへ変更して正確表示を保証する回帰を追加。再レビューP2の「値が引用ラベルで始まると偽引用扱い」は専用language分離で修正し、32件再試験と独立再レビューで残るP0/P1/P2なし。
+- ローカルGUI: 最終language/CSS修正後のChromium desktop1365と375px touchで重点6群が各成功。mobile実操作43（従来30+13）、両テーマ200%の挿入前/挿入後プレビュー、全文折返し、Escape/フォーカス、原本不変を確認。更新coverage契約17件成功。フル6条件は実Actionsで確認する。
+- Issue原文はAPI読戻しで添付全文と一致確認。PR #71はopen/unmergedであり依存しない。[Draft PR #81](https://github.com/tetsujisugimori-coder/calculator-memo/pull/81) を作成。Git CLI pushは認証不足で失敗し、認証済みAPIのblob/tree/commit/refで公開、ローカル検証ツリーとの完全一致を確認した。最終文書更新後のHEADについて実CIを確認し、結果はPR Checks/完了コメントへ記録する。
+- ローカルWebKitは今回もOS依存不足で起動失敗。実Actionsの6条件と区別し、成功と扱わない。本PRはDraftのまま人間のレビュー待ちとし、自動merge・本番公開は行わない。
+
+
 ## 2026-10-24 JST: 固定引用と明示選択した保存記録の比較（Issue #76）
 
 - 着手: 最新main `1f2e90267ec8832dca9f4b77b6b9ae83bf91cba3`、PR #75 merge済みを確認。cleanな新規cloneから `feat/76-quote-record-comparison`。PR #71には依存しない。[Issue #76](https://github.com/tetsujisugimori-coder/calculator-memo/issues/76) に依頼原文を保存し、本文を保持する。

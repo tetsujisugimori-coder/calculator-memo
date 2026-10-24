@@ -576,3 +576,10 @@ activations in this quote fixture, nine more than its previous 21. Existing 562
 geometry checkpoints, six conditions, 114 retained PNGs, two workers, 30-minute limit and zero successful trace exports
 remain unchanged. These counts are acceptance requirements, not execution results;
 the exact final-head CI establishes completed coverage.
+
+
+## Fixed quote difference insertion (Issue #78)
+
+The same six contexts now exercise full Markdown preview/cancel and nested Escape/focus trapping, explicit insertion at a selected range start with exact original quote preservation, dedicated undo, and disabling undo after subsequent user edits. They also prepare a preview before a storage update, require its removal and a disabled insertion action, and retain the existing explicit refresh/reselection regression. Preview data uses the existing long expression/record ID and is checked in both themes at 200% text without internal code overflow, both before insertion and in the ordinary report preview afterward. No insertion, cancellation or undo writes storage or confirmation history.
+
+Two acceptance groups and thirteen activations per context are added: required totals are 732 checks (122/121/122/122/122/123), 958 mobile touch activations, and unchanged 562 historical geometry checkpoints. Extra live fit assertions do not create screenshots: 114 PNG cap, successful trace discard, six contexts and 30-minute CI limit remain unchanged. These are required contracts, not claimed completed test results. Physical iPhone Safari, VoiceOver and software keyboard remain outside these automated checks.
