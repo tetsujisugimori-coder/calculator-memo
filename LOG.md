@@ -12,6 +12,10 @@
 - 実GUI: pinned Playwright Chromium desktop1365/375px touchで引用/差分/出典8群とprovenance/errors（各10検査）成功。両テーマ200%、長いID/式、詳細往復とフォーカス、他タブ更新/再取得、固定snapshot/未保存本文/原本不変を検証。mobile実touch55操作。6条件契約は744検査/mobile各970操作/geometry562、30分・114PNG・成功trace非保存を維持。フルChromium/WebKitは最終HEAD実CIで確認する。
 - 初回GUIで共通化時の片側欠落説明の退行を検出して元のラベル付き文言に修正。次の失敗は試験で先行注入した他タブ更新が既存安全ガードを正しく発火したため、既存編集検査後に注入する順序へ訂正。期待値・安全ガードは弱めていない。初回依存導入は既定cache書込不可で失敗し作業用cacheで復旧、system Chromium起動制約は公式pinned headless shellで代替した。
 - 未検証: 実機iPhone Safari/VoiceOver/OSソフトキーボード、任意外部writerの原子的排他、数学的正しさ・真正性。旧差分の後付け追跡は対象外。新規依存なし。設計と次善策・rollbackは `docs/agent/formula-report-diff-tracking.md`。
+- [Draft PR #83](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83) を作成。Git CLI pushは認証不足exit128、remote branch不存在を確認後、認証済み個別blob/tree/commit/refで公開。検証済みローカルtree `fbf48125a13e801881cf0e15756d4c4ce96177f3` との完全一致を確認。初回ファイル転送処理の停滞は結果を照合してから再開し、不確定writeを盲目的に再送していない。
+- 互換性: 旧アプリには新しい追跡UIはないが本文は通常Markdownとして保持される。新アプリも未知version/未知フィールドの追跡情報を修復・削除せず照合不能として保持する。新しいプレビュー準備日時/差分IDはその操作自身の情報であり、記録に欠ける確認日時・保存完了時刻を生成したものではない。
+- この文書追記後の最終HEADについて実Actionsの6条件と成果物を確認し、結果はPR Checks/完了コメントへ記録する。未実行・実行中を成功として先取りしない。Draftを維持し、人間のレビュー/マージ判断を待つ。
+
 
 
 
