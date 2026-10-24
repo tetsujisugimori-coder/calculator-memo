@@ -547,3 +547,11 @@ is injected only in a fresh test context and restored before leaving the fixture
 ## Issue #72 template and heading navigation
 
 Each existing context adds one acceptance group for append/explicit undo, duplicate headings, fenced-code exclusion, edit selection, preview focus and exact raw storage invariance. Eight real activations are added per context (mobile 915), making 696 checks. Existing 562 geometry points, 114 PNG cap, successful trace suppression and 30-minute budget remain unchanged. Existing two-theme 200% report layout checks also require the chapter disclosure. No dependency on unmerged PR #71.
+
+## Issue #74 saved calculation quotes
+
+Two new acceptance groups in each existing context cover saved-linked record/block selection, cancel, selection-preserving insertion, dedicated undo, immutable negative-zero/actual-input snapshots, ordinary save/reload without confirmations, and read-only source navigation. Both themes at 200% text use horizontal-fit assertions without additional screenshots. A deliberately simulated storage notification makes the source stale and disables save; explicit refresh detects changed and deleted source records without rewriting the quote or raw storage. The adjacent refresh scenario continues to cover real second-tab application saves.
+
+Required totals are 708 checks (118/117/118/118/118/119), 936 mobile touch activations per context, and the unchanged 562 screenshot checkpoints and 114 PNG cap. The six conditions, 30-minute CI limit and successful trace discard remain unchanged. These counts describe the acceptance contract, not a claim of execution. Real iPhone Safari and VoiceOver are not covered by browser emulation.
+
+Citation layout uses a 113-character record ID and an unbroken 203-character expression. In both themes at 200% text, picker preview, reloaded report preview and saved detail must each expose both citation code blocks with computed `white-space: pre-wrap`, and both code/pre `scrollWidth <= clientWidth + 1`. This specifically catches internal horizontal scrolling that document/dialog width checks alone miss; it adds no PNG or acceptance-group count.

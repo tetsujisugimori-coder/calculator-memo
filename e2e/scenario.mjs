@@ -452,6 +452,122 @@ async function exerciseFormulaReports(prefix) {
   await passed(prefix + ": formula report and orphan survive reload without altering existing calculation notes history or registered execution data");
 }
 
+async function exerciseFormulaQuotes(prefix) {
+  await stage(prefix + ": formula-calculation-quotes");
+  const original = await storage();
+  const now = "2026-10-24T00:00:00.000Z";
+  const formula = { id: "quote-formula", title: "Quote formula", expression: "x * 2", createdAt: now, updatedAt: now };
+  const record = { id: "quote-record-" + "r".repeat(100), calculatedAt: now, persistedAt: now, evaluator: "calculator-memo-v1", status: "confirmed", blocks: [
+    { blockId: "quote-source", position: 1, expression: "z = -0", evaluationMode: "note-variables", inputs: [], result: "-0", resultText: "0", status: "success" },
+    { blockId: "quote-result", position: 2, expression: "z*2" + "+0".repeat(100), evaluationMode: "note-variables", inputs: [{ kind: "variable", name: "z", sourceBlockId: "quote-source", value: "-0" }], result: "-0", resultText: "0", status: "success" },
+  ] };
+  const memo = { id: "quote-memo", type: "plain-calculation", title: "Quote saved source", content: "Current draft is not historical evidence", createdAt: now, updatedAt: now,
+    blocks: [{ id: "quote-source", type: "calculation", expression: "z = 999", displayExpression: "z = 999", result: 999, resultText: "999", error: null, evaluationMode: "note-variables" }], calculationEvidence: { version: 1, records: [record] } };
+  const body = "前文\n選択した文章も残す\n後文";
+  const savedReport = { id: "quote-report", formulaId: formula.id, title: "Quote report", body, createdAt: now, updatedAt: now, confirmedExpression: null,
+    evidence: { version: 1, links: [{ memoId: memo.id, recordId: record.id }], confirmations: [] } };
+  const seeded = { ...original, notes: [...original.notes, memo], formulaLibrary: { version: 1, entries: [formula], selectedId: formula.id }, formulaReports: { version: 1, entries: [savedReport] } };
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), seeded);
+  await page.reload();
+  const library = () => page.getByRole("dialog", { name: "登録式ライブラリ", exact: true });
+  const report = () => page.getByRole("dialog", { name: "登録式の関連レポート", exact: true });
+  const picker = () => page.getByRole("dialog", { name: "計算根拠を引用", exact: true });
+  const editor = () => report().getByLabel("レポート本文（Markdown）", { exact: true });
+  const tracking = () => report().getByRole("region", { name: "計算根拠引用の状態", exact: true });
+  const assertQuoteWrapping = async region => {
+    const codes = region.locator('pre > code[data-language="text"], pre > code[data-language="calculator-memo-evidence-v1"]');
+    await expect(codes).toHaveCount(2);
+    for (const code of await codes.all()) {
+      const dimensions = await code.evaluate(element => {
+        const pre = element.parentElement;
+        return { whiteSpace: getComputedStyle(element).whiteSpace, codeScroll: element.scrollWidth, codeClient: element.clientWidth, preScroll: pre.scrollWidth, preClient: pre.clientWidth };
+      });
+      assert.equal(dimensions.whiteSpace, "pre-wrap", "Citation code must wrap despite the general Markdown code selector");
+      assert.ok(dimensions.codeScroll <= dimensions.codeClient + 1 && dimensions.preScroll <= dimensions.preClient + 1, "Citation must not require internal horizontal scrolling: " + JSON.stringify(dimensions));
+    }
+  };
+  const inspectThemes = async region => {
+    for (const theme of ["light", "dark"]) {
+      await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+      await assertQuoteWrapping(region); await assertHorizontalFit();
+    }
+    await page.evaluate(() => document.documentElement.style.fontSize = "");
+  };
+  const open = async (verifySaved = false) => {
+    await activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
+    if (verifySaved) await inspectThemes(library().getByRole("region", { name: "保存済み関連レポート", exact: true }));
+    await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
+    if (verifySaved) await inspectThemes(report().getByRole("region", { name: "関連レポートのプレビュー", exact: true }));
+    await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
+  };
+  await open();
+  const rawBefore = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await activate(report().getByRole("button", { name: "計算根拠を引用", exact: true }));
+  await activate(picker().getByRole("button", { name: "引用選択を取り消す", exact: true }));
+  await expect(editor()).toHaveValue(body);
+  const insert = async () => {
+    await editor().evaluate(element => { element.focus(); element.setSelectionRange(3, 13); });
+    await activate(report().getByRole("button", { name: "計算根拠を引用", exact: true }));
+    await picker().getByLabel("引用する保存済み計算記録", { exact: true }).selectOption(JSON.stringify([memo.id, record.id]));
+    await picker().getByLabel("引用するブロック", { exact: true }).selectOption("quote-result");
+    await expect(picker()).toContainText("-0");
+    await expect(picker()).not.toContainText("999");
+    await activate(picker().getByRole("button", { name: "引用の挿入前プレビュー", exact: true }));
+    await expect(picker().getByRole("region", { name: "引用の挿入前プレビュー", exact: true })).toContainText("quote-result");
+    await inspectThemes(picker().getByRole("region", { name: "引用の挿入前プレビュー", exact: true }));
+    await activate(picker().getByRole("button", { name: "この引用を本文へ挿入", exact: true }));
+    const inserted = await editor().inputValue();
+    assert.ok(inserted.startsWith(body.slice(0, 3)) && inserted.endsWith(body.slice(3)), "Citation insertion preserves the selected text and unrelated suffix");
+    assert.ok(inserted.includes("calculator-memo-evidence-v1"));
+    assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), rawBefore);
+    return inserted;
+  };
+  await insert();
+  await activate(report().getByRole("button", { name: "直前の引用を取り消す", exact: true }));
+  await expect(editor()).toHaveValue(body);
+  const quotedBody = await insert();
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await activate(report().getByRole("button", { name: "レポートを保存", exact: true }));
+  await expect.poll(async () => (await storage()).formulaReports.entries[0].body).toBe(quotedBody);
+  assert.deepEqual((await storage()).formulaReports.entries[0].evidence.confirmations, []);
+  assert.deepEqual((await storage()).notes, seeded.notes); assert.deepEqual((await storage()).history, original.history);
+  await page.reload(); await open(true);
+  await expect(editor()).toHaveValue(quotedBody);
+  const beforeView = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  await activate(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true }));
+  const source = page.getByRole("dialog", { name: "引用元の保存記録・ブロック", exact: true });
+  await expect(source).toContainText("quote-result"); await expect(source).toContainText("-0"); await expect(source).not.toContainText("999");
+  await activate(source.getByRole("button", { name: "引用元表示を閉じる", exact: true }));
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await passed(prefix + ": saved calculation quote cancel insertion undo preview ordinary save reload and source block viewing preserve selected text negative zero and confirmation history in both themes at 200 percent");
+  const changed = await storage();
+  changed.notes.find(item => item.id === memo.id).calculationEvidence.records[0].blocks[1].resultText = "changed saved display";
+  // Synthetic notification ordering is controlled here; real second-tab save is covered by the adjacent refresh scenario.
+  await page.evaluate(data => { const key = "calculation-memo:data"; const oldValue = localStorage.getItem(key); const newValue = JSON.stringify(data); localStorage.setItem(key, newValue); dispatchEvent(new StorageEvent("storage", { key, oldValue, newValue, storageArea: localStorage })); }, changed);
+  await expect(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true })).toBeDisabled();
+  await expect(report().getByRole("button", { name: "レポートを保存", exact: true })).toBeDisabled();
+  await expect(editor()).toHaveValue(quotedBody);
+  await activate(report().getByText("根拠となる保存済み計算記録", { exact: true }));
+  await activate(report().getByRole("button", { name: "保存済み根拠を再取得", exact: true }));
+  await expect(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true })).toBeEnabled();
+  await expect(tracking().getByRole("status")).toContainText("変更");
+  await expect(editor()).toHaveValue(quotedBody);
+  assert.deepEqual(await storage(), changed);
+  const missing = structuredClone(changed); missing.notes = missing.notes.filter(item => item.id !== memo.id);
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), missing);
+  await activate(report().getByRole("button", { name: "保存済み根拠を再取得", exact: true }));
+  await expect(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true })).toBeDisabled();
+  await expect(editor()).toHaveValue(quotedBody);
+  assert.deepEqual(await storage(), missing);
+  await passed(prefix + ": quote storage notification disables stale source and save; explicit refresh detects changed and missing sources without overwriting quoted Markdown or storage");
+  await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
+  await page.reload();
+}
+
 async function exerciseFormulaStatusFilters(prefix) {
   await stage(prefix + ": formula-evidence-status-filters");
   const original = await storage();
@@ -3672,6 +3788,7 @@ async function exercise(scenario) {
   await exerciseVariables(prefix);
   await exerciseFormulaLibrary(prefix);
   await exerciseFormulaReports(prefix);
+  await exerciseFormulaQuotes(prefix);
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
   await exerciseFormulaTimeline(prefix);
