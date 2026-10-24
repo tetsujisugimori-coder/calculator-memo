@@ -11,8 +11,9 @@
 - 独立レビュー: 固定snapshot、原本取得時点、古いpreview、専用取消、保存境界、未知/容量/敵対文字列を確認しP0/P1阻害指摘なし。独立実行の新規57件も成功。
 - GUIは既存6条件へ2検査群を追加し、732検査・mobile958操作・geometry562、30分・114PNG・成功trace非保存を維持。最終HEAD実CIは確認中。実機iPhone Safari/VoiceOver/OSソフトキーボードは未検証。
 - 実ブラウザ初回: Chromium desktopで記録ID/日時のバックスラッシュ表示を発見。既存rendererを変更せず、動的値専用コードフェンスへ変更して正確表示を保証する回帰を追加。再レビューP2の「値が引用ラベルで始まると偽引用扱い」は専用language分離で修正し、32件再試験と独立再レビューで残るP0/P1/P2なし。
-- ローカルGUI: 表示修正後のChromium desktop1365、最終language/CSS修正後の375px touchで重点6群成功。mobile実操作43（従来30+13）、両テーマ200%の挿入前/挿入後プレビュー、全文折返し、Escape/フォーカス、原本不変を確認。更新coverage契約17件成功。フル6条件は実Actionsで確認する。
-- Issue原文はAPI読戻しで添付全文と一致確認。PR #71はopen/unmergedであり依存しない。PRは未作成。
+- ローカルGUI: 最終language/CSS修正後のChromium desktop1365と375px touchで重点6群が各成功。mobile実操作43（従来30+13）、両テーマ200%の挿入前/挿入後プレビュー、全文折返し、Escape/フォーカス、原本不変を確認。更新coverage契約17件成功。フル6条件は実Actionsで確認する。
+- Issue原文はAPI読戻しで添付全文と一致確認。PR #71はopen/unmergedであり依存しない。[Draft PR #81](https://github.com/tetsujisugimori-coder/calculator-memo/pull/81) を作成。Git CLI pushは認証不足で失敗し、認証済みAPIのblob/tree/commit/refで公開、ローカル検証ツリーとの完全一致を確認した。最終文書更新後のHEADについて実CIを確認し、結果はPR Checks/完了コメントへ記録する。
+- ローカルWebKitは今回もOS依存不足で起動失敗。実Actionsの6条件と区別し、成功と扱わない。本PRはDraftのまま人間のレビュー待ちとし、自動merge・本番公開は行わない。
 
 
 ## 2026-10-24 JST: 固定引用と明示選択した保存記録の比較（Issue #76）
