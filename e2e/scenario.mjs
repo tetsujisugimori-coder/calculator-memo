@@ -632,6 +632,43 @@ async function exerciseFormulaQuotes(prefix) {
   assert.equal(differenceBody.split("calculator-memo-evidence-v1").length, quotedBody.split("calculator-memo-evidence-v1").length, "Difference must not create or replace quote metadata");
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
   await expect(report().getByRole("button", { name: "直前の引用を取り消す", exact: true })).toBeDisabled();
+  const sourceAudit = () => page.getByRole("dialog", { name: "比較差分の出典確認", exact: true });
+  const sourceTrigger = () => report().getByRole("button", { name: "比較差分1の出典を確認", exact: true });
+  await sourceTrigger().focus();
+  await activate(sourceTrigger());
+  await expect(sourceAudit()).toContainText(record.id);
+  await expect(sourceAudit()).toContainText(comparisonRecord.id);
+  await expect(sourceAudit()).toContainText(memo.id);
+  await expect(sourceAudit()).toContainText("quote-result");
+  await expect(sourceAudit()).not.toContainText("999");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  for (const side of ["比較元", "比較先"]) {
+    const trigger = sourceAudit().getByRole("button", { name: `${side}の保存記録を開く`, exact: true });
+    await trigger.focus(); await activate(trigger);
+    const detail = page.getByRole("dialog", { name: "出典の保存記録詳細", exact: true });
+    await expect(detail).toContainText(side === "比較元" ? record.id : comparisonRecord.id);
+    await assertHorizontalFit();
+    await page.keyboard.press("Escape");
+    await expect(trigger).toBeFocused();
+  }
+  await activate(sourceAudit().getByRole("button", { name: "引用時点の比較を再確認", exact: true }));
+  await expect(page.getByRole("region", { name: "引用時点の比較差分", exact: true })).toContainText("変更 2 / 追加 1 / 削除 0");
+  await page.keyboard.press("Escape");
+  await activate(sourceAudit().getByRole("button", { name: "現在の出典同士を比較", exact: true }));
+  await expect(page.getByRole("region", { name: "現在の出典の比較差分", exact: true })).toContainText("変更 2 / 追加 1 / 削除 0");
+  await page.keyboard.press("Escape");
+  await sourceAudit().getByRole("button", { name: "出典確認を閉じる", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(sourceAudit().getByRole("button", { name: "閉じる", exact: true })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(sourceAudit()).toHaveCount(0); await expect(sourceTrigger()).toBeFocused();
+  await expect(editor()).toHaveValue(differenceBody);
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await passed(prefix + ": difference source audit distinguishes both saved records and historical/current comparisons with read-only detail navigation, keyboard focus and two-theme 200 percent layout");
   await activate(report().getByRole("button", { name: "レポートをプレビュー", exact: true }));
   const reportPreview = report().getByRole("region", { name: "関連レポートのプレビュー", exact: true });
   for (const theme of ["light", "dark"]) {
@@ -693,6 +730,37 @@ async function exerciseFormulaQuotes(prefix) {
   await expect(editor()).toHaveValue(quotedBody);
   assert.deepEqual(await storage(), missing);
   await passed(prefix + ": quote storage notification disables stale source and save; explicit refresh detects changed and missing sources without overwriting quoted Markdown or storage");
+  await editor().fill(afterSecondInsert);
+  await page.evaluate(raw => localStorage.setItem("calculation-memo:data", raw), beforeView);
+  await activate(sourceTrigger());
+  await activate(sourceAudit().getByRole("button", { name: "差分出典の保存原本を再取得", exact: true }));
+  await activate(sourceAudit().getByRole("button", { name: "現在の出典同士を比較", exact: true }));
+  const changedForAudit = JSON.parse(beforeView);
+  changedForAudit.notes.find(item => item.id === memo.id).calculationEvidence.records[0].blocks[1].resultText = "source audit changed display";
+  await page.evaluate(data => { const key = "calculation-memo:data"; const oldValue = localStorage.getItem(key); const newValue = JSON.stringify(data); localStorage.setItem(key, newValue); dispatchEvent(new StorageEvent("storage", { key, oldValue, newValue, storageArea: localStorage })); }, changedForAudit);
+  await expect(page.getByRole("dialog", { name: "現在の出典の比較", exact: true })).toHaveCount(0);
+  await expect(sourceAudit().getByRole("alert").filter({ hasText: "根拠未照合" })).toBeVisible();
+  await expect(sourceAudit().getByRole("button", { name: "現在の出典同士を比較", exact: true })).toBeDisabled();
+  await expect(editor()).toHaveValue(afterSecondInsert);
+  await activate(sourceAudit().getByRole("button", { name: "差分出典の保存原本を再取得", exact: true }));
+  await expect(page.getByRole("dialog", { name: "現在の出典の比較", exact: true })).toHaveCount(0);
+  await expect(sourceAudit().getByRole("region", { name: "比較元の出典", exact: true })).toContainText("変更");
+  await activate(sourceAudit().getByRole("button", { name: "引用時点の比較を再確認", exact: true }));
+  await expect(page.getByRole("region", { name: "引用時点の比較差分", exact: true })).not.toContainText("source audit changed display");
+  await page.keyboard.press("Escape");
+  await activate(sourceAudit().getByRole("button", { name: "現在の出典同士を比較", exact: true }));
+  await expect(page.getByRole("region", { name: "現在の出典の比較差分", exact: true })).toContainText("source audit changed display");
+  await page.keyboard.press("Escape");
+  assert.deepEqual(await storage(), changedForAudit);
+  await expect(editor()).toHaveValue(afterSecondInsert);
+  // Restore only the synthetic test source; the application never performs this write.
+  await page.evaluate(raw => localStorage.setItem("calculation-memo:data", raw), beforeView);
+  await activate(sourceAudit().getByRole("button", { name: "差分出典の保存原本を再取得", exact: true }));
+  await page.keyboard.press("Escape");
+  await expect(sourceTrigger()).toBeFocused();
+  await expect(editor()).toHaveValue(afterSecondInsert);
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await passed(prefix + ": source updates discard current comparison, explicit refresh separates changed current evidence from immutable insertion snapshots and leaves draft and raw history untouched");
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload();
 }

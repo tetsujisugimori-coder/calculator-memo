@@ -122,6 +122,19 @@ export function insertQuoteAtCursor(body: string, quote: string, selectionStart:
   })) {
     throw new Error('コード・数式ブロック内へは引用を挿入できません。ブロック外へカーソルを移してください。本文は保持しています。');
   }
+  // Difference tracking has a structured envelope. Do not split its body from
+  // its metadata, including future or damaged envelopes, when inserting quotes.
+  const blocks = parseMarkdownBlocks(body);
+  let differenceStart: number | null = null;
+  for (const block of blocks) {
+    if (block.kind !== 'code') continue;
+    if (block.language.startsWith('calculator-memo-difference-start')) differenceStart ??= block.start;
+    else if (block.language.startsWith('calculator-memo-difference') && differenceStart !== null) {
+      if (start > differenceStart && start < block.end) throw new Error('比較差分の本文・追跡情報の内部へは挿入できません。差分全体の外へカーソルを移してください。');
+      differenceStart = null;
+    }
+  }
+  if (differenceStart !== null && start > differenceStart) throw new Error('比較差分の終了情報を確認できません。本文を保持し、この差分の前へカーソルを移してください。');
   // Insert before the selected range; never delete the selected or surrounding prose.
   const addition = `${start ? '\n\n' : ''}${quote}\n\n`;
   const next = body.slice(0, start) + addition + body.slice(start);

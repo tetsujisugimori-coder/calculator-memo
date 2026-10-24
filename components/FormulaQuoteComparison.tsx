@@ -5,12 +5,12 @@ import type { FormulaReportEvidenceLink, Memo } from "../lib/types";
 import type { QuoteAssessment } from "../lib/formula-report-quotes";
 import { quoteComparisonTargets, compareQuoteToRecord } from "../lib/formula-quote-comparison";
 import { reportEvidenceLinkKey } from "../lib/formula-report-evidence";
-import { evidenceRowLabel } from "../lib/evidence-comparison";
+import { evidenceRowLabel, type EvidenceComparison } from "../lib/evidence-comparison";
 import { BlockInfo, RecordInfo } from "./EvidenceRecordDetails";
 import { MarkdownContent } from "./MarkdownContent";
 import { Modal } from "./Modal";
 
-export type QuoteSource = { notes: Memo[]; fetchedAt: string; error?: string; stale?: boolean };
+export type QuoteSource = { notes: Memo[]; fetchedAt: string; error?: string; stale?: boolean; invalidData?: boolean };
 export type DifferenceInsertion = { key: string; reportId: string; title: string; disabled: boolean; prepare: (quote: QuoteAssessment, targetKey: string) => { markdown: string; start: number; end: number; insert: () => void } };
 export function FormulaQuoteComparison({ quote, formulaId, body, links, source, onRefresh, onClose, insertion }: {
   quote: QuoteAssessment; formulaId: string; body: string; links: FormulaReportEvidenceLink[]; source: QuoteSource;
@@ -40,7 +40,6 @@ export function FormulaQuoteComparison({ quote, formulaId, body, links, source, 
   const selectedTarget = result.targets.find(target => reportEvidenceLinkKey(target.link) === choice);
   const snapshot = quote.snapshot;
   const comparison = result.comparison;
-  const selectedRow = comparison?.rows.find(row => row.blockId === (active ? selection.blockId : snapshot?.blockId));
   return <Modal title="引用時の記録と別の保存記録を比較" onClose={onClose} wide><section className="formula-report quote-tools saved-evidence">
     <p>比較元は追跡情報に保存された引用時の記録です。現在取得した元記録では置き換えません。比較先はこの登録式の保存済み根拠リンクから明示選択します。</p>
     <p>同じメモID内のブロックIDだけで対応付けます。別メモの同名・同式は同一ブロックの根拠にならないため比較しません。日時順での自動選択・再計算・保存・確認履歴の追加は行いません。</p>
@@ -54,13 +53,7 @@ export function FormulaQuoteComparison({ quote, formulaId, body, links, source, 
     <label htmlFor={id}>比較先の保存記録</label><select id={id} aria-label="比較先の保存記録" value={choice} disabled={blocked || !result.targets.length} onChange={event => { setInvalidated(false); setSelection({ notes: source.notes, links, body, fetchedAt: source.fetchedAt, quoteKey, choice: event.target.value, blockId: snapshot?.blockId ?? '' }); }}><option value="">記録を選択</option>{result.targets.map((target, index) => <option key={reportEvidenceLinkKey(target.link)} value={reportEvidenceLinkKey(target.link)}>記録{index + 1}：{target.link.recordId.slice(0, 8)}{target.link.recordId.length > 8 ? '…' : ''}{target.status === 'missing' ? '（欠落）' : target.status === 'invalid' ? '（比較不能）' : ''}</option>)}</select>
     {selectedTarget && <p>比較先のメモID：{selectedTarget.link.memoId}　記録ID：{selectedTarget.link.recordId}</p>}
     {invalidated && !blocked && <p role="status">取得内容または引用が変わったため、比較先の選択を解除しました。選択し直してください。</p>}
-    {comparison && <section aria-label="引用時と比較先の差分"><h3>比較先</h3><p>メモID：{snapshot!.memoId}</p><RecordInfo record={comparison.after} />
-      <p>変更 {comparison.counts.changed} / 追加 {comparison.counts.added} / 削除 {comparison.counts.removed} / 同一（比較対象項目に変更なし）{comparison.counts.unchanged}</p>
-      {comparison.warnings.map(warning => <p key={warning}>{warning}</p>)}
-      <label htmlFor={`${id}-block`}>詳細を確認するブロック</label><select id={`${id}-block`} value={selectedRow?.blockId ?? ''} onChange={event => setSelection(current => current && ({ ...current, blockId: event.target.value }))}>{comparison.rows.map((row, index) => <option key={row.blockId} value={row.blockId}>ブロック{index + 1}：{row.blockId.slice(0, 8)}{row.blockId.length > 8 ? '…' : ''}</option>)}</select>
-      <ul>{comparison.rows.map(row => <li key={row.blockId}>ブロックID：{row.blockId} / {evidenceRowLabel(row)}</li>)}</ul>
-      {selectedRow && <section aria-label="選択ブロックの差分"><h4>ブロックID：{selectedRow.blockId}</h4><p>{evidenceRowLabel(selectedRow)}</p><div className="evidence-pair"><section><h4>引用時</h4>{selectedRow.before ? <BlockInfo {...selectedRow.before} record={comparison.before} /> : <p>引用時の記録には存在しません。</p>}</section><section><h4>比較先</h4>{selectedRow.after ? <BlockInfo {...selectedRow.after} record={comparison.after} /> : <p>比較先の記録には存在しません。</p>}</section></div></section>}
-    </section>}
+    {comparison && <QuoteComparisonDetails key={choice} comparison={comparison} memoId={snapshot!.memoId} initialBlockId={snapshot!.blockId} />}
     {insertion && <button type="button" disabled={!comparison || blocked || insertion.disabled} onClick={() => {
       try { const plan = insertion.prepare(quote, choice); setPrepared({ selection, key: insertion.key, plan }); setInsertionError(""); }
       catch (cause) { setPrepared(null); setInsertionError(cause instanceof Error ? cause.message : "差分文を準備できません。本文は保持しています。"); }
@@ -79,4 +72,19 @@ export function FormulaQuoteComparison({ quote, formulaId, body, links, source, 
     </Modal>}
     <button type="button" onClick={onClose}>比較表示を閉じる</button>
   </section></Modal>;
+}
+
+/** Shared observation-only comparison view; never reads or writes persistence. */
+export function QuoteComparisonDetails({ comparison, memoId, initialBlockId, beforeLabel = "引用時", afterLabel = "比較先" }: { comparison: EvidenceComparison; memoId: string; initialBlockId: string; beforeLabel?: string; afterLabel?: string }) {
+  const id = useId();
+  const [blockId, setBlockId] = useState(initialBlockId);
+  const selectedRow = comparison.rows.find(row => row.blockId === blockId);
+  return <section aria-label="引用時と比較先の差分"><h3>{afterLabel}</h3><p>メモID：{memoId}</p><RecordInfo record={comparison.after} />
+    <p>変更 {comparison.counts.changed} / 追加 {comparison.counts.added} / 削除 {comparison.counts.removed} / 同一（比較対象項目に変更なし）{comparison.counts.unchanged}</p>
+    {comparison.warnings.map(warning => <p key={warning}>{warning}</p>)}
+    {!selectedRow && <p role="status">初期選択ブロックはこの比較の両記録に存在しません。詳細を確認する別ブロックを明示選択してください。</p>}
+    <label htmlFor={`${id}-block`}>詳細を確認するブロック</label><select id={`${id}-block`} value={selectedRow?.blockId ?? ''} onChange={event => setBlockId(event.target.value)}><option value="">ブロックを選択</option>{comparison.rows.map((row, index) => <option key={row.blockId} value={row.blockId}>ブロック{index + 1}：{row.blockId.slice(0, 8)}{row.blockId.length > 8 ? '…' : ''}</option>)}</select>
+    <ul>{comparison.rows.map(row => <li key={row.blockId}>ブロックID：{row.blockId} / {evidenceRowLabel(row)}</li>)}</ul>
+    {selectedRow && <section aria-label="選択ブロックの差分"><h4>ブロックID：{selectedRow.blockId}</h4><p>{evidenceRowLabel(selectedRow)}</p><div className="evidence-pair"><section><h4>{beforeLabel}</h4>{selectedRow.before ? <BlockInfo {...selectedRow.before} record={comparison.before} /> : <p>{beforeLabel}の記録には存在しません。</p>}</section><section><h4>{afterLabel}</h4>{selectedRow.after ? <BlockInfo {...selectedRow.after} record={comparison.after} /> : <p>{afterLabel}の記録には存在しません。</p>}</section></div></section>}
+  </section>;
 }
