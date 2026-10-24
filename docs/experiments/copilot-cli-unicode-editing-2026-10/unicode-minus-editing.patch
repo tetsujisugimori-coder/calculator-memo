@@ -1,0 +1,141 @@
+diff --git a/components/CalculatorApp.tsx b/components/CalculatorApp.tsx
+index 6195a6c..ccbc656 100644
+--- a/components/CalculatorApp.tsx
++++ b/components/CalculatorApp.tsx
+@@ -105,3 +105,3 @@ export function CalculatorApp() {
+       }
+-      if (/^[+\-*/]$/.test(input)) {
++      if (/^[+\-−–—*/]$/.test(input)) {
+         setExpression(`${result.value}${input}`); setAfterEquals(false); return;
+@@ -212,5 +212,5 @@ export function CalculatorApp() {
+       if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || confirm) return;
+-      if (/^[0-9+\-*/.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
++      if (/^[0-9+\-−–—*/.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
+       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
+-      else if (event.key === "Backspace") { event.preventDefault(); setExpression((current) => current.slice(0, -1)); setError(""); }
++      else if (event.key === "Backspace") { event.preventDefault(); setExpression((current) => current.slice(0, -1)); setError(""); setAfterEquals(false); }
+       else if (event.key === "Delete" || event.key === "Escape") { event.preventDefault(); setExpression(""); setResult(blankResult); setError(""); setAfterEquals(false); }
+@@ -237,3 +237,3 @@ export function CalculatorApp() {
+           <div className="mobile-tabs" role="tablist" aria-label="表示切り替え"><button id="history-tab" role="tab" aria-selected={data.settings.activePanel === "history"} aria-controls="history-panel" tabIndex={data.settings.activePanel === "history" ? 0 : -1} className={data.settings.activePanel === "history" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "history")} onClick={() => setPanel("history")}>履歴 <span>{data.history.length}</span></button><button id="notes-tab" role="tab" aria-selected={data.settings.activePanel === "notes"} aria-controls="notes-panel" tabIndex={data.settings.activePanel === "notes" ? 0 : -1} className={data.settings.activePanel === "notes" ? "active" : ""} onKeyDown={(event) => handleTabKey(event, "notes")} onClick={() => setPanel("notes")}>メモ <span>{data.notes.length}</span></button></div>
+-          <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onCalculate={calculate} onClear={() => { setExpression(""); setResult(blankResult); setError(""); setAfterEquals(false); }} onClearEntry={() => { setExpression((current) => clearEntry(current)); setError(""); }} onBackspace={() => { setExpression((current) => current.slice(0, -1)); setError(""); }} onToggleSign={() => { setExpression((current) => toggleSign(current)); setError(""); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
++          <CalculatorPad expression={expression} displayExpression={displayExpression} resultText={displayResult} error={error} onInput={changeExpression} onCalculate={calculate} onClear={() => { setExpression(""); setResult(blankResult); setError(""); setAfterEquals(false); }} onClearEntry={() => { setExpression((current) => clearEntry(current)); setError(""); setAfterEquals(false); }} onBackspace={() => { setExpression((current) => current.slice(0, -1)); setError(""); setAfterEquals(false); }} onToggleSign={() => { setExpression((current) => toggleSign(current)); setError(""); setAfterEquals(false); }} onCreateNote={openCurrentNote} canCreateNote={afterEquals && !error} />
+           <p className="keyboard-hint"><kbd>Enter</kbd> 計算　<kbd>Esc</kbd> クリア　数字・演算子はそのまま入力</p>
+diff --git a/e2e/unicode-editing.mjs b/e2e/unicode-editing.mjs
+new file mode 100644
+index 0000000..9d10877
+--- /dev/null
++++ b/e2e/unicode-editing.mjs
+@@ -0,0 +1,42 @@
++import assert from "node:assert/strict";
++import { chromium, webkit } from "@playwright/test";
++
++const baseUrl = process.env.CALCULATOR_URL ?? "http://127.0.0.1:4281/calculator-memo/";
++
++async function check(browserType, name) {
++  const browser = await browserType.launch();
++  try {
++    const page = await browser.newPage();
++    const button = (label) => page.getByRole("button", { name: label, exact: true });
++
++    await page.goto(`${baseUrl}?expr=${encodeURIComponent("12-34")}`);
++    await button("計算する").click();
++    assert.equal(await page.locator(".lcd-result").innerText(), "-22");
++    await button("現在の数値を消去").click();
++    await button("5").click();
++    assert.equal(await page.locator(".lcd-expression").innerText(), "12 − 5");
++
++    await page.goto(`${baseUrl}?expr=${encodeURIComponent("12　−　34　")}`);
++    await button("計算する").click();
++    assert.equal(await page.locator(".lcd-result").innerText(), "-22");
++    await page.keyboard.press("Backspace");
++    await page.keyboard.press("Backspace");
++    await page.keyboard.press("5");
++    assert.equal(await page.locator(".lcd-expression").innerText(), "12 − 35");
++
++    await page.goto(`${baseUrl}?expr=${encodeURIComponent("−34")}`);
++    await button("計算する").click();
++    assert.equal(await page.locator(".lcd-result").innerText(), "-34");
++    await button("符号反転").click();
++    assert.equal(await page.locator(".lcd-expression").innerText(), "34");
++    await button("計算する").click();
++    assert.equal(await page.locator(".lcd-result").innerText(), "34");
++  } finally {
++    await browser.close();
++  }
++  console.log(`PASS ${name}: ASCII/Unicode minus, whitespace, confirmed edits, Backspace`);
++}
++
++for (const [browserType, name] of [[chromium, "Chromium"], [webkit, "WebKit"]]) {
++  await check(browserType, name);
++}
+diff --git a/lib/calculator.ts b/lib/calculator.ts
+index 1f87ae9..78275b8 100644
+--- a/lib/calculator.ts
++++ b/lib/calculator.ts
+@@ -81,4 +81,18 @@ export function appendInput(expression: string, input: string): string {
+ 
++function trailingNumber(expression: string) {
++  const match = expression.match(/([-−–—]?)(\s*)(\d*\.?\d+)(%?)(\s*)$/);
++  if (!match || match.index === undefined) return null;
++  const [, sign, spacing, number, percent, trailing] = match;
++  const prefix = expression.slice(0, match.index);
++  const previous = prefix.trimEnd().at(-1) ?? "";
++  const signIsBinary = !!sign && /[\d.)%]/.test(previous);
++  const numberStart = match.index + sign.length + spacing.length;
++  return { index: match.index, sign, number, percent, trailing, signIsBinary, numberStart };
++}
++
+ export function clearEntry(expression: string): string {
+-  return expression.replace(/-?\d*\.?\d+%?$/, "") || "";
++  const token = trailingNumber(expression);
++  if (!token) return expression;
++  const end = token.sign && !token.signIsBinary ? token.index : token.numberStart;
++  return expression.slice(0, end) + token.trailing;
+ }
+@@ -86,7 +100,8 @@ export function clearEntry(expression: string): string {
+ export function toggleSign(expression: string): string {
+-  const match = expression.match(/(-?\d*\.?\d+)%?$/);
+-  if (!match || match.index === undefined) return expression ? `${expression}(-` : "-";
+-  const token = match[0];
+-  const replacement = token.startsWith("-") ? token.slice(1) : `-${token}`;
+-  return expression.slice(0, match.index) + replacement;
++  const token = trailingNumber(expression);
++  if (!token) return expression ? `${expression}(-` : "-";
++  if (token.sign && !token.signIsBinary) {
++    return expression.slice(0, token.index) + token.number + token.percent + token.trailing;
++  }
++  return expression.slice(0, token.numberStart) + "-" + token.number + token.percent + token.trailing;
+ }
+diff --git a/tests/calculator.test.ts b/tests/calculator.test.ts
+index 0e930c9..8604dc4 100644
+--- a/tests/calculator.test.ts
++++ b/tests/calculator.test.ts
+@@ -47,2 +47,28 @@ describe("calculator input helpers", () => {
+   it("toggles the last number sign", () => expect(toggleSign("12+34")).toBe("12+-34"));
++  it("keeps a binary minus when clearing the trailing number", () => {
++    expect(clearEntry("12-34")).toBe("12-");
++  });
++  it("toggles the trailing number after a binary minus", () => {
++    expect(toggleSign("12-34")).toBe("12--34");
++  });
++  it("treats a Unicode leading minus as a sign", () => {
++    expect(toggleSign("−34")).toBe("34");
++    expect(clearEntry("−34")).toBe("");
++  });
++  it("recognizes a binary Unicode minus with full-width whitespace", () => {
++    expect(toggleSign("12　−　34　")).toBe("12　−　-34　");
++    expect(clearEntry("12　−　34")).toBe("12　−　");
++  });
++  it("recognizes an ASCII binary minus with surrounding spaces", () => {
++    expect(toggleSign("12 - 34")).toBe("12 - -34");
++    expect(clearEntry("12 - 34")).toBe("12 - ");
++  });
++  it("preserves trailing spaces while editing the last number", () => {
++    expect(toggleSign("12 + 34 ")).toBe("12 + -34 ");
++    expect(clearEntry("12 + 34 ")).toBe("12 +  ");
++  });
++  it("does not change normal calculation semantics for spaced Unicode minus", () => {
++    expect(calculateExpression("12　−　34").value).toBe(-22);
++    expect(calculateExpression(toggleSign("12-34")).value).toBe(46);
++  });
+ });
