@@ -9,6 +9,7 @@
 - 検証: ローカル全単体1453件/63ファイル（追加境界/UI33件）、lint・型検査・通常/Pages build成功。独立レビューで引用切替時の選択失効と選択解除通知を修正し、33件再確認で阻害指摘なし。既存CI契約は36/37、未変更の100ms合成timeout試験がNode24の起動中に終了し期待ログを取得できず失敗。期限や期待値は緩めず、固定Node22の実CIで確認する。
 - GUIは既存6条件に各2検査群と9操作を追加し、720検査・mobile945操作・geometry562、30分・114PNG・成功trace非保存を維持。最終結果はPR Checksへ記録する。ローカルWebKitは必要なOSライブラリ不足で起動不可、実機iPhone Safari/VoiceOverは未検証。
 - ローカル重点GUI: 隔離Playwright Chromium desktop1365と375px touchで引用4群（既存2+新規2）成功、touch30操作（従来21+追加9）を実測。両テーマ200%、モーダルTab/復帰、本文編集の説明、stale/再取得、原本不変を確認。WebKitローカル未実行を成功と混同しない。
+- [Draft PR #77](https://github.com/tetsujisugimori-coder/calculator-memo/pull/77) を作成。Git CLI pushは認証不足で失敗したため、認証済みGitHub経由のblob/tree/commit/refで公開しローカル検証ツリーとの一致を確認。最終HEADの実CIはPR Checksと完了コメントへ記録する。この文書更新後の成功を先取りしない。
 - Issue原文は読戻し一致を確認。保存schema/version/制限・確認履歴・assessment・計算エンジン変更なし。比較表示は読み取り専用で、rollbackはコードのみrevert、データ移行不要。
 
 
