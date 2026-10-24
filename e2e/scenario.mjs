@@ -496,7 +496,7 @@ async function exerciseFormulaQuotes(prefix) {
   const open = async (verifySaved = false) => {
     await activate(page.getByRole("button", { name: "登録式ライブラリ", exact: true }));
     if (verifySaved) await inspectThemes(library().getByRole("region", { name: "保存済み関連レポート", exact: true }));
-    await activate(library().getByRole("button", { name: /Quote report/ }));
+    await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true }));
     if (verifySaved) await inspectThemes(report().getByRole("region", { name: "関連レポートのプレビュー", exact: true }));
     await activate(report().getByRole("button", { name: "Markdownを編集", exact: true }));
   };
