@@ -41,7 +41,7 @@ const open = async (r = report) => { await render(r); await click('Markdownを�
 const prepare = async () => { await click('別の保存記録と比較'); await choose(); await click('差分をレポートに挿入'); };
 const insert = async () => { await prepare(); expect(preview()).not.toBeNull(); await click('この差分を本文へ挿入'); };
 beforeEach(() => { localStorage.clear(); Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true }); host = document.createElement('div'); document.body.append(host); root = createRoot(host); saved.mockReset(); closed.mockReset(); });
-afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); });
+afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
 it('requires preview and explicit insertion, showing identities without writing body or storage', async () => {
   const raw = seed(); await open(); await prepare();
@@ -107,6 +107,9 @@ it('copy and Markdown download contain the exact inserted draft, preserving fixe
   expect(copy).toHaveBeenCalledWith(after); expect(output).toHaveBeenCalledWith(expect.objectContaining({ markdown: after })); expect(readQuoteAssessments(after, 'f', notes())[0].snapshot).toEqual(snapshot); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(saved).not.toHaveBeenCalled();
 });
 it.each(['missing', 'changed'])('uses the frozen snapshot despite the original saved record being %s', async state => {
+  // Keep the sentinel 999 distinct from random UUID/time metadata; the original assertion remains strict.
+  vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000001');
+  vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date(at));
   const records = notes(); if (records[0].type !== 'plain-calculation') throw new Error('fixture');
   if (state === 'missing') records[0].calculationEvidence!.records.shift(); else records[0].calculationEvidence!.records[0].blocks[0].result = '999';
   const raw = seed(report, [], records); await open(); await insert(); expect(editor().value).toContain(quote); expect(editor().value).not.toContain('999'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
@@ -183,4 +186,48 @@ it.each(['quote', 'difference'] as const)('rejects %s insertion after an unknown
   expect(readDifferenceAssessments(editor().value, 'f', notes()).every(item => item.status !== 'tracked')).toBe(true);
   expect(button('直前の差分挿入を取り消す').disabled).toBe(true);
   expect(button('直前の引用を取り消す').disabled).toBe(true);
+});
+
+it.each(['body-edit', 'selection', 'picker'] as const)('delayed difference insertion caret never overrides newer %s intent', async intent => {
+  const frames = new Map<number, FrameRequestCallback>(); let frameId = 0;
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.set(++frameId, callback); return frameId; });
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => { frames.delete(id); });
+  const raw = seed(); await open(); await insert();
+  expect(frames.size).toBeGreaterThan(0);
+  const queuedAtInsertion = [...frames.values()];
+  const inserted = editor().value;
+  if (intent === 'body-edit') await edit(`${inserted}\nnewer edit`);
+  editor().focus(); editor().setSelectionRange(1, 4);
+  await act(async () => editor().dispatchEvent(new Event('select', { bubbles: true })));
+  if (intent === 'picker') await click('計算根拠を引用');
+  const focus = document.activeElement;
+  await act(async () => { for (const callback of queuedAtInsertion) callback(100); frames.clear(); });
+  expect([editor().selectionStart, editor().selectionEnd]).toEqual([1, 4]);
+  expect(document.activeElement).toBe(focus);
+  expect(editor().value).toBe(intent === 'body-edit' ? `${inserted}\nnewer edit` : inserted);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(saved).not.toHaveBeenCalled();
+});
+
+it('current difference insertion frame still places the caret after the inserted block', async () => {
+  const frames: FrameRequestCallback[] = [];
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.push(callback); return frames.length; });
+  seed(); await open(); await insert(); const added = editor().value;
+  await act(async () => frames.forEach(callback => callback(100)));
+  const caret = added.indexOf('選択した本文');
+  expect(caret).toBeGreaterThan(3);
+  expect([editor().selectionStart, editor().selectionEnd]).toEqual([caret, caret]);
+  expect(document.activeElement).toBe(editor());
+});
+
+it('delayed insertion caret cannot steal focus from discard confirmation opened by the modal header', async () => {
+  const frames: FrameRequestCallback[] = [];
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.push(callback); return frames.length; });
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+  const raw = seed(); await open(); await insert();
+  await act(async () => host.querySelector<HTMLButtonElement>('.modal-header button')!.click());
+  const focused = document.activeElement;
+  expect(focused).not.toBe(editor());
+  await act(async () => frames.forEach(callback => callback(100)));
+  expect(document.activeElement).toBe(focused);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(saved).not.toHaveBeenCalled();
 });

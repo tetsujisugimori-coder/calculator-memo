@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: PR #87 最終CI中の選択位置ずれ再発・遅延caret保護
+
+- `9d3a16c` の実CI run40182162352 attempt1は30分付近でGUI取消、attempt2はWebKit390の既存引用picker選択assertionで失敗。他5条件完了。取消・失敗のartifactとdigestを検証記録へ保存し、成功に置換しない。上限・検査数・期待値は不変更。
+- traceの期待4432..4434に対し実測6525..6525は、本文末尾ではなく直前の差分挿入caretと一致。新storage回帰helper実行前の既存経路。既存traceだけでは原因未確定のため、局所RAF/event/setter計測を追加して調査した。
+- 局所WebKit26.5で後続本文編集後にも古い差分挿入RAFがcaretを動かす事実を観測。旧buildの当該callbackだけを新選択後まで保留→解放すると、tapより前にCIと同値の上書きを因果再現した。自然tap10回では再現0、固定CI26.0との版差と歴史的#85初回の全原因未確定は区別する。
+- 最小修正：引用/差分で共有する遅延caret要求の取消＋epoch/本文同一性ガード。後続入力・選択・操作・storage通知・unmountで失効。本文生成・挿入位置規則・保護範囲・安全取消・保存契約は変更しない。待ち時間増加/検査削減/上限延長は不採用。
+- 新規9件：取消済みcallback強制実行を含む赤6件→緑、正規挿入focus/caretの正対照2件も成功。独立レビューでヘッダー×→破棄確認へのfocusを古いcallbackが奪うP3を追加再現し、close共通入口の取消で修正、回帰1件追加。差分/引用の既存49件を含む58件・独立4件成功、残件なし。修正後の局所WebKit26.5/Chromium141各390px・heldRAF10回は選択保持。最終全単体1775件/73files・lint/型/通常/Pages build成功。既存sentinel999検査とランダムUUIDの衝突は当該fixtureのID/日時だけ決定化し期待値を維持、独立確認済み。負荷時CI契約100ms合成timeout1件失敗後、同条件を静穏下で37件全成功。最終HEAD実CIはPRへ記録する。
+
 ## 2026-10-25 JST: PR #87 再レビュー P2・実 storage 通知後の保持本文
 
 - 着手時：作業ツリー clean、PR #87 Draft/open、branch `feat/audit-markdown-export` と remote HEAD `ad15bfffe5104779cda707c36fa2ae75926c6233` 一致。main `9c1cbd2c77131e9d717b6206ac54c7a6c389d235`。既存追加変更の破棄なし。
