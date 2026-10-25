@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: 根拠点検結果の本文内固定記録（Issue #88）
+
+- 着手: PR #87 merged / 最新main `a3ca0f5f6b993a5df8d0a5648b794b1acefd2f9c` を確認。旧作業tree clean、別worktree `calculator-fixed-audit` / `feat/audit-fixed-record` で保全。新規 [Issue #88](https://github.com/tetsujisugimori-coder/calculator-memo/issues/88)。
+- 第一希望を採用: 共有inventory/assessment/Markdown builder、厳密block解析、既存挿入保護を再利用。最小v1追跡領域だけを既存本文へ保持し、保存schema変更・独立判定・暗黙取得なし。次善策の別保存領域は互換/移行/二重判定負担により不採用。実装前比較は `docs/agent/formula-report-audit-record.md`。
+- プレビューは対象本文全文・全件Markdown・出力/取得時刻・未照合/失効/保持本文一致未確認を区別。SHA計算は対象世代へ固定、storage/取得/closeで古い完了を抑止。指定位置追加は選択文章を残し、保存/確認/再計算/確認履歴追加なし。正確な本文一致と編集世代で専用取消を保護。
+- 自己参照対策: 固定記録内部の引用/差分を新出現へ数えず、正常な外側根拠を保持。未知/破損/重複/不完全境界は推測回復せず不完全集計。独立レビューが異種領域入れ子の完全性漏れP2を赤テストで再現、外側不正行保持・不完全集計へ修正し独立試験で再確認。
+- ローカル検証: 全1824単体/77files（新規49、既存1775維持）、型/lint/通常Pages build成功。独立6試験と再レビューでP0〜P3残件なし（ソース/jsdom範囲）。Chromium375/390各6checks成功、非同期preview focus欠落も再現修正。local WebKit26.5はassertion後close停止で完走未確認。6GUI条件へ各6checks追加し、既存PNG114/成功trace0/30分上限を維持。最終件数・GUI・独立レビュー・最終HEAD実CIは設計/PRへ記録し先取りしない。
+- 制限: 数学的証明/真正性/現在の原本一致/外部writerとの原子的整合を保証しない。PR85初回CI全原因未特定を維持、PR87の古いcaret取消を保持。実機Safari/VoiceOver/OS文字拡大は未検証。main直接push/merge/auto-merge/公開なし。
+
 ## 2026-10-25 JST: PR #87 最終CI中の選択位置ずれ再発・遅延caret保護
 
 - `9d3a16c` の実CI run40182162352 attempt1は30分付近でGUI取消、attempt2はWebKit390の既存引用picker選択assertionで失敗。他5条件完了。取消・失敗のartifactとdigestを検証記録へ保存し、成功に置換しない。上限・検査数・期待値は不変更。

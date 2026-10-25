@@ -602,3 +602,10 @@ The clipboard sink verifies payload and application response, not the OS clipboa
 The six existing conditions additionally execute `audit-storage.mjs` against the real CalculatorApp tree. A second page in the same browser context writes only synthetic localStorage data; no replacement component props or synthetic `StorageEvent` substitutes for this path. Changed/deleted saved reports, locally edited text and an unrelated saved memo each exercise immediate output, explicit source recheck, audit close/reopen, downloaded Markdown parity and unchanged storage/retained editor text. Deferred clipboard resolution and rejection must not resurrect notices or manual-copy recovery after an external update. Both themes at CSS 200% retain horizontal fit and keyboard Escape focus return.
 
 These new actions use mouse clicks and keyboard focus, including under mobile emulation; they do not claim physical touch or OS text zoom. Existing touch activations (991 per touch condition), 562 geometry checkpoints, 114 PNG outputs, success trace non-retention and 30-minute CI limit are unchanged. Six additional named checks per condition bring the complete contract to **810** checks: **135 / 134 / 135 / 135 / 135 / 136**. This is an addition to, not replacement of, the prior audit/quote/mixed-snapshot cases.
+
+## 固定点検記録（Issue #88）
+`audit-fixed-record.mjs` を各既存条件に追加し、6検査×6条件を加える。
+全体契約は846検査、geometry562、mobile各1036touch（今回のボタン操作45回追加、局所Chromiumで実測）。
+既存PNG114枚・成功時trace非保存・30分上限は不変更。
+合成fixtureを隔離して、未照合／照合済み・全件／絞り込み・指定位置の非破壊挿入／取消・編集後取消拒否・自己参照除外・実別page更新／削除・遅延digest失効・両theme CSS200%と入れ子focus復帰を確認する。
+別pageは同browser context内のアプリを動作させないwriterであり、合成storage eventのみの試験とは区別する。各検査の実行結果・対象SHA・ブラウザ版はprovenance／PRを参照し、ここでは成功を先取りしない。

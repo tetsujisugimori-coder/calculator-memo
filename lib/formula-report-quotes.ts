@@ -1,3 +1,4 @@
+import { outsideAuditRecordBlocks, scanAuditRecordEnvelopes } from './formula-report-audit-record';
 import { validateQuoteSnapshot, type QuoteSnapshot } from './formula-report-snapshots';
 import { scanDifferenceEnvelopes } from './formula-report-diff-envelope';
 import { resolveReportEvidence } from './formula-report-evidence';
@@ -43,7 +44,8 @@ export function createQuoteMarkdown(snapshot: QuoteSnapshot): string {
 
 export function readQuoteAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean } = {}, parsedBlocks?: MarkdownBlock[]): QuoteAssessment[] {
   if (body.length > 100_000) return [{ status: 'unavailable', reason: '本文上限超過のため引用照合を停止しています。本文は保持しています。', start: 0, end: body.length }];
-  const blocks = parsedBlocks ?? parseMarkdownBlocks(body);
+  const blocks = outsideAuditRecordBlocks(body, parsedBlocks ?? parseMarkdownBlocks(body));
+  const auditRanges = scanAuditRecordEnvelopes(body);
   const results: QuoteAssessment[] = [];
   for (let index = 0; index < blocks.length; index++) {
     const metadata = blocks[index];
@@ -59,6 +61,7 @@ export function readQuoteAssessments(body: string, formulaId: string, notes: Mem
       const visible = blocks[index - 1];
       if (!visible || visible.kind !== 'code' || visible.language !== 'text') { result.status = 'edited'; result.reason = '引用本文が欠落または編集されています。メタデータとの整合を確認できません。'; continue; }
       result.start = visible.start;
+      if (auditRanges.some(range => result.start < range.end && result.end > range.start)) { result.status = 'invalid'; result.reason = '固定引用と固定点検記録の領域が交差しています。本文対応を推測しません。'; delete result.snapshot; continue; }
       // Parser end includes the final line break. Ignore only that structural line break.
       const actual = normalizeLines(body.slice(visible.start, metadata.end)).replace(/\n$/, '');
       if (actual !== normalizeLines(createQuoteMarkdown(snapshot))) { result.status = 'edited'; result.reason = '引用本文または形式が編集されています。引用時メタデータとの整合を確認できません。'; continue; }
@@ -113,9 +116,9 @@ export function insertQuoteAtCursor(body: string, quote: string, selectionStart:
   }
   // Difference tracking has a structured envelope. Do not split its body from
   // its metadata, including future or damaged envelopes, when inserting quotes.
-  for (const range of scanDifferenceEnvelopes(body)) {
+  for (const range of [...scanDifferenceEnvelopes(body, outsideAuditRecordBlocks(body)), ...scanAuditRecordEnvelopes(body)]) {
     if (start > range.start && (start < range.end || (!range.closed && start === range.end))) {
-      throw new Error('比較差分の本文・追跡情報の内部、または終了を確認できない範囲へは挿入できません。本文を保持し、差分全体の前へカーソルを移してください。');
+      throw new Error('比較差分・固定点検記録の本文・追跡情報の内部、または終了を確認できない範囲へは挿入できません。本文を保持し、差分全体の前へカーソルを移してください。');
     }
   }
   // Insert before the selected range; never delete the selected or surrounding prose.

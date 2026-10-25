@@ -1,3 +1,4 @@
+import { outsideAuditRecordBlocks, scanAuditRecordEnvelopes } from './formula-report-audit-record';
 import type { EvidenceRecord } from './calculation-evidence';
 import { buildQuoteDifferenceMarkdown } from './formula-report-diff';
 import { reportEvidenceLinkKey, resolveReportEvidence } from './formula-report-evidence';
@@ -65,11 +66,13 @@ export function assessDifferenceSource(memoId: string, frozen: EvidenceRecord, n
  */
 export function readDifferenceAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean; invalidData?: boolean } = {}, parsed?: { blocks: MarkdownBlock[]; ranges: DifferenceEnvelope[] }): DifferenceAssessment[] {
   if (body.length > 100_000) return [{ status: 'invalid', reason: '本文上限超過のため差分の照合を停止しています。本文は保持しています。', start: 0, end: body.length }];
-  const blocks = parsed?.blocks ?? parseMarkdownBlocks(body);
+  const blocks = outsideAuditRecordBlocks(body, parsed?.blocks ?? parseMarkdownBlocks(body));
+  const auditRanges = scanAuditRecordEnvelopes(body);
   const results: DifferenceAssessment[] = [];
-  for (const range of parsed?.ranges ?? scanDifferenceEnvelopes(body, blocks)) {
+  for (const range of (parsed?.ranges ?? scanDifferenceEnvelopes(body, blocks)).filter(range => !auditRanges.some(audit => range.start >= audit.start && range.end <= audit.end))) {
     const result: DifferenceAssessment = { status: range.status === 'untracked' ? 'untracked' : 'invalid', reason: range.reason, start: range.start, end: range.end };
     results.push(result);
+    if (auditRanges.some(audit => range.start < audit.end && range.end > audit.start)) { result.status = 'invalid'; result.reason = '比較差分と固定点検記録が入れ子・交差しています。出典対応を推測しません。'; continue; }
     const snapshot = range.snapshot;
     if (!snapshot) continue;
     if (snapshot.quote.formulaId !== formulaId) { result.reason = '別の登録式IDの差分です。出典を対応付けできません。'; continue; }

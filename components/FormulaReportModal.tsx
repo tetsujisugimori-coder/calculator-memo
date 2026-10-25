@@ -32,7 +32,7 @@ function acquireEvidence(formulaId: string) {
   const loaded = loadData();
   return loaded.status === "error"
     ? { links: [] as FormulaReportEvidenceLink[], notes: [] as Memo[], raw: loaded.raw, invalidData: loaded.reason !== "storage-unavailable", error: "保存済み原本を安全に取得できません。根拠は参照不能です。現在の編集で補完しません。", fetchedAt: new Date().toISOString() }
-    : { links: structuredClone(loaded.data.formulaReports?.entries.find(item => item.formulaId === formulaId)?.evidence?.links ?? []), notes: structuredClone(loaded.data.notes), raw: loaded.status === "ok" ? loaded.raw : null, error: "", fetchedAt: new Date().toISOString() };
+    : { reports: structuredClone(loaded.data.formulaReports), links: structuredClone(loaded.data.formulaReports?.entries.find(item => item.formulaId === formulaId)?.evidence?.links ?? []), notes: structuredClone(loaded.data.notes), raw: loaded.status === "ok" ? loaded.raw : null, error: "", fetchedAt: new Date().toISOString() };
 }
 
 /** Expectations are frozen when opened; prop changes never silently rebase a draft. */
@@ -66,6 +66,10 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
   }, []);
   const headingPrefix = useId();
   const [quotePicker, setQuotePicker] = useState(false);
+  const [auditUndo, setAuditUndo] = useState<{ before: string; after: string; epoch: number } | null>(null);
+  const auditEditEpoch = useRef(0);
+  const auditPosition = useRef({ start: 0, end: 0 });
+  const auditInsertEpoch = useRef(0);
   const [quoteUndo, setQuoteUndo] = useState<{ before: string; after: string } | null>(null);
   const quoteSelection = useRef({ start: 0, end: 0 });
   const diffSelection = useRef({ start: 0, end: 0 });
@@ -135,7 +139,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
   useEffect(() => {
     const observe = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY && event.key !== null) return;
-      auditNavigationEpoch.current += 1;
+      auditNavigationEpoch.current += 1; auditInsertEpoch.current += 1;
       cancelDeferredCaret();
       if (event.newValue !== evidence.raw) { setEvidenceChanged(true); setHeldContextUncertain(true); }
     };
@@ -151,7 +155,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
     try {
       const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm, ...(confirm ? { confirmationRemarks: remarks } : {}) });
       if (typeof result === "string") { setNotice({ text: result, failed: true }); return; }
-      setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
+      setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setAuditUndo(null);
       setEvidence(acquireEvidence(formulaId));
       setBaseline({ report: structuredClone(result), expression: baseline.expression, definition: baseline.definition });
       if (confirm) setRemarks("");
@@ -162,7 +166,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
   const auditContext = JSON.stringify([id, title, formula?.title, dirty, formulaReportSignature(report), formulaId, formulaDefinitionSignature(formula), body, links, originalGeneration, generation, evidence.fetchedAt, conflict]);
   const auditContextRef = useRef(auditContext);
   useLayoutEffect(() => { auditContextRef.current = auditContext; return () => { auditContextRef.current = ""; }; }, [auditContext]);
-  const insertionKey = JSON.stringify([id, formulaId, title, body, links, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, saving]);
+  const insertionKey = JSON.stringify([id, formulaId, title, body, links, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, saving, originalGeneration, savedContextUncertain]);
   useLayoutEffect(() => { insertionKeyRef.current = insertionKey; }, [insertionKey]);
   if (differenceUndo && conflict) setDifferenceUndo(null);
   const checkInsertionSource = () => {
@@ -195,7 +199,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
       return { markdown, start, end, insert: () => {
         if (insertionKeyRef.current !== insertionKey || savingRef.current || !writable || conflict || evidenceChanged || evidence.error) throw new Error("本文・レポート・取得世代が変わりました。古いプレビューは挿入しません。生成し直してください。");
         preflight(checkInsertionSource());
-        setDifferenceUndo({ before: body, after: next.body }); setQuoteUndo(null); setTemplateUndo(null);
+        setAuditUndo(null); setDifferenceUndo({ before: body, after: next.body }); setQuoteUndo(null); setTemplateUndo(null);
         setBody(next.body); setPreview(false);
         setNotice({ text: "比較差分を本文へ追加しました。既存引用はそのままです。未保存・未確認です。", failed: false });
         scheduleInsertedCaret(next.body, next.caret);
@@ -241,12 +245,12 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         <p id="report-template-help">6章のMarkdownを本文の末尾に追加します。既存本文は保持します。章は自由に編集・削除でき、追加だけでは保存・確認されません。直後は専用の取消ができますが、その後の編集・保存で取消は終了します。</p>
         <button type="button" disabled={saving || !writable || conflict || evidenceChanged} aria-describedby="report-template-help" onClick={() => {
           if (savingRef.current) return;
-          try { const next = appendFormulaReportTemplate(body); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setDifferenceUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
+          try { const next = appendFormulaReportTemplate(body); setAuditUndo(null); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setDifferenceUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
           catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "追加できませんでした。本文は保持しています。", failed: true }); }
         }}>テンプレートを挿入（末尾に追加）</button>
         <button type="button" disabled={saving || !templateUndo || body !== templateUndo.after} onClick={() => {
           if (savingRef.current || !templateUndo || body !== templateUndo.after) return;
-          setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
+          setAuditUndo(null); setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
         }}>直前のテンプレート追加を取り消す</button>
       </div>}
       {!preview && <div className="quote-tools">
@@ -258,13 +262,13 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         }}>計算根拠を引用</button>
         <button type="button" disabled={saving || !quoteUndo || body !== quoteUndo.after} onClick={() => {
           if (savingRef.current || !quoteUndo || body !== quoteUndo.after) return;
-          setBody(quoteUndo.before); setQuoteUndo(null); setTemplateUndo(null);
+          setAuditUndo(null); setBody(quoteUndo.before); setQuoteUndo(null); setTemplateUndo(null);
           setNotice({ text: "直前の引用を取り消しました。保存は行っていません。", failed: false });
         }}>直前の引用を取り消す</button>
       </div>}
       <div className="quote-tools"><button type="button" disabled={saving || !!conflict || !differenceUndo || body !== differenceUndo.after} onClick={() => {
         if (savingRef.current || conflict || !differenceUndo || body !== differenceUndo.after) return;
-        setBody(differenceUndo.before); setDifferenceUndo(null); setQuoteUndo(null); setTemplateUndo(null);
+        setAuditUndo(null); setBody(differenceUndo.before); setDifferenceUndo(null); setQuoteUndo(null); setTemplateUndo(null);
         setNotice({ text: "直前の差分挿入を取り消しました。保存は行っていません。", failed: false });
       }}>直前の差分挿入を取り消す</button></div>
       <FormulaQuoteStatus insertion={differenceInsertion} onCompareOpen={() => {
@@ -281,12 +285,40 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         }
         try {
           const next = insertQuoteAtCursor(body, markdown, quoteSelection.current.start, quoteSelection.current.end);
-          setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setDifferenceUndo(null); setBody(next.body); setQuotePicker(false);
+          setAuditUndo(null); setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setDifferenceUndo(null); setBody(next.body); setQuotePicker(false);
           setNotice({ text: "計算根拠を引用しました。未保存です。", failed: false });
           scheduleInsertedCaret(next.body, next.caret);
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
       }} />}
+      <div className="quote-tools"><button type="button" disabled={!auditUndo || saving} onClick={() => {
+        if (!auditUndo || savingRef.current) return;
+        if (conflict || body !== auditUndo.after || auditEditEpoch.current !== auditUndo.epoch) { setNotice({ text: "挿入後に本文または対象が変わったため安全に取消できません。現在の本文は保持しています。", failed: true }); return; }
+        cancelDeferredCaret(); setBody(auditUndo.before); setAuditUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
+        setNotice({ text: "直前の固定点検記録だけを取り消しました。保存・確認は行っていません。", failed: false });
+      }}>直前の点検記録挿入を取り消す</button></div>
       <FormulaReportAudit key={auditContext}
+        insertion={{ disabled: saving || !writable || !!conflict,
+          onOpen: () => { cancelDeferredCaret(); const editor = editorRef.current; const end = body.replace(/\r\n?/g, "\n").length; auditPosition.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end }; },
+          prepare: markdown => {
+            if (savingRef.current || !writable || conflict) throw new Error("現在は挿入できません。本文は保持しています。");
+            const position = { ...auditPosition.current }; const epoch = auditInsertEpoch.current;
+            const next = insertDifferenceAtCursor(body, markdown, formulaId, position.start, position.end);
+            // Validate the held collection without an implicit storage acquisition.
+            const held = evidence.reports ?? { version: 1 as const, entries: [] };
+            const candidate: FormulaReport = { ...(baseline.report ?? { id, formulaId, title, body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), confirmedExpression: null }), title, body: next.body };
+            if (candidate.evidence) candidate.evidence = { ...candidate.evidence, links };
+            else if (links.length) candidate.evidence = { version: 1, links, confirmations: [] };
+            const exists = held.entries.some(entry => entry.id === id);
+            readFormulaReports({ ...held, entries: exists ? held.entries.map(entry => entry.id === id ? candidate : entry) : [...held.entries, candidate] });
+            return { ...position, insert: () => {
+              if (insertionKeyRef.current !== insertionKey || auditInsertEpoch.current !== epoch || savingRef.current || !writable || conflict) throw new Error("本文・対象・取得世代が変わりプレビューは失効しました。生成し直してください。本文は保持しています。");
+              const editor = editorRef.current;
+              if (editor && (editor.selectionStart !== position.start || editor.selectionEnd !== position.end)) throw new Error("挿入位置が変わったため挿入を停止しました。本文で位置を選び、根拠点検を開き直してください。");
+              setAuditUndo({ before: body, after: next.body, epoch: auditEditEpoch.current }); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setBody(next.body); setPreview(false);
+              setNotice({ text: "点検結果を固定記録として挿入しました。未保存・未確認です。記録は自動更新されません。", failed: false }); scheduleInsertedCaret(next.body, next.caret);
+            } };
+          }
+        }}
         body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict || savedContextUncertain || heldContextUncertain} disabled={saving}
         onNavigate={(start, end) => {
           const epoch = auditNavigationEpoch.current;
@@ -297,7 +329,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
         {body.length > 100_000 ? <p>上限超過のため章一覧を停止しています。本文は保持しています。</p> : headings.length ? <nav aria-label="レポートの章一覧"><ol>{headings.map(heading => <li key={heading.id} style={{ paddingInlineStart: `${(heading.level - 1) * .5}rem` }}><button type="button" disabled={saving} onClick={() => navigateHeading(heading)}>H{heading.level}：{heading.text}</button></li>)}</ol></nav> : <p>見出しがありません。行頭の #〜###### と空白で見出しを作成できます。</p>}
       </details>
-      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); }} /></>}
+      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { auditEditEpoch.current += 1; setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); }} /></>}
       <p>タイトル {title.length}/120文字、本文 {body.length}/100,000文字。見出しは編集用テンプレートです。未記入の証明・史実・出典は補いません。</p>
       {invalid && <p role="alert">タイトルは1〜120文字、本文は100,000文字以内にしてください。超過分は切り捨てません。</p>}
       <p>コピー・ファイル出力は現在表示中の本文です。未保存の編集も含み、保存は行いません。</p>
