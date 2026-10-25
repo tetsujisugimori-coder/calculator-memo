@@ -14,6 +14,61 @@ const pair = (): [AuditComparableRecord, AuditComparableRecord] => [{recordId:'A
 const mutateRecords = (b: AuditComparableRecord, action:(value:EvidenceRecord)=>void) => { const s=b.snapshot!.items[0].sources[0]; action(s.frozen); action(s.observed!); };
 
 describe('fixed audit two-record comparison', () => {
+  it('does not certify two successfully acquired empty inventories as matched', () => {
+    const [a, b] = pair(); a.snapshot!.items = []; b.snapshot!.items = [];
+    const original = JSON.stringify([a, b]); const result = compareAuditRecords(a, b);
+    expect(result.states).toEqual(['incomparable']); expect(result.rows).toHaveLength(0);
+    expect(result.limitations).toContain('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。');
+    expect(result.changes).toEqual([]); expect(JSON.stringify([a, b])).toBe(original);
+  });
+  it.each(['unavailable', 'invalid', undefined] as const)('retains empty acquisition constraint %s without a match', acquisition => {
+    const [a, b] = pair(); a.snapshot!.items = []; b.snapshot!.items = [];
+    b.snapshot!.acquisitionStatus = acquisition;
+    const result = compareAuditRecords(a, b);
+    expect(result.states).toContain(acquisition === 'unavailable' ? 'unavailable' : 'unknown');
+    expect(result.states).toContain('incomparable'); expect(result.states).not.toContain('matched');
+    expect(result.rows).toHaveLength(0); expect(result.changes).toContain('原本取得・形式検証状態');
+    expect(result.limitations).toContain('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。');
+  });
+  it.each(['future', 'malformed'] as const)('rejects %s empty snapshot instead of treating empty rows as agreement', mode => {
+    const [a, b] = pair(); a.snapshot!.items = []; b.snapshot!.items = [];
+    if (mode === 'future') Object.assign(b.snapshot!, { version: 99 });
+    else Object.assign(b.snapshot!, { complete: 'true' });
+    const original = JSON.stringify([a, b]); const result = compareAuditRecords(a, b);
+    expect(result.states).toEqual(['unknown', 'incomparable']); expect(result.rows).toHaveLength(0);
+    expect(result.limitations).toContain('未知・不正な比較形式です。原文は保持します。');
+    expect(JSON.stringify([a, b])).toBe(original);
+  });
+  it.each(['added', 'removed'] as const)('preserves %s when only one complete inventory is empty', state => {
+    const [a, b] = pair(); (state === 'added' ? a : b).snapshot!.items = [];
+    const result = compareAuditRecords(a, b);
+    expect(result.states).toEqual([state]); expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].states).toEqual([state]);
+    expect(result.limitations.join(' ')).not.toContain('両記録に比較可能な根拠項目');
+  });
+  it.each(['unverified', 'stale'] as const)('keeps %s empty records incomparable', state => {
+    const [a, b] = pair(); for (const item of [a, b]) {
+      item.snapshot!.items = []; item.snapshot!.state = state;
+      delete item.snapshot!.acquisitionStatus; delete item.snapshot!.fetchedAt;
+    }
+    const result = compareAuditRecords(a, b);
+    expect(result.states).toEqual(['incomparable']); expect(result.rows).toHaveLength(0);
+    expect(result.limitations).toContain('未照合または失効した記録です。取得原本の状態は比較できません。');
+  });
+  it('retains incomplete empty inventory constraints without inventing missing occurrences', () => {
+    const [a, b] = pair(); a.snapshot!.items = []; b.snapshot!.items = []; b.snapshot!.complete = false;
+    const result = compareAuditRecords(a, b);
+    expect(result.states).toEqual(['incomparable', 'changed']); expect(result.rows).toHaveLength(0);
+    expect(result.limitations).toContain('片側または両側の集計が不完全です。未列挙の項目数と追加・削除は確定できません。');
+  });
+  it.each(['calculatedAt', 'persistedAt'] as const)('does not classify only %s metadata as a calculation change', field => {
+    const [a, b] = pair(); mutateRecords(b, value => { value[field] = '2026-10-26T00:00:00.000Z'; });
+    const original = JSON.stringify([a, b]); const result = compareAuditRecords(a, b);
+    expect(result.states).toEqual(['matched']); expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].states).toEqual(['matched']); expect(result.changes).toEqual([]);
+    expect(result.rows[0].sources[0].changes).toEqual([]); expect(JSON.stringify([a, b])).toBe(original);
+  });
+
   it('compares complete identical known data with no mutation and preserves same source record identity', () => {
     const [a,b]=pair(); const original=JSON.stringify([a,b]); const result=compareAuditRecords(a,b);
     expect(result.states).toEqual(['matched']); expect(result.rows[0].sources[0].frozen?.before.id).toBe('r'); expect(JSON.stringify([a,b])).toBe(original);

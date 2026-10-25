@@ -37,3 +37,17 @@ Node24.22.1、全1906単体/81files成功（既存1824＋新82＝core51/実ア�
 全6GUI条件へ各6追加し846→882検査、geometry562維持、mobile1086touch（既存1036＋今回50）、PNG114/成功trace0/30分上限不変更。実機Safari/VoiceOver/OS拡大は未検証。独立P2×2/P3×1は同じ赤試験で修正後緑、関連82件と型検査成功、確認範囲で残P0〜P2なし。[独立報告](formula-report-audit-comparison-independent-review.md)。独立担当の検証はソース/jsdom/単体であり実ブラウザ/CIとは区別。
 
 最終公開commit・実CI run/attempt・成果物digest/HEAD整合はDraft PRに記録する。この文書コミット自身の未実行CIを成功と予告しない。Draft・未マージ保持、main直接push/auto-merge/公開は行わない。
+
+## PR #91 再レビュー追補の設計（2026-10-26 JST）
+
+対象HEAD `eae5cc1882bb1f97647d63cf6f5b11eb28993d5c`、main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f`。既存Draft/未マージを確認し、新規clean cloneで既存作業を保護した。同じPR/branchを継続する。
+
+従来の取得失敗0件への対応だけでは、両記録が `checked / acquisitionStatus: ok / complete: true / items: []` の場合に総合状態の末尾fallbackが `matched` になる。空集合に差分がないことと、比較対象のある根拠一致を混同した判定であり、UIの0件注意とも矛盾する。
+
+第一希望の最小修正を採用する。形式検証後、両側itemsが空なら既存 `incomparable` と「両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。」を制約へ加える。早期returnせず、取得不能/成否未記録/未知不正/未照合/失効/不完全/状態変更も併存させる。片側だけ空なら既存の安定IDに基づく追加・削除と不完全時の断定拒否を保持する。新状態 `empty` の追加は次善策だが、既存比較不能で意味を表現でき、形式・UI契約を増やす必要がないため不採用。
+
+P3検討: 計算記録の `calculatedAt` / `persistedAt` だけの変化は、今回の既知計算根拠（式・実使用入力/参照・内部値・表示値等）の差分対象外。日時は詳細情報として保持・表示し、同じ根拠の日時差だけで計算結果の変化とはしない。取得日時・生成日時も互いに代用しない。出典照合状態そのものが変われば、その状態差は従来どおり別に検出する。差分エンジンの拡張は行わない。
+
+保存schema/version、旧v1/v2本文、snapshot、原本、確認履歴、容量、計算エンジンは変更しない。比較操作は読取のみ。検証結果は後記し、未実施のCIを先取りしない。
+
+追補検証: 修正前core4/UI1失敗→同一期待値で成功。全単体1937/82files（従来1906＋31）、lint/型/通常Pages build成功。独立97件成功。local契約36/37は既存100ms起動タイムアウトのログ前停止（単純Node起動170〜351ms）で、上限/期待値は不変更。実Chromium141/WebKit26.0の既存6条件×比較7検査＝42成功、mobile各53tap、pageerror0、exit0。空同士の両theme/CSS200/focus/保存不変を含む。正式GUI888/geometry562/PNG114/成功trace0と最終HEAD契約37の結果・digestは既存Draft PR #91の追記を参照する。

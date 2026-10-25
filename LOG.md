@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）
+
+- 着手: 最新PR HEAD `eae5cc1882bb1f97647d63cf6f5b11eb28993d5c`、main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f`、Draft/未マージを確認。専用clean cloneで同じ `feat/audit-record-comparison` を継続し既存作業を保護。
+- 再現・原因: 別recordId/同じformulaId/reportIdで双方checked・取得ok・完全・items空のとき、差分statesが空でmatchedへfallbackした。取得失敗0件の前回修正だけでは正常取得0件を覆えていなかった。coreの正常空判定1件/空制約3件、実CalculatorAppの誤一致表示1件を修正前REDで確認。
+- 第一希望採用: 形式検証後、両側items空に既存incomparableと理由を付与する6行の最小修正。早期returnせず取得成否/未記録/失効/不完全と状態変化を併記。片側0件の追加/削除やstable ID、frozen/observed分離は不変更。新しいempty状態追加は互換/UI契約増加が不要なため不採用。
+- 互換・保護: schema/version/容量/engine、旧v1/v2本文/snapshot/原本/確認履歴を不変更。比較は非保存・非再計算・非挿入。calculatedAt/persistedAtだけの差は既知計算根拠差の対象外と設計へ明記し2回帰で確認。
+- ローカル検証: 全1937単体/82files（従来1906＋core13＋実アプリ1＋独立17）成功、失敗/skip0、52.68秒。lint/TypeScript/通常・Pages build成功。独立担当の関連97件成功、P0〜P3新規残存指摘なし（ソース/jsdom範囲）。同一期待値のRED→GREENを保持。
+- CI契約: ローカル36成功/1失敗。既存100ms合成timeoutでNodeが最初のログ前に停止（静穏再実行でも再現）。単純Node起動の実測170/351/218msは100ms超で、timeout終了124とログ欠落を区別した。期待値/上限は変更せず、正式CIの同37件を別に照合する。
+- 実GUI: local Chromium141.0.7390.37/WebKit26.0の既存6条件で比較専用7検査ずつ計42成功、pageerror0、各mobile53tap、process exit0。空同士の比較不能/理由/0行、両テーマCSS200%、focus/keyboard/Escape復帰、storage不変と既存比較経路を確認。既存全館GUIへ各1検査を追加（882→888、geometry562/PNG114/成功trace0/30分保持）。最終HEADの正式全GUI・契約37・CI成果物はPR Checksと追記結果を参照し、記録commit自身の成功を先取りしない。
+- 関連: [Issue #90](https://github.com/tetsujisugimori-coder/calculator-memo/issues/90)、[Draft PR #91](https://github.com/tetsujisugimori-coder/calculator-memo/pull/91)、[設計](docs/agent/formula-report-audit-comparison.md)。今回の検証結果と最終CIの更新はこの追補/PRへ記録する。旧レビュー結論は当時の範囲に限る。
+- 残余: #85初回選択位置ずれの全原因未特定、実機Safari/VoiceOver/OS文字拡大の未検証を維持。数学的証明/真正性/外部原本の原子的整合は保証しない。main push/merge/auto-merge/公開は行わない。
+
 ## 2026-10-25 JST: 固定点検記録の2時点比較（Issue #90）
 
 - 基点: PR #89 merged、最新main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f` をAPI/fetchで確認。旧clean worktree保持、新worktree/branch `feat/audit-record-comparison`。関連 [Issue #90](https://github.com/tetsujisugimori-coder/calculator-memo/issues/90)。

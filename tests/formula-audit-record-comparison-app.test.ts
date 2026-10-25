@@ -164,3 +164,32 @@ it.each(['unavailable', 'invalid', undefined] as const)('zero-item acquisition %
   await compare(); expect(result()!.textContent).toContain('比較不能');
   expect(result()!.querySelector('h4')!.textContent).not.toContain('一致');
 });
+
+it('real app keeps successfully acquired empty records incomparable without saving or changing fixed history', async () => {
+  const inventory = { items: [], complete: true, reason: '認識できた項目なし' };
+  const fixedEmpty = (recordId: string) => createAuditRecordMarkdown('0件の点検', {
+    ...info(recordId), comparison: captureAuditComparison(inventory, [], 'checked', at, 'ok', { editing: false, unsavedChanges: false, savedContextChanged: false }),
+  });
+  const fixture = structuredClone(original);
+  const body = `${fixedEmpty('audit-a')}\n\n${fixedEmpty('audit-b')}`;
+  fixture.formulaReports!.entries[0].body = body;
+  const saved = JSON.stringify(fixture);
+  localStorage.setItem(STORAGE_KEY, saved);
+  await open();
+  expect(result()).toBeNull();
+  expect(area().textContent).toContain('原本取得・形式検証：成功');
+  const reads = vi.spyOn(Storage.prototype, 'getItem'), writes = vi.spyOn(Storage.prototype, 'setItem');
+  await compare();
+  expect(result()!.querySelector('h4')!.textContent).toBe('総合状態：比較不能');
+  expect(result()!.querySelector('h4')!.textContent).not.toContain('一致');
+  expect(result()!.textContent).toContain('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。');
+  expect(result()!.querySelectorAll('ol > li')).toHaveLength(0);
+  expect(result()!.textContent).toContain('0件は点検完了や数学的な一致を意味しません');
+  expect(reads).not.toHaveBeenCalled(); expect(writes).not.toHaveBeenCalled();
+  reads.mockRestore(); writes.mockRestore();
+  await click('根拠点検を閉じる'); await click('Markdownを編集');
+  expect(host.querySelector<HTMLTextAreaElement>('#formula-report-body')!.value).toBe(body);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(saved);
+  expect(fixture.notes).toEqual(original.notes);
+  expect(fixture.formulaReports!.entries[0].evidence).toEqual(report.evidence);
+});

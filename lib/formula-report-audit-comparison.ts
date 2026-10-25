@@ -150,6 +150,12 @@ export function compareAuditRecords(before: AuditComparableRecord, after: AuditC
     else if (snapshot.acquisitionStatus === 'unavailable') result.states.push('unavailable', 'incomparable');
     else if (snapshot.acquisitionStatus === 'invalid' || snapshot.acquisitionStatus === undefined) { result.states.push('unknown', 'incomparable'); result.limitations.push(snapshot.acquisitionStatus === undefined ? '原本取得の成否が記録されていません。0件でも取得成功とは推測しません。' : '取得した保存形式が未知・不正です。'); }
   }
+  // Successful acquisition is not evidence of agreement when nothing can be compared.
+  // Keep other acquisition/validation constraints and metadata changes alongside this.
+  if (!a.items.length && !b.items.length) {
+    result.states.push('incomparable');
+    result.limitations.push('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。');
+  }
   if (!a.bodyContext || !b.bodyContext) result.limitations.push('保持本文・未保存編集の状態は片側または両側で未記録です。保存本文との一致を推測しません。');
   else {
     for (const [key, label] of [['editing', '対象本文の編集状態'], ['unsavedChanges', 'レポートの未保存変更状態'], ['savedContextChanged', '保存本文との一致確認制約']] as const) if (a.bodyContext[key] !== b.bodyContext[key]) result.changes.push(label);

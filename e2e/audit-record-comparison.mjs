@@ -14,9 +14,9 @@ export async function exerciseAuditRecordComparison({ page, context, base, expec
     { blockId: 'target', position: 2, expression: value === 1 ? 'x+1' : longExpression, inputs: [{ kind: 'variable', name: 'x', sourceBlockId: 'source', value: String(value) }], result: '2', resultText: '2', status: 'success' },
   ] });
   const snapshot = value => ({ version: 1, state: 'checked', acquisitionStatus: 'ok', complete: true, reason: 'Synthetic known record', fetchedAt: at, items: [{ id: stableId, kind: 'quote', bodyStatus: 'intact', reason: 'Synthetic intact', sources: [{ side: 'quote', memoId: 'compare-m', blockId: 'target', status: 'matched', reason: 'Synthetic matched', linked: true, frozen: calculation(value), observed: calculation(value) }] }] });
-  const fixed = (recordId, value, legacy = false) => {
+  const fixed = (recordId, value, legacy = false, empty = false) => {
     const version = legacy ? 1 : 2;
-    const metadata = { version, recordId, formulaId, reportId, generatedAt: at, bodySha256: 'a'.repeat(64), bodyLength: 100, ...(legacy ? {} : { comparison: snapshot(value) }) };
+    const metadata = { version, recordId, formulaId, reportId, generatedAt: at, bodySha256: 'a'.repeat(64), bodyLength: 100, ...(legacy ? {} : { comparison: { ...snapshot(value), ...(empty ? { items: [] } : {}) } }) };
     return '```calculator-memo-audit-record-start-v' + version + '\n' + JSON.stringify(metadata) + '\n```\n\nHistorical audit ' + recordId + '\n\n```calculator-memo-audit-record-end-v' + version + '\n' + JSON.stringify({ version, recordId }) + '\n```';
   };
   const body = [fixed('record-A', 1), fixed('record-B', 2), fixed('record-legacy', 1, true)].join('\n\n');
@@ -29,8 +29,8 @@ export async function exerciseAuditRecordComparison({ page, context, base, expec
   const click = name => activate(button(name));
   const result = () => comparison().getByRole('region', { name: '2時点比較結果', exact: true });
   const raw = () => page.evaluate(key => localStorage.getItem(key), key);
-  const open = async () => {
-    await page.goto(base); await page.evaluate(({ key, fixture }) => localStorage.setItem(key, JSON.stringify(fixture)), { key, fixture }); await page.reload();
+  const open = async (data = fixture) => {
+    await page.goto(base); await page.evaluate(({ key, fixture }) => localStorage.setItem(key, JSON.stringify(fixture)), { key, fixture: data }); await page.reload();
     await click('登録式ライブラリ'); await click('関連レポートを閲覧・編集'); await click('根拠点検');
   };
   const choose = async (label, id) => {
@@ -126,6 +126,34 @@ export async function exerciseAuditRecordComparison({ page, context, base, expec
     await expect(comparison()).toContainText('日時不明');
     assert.equal(await raw(), JSON.stringify(fixture));
     await passed(prefix + ': valid current record navigation selects its exact region while legacy and unknown incomplete records remain ineligible without mutation');
+
+    const emptyFixture = structuredClone(fixture);
+    const emptyBody = [fixed('record-A', 1, false, true), fixed('record-B', 1, false, true)].join('\n\n');
+    emptyFixture.formulaReports.entries[0].body = emptyBody;
+    await open(emptyFixture); const emptySaved = await raw();
+    await expect(result()).toHaveCount(0);
+    await expect(comparison()).toContainText('原本取得・形式検証：成功');
+    await select();
+    await button('選択した2記録を比較').focus();
+    await expect(button('選択した2記録を比較')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(result().getByRole('heading', { level: 4 })).toHaveText('総合状態：比較不能');
+    await expect(result()).toContainText('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。');
+    await expect(result()).toContainText('0件は点検完了や数学的な一致を意味しません');
+    await expect(result().locator('ol > li')).toHaveCount(0);
+    for (const theme of ['dark', 'light']) {
+      await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = '200%'; }, theme);
+      await assertHorizontalFit();
+      await result().getByRole('heading', { level: 4 }).scrollIntoViewIfNeeded();
+      await expect(result().getByRole('heading', { level: 4 })).toBeVisible();
+      await button('比較元Aと比較先Bを入れ替える').focus();
+      await expect(button('比較元Aと比較先Bを入れ替える')).toBeFocused();
+    }
+    assert.equal(await raw(), emptySaved);
+    assert.equal(emptySaved, JSON.stringify(emptyFixture));
+    await page.keyboard.press('Escape'); await expect(audit()).toHaveCount(0); await expect(button('根拠点検')).toBeFocused();
+    assert.equal(await raw(), emptySaved);
+    await passed(prefix + ': successfully acquired empty records remain incomparable with explicit reason zero rows and unchanged storage in both themes CSS 200 percent and keyboard focus');
   } finally {
     await second.close();
     await page.evaluate(({ key, original }) => { if (original === null) localStorage.removeItem(key); else localStorage.setItem(key, original); document.documentElement.style.fontSize = ''; }, { key, original });
