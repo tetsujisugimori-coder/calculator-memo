@@ -37,11 +37,11 @@ const inputMap = (block: EvidenceBlock, field: 'sourceBlockId' | 'value') => JSO
 );
 
 /** No parsing/evaluation, present-day memo lookup, clock or persistence operations. */
-export function compareEvidenceRecords(before: EvidenceRecord, after: EvidenceRecord): EvidenceComparison {
+export function compareEvidenceRecords(before: EvidenceRecord, after: EvidenceRecord, options: { allowSameRecordId?: boolean } = {}): EvidenceComparison {
   if (!validCalculationEvidence({ version: 1, records: [before] }) || !validCalculationEvidence({ version: 1, records: [after] })) {
     throw new Error('比較不可: 未対応または不正な計算記録です。欠けた情報は確認不能であり、現在のメモから補完しません。元データを保護してください。');
   }
-  if (before.id === after.id) throw new Error('比較には異なる2件の保存記録を選んでください。');
+  if (before.id === after.id && !options.allowSameRecordId) throw new Error('比較には異なる2件の保存記録を選んでください。');
   const left = structuredClone(before), right = structuredClone(after);
   const leftById = new Map(left.blocks.map((block, index) => [block.blockId, { block, executionOrder: index + 1 }]));
   const rightById = new Map(right.blocks.map((block, index) => [block.blockId, { block, executionOrder: index + 1 }]));

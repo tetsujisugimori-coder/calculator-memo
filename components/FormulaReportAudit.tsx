@@ -3,6 +3,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { parseReportAudit, assessReportAudit, type AuditItem, type AuditAcquisition } from "../lib/formula-report-audit";
 import { buildAuditMarkdown, bodyLabels, sourceLabels } from "../lib/formula-report-audit-export";
+import { captureAuditComparison } from "../lib/formula-report-audit-comparison";
+import { FormulaAuditRecordComparison } from "./FormulaAuditRecordComparison";
 import { createAuditRecordMarkdown } from "../lib/formula-report-audit-record";
 import { downloadMarkdownReport } from "../lib/markdown-report";
 import { loadData, STORAGE_KEY } from "../lib/storage";
@@ -23,6 +25,7 @@ export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, r
   const [preparing, setPreparing] = useState(false);
   const [recordError, setRecordError] = useState("");
   const [open, setOpen] = useState(false);
+  const [comparisonGeneration, setComparisonGeneration] = useState(0);
   const [acquisition, setAcquisition] = useState<Acquisition>();
   const [stale, setStale] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -60,6 +63,7 @@ export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, r
       if ((event.key === STORAGE_KEY || event.key === null) && (!acquisition || event.newValue !== acquisition.raw)) {
         exportEpoch.current += 1; exportBusy.current = false;
         setExporting(false); setExportNotice(null); setManualCopy(null); setRecordPreview(null); setPreparing(false);
+        setComparisonGeneration(value => value + 1);
         staleRef.current = true; setStale(true); setSelected(null);
         heldContextRef.current = true; setHeldContextUncertain(true);
       }
@@ -68,6 +72,7 @@ export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, r
     return () => window.removeEventListener("storage", observe);
   }, [acquisition]);
   const refresh = () => {
+    setComparisonGeneration(value => value + 1);
     invalidateExport();
     setSelected(null);
     const loaded = loadData();
@@ -90,10 +95,11 @@ export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, r
     try {
       const generatedAt = new Date().toISOString();
       const output = generateMarkdown(true, generatedAt);
+      const comparison = captureAuditComparison(inventory, items, staleRef.current || stale ? "stale" : acquisition ? "checked" : "unverified", !staleRef.current && !stale ? acquisition?.fetchedAt : undefined, !staleRef.current && !stale && acquisition ? acquisition.error ? acquisition.invalidData ? "invalid" : "unavailable" : "ok" : undefined, { editing, unsavedChanges: unsavedChanges ?? editing, savedContextChanged: bodyContextUncertain || heldContextRef.current });
       const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(body));
       if (exportEpoch.current !== epoch) return;
       const bodySha256 = Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("");
-      const markdown = createAuditRecordMarkdown(output.markdown, { recordId: crypto.randomUUID(), formulaId, reportId: reportId ?? "未登録", generatedAt, bodyLength: body.length, bodySha256 });
+      const markdown = createAuditRecordMarkdown(output.markdown, { recordId: crypto.randomUUID(), formulaId, reportId: reportId ?? "未登録", generatedAt, bodyLength: body.length, bodySha256, comparison });
       const prepared = insertion.prepare(markdown);
       setRecordPreview({ ...prepared, markdown, body, epoch });
     } catch (cause) {
@@ -134,6 +140,7 @@ export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, r
         {bodyContextUncertain && <p role="alert">出力対象は画面に保持した本文です。現在の保存本文との一致は未確認です。保存領域の更新等を検知していますが、対象レポートの変更・削除は断定しません。出典の再照合とは別の制約です。</p>}
         {unsavedChanges && !editing && !bodyContextUncertain && <p>本文は保存済みの内容ですが、タイトル・関連付けなどに未保存変更があります。</p>}
         <p>出典一致・本文対応・利用者の明示確認・数学的正しさは別です。保存記録の変更だけで過去の引用が誤りとは判定しません。閲覧・照合・移動では保存も再計算も行いません。</p>
+        <FormulaAuditRecordComparison body={body} formulaId={formulaId} reportId={reportId} savedContextChanged={bodyContextUncertain} generation={comparisonGeneration} onNavigate={(start, end) => { closeAudit(); onNavigate(start, end); }} />
         <button type="button" onClick={refresh}>保存記録と照合</button>
         {!acquisition || stale ? <p role="status">未照合です。{stale ? "保存原本の更新を検知したため以前の結果と詳細を失効しました。" : "照合は明示操作で開始します。"}</p> : <p>原本の観測取得日時：{acquisition.fetchedAt}。保存日時・計算日時・利用者確認日時ではありません。</p>}
         {acquisition && !stale && acquisition.error && <p role="alert">{acquisition.invalidData ? "保存原本が未知・不正な形式です。" : "保存原本の取得に失敗しました。"}古い成功結果では代用しません。</p>}
@@ -156,7 +163,7 @@ export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, r
         {exporting && <p role="status">出力開始時点の点検結果をコピーしています。対象変更後の完了通知は表示しません。</p>}
         {exportNotice && <p role={exportNotice.failed ? "alert" : "status"}>{exportNotice.text}</p>}
         {manualCopy !== null && <div><label htmlFor="audit-export-manual-copy">点検結果Markdown全文（手動コピー用）</label><textarea id="audit-export-manual-copy" readOnly className="code-input" rows={10} value={manualCopy} onFocus={event => event.target.select()} /></div>}
-        <label>表示する状態<select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
+        <label>表示する状態<select aria-label="表示する状態" value={filter} onChange={event => setFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
         <ol aria-label="本文順の根拠一覧">{visible.map(item => {
           const snapshot = item.quote?.snapshot ?? item.difference?.snapshot?.quote;
           const identifier = item.quote?.snapshot?.quoteId ?? item.difference?.snapshot?.differenceId;

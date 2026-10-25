@@ -76,7 +76,7 @@ it('identity generation change destroys prior detail, filter and results', async
 });
 it('filters per occurrence without changing body, and close returns focus', async () => {
   const body = `${createQuoteMarkdown(quote)}\n\n${tracked()}`, raw = seed(); await audit(body); const entry = button('根拠点検'); entry.focus(); await openAudit(); await click('保存記録と照合');
-  const select = host.querySelector('select')!; await act(async () => { select.value = 'review'; select.dispatchEvent(new Event('change', { bubbles: true })); }); expect(auditRegion().children).toHaveLength(0); expect(host.textContent).toContain('該当する項目はありません');
+  const select = host.querySelector<HTMLSelectElement>('select[aria-label="表示する状態"]')!; await act(async () => { select.value = 'review'; select.dispatchEvent(new Event('change', { bubbles: true })); }); expect(auditRegion().children).toHaveLength(0); expect(host.textContent).toContain('該当する項目はありません');
   await click('根拠点検を閉じる'); expect(document.activeElement).toBe(entry); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });
 it('invalid tracking has no exposed snapshot or enabled guessed jump', async () => {

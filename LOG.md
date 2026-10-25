@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: 固定点検記録の2時点比較（Issue #90）
+
+- 基点: PR #89 merged、最新main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f` をAPI/fetchで確認。旧clean worktree保持、新worktree/branch `feat/audit-record-comparison`。関連 [Issue #90](https://github.com/tetsujisugimori-coder/calculator-memo/issues/90)。
+- 実装前調査: v1固定記録には完全な構造化計算根拠がなく、人間向けMarkdownから復元しない。第一希望の既存scanner/共有assessment/計算差分engine再利用を採用、新規本文内v2だけ比較資料を保持。旧v1は不変/比較資料不足。別保存領域は移行/二重管理負担により不採用。保存schema/容量/engine意味論を維持。[設計](docs/agent/formula-report-audit-comparison.md)。
+- 明示A/B・入替・同一性/適格性の処理側検証、安定ID対応、引用時と点検取得時の資料分離。式/入力/参照/内部値/表示値/状態変化を分離し、同結果でも根拠変更を隠さない。重複/欠落/未知/不正/不完全は推測補完せず、変更理由不明を表示。
+- 保護: 過去記録/本文/snapshot/原本/確認履歴を比較操作では変更しない。選択/本文/対象/照合/通知で旧結果失効。取得成功だけで保持本文を現在の保存本文へ格上げしない。自動保存/再計算/確認/本文挿入なし。
+- 独立レビュー修正: 0件取得成否の欠落P2（正常/失敗を一致へ誤分類）と、比較差分の原引用ID/対象block変更漏れP2を独立赤各2件→修正。記録全体の取得状態と原引用識別を保持し、旧不足は推測しない。StrictModeのeffect cleanup世代ずれも独立赤1件→不要加算除去。実GUIのselectラベル混入も修正。詳細と最終検証は設計文書へ記録。
+- 検証: 全1906単体/81files（既存1824＋新82）、lint/型/通常Pages build、CI契約37成功。局所Chromium141両幅6検査/50tap/pageerror0、localWebKit26.5はassertion後cleanup停止で完走PASSとしない。正式6条件へ各6追加し882checks/geometry562/mobile1086/PNG114/成功trace0/30分を維持。独立P2×2/P3×1は赤→緑、確認範囲で阻害残件なし。最終HEAD実CI・artifact照合はDraft PRへ記録し、未実行を成功としない。PR85初回CI全原因未特定、実機Safari/VoiceOver/OS文字拡大未検証を継続。
+
 ## 2026-10-25 JST: 根拠点検結果の本文内固定記録（Issue #88）
 
 - 着手: PR #87 merged / 最新main `a3ca0f5f6b993a5df8d0a5648b794b1acefd2f9c` を確認。旧作業tree clean、別worktree `calculator-fixed-audit` / `feat/audit-fixed-record` で保全。新規 [Issue #88](https://github.com/tetsujisugimori-coder/calculator-memo/issues/88)。
