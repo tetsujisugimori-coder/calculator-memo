@@ -13,6 +13,9 @@ import { extractMarkdownHeadings, markdownHeadingDomId, type MarkdownHeading } f
 import { FormulaQuotePicker, FormulaQuoteStatus } from "./FormulaReportQuotes";
 import { insertQuoteAtCursor } from "../lib/formula-report-quotes";
 import { buildQuoteDifferenceMarkdown, insertDifferenceAtCursor } from "../lib/formula-report-diff";
+import { createTrackedDifferenceMarkdown } from "../lib/formula-report-diff-tracking";
+import { compareQuoteToRecord } from "../lib/formula-quote-comparison";
+import { FormulaDifferenceSources } from "./FormulaDifferenceSources";
 import type { DifferenceInsertion } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
 
@@ -25,7 +28,7 @@ type Props = {
 function acquireEvidence(formulaId: string) {
   const loaded = loadData();
   return loaded.status === "error"
-    ? { links: [] as FormulaReportEvidenceLink[], notes: [] as Memo[], raw: loaded.raw, error: "保存済み原本を安全に取得できません。根拠は参照不能です。現在の編集で補完しません。", fetchedAt: new Date().toISOString() }
+    ? { links: [] as FormulaReportEvidenceLink[], notes: [] as Memo[], raw: loaded.raw, invalidData: loaded.reason !== "storage-unavailable", error: "保存済み原本を安全に取得できません。根拠は参照不能です。現在の編集で補完しません。", fetchedAt: new Date().toISOString() }
     : { links: structuredClone(loaded.data.formulaReports?.entries.find(item => item.formulaId === formulaId)?.evidence?.links ?? []), notes: structuredClone(loaded.data.notes), raw: loaded.status === "ok" ? loaded.raw : null, error: "", fetchedAt: new Date().toISOString() };
 }
 
@@ -132,7 +135,9 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     prepare: (quote, targetKey) => {
       if (savingRef.current || !writable || conflict || evidenceChanged || evidence.error) throw new Error("現在は差分を挿入できません。本文は保持しています。");
       const data = checkInsertionSource();
-      const markdown = buildQuoteDifferenceMarkdown(quote, formulaId, evidence.notes, evidence.links, targetKey);
+      const visible = buildQuoteDifferenceMarkdown(quote, formulaId, evidence.notes, evidence.links, targetKey);
+      const comparison = compareQuoteToRecord(quote, formulaId, evidence.notes, evidence.links, targetKey);
+      const markdown = createTrackedDifferenceMarkdown(visible, quote.snapshot!, comparison.after, crypto.randomUUID(), new Date().toISOString());
       const { start, end } = diffSelection.current;
       const next = insertDifferenceAtCursor(body, markdown, formulaId, start, end);
       // Validate the complete report collection without invoking any save/confirmation writer.
@@ -223,6 +228,7 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
         const end = body.replace(/\r\n?/g, "\n").length;
         diffSelection.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end };
       }} onRefresh={refreshEvidence} body={body} formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || conflict }} />
+      <FormulaDifferenceSources body={body} formulaId={formulaId} reportId={report?.id ?? id} links={evidence.links} source={{ ...evidence, stale: evidenceChanged || !!conflict }} onRefresh={refreshEvidence} />
       {quotePicker && <FormulaQuotePicker formulaId={formulaId} links={evidence.links} source={{ ...evidence, stale: evidenceChanged }} disabled={saving || !writable || conflict} onClose={() => setQuotePicker(false)} onInsert={markdown => {
         if (savingRef.current || !writable || conflict || evidenceChanged || evidence.error) return;
         const latest = loadData();

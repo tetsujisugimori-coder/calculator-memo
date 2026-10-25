@@ -1,5 +1,34 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: PR #83 P2 比較差分フェンスの境界保護
+
+- 対象: [PR #83](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83)、[review 5640533497](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83#pullrequestreview-5640533497)、行コメント4368884046。開始時remote/local HEADは `4e6a49ef99399a11b8df8f5cdf16797233ce6cba` 一致、作業ツリーclean。既存枝を継続しIssue #82を再利用、新PRなし。
+- 修正前再現: 正規の両固定snapshotを持つ差分の開始/終端間に `calculator-memo-difference-preview` を追加し、その後・正規終端より前へ挿入。引用/差分の両経路 × LF/CRLFの4回帰すべて旧実装で拒否されず失敗した。UIの両経路でも本文変更または不正な挿入プレビューを再現。原因は予約接頭辞だけで終了を判定するガードで、読取側にも同種の早期解除があった。
+- 採用: 完全一致v1開始/終端、実フェンス閉鎖、既存validator、同一IDを共通scannerで確認。未知・破損・将来版・重複/入れ子で曖昧になれば元の開始からEOFまで保護し、後続のもっともらしい終端で復旧しない。両挿入と出典状態表示を同一境界へ統一する。循環依存を避けるためsnapshot型/validatorだけ中立モジュールへ移動し既存exportを維持。
+- 第一希望/妥協: 安全な境界だけを許す。壊れた差分以降の無関係な文章にも挿入できない場合があるが、推測回復より原本保全を優先する。通常v1直前/直後、複数正常差分間は維持。マーカーが完全削除された文章の元範囲復元は対象外。詳細は `docs/agent/formula-report-diff-tracking.md`。
+- 不変: snapshot・既存Markdown・追跡情報の自動更新/修復/削除なし。保存schema/version/容量/計算エンジン/確認判定/確認履歴、専用取消を変更しない。選択は削除しないため開始位置だけを挿入境界とする既存契約を維持。
+- 検証: 追加境界74件（両経路、LF/CRLF、UTF-16日本語/絵文字、未来/破損/未知/入れ子/欠落、正常境界、選択、原情報不変）が成功。全単体1660件/68ファイル、CI契約37件、lint/型検査/通常・Pages build成功。独立再レビューは影響237件と追加927境界assertionsでP0/P1/P2残件なし。実Chromium375/390pxのfocused検査各11件・61touchで両テーマ200%、本文/選択/原本/確認履歴不変とフォーカス復帰を確認。全6条件Chromium/WebKitはこの記録を含む最終HEADの実CIで確認し、結果をPRへ記録する。未完了を成功扱いしない。
+- CI方針: 既存6条件を維持し異常挿入拒否1群/条件を追加。30分上限、代表PNG114枚、成功trace非保存、保存上限は変更しない。実機Safari/VoiceOver/OSソフトキーボードは未検証。
+
+## 2026-10-25 JST: 比較差分の出典追跡・根拠確認（Issue #82）
+
+- 着手調査: 最新 main `5e003bfc5e7a543a7b686f1997eafb8beec0b7aa` と PR #81 のマージ（2026-10-24 23:58 JST）を確認し、専用枝 `feat/82-difference-source-tracking` を作成。依頼全文を [Issue #82](https://github.com/tetsujisugimori-coder/calculator-memo/issues/82) に保持し、読戻し一致を確認。既存 checkout は変更しない。
+- 第一希望: 既存引用・根拠表示を拡張し、通常 Markdown 内の厳密なバージョン付き開始/終了メタデータに、両保存記録の固定 snapshot と元引用の識別情報を保持する。既存 validator/comparison/parser、詳細表示、保存原本の取得・失効・容量 preflight を再利用する。保存スキーマ/version/容量、確認履歴、計算エンジンは変更しない。
+- 従来 PR #81 の差分は追跡用 snapshot を持たない通常 Markdown。新情報を推測して移行せず「追跡情報不足」とする。新規差分の出典は構造化 ID と検証済み記録で追跡し、表示本文の一致だけで対応付けない。本文編集と出典の現在状態は別々に表示する。
+- 変更予定: `lib/formula-report-diff-tracking.ts`、レポート編集画面・出典 UI・既存比較表示の最小共通化、単体/統合/GUI 境界テスト、README・設計文書。別メタデータ保存は既存の未知フィールド保護を変えるため不採用。全履歴の自動復元/自動追従/再確認は対象外。
+- 検証: 実装前。PR 未作成、CI 未実行。最終 HEAD の結果と独立レビューは後続記録/PR に明記する。
+- 実装・ローカル検証: 両固定記録の追跡・本文編集の別判定・現在の出典詳細/明示比較・取得世代失効を実装。全単体1584件/67ファイル（追加コア38/UI34）、CI契約37件、型検査、通常/Pages build成功。保存writer/schema/確認判定/計算エンジンの変更なし。
+- 独立レビュー: 同一登録式のレポートID切替で旧出典dialogが残るP2、両現在記録から引用ブロックが消えた際の残存詳細選択P2を修正。独立89件再検証で残るP0/P1/P2なし。不正JSON/未知version/不正構造と実Storage取得例外も分離した。
+- 実GUI: pinned Playwright Chromium desktop1365/375px touchで引用/差分/出典8群とprovenance/errors（各10検査）成功。両テーマ200%、長いID/式、詳細往復とフォーカス、他タブ更新/再取得、固定snapshot/未保存本文/原本不変を検証。mobile実touch55操作。6条件契約は744検査/mobile各970操作/geometry562、30分・114PNG・成功trace非保存を維持。フルChromium/WebKitは最終HEAD実CIで確認する。
+- 初回GUIで共通化時の片側欠落説明の退行を検出して元のラベル付き文言に修正。次の失敗は試験で先行注入した他タブ更新が既存安全ガードを正しく発火したため、既存編集検査後に注入する順序へ訂正。期待値・安全ガードは弱めていない。初回依存導入は既定cache書込不可で失敗し作業用cacheで復旧、system Chromium起動制約は公式pinned headless shellで代替した。
+- 未検証: 実機iPhone Safari/VoiceOver/OSソフトキーボード、任意外部writerの原子的排他、数学的正しさ・真正性。旧差分の後付け追跡は対象外。新規依存なし。設計と次善策・rollbackは `docs/agent/formula-report-diff-tracking.md`。
+- [Draft PR #83](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83) を作成。Git CLI pushは認証不足exit128、remote branch不存在を確認後、認証済み個別blob/tree/commit/refで公開。検証済みローカルtree `fbf48125a13e801881cf0e15756d4c4ce96177f3` との完全一致を確認。初回ファイル転送処理の停滞は結果を照合してから再開し、不確定writeを盲目的に再送していない。
+- 互換性: 旧アプリには新しい追跡UIはないが本文は通常Markdownとして保持される。新アプリも未知version/未知フィールドの追跡情報を修復・削除せず照合不能として保持する。新しいプレビュー準備日時/差分IDはその操作自身の情報であり、記録に欠ける確認日時・保存完了時刻を生成したものではない。
+- この文書追記後の最終HEADについて実Actionsの6条件と成果物を確認し、結果はPR Checks/完了コメントへ記録する。未実行・実行中を成功として先取りしない。Draftを維持し、人間のレビュー/マージ判断を待つ。
+
+
+
+
 ## 2026-10-24 JST: 比較差分を関連レポートへ挿入（Issue #78）
 
 - 着手: cleanな新規clone、最新main `2087868b572b707de86635a88306dc010a2a544f`（PR #77 merge）から `feat/78-report-diff-insertion`。本人の添付全文を [Issue #78](https://github.com/tetsujisugimori-coder/calculator-memo/issues/78) に原文で保存。PR #71には依存しない。
