@@ -1,3 +1,4 @@
+import { outsideAuditRecordBlocks, scanAuditRecordEnvelopes } from './formula-report-audit-record';
 import { parseMarkdownBlocks } from './markdown-blocks';
 import { closedCode, scanDifferenceEnvelopes } from './formula-report-diff-envelope';
 import { readQuoteAssessments, type QuoteAssessment } from './formula-report-quotes';
@@ -23,7 +24,9 @@ export type AuditAcquisition = { notes: Memo[]; links: FormulaReportEvidenceLink
  * authority here: a poisoned region hides an unknown number of later items. */
 export function parseReportAudit(body: string, formulaId: string): AuditInventory {
   if (body.length > 100_000) return { items: [], complete: false, reason: '本文上限超過のため列挙できません。根拠0件とは判定していません。' };
-  const blocks = parseMarkdownBlocks(body);
+  const originalBlocks = parseMarkdownBlocks(body);
+  const auditRecords = scanAuditRecordEnvelopes(body, originalBlocks);
+  const blocks = outsideAuditRecordBlocks(body, originalBlocks);
   const ranges = scanDifferenceEnvelopes(body, blocks);
   const differences = readDifferenceAssessments(body, formulaId, [], { stale: true }, { blocks, ranges });
   // Filter before quote duplicate detection so snapshots inside an envelope can
@@ -53,9 +56,9 @@ export function parseReportAudit(body: string, formulaId: string): AuditInventor
   }
   items.sort((a, b) => a.start - b.start || a.end - b.end);
   items.forEach((item, index) => { item.order = index + 1; });
-  const complete = ranges.every(range => range.closed) && quotes.every(quote => !quoteBlocks.some(block => block.end === quote.end && block.kind === 'code' && !closedCode(body, block)));
+  const complete = auditRecords.every(record => record.status === 'complete') && !quotes.some(quote => auditRecords.some(record => quote.start < record.end && quote.end > record.start)) && ranges.every(range => range.closed) && quotes.every(quote => !quoteBlocks.some(block => block.end === quote.end && block.kind === 'code' && !closedCode(body, block)));
   return { items: assessReportAudit({ items, complete, reason: '' }), complete,
-    reason: complete ? '認識可能な根拠を本文順に列挙しています。マーカーが完全に削除された文章の由来は推定しません。' : '集計は不完全です。破損・終端欠落で対応が曖昧な領域には未列挙の項目があり得ます。隠れた件数は不明です。' };
+    reason: complete ? '認識可能な根拠を本文順に列挙しています。マーカーが完全に削除された文章の由来は推定しません。' + (auditRecords.length ? ` 固定点検記録${auditRecords.length}件の内部は過去記録として除外しています。現在の引用・比較差分として二重計上しません。` : '') : '集計は不完全です。固定点検記録を含む未知・不正・重複・破損・終端欠落で対応が曖昧な領域には未列挙の項目があり得ます。隠れた件数は不明です。' };
 }
 
 /** Exactly one acquisition is supplied by the caller. This pure function never

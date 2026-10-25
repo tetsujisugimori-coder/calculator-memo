@@ -8,7 +8,7 @@ const sideLabels = { quote: '引用元', before: '比較元', after: '比較先'
 export type AuditMarkdownInput = {
   formulaId: string; formulaTitle?: string; reportId?: string; reportTitle?: string;
   editing: boolean; unsavedChanges?: boolean; savedContextChanged?: boolean; body: string; inventory: AuditInventory; items: AuditItem[];
-  state: 'unverified' | 'checked' | 'stale'; fetchedAt?: string; acquisitionError?: string; exportedAt: string;
+  destination?: 'file' | 'record'; state: 'unverified' | 'checked' | 'stale'; fetchedAt?: string; acquisitionError?: string; exportedAt: string;
 };
 
 function utc(value: string): string {
@@ -94,7 +94,7 @@ export function buildAuditMarkdown(input: AuditMarkdownInput): MarkdownReport {
     lines.push(item.canNavigate ? '本文移動：この点検世代で対応位置を認識できました。出力先からアプリ内移動できる保証ではありません。' : '本文移動：対応位置を安全に確定できないため移動不能です。', '');
   }
   lines.push('## 保存保護と保証しないこと', '',
-    'この出力は独立した点検記録です。レポート本文への挿入、計算メモレポートとの結合、保存、再計算、利用者確認、確認履歴追加は行いません。', '',
+    input.destination === 'record' ? 'これは挿入時点の固定点検記録です。現在の照合・編集中本文・利用者確認とは別であり、後日の変更を自動反映しません。明示挿入だけでは保存、再計算、利用者確認、確認履歴追加を行いません。' : 'この出力は独立した点検記録です。レポート本文への挿入、計算メモレポートとの結合、保存、再計算、利用者確認、確認履歴追加は行いません。', '',
     '本文全文、固定snapshot全文、保存原本全文は含みません。この出力だけから元のレポート本文・計算記録・snapshotを復元できません。追跡情報にない内容、解析不能領域、マーカーが消された文章の由来、変更理由や真正性は推測しません。', '',
     '原本の常時最新性・任意の外部書込みとの原子的整合性は保証しません。出力後の変更はこのファイルへ自動反映しません。ファイル名のみ既存の安全化・長さ制限を適用し、上記のタイトル・IDは省略していません。', '');
   return { markdown: lines.join('\n'), filename: reportFilename(`${input.reportTitle ?? '関連レポート'}-根拠点検`), warnings: inventory.complete ? [] : [inventory.reason] };

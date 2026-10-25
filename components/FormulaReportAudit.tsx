@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { parseReportAudit, assessReportAudit, type AuditItem, type AuditAcquisition } from "../lib/formula-report-audit";
 import { buildAuditMarkdown, bodyLabels, sourceLabels } from "../lib/formula-report-audit-export";
+import { createAuditRecordMarkdown } from "../lib/formula-report-audit-record";
 import { downloadMarkdownReport } from "../lib/markdown-report";
 import { loadData, STORAGE_KEY } from "../lib/storage";
 import { Modal } from "./Modal";
@@ -11,12 +12,16 @@ import { FormulaQuoteComparison, type QuoteSource } from "./FormulaQuoteComparis
 import { DifferenceSourceDialog } from "./FormulaDifferenceSources";
 
 type Acquisition = AuditAcquisition & { fetchedAt: string; raw: string | null };
-type Props = { body: string; formulaId: string; formulaTitle?: string; reportId?: string; reportTitle?: string; editing: boolean; unsavedChanges?: boolean; savedContextChanged?: boolean; disabled?: boolean; onNavigate: (start: number, end: number) => void };
+export type AuditRecordInsertion = { prepare: (markdown: string) => { start: number; end: number; insert: () => void }; disabled?: boolean; onOpen: () => void };
+type Props = { insertion?: AuditRecordInsertion; body: string; formulaId: string; formulaTitle?: string; reportId?: string; reportTitle?: string; editing: boolean; unsavedChanges?: boolean; savedContextChanged?: boolean; disabled?: boolean; onNavigate: (start: number, end: number) => void };
 const short = (value: string) => value.length > 24 ? `${value.slice(0, 24)}…` : value;
 
 /** Mounted for one report/body/definition/link/original generation by the editor.
  * No original is read until the user explicitly requests one acquisition. */
-export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, reportTitle, editing, unsavedChanges, savedContextChanged, disabled, onNavigate }: Props) {
+export function FormulaReportAudit({ insertion, body, formulaId, formulaTitle, reportId, reportTitle, editing, unsavedChanges, savedContextChanged, disabled, onNavigate }: Props) {
+  const [recordPreview, setRecordPreview] = useState<{ markdown: string; body: string; start: number; end: number; epoch: number; insert: () => void } | null>(null);
+  const [preparing, setPreparing] = useState(false);
+  const [recordError, setRecordError] = useState("");
   const [open, setOpen] = useState(false);
   const [acquisition, setAcquisition] = useState<Acquisition>();
   const [stale, setStale] = useState(false);
@@ -35,12 +40,12 @@ export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, re
   useLayoutEffect(() => () => { exportEpoch.current += 1; }, []);
   const invalidateExport = () => {
     exportEpoch.current += 1; exportBusy.current = false;
-    setExporting(false); setExportNotice(null); setManualCopy(null);
+    setExporting(false); setExportNotice(null); setManualCopy(null); setRecordPreview(null); setPreparing(false);
   };
   const [lastSavedContext, setLastSavedContext] = useState(savedContextChanged);
   if (lastSavedContext !== savedContextChanged) {
     setLastSavedContext(savedContextChanged);
-    setExporting(false); setExportNotice(null); setManualCopy(null);
+    setExporting(false); setExportNotice(null); setManualCopy(null); setRecordPreview(null); setPreparing(false);
   }
   useLayoutEffect(() => {
     // Parent storage protection may change without a browser storage event
@@ -54,7 +59,7 @@ export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, re
     const observe = (event: StorageEvent) => {
       if ((event.key === STORAGE_KEY || event.key === null) && (!acquisition || event.newValue !== acquisition.raw)) {
         exportEpoch.current += 1; exportBusy.current = false;
-        setExporting(false); setExportNotice(null); setManualCopy(null);
+        setExporting(false); setExportNotice(null); setManualCopy(null); setRecordPreview(null); setPreparing(false);
         staleRef.current = true; setStale(true); setSelected(null);
         heldContextRef.current = true; setHeldContextUncertain(true);
       }
@@ -72,6 +77,29 @@ export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, re
       : { notes: structuredClone(loaded.data.notes), links: structuredClone(loaded.data.formulaReports?.entries.find(report => report.formulaId === formulaId)?.evidence?.links ?? []), raw: loaded.status === "ok" ? loaded.raw : null, fetchedAt });
     staleRef.current = false; setStale(false);
   };
+  const generateMarkdown = (record: boolean, exportedAt = new Date().toISOString()) => {
+    return buildAuditMarkdown({ body, formulaId, formulaTitle, reportId, reportTitle, editing, unsavedChanges, savedContextChanged: bodyContextUncertain || heldContextRef.current,
+        inventory, items, state: staleRef.current || stale ? "stale" : acquisition ? "checked" : "unverified",
+        fetchedAt: !staleRef.current && !stale ? acquisition?.fetchedAt : undefined,
+        acquisitionError: !staleRef.current && !stale ? acquisition?.error : undefined, exportedAt, destination: record ? "record" : "file" });
+  };
+  const prepareRecord = async () => {
+    if (!insertion || preparing) return;
+    invalidateExport(); setRecordError(""); setPreparing(true);
+    const epoch = exportEpoch.current;
+    try {
+      const generatedAt = new Date().toISOString();
+      const output = generateMarkdown(true, generatedAt);
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(body));
+      if (exportEpoch.current !== epoch) return;
+      const bodySha256 = Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("");
+      const markdown = createAuditRecordMarkdown(output.markdown, { recordId: crypto.randomUUID(), formulaId, reportId: reportId ?? "未登録", generatedAt, bodyLength: body.length, bodySha256 });
+      const prepared = insertion.prepare(markdown);
+      setRecordPreview({ ...prepared, markdown, body, epoch });
+    } catch (cause) {
+      if (exportEpoch.current === epoch) setRecordError(cause instanceof Error ? cause.message : "プレビューを生成できません。本文は保持しています。");
+    } finally { if (exportEpoch.current === epoch) setPreparing(false); }
+  };
   const exportAudit = async (download: boolean) => {
     if (exportBusy.current) return;
     const epoch = ++exportEpoch.current;
@@ -79,10 +107,7 @@ export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, re
     let markdown: string | undefined;
     try {
       // Synchronous generation freezes one render's body, assessment and acquisition.
-      const output = buildAuditMarkdown({ body, formulaId, formulaTitle, reportId, reportTitle, editing, unsavedChanges, savedContextChanged: bodyContextUncertain || heldContextRef.current,
-        inventory, items, state: staleRef.current || stale ? "stale" : acquisition ? "checked" : "unverified",
-        fetchedAt: !staleRef.current && !stale ? acquisition?.fetchedAt : undefined,
-        acquisitionError: !staleRef.current && !stale ? acquisition?.error : undefined, exportedAt: new Date().toISOString() });
+      const output = generateMarkdown(false);
       markdown = output.markdown;
       if (download) downloadMarkdownReport(output);
       else await navigator.clipboard.writeText(output.markdown);
@@ -102,7 +127,7 @@ export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, re
   const reviewCount = items.filter(item => item.needsReview).length;
   const visible = items.filter(item => filter === "all" || (filter === "review" ? item.needsReview : item.sources.some(source => source.status === "unverified")));
   return <section className="quote-tools report-audit-entry" aria-label="レポート全体の根拠点検">
-    <button type="button" disabled={disabled} onClick={() => setOpen(true)}>根拠点検</button>
+    <button type="button" disabled={disabled} onClick={() => { insertion?.onOpen(); setOpen(true); }}>根拠点検</button>
     {open && <Modal title="レポート全体の根拠点検" onClose={closeAudit} wide>
       <section className="formula-report quote-tools report-audit">
         <p>{editing ? "編集中の本文が対象です。未保存の本文だけを一覧化し、保存本文とは混在させません。" : "現在表示しているレポート本文が対象です。"}</p>
@@ -117,6 +142,17 @@ export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, re
         {!items.length && <p>列挙できる根拠項目がありません。全件一致・点検完了を意味しません。</p>}
         <p>コピー・.md出力は絞り込みや詳細選択に関係なく、認識できた全項目を本文順に出力します。本文・snapshot全文は含めず、元データの復元用ではありません。ファイル名のみ安全化・短縮し、出力内のタイトル・IDは省略しません。</p>
         <div className="modal-actions"><button type="button" disabled={exporting} onClick={() => void exportAudit(false)}>点検結果をコピー</button><button type="button" disabled={exporting} onClick={() => void exportAudit(true)}>点検結果を.md出力</button></div>
+        {insertion && <button type="button" disabled={insertion.disabled} aria-disabled={preparing || undefined} onClick={event => { event.currentTarget.focus(); void prepareRecord(); }}>レポートへ挿入</button>}
+        {preparing && <p role="status">対象本文と固定記録のプレビューを準備しています。</p>}
+        {recordError && <p role="alert">{recordError}</p>}
+        {recordPreview && <Modal title="点検結果の固定記録を挿入" onClose={() => setRecordPreview(null)} wide><section className="formula-report quote-tools">
+          <p>登録式：{formulaTitle}（{formulaId}）／レポート：{reportTitle}（{reportId}）</p>
+          <p>挿入位置：{recordPreview.start}（0始まりUTF-16、textareaの改行正規化後）。選択範囲 {recordPreview.start}〜{recordPreview.end} の文章は保持します。固定記録は自動更新されず、保存・確認・証明とは別です。</p>
+          <label htmlFor="audit-record-target-body">点検対象本文（挿入前の全文）</label><textarea id="audit-record-target-body" readOnly className="code-input" rows={6} value={recordPreview.body} />
+          <label htmlFor="audit-record-markdown">挿入するMarkdown全文</label><textarea id="audit-record-markdown" readOnly className="code-input" rows={12} value={recordPreview.markdown} />
+          <button type="button" onClick={() => { try { if (exportEpoch.current !== recordPreview.epoch) throw new Error("プレビューは失効しました。生成し直してください。"); recordPreview.insert(); closeAudit(); } catch (cause) { setRecordPreview(null); setRecordError(cause instanceof Error ? cause.message : "挿入できません。本文は保持しています。"); } }}>固定記録を本文へ挿入</button>
+          <button type="button" onClick={() => setRecordPreview(null)}>挿入をやめる</button>
+        </section></Modal>}
         {exporting && <p role="status">出力開始時点の点検結果をコピーしています。対象変更後の完了通知は表示しません。</p>}
         {exportNotice && <p role={exportNotice.failed ? "alert" : "status"}>{exportNotice.text}</p>}
         {manualCopy !== null && <div><label htmlFor="audit-export-manual-copy">点検結果Markdown全文（手動コピー用）</label><textarea id="audit-export-manual-copy" readOnly className="code-input" rows={10} value={manualCopy} onFocus={event => event.target.select()} /></div>}
