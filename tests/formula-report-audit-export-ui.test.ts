@@ -44,7 +44,7 @@ const auditRegion = () => host.querySelector('[aria-label="本文順の根拠一
 const copied = () => copy.mock.calls.at(-1)![0];
 const exportCopy = async () => click('点検結果をコピー');
 const exportFile = async () => click('点検結果を.md出力');
-const setFilter = async (value: string) => act(async () => { const select = host.querySelector('.report-audit select')! as HTMLSelectElement; select.value = value; select.dispatchEvent(new Event('change', { bubbles: true })); });
+const setFilter = async (value: string) => act(async () => { const select = host.querySelector('select[aria-label="表示する状態"]')! as HTMLSelectElement; select.value = value; select.dispatchEvent(new Event('change', { bubbles: true })); });
 
 it('exports the exact all-item assessment despite an empty review filter without reading or writing originals', async () => {
   const raw = seed(); await audit(); await openAudit(); await click('保存記録と照合'); await setFilter('review');

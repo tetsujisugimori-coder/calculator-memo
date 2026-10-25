@@ -1,5 +1,26 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）
+
+- 着手: 最新PR HEAD `eae5cc1882bb1f97647d63cf6f5b11eb28993d5c`、main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f`、Draft/未マージを確認。専用clean cloneで同じ `feat/audit-record-comparison` を継続し既存作業を保護。
+- 再現・原因: 別recordId/同じformulaId/reportIdで双方checked・取得ok・完全・items空のとき、差分statesが空でmatchedへfallbackした。取得失敗0件の前回修正だけでは正常取得0件を覆えていなかった。coreの正常空判定1件/空制約3件、実CalculatorAppの誤一致表示1件を修正前REDで確認。
+- 第一希望採用: 形式検証後、両側items空に既存incomparableと理由を付与する6行の最小修正。早期returnせず取得成否/未記録/失効/不完全と状態変化を併記。片側0件の追加/削除やstable ID、frozen/observed分離は不変更。新しいempty状態追加は互換/UI契約増加が不要なため不採用。
+- 互換・保護: schema/version/容量/engine、旧v1/v2本文/snapshot/原本/確認履歴を不変更。比較は非保存・非再計算・非挿入。calculatedAt/persistedAtだけの差は既知計算根拠差の対象外と設計へ明記し2回帰で確認。
+- ローカル検証: 全1937単体/82files（従来1906＋core13＋実アプリ1＋独立17）成功、失敗/skip0、52.68秒。lint/TypeScript/通常・Pages build成功。独立担当の関連97件成功、P0〜P3新規残存指摘なし（ソース/jsdom範囲）。同一期待値のRED→GREENを保持。
+- CI契約: ローカル36成功/1失敗。既存100ms合成timeoutでNodeが最初のログ前に停止（静穏再実行でも再現）。単純Node起動の実測170/351/218msは100ms超で、timeout終了124とログ欠落を区別した。期待値/上限は変更せず、正式CIの同37件を別に照合する。
+- 実GUI: local Chromium141.0.7390.37/WebKit26.0の既存6条件で比較専用7検査ずつ計42成功、pageerror0、各mobile53tap、process exit0。空同士の比較不能/理由/0行、両テーマCSS200%、focus/keyboard/Escape復帰、storage不変と既存比較経路を確認。既存全館GUIへ各1検査を追加（882→888、geometry562/PNG114/成功trace0/30分保持）。最終HEADの正式全GUI・契約37・CI成果物はPR Checksと追記結果を参照し、記録commit自身の成功を先取りしない。
+- 関連: [Issue #90](https://github.com/tetsujisugimori-coder/calculator-memo/issues/90)、[Draft PR #91](https://github.com/tetsujisugimori-coder/calculator-memo/pull/91)、[設計](docs/agent/formula-report-audit-comparison.md)。今回の検証結果と最終CIの更新はこの追補/PRへ記録する。旧レビュー結論は当時の範囲に限る。
+- 残余: #85初回選択位置ずれの全原因未特定、実機Safari/VoiceOver/OS文字拡大の未検証を維持。数学的証明/真正性/外部原本の原子的整合は保証しない。main push/merge/auto-merge/公開は行わない。
+
+## 2026-10-25 JST: 固定点検記録の2時点比較（Issue #90）
+
+- 基点: PR #89 merged、最新main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f` をAPI/fetchで確認。旧clean worktree保持、新worktree/branch `feat/audit-record-comparison`。関連 [Issue #90](https://github.com/tetsujisugimori-coder/calculator-memo/issues/90)。
+- 実装前調査: v1固定記録には完全な構造化計算根拠がなく、人間向けMarkdownから復元しない。第一希望の既存scanner/共有assessment/計算差分engine再利用を採用、新規本文内v2だけ比較資料を保持。旧v1は不変/比較資料不足。別保存領域は移行/二重管理負担により不採用。保存schema/容量/engine意味論を維持。[設計](docs/agent/formula-report-audit-comparison.md)。
+- 明示A/B・入替・同一性/適格性の処理側検証、安定ID対応、引用時と点検取得時の資料分離。式/入力/参照/内部値/表示値/状態変化を分離し、同結果でも根拠変更を隠さない。重複/欠落/未知/不正/不完全は推測補完せず、変更理由不明を表示。
+- 保護: 過去記録/本文/snapshot/原本/確認履歴を比較操作では変更しない。選択/本文/対象/照合/通知で旧結果失効。取得成功だけで保持本文を現在の保存本文へ格上げしない。自動保存/再計算/確認/本文挿入なし。
+- 独立レビュー修正: 0件取得成否の欠落P2（正常/失敗を一致へ誤分類）と、比較差分の原引用ID/対象block変更漏れP2を独立赤各2件→修正。記録全体の取得状態と原引用識別を保持し、旧不足は推測しない。StrictModeのeffect cleanup世代ずれも独立赤1件→不要加算除去。実GUIのselectラベル混入も修正。詳細と最終検証は設計文書へ記録。
+- 検証: 全1906単体/81files（既存1824＋新82）、lint/型/通常Pages build、CI契約37成功。局所Chromium141両幅6検査/50tap/pageerror0、localWebKit26.5はassertion後cleanup停止で完走PASSとしない。正式6条件へ各6追加し882checks/geometry562/mobile1086/PNG114/成功trace0/30分を維持。独立P2×2/P3×1は赤→緑、確認範囲で阻害残件なし。最終HEAD実CI・artifact照合はDraft PRへ記録し、未実行を成功としない。PR85初回CI全原因未特定、実機Safari/VoiceOver/OS文字拡大未検証を継続。
+
 ## 2026-10-25 JST: 根拠点検結果の本文内固定記録（Issue #88）
 
 - 着手: PR #87 merged / 最新main `a3ca0f5f6b993a5df8d0a5648b794b1acefd2f9c` を確認。旧作業tree clean、別worktree `calculator-fixed-audit` / `feat/audit-fixed-record` で保全。新規 [Issue #88](https://github.com/tetsujisugimori-coder/calculator-memo/issues/88)。

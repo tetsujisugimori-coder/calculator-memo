@@ -1,5 +1,6 @@
 // Synthetic-only PR GUI regression harness. Run from the repository root.
 import assert from "node:assert/strict";
+import { exerciseAuditRecordComparison } from "./audit-record-comparison.mjs";
 import { exerciseAuditFixedRecord } from "./audit-fixed-record.mjs";
 import { exerciseAuditStorage } from "./audit-storage.mjs";
 import { performance } from "node:perf_hooks";
@@ -4147,6 +4148,7 @@ async function exercise(scenario) {
   await exerciseFormulaQuotes(prefix);
   await exerciseAuditStorage({ page, context, base, expect, passed, prefix, assertHorizontalFit });
   await exerciseAuditFixedRecord({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
+  await exerciseAuditRecordComparison({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
   await exerciseFormulaTimeline(prefix);
