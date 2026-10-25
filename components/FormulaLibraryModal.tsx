@@ -10,8 +10,8 @@ import { FormulaDetailView } from "./FormulaDetailView";
 import { removeFormula, saveFormula, validateFormula } from "../lib/formula-library";
 import type { FormulaLibrary, RegisteredFormula, FormulaReports, FormulaReport } from "../lib/types";
 
-type Props = { originalGeneration?: string | null; reports?: FormulaReports; onSaveReport?: (request: FormulaReportSaveRequest) => Promise<FormulaReport | string>; library: FormulaLibrary; onChange: (library: FormulaLibrary) => void; onClose: () => void; writable: boolean; pendingSave?: boolean; onExecute: (id: string) => void };
-export function FormulaLibraryModal({ originalGeneration, library, reports, onSaveReport, onChange, onClose, writable, pendingSave = false, onExecute }: Props) {
+type Props = { savedContextUncertain?: boolean; originalGeneration?: string | null; reports?: FormulaReports; onSaveReport?: (request: FormulaReportSaveRequest) => Promise<FormulaReport | string>; library: FormulaLibrary; onChange: (library: FormulaLibrary) => void; onClose: () => void; writable: boolean; pendingSave?: boolean; onExecute: (id: string) => void };
+export function FormulaLibraryModal({ savedContextUncertain, originalGeneration, library, reports, onSaveReport, onChange, onClose, writable, pendingSave = false, onExecute }: Props) {
   const [draft, setDraft] = useState<{ id?: string; title: string; expression: string } | null>(null);
   const [reportFormulaId, setReportFormulaId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -87,7 +87,7 @@ export function FormulaLibraryModal({ originalGeneration, library, reports, onSa
         </section>}
       </>}
       {onSaveReport && reports?.entries.some(report => !library.entries.some(formula => formula.id === report.formulaId)) && <section aria-label="登録式が見つからないレポート"><h3>登録式が見つからないレポート</h3><p>削除された登録式の説明を保全しています。内容を閲覧・編集・コピー・ファイル出力できます。</p><ul>{reports.entries.filter(report => !library.entries.some(formula => formula.id === report.formulaId)).map(report => <li key={report.id}><button onClick={() => setReportFormulaId(report.formulaId)}>{report.title}：閲覧・救出</button></li>)}</ul></section>}
-      {reportFormulaId && onSaveReport && <FormulaReportModal originalGeneration={originalGeneration} key={reportFormulaId} formulaId={reportFormulaId} formula={library.entries.find(formula => formula.id === reportFormulaId)} report={reports?.entries.find(report => report.formulaId === reportFormulaId)} writable={writable && !pendingSave} onSave={onSaveReport} onClose={() => { setReportFormulaId(null); if (!source.stale) source.refresh(); }} />}
+      {reportFormulaId && onSaveReport && <FormulaReportModal savedContextUncertain={savedContextUncertain} originalGeneration={originalGeneration} key={reportFormulaId} formulaId={reportFormulaId} formula={library.entries.find(formula => formula.id === reportFormulaId)} report={reports?.entries.find(report => report.formulaId === reportFormulaId)} writable={writable && !pendingSave} onSave={onSaveReport} onClose={() => { setReportFormulaId(null); if (!source.stale) source.refresh(); }} />}
       {removed && !draft && <div role="status">「{removed.title}」を削除しました。<button disabled={!writable} onClick={() => { try { onChange(saveFormula(library, removed)); setSelectedId(removed.id); setRemoved(null); setError(""); } catch (cause) { setError(String(cause)); } }}>直前の削除を取り消す</button><p>取り消しはこの画面を閉じるまで有効です。</p></div>}
       {pendingDelete && <Modal title="登録式を削除しますか？" onClose={() => setPendingDelete(null)}><p>「{pendingDelete.title}」を削除します。メモや履歴には影響しません。関連レポートは削除せず、「登録式が見つからないレポート」に保全します。</p><div className="modal-actions"><button onClick={() => setPendingDelete(null)}>キャンセル</button><button className="button-danger" disabled={!writable} onClick={() => { onChange(removeFormula(library, pendingDelete.id)); setRemoved(pendingDelete); setPendingDelete(null); }}>削除する</button></div></Modal>}
     </div>

@@ -150,3 +150,34 @@ it('compact native options retain full long identifiers and expression in select
   expect(JSON.parse(metadata)).toMatchObject({ memoId, blockId, record: { id: recordId, blocks: [{ blockId, expression }] } });
   expect(saved).not.toHaveBeenCalled();
 });
+
+it.each(['body-edit', 'selection', 'picker'] as const)('delayed quote insertion caret never overrides newer %s intent', async intent => {
+  const frames = new Map<number, FrameRequestCallback>(); let frameId = 0;
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.set(++frameId, callback); return frameId; });
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => { frames.delete(id); });
+  const raw = seed(); await render(); await click('Markdownを編集'); await insert();
+  expect(frames.size).toBeGreaterThan(0);
+  const queuedAtInsertion = [...frames.values()];
+  const inserted = editor().value;
+  if (intent === 'body-edit') await changeBody(`${inserted}\nnewer edit`);
+  editor().focus(); editor().setSelectionRange(1, 4);
+  await act(async () => editor().dispatchEvent(new Event('select', { bubbles: true })));
+  if (intent === 'picker') await click('計算根拠を引用');
+  const focus = document.activeElement;
+  await act(async () => { for (const callback of queuedAtInsertion) callback(100); frames.clear(); });
+  expect([editor().selectionStart, editor().selectionEnd]).toEqual([1, 4]);
+  expect(document.activeElement).toBe(focus);
+  expect(editor().value).toBe(intent === 'body-edit' ? `${inserted}\nnewer edit` : inserted);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(saved).not.toHaveBeenCalled();
+});
+
+it('current quote insertion frame still places the caret after the inserted block', async () => {
+  const frames: FrameRequestCallback[] = [];
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.push(callback); return frames.length; });
+  seed(); await render(); await click('Markdownを編集'); editor().setSelectionRange(0, 0); await insert(); const added = editor().value;
+  await act(async () => frames.forEach(callback => callback(100)));
+  const caret = added.indexOf(report.body);
+  expect(caret).toBeGreaterThan(0);
+  expect([editor().selectionStart, editor().selectionEnd]).toEqual([caret, caret]);
+  expect(document.activeElement).toBe(editor());
+});

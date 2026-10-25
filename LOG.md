@@ -1,5 +1,35 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: PR #87 最終CI中の選択位置ずれ再発・遅延caret保護
+
+- `9d3a16c` の実CI run40182162352 attempt1は30分付近でGUI取消、attempt2はWebKit390の既存引用picker選択assertionで失敗。他5条件完了。取消・失敗のartifactとdigestを検証記録へ保存し、成功に置換しない。上限・検査数・期待値は不変更。
+- traceの期待4432..4434に対し実測6525..6525は、本文末尾ではなく直前の差分挿入caretと一致。新storage回帰helper実行前の既存経路。既存traceだけでは原因未確定のため、局所RAF/event/setter計測を追加して調査した。
+- 局所WebKit26.5で後続本文編集後にも古い差分挿入RAFがcaretを動かす事実を観測。旧buildの当該callbackだけを新選択後まで保留→解放すると、tapより前にCIと同値の上書きを因果再現した。自然tap10回では再現0、固定CI26.0との版差と歴史的#85初回の全原因未確定は区別する。
+- 最小修正：引用/差分で共有する遅延caret要求の取消＋epoch/本文同一性ガード。後続入力・選択・操作・storage通知・unmountで失効。本文生成・挿入位置規則・保護範囲・安全取消・保存契約は変更しない。待ち時間増加/検査削減/上限延長は不採用。
+- 新規9件：取消済みcallback強制実行を含む赤6件→緑、正規挿入focus/caretの正対照2件も成功。独立レビューでヘッダー×→破棄確認へのfocusを古いcallbackが奪うP3を追加再現し、close共通入口の取消で修正、回帰1件追加。差分/引用の既存49件を含む58件・独立4件成功、残件なし。修正後の局所WebKit26.5/Chromium141各390px・heldRAF10回は選択保持。最終全単体1775件/73files・lint/型/通常/Pages build成功。既存sentinel999検査とランダムUUIDの衝突は当該fixtureのID/日時だけ決定化し期待値を維持、独立確認済み。負荷時CI契約100ms合成timeout1件失敗後、同条件を静穏下で37件全成功。最終HEAD実CIはPRへ記録する。
+
+## 2026-10-25 JST: PR #87 再レビュー P2・実 storage 通知後の保持本文
+
+- 着手時：作業ツリー clean、PR #87 Draft/open、branch `feat/audit-markdown-export` と remote HEAD `ad15bfffe5104779cda707c36fa2ae75926c6233` 一致。main `9c1cbd2c77131e9d717b6206ac54c7a6c389d235`。既存追加変更の破棄なし。
+- 訂正：下段の前回「外部変更/削除後の保持本文P2修正済み」は report props を差し替える試験経路だけだった。実 CalculatorApp は storage 通知後も旧 data/confirmedSerialized を保持するため警告が伝播せず、未修正だった実経路を今回独立再現した。前回の履歴は消さず保証範囲をここで訂正する。
+- 修正前：実 CalculatorApp 統合の本文変更/削除2件が失敗。別 build の旧 HEAD を Chromium 141/375px で起動し、同 browser context の別ページから保存データを実更新した2件でも旧本文を「現在表示中の保存済み本文」と出力することを確認。
+- 原因／修正：親の既存保存保護を Library→Report→Audit に伝播。storage 通知に対する本文一致未確認は一時状態として保持し、出典再照合では解除しない。同期通知→描画前出力と遅延コピー完了も既存epochで保護。対象変更・削除とは断定せず、未保存編集との差を別表示。第一希望の既存通知再利用を採用、追加取得による比較は暗黙取得と編集基準の複雑化を避け不採用。
+- 保存保護：旧本文・タイトル・関連付け・snapshot・保存原本・確認履歴は不変。既存上書き停止、共有判定、保存schema/容量/engine/挿入取消契約を変更しない。出力からの保存領域read/writeを追加しない。
+- 独立再レビュー：実装担当と別 agent がソース＋jsdom を点検、関連57件と独立3件成功、P0/P1/P2/P3新規指摘なし。描画前storage→出力、Library未mount時更新→元bytes復帰、storage通知なし親保護変更→遅延コピーを独立検証。実ブラウザ／CIの証拠とは区別する。
+- 最終ローカル：全単体1766件/73files・関連57件・CI契約37件・lint・型・通常/Pages build成功。focused Chromium141/375・390各6チェック成功、local WebKit26.5は後処理close停止で完走成功とはしない。詳細は `docs/agent/formula-report-audit-storage-verification.md`。最終HEAD実CIはPR本文へ追記し、この記録コミット前に先取りしない。実機Safari/VoiceOver未検証、PR #85初回CI選択位置ずれ原因未特定を維持。
+
+## 2026-10-25 JST: 根拠点検結果の Markdown 出力（Issue #86）
+
+- 着手: PR #85 の 14:41:57 JST merge と main `9c1cbd2c77131e9d717b6206ac54c7a6c389d235` を確認。新規 clean clone から `feat/audit-markdown-export`、既存作業ツリーは不変。重複Issueを検索し [Issue #86](https://github.com/tetsujisugimori-coder/calculator-memo/issues/86) を作成。
+- 調査・設計: 既存 inventory/assessment と Acquisition.fetchedAt を再利用。第一希望は同じ世代の全項目を純粋builderへ渡す方式で採用。DOM抽出/別parser/暗黙再取得/新規永続化は不採用。設計を実装前に `docs/agent/formula-report-audit-export.md` へ記録。
+- 実装: 絞り込み非依存の全件コピー/.md出力、本文種別・未保存状態・ID・出力/取得時刻・未照合/失効・両側の状態理由・集計制約。既存 safe fence/上限/filename/download を再利用し、失敗時は全文手動コピー欄。失効/閉鎖/切替/再取得の同期epochで遅い通知と旧全文欄を無効化。
+- 非破壊: 本文/snapshot/原本/確認履歴・schema/version/容量/計算engine/挿入取消は不変。出力は独立記録で、数学的正しさ・真正性や常時最新性を保証しない。開始済みOS clipboard書込取消・OSファイル保存完了は保証外。
+- ローカル検証: 追加47件（pure33/UI14）、全単体1756件/72files、CI契約37件、型検査・lint・通常/Pages build成功。ローカルNode24.22.1とCI固定22.13.0を区別する。初回依存取得は既定cache不在で失敗し、一時cache指定で成功。Chromiumは実行環境のsocket制約により起動前停止、GUI成功とは扱わない。最終HEAD実CI・実GUI結果はPRへ追記する。
+- 独立レビュー: 同IDの保存レポート外部変更/削除後に保持中の旧本文を現在の保存済み本文と誤認させるP2を独立再現し修正。再照合後も保持本文/保存競合の制約を記載し、本文編集とタイトル等の未保存変更を分離。独立再検証47件成功、P1/P2残件なし。比較基準の文言も直近保存で更新される編集基準本文へ訂正。
+- focused GUIで手動コピー欄の暗黙ラベルが全文をaccessible nameへ含める問題を再現し、明示label/textarea関連へ修正。全文・失敗判定・exact label検査は維持。
+- 未検証/残余: 実機Safari/VoiceOver/OSソフトキーボード。#85初回CIの選択位置ずれは原因未特定を維持し、今回成功で根本解決としない。既存6条件/30分/画像trace方針を変更しない。
+
+
 ## 2026-10-25 JST: レポート全体の根拠点検（Issue #84）
 
 - 着手: PR #83 merged を API で確認、clean な作業ツリーを main `163e31dbdc07c37da49da5f2b5741cfa3bba4f2b` へ fast-forward し `feat/report-evidence-audit` を作成。既存の根拠点検 Issue は検索0件のため [Issue #84](https://github.com/tetsujisugimori-coder/calculator-memo/issues/84) を作成。

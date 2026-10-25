@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useId, useMemo, useRef, useState } from "react";
 import type { FormulaReport, RegisteredFormula, FormulaReportEvidenceLink, Memo } from "../lib/types";
 import { readFormulaReports, formulaReportSignature, FORMULA_REPORT_TEMPLATE, appendFormulaReportTemplate, type FormulaReportSaveRequest } from "../lib/formula-reports";
 import { downloadMarkdownReport, reportFilename } from "../lib/markdown-report";
@@ -21,6 +21,7 @@ import { Modal } from "./Modal";
 import { FormulaReportAudit } from "./FormulaReportAudit";
 
 type Props = {
+  savedContextUncertain?: boolean;
   originalGeneration?: string | null;
   formulaId: string; formula?: RegisteredFormula; report?: FormulaReport;
   writable: boolean; onClose: () => void;
@@ -35,13 +36,34 @@ function acquireEvidence(formulaId: string) {
 }
 
 /** Expectations are frozen when opened; prop changes never silently rebase a draft. */
-export function FormulaReportModal({ originalGeneration, formulaId, formula, report, writable, onClose, onSave }: Props) {
+export function FormulaReportModal({ savedContextUncertain, originalGeneration, formulaId, formula, report, writable, onClose, onSave }: Props) {
   const [baseline, setBaseline] = useState(() => ({ report: report ? structuredClone(report) : undefined, expression: formula?.expression ?? null, definition: formulaDefinitionSignature(formula) }));
   const [openedFormulaId] = useState(formulaId);
   const [id] = useState(() => report?.id ?? crypto.randomUUID());
   const [title, setTitle] = useState(report?.title ?? formula?.title ?? "関連レポート");
   const [body, setBody] = useState(report?.body ?? FORMULA_REPORT_TEMPLATE);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const caretFrame = useRef<number | null>(null);
+  const caretEpoch = useRef(0);
+  const cancelDeferredCaret = useCallback(() => {
+    caretEpoch.current += 1;
+    if (caretFrame.current !== null) cancelAnimationFrame(caretFrame.current);
+    caretFrame.current = null;
+  }, []);
+  const scheduleInsertedCaret = (insertedBody: string, caret: number) => {
+    cancelDeferredCaret();
+    const epoch = caretEpoch.current;
+    caretFrame.current = requestAnimationFrame(() => {
+      const editor = editorRef.current;
+      if (epoch !== caretEpoch.current || !editor || editor.value !== insertedBody.replace(/\r\n?/g, "\n")) return;
+      caretFrame.current = null;
+      editor.focus(); editor.setSelectionRange(caret, caret);
+    });
+  };
+  useLayoutEffect(() => () => {
+    caretEpoch.current += 1;
+    if (caretFrame.current !== null) cancelAnimationFrame(caretFrame.current);
+  }, []);
   const headingPrefix = useId();
   const [quotePicker, setQuotePicker] = useState(false);
   const [quoteUndo, setQuoteUndo] = useState<{ before: string; after: string } | null>(null);
@@ -86,7 +108,15 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
   const [evidence, setEvidence] = useState(() => acquireEvidence(formulaId));
   const [generation, setGeneration] = useState(0);
   const [evidenceChanged, setEvidenceChanged] = useState(false);
+  // A source refresh cannot establish that the retained editing baseline is current.
+  const [heldContextUncertain, setHeldContextUncertain] = useState(false);
   const [preview, setPreview] = useState(Boolean(report));
+  useEffect(() => {
+    // Native select also covers programmatic selection made by another UI intent.
+    const editor = editorRef.current;
+    editor?.addEventListener("select", cancelDeferredCaret);
+    return () => editor?.removeEventListener("select", cancelDeferredCaret);
+  }, [preview, cancelDeferredCaret]);
   const [remarks, setRemarks] = useState("");
   const remarksInvalid = remarks.length > 500;
   const [saving, setSaving] = useState(false);
@@ -106,14 +136,15 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
     const observe = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY && event.key !== null) return;
       auditNavigationEpoch.current += 1;
-      if (event.newValue !== evidence.raw) setEvidenceChanged(true);
+      cancelDeferredCaret();
+      if (event.newValue !== evidence.raw) { setEvidenceChanged(true); setHeldContextUncertain(true); }
     };
     window.addEventListener("storage", observe);
     return () => window.removeEventListener("storage", observe);
-  }, [evidence.raw]);
+  }, [evidence.raw, cancelDeferredCaret]);
   const refreshEvidence = () => { setEvidence(acquireEvidence(formulaId)); setGeneration(value => value + 1); setEvidenceChanged(false); };
   const unavailable = Boolean(evidence.error) || resolveReportEvidence(evidence.notes, links).some(item => item.status !== "available");
-  const close = () => { if (savingRef.current) return; if (unsaved) setDiscard(true); else onClose(); };
+  const close = () => { if (savingRef.current) return; cancelDeferredCaret(); if (unsaved) setDiscard(true); else onClose(); };
   const save = async (confirm: boolean) => {
     if (!writable || savingRef.current || conflict || invalid || evidenceChanged || (confirm && (!formula || unavailable || remarksInvalid))) return;
     savingRef.current = true; setSaving(true); setNotice(null);
@@ -128,7 +159,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
     } catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "保存に失敗しました。編集内容は保持しています。", failed: true }); }
     finally { savingRef.current = false; setSaving(false); }
   };
-  const auditContext = JSON.stringify([id, formulaReportSignature(report), formulaId, formulaDefinitionSignature(formula), body, links, originalGeneration, generation, evidence.fetchedAt, conflict]);
+  const auditContext = JSON.stringify([id, title, formula?.title, dirty, formulaReportSignature(report), formulaId, formulaDefinitionSignature(formula), body, links, originalGeneration, generation, evidence.fetchedAt, conflict]);
   const auditContextRef = useRef(auditContext);
   useLayoutEffect(() => { auditContextRef.current = auditContext; return () => { auditContextRef.current = ""; }; }, [auditContext]);
   const insertionKey = JSON.stringify([id, formulaId, title, body, links, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, saving]);
@@ -167,7 +198,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
         setDifferenceUndo({ before: body, after: next.body }); setQuoteUndo(null); setTemplateUndo(null);
         setBody(next.body); setPreview(false);
         setNotice({ text: "比較差分を本文へ追加しました。既存引用はそのままです。未保存・未確認です。", failed: false });
-        requestAnimationFrame(() => { editorRef.current?.focus(); editorRef.current?.setSelectionRange(next.caret, next.caret); });
+        scheduleInsertedCaret(next.body, next.caret);
       } };
     },
   };
@@ -187,7 +218,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
   const state = conflict ? "現在の保存内容との照合不能（編集中に変更されました）" : dirty && baseline.report ? "編集中の内容は未確認・未保存です" : !formula ? "登録式が見つからない" : evidence.error || evidenceChanged || unavailable ? "根拠不足または判定不能" : assessment.status === "confirmed" ? "確認済み・式一致（式との対応を確認済み）" : assessment.status === "changed" ? "確認済み・式変更あり。式が変更されています。レポートの内容を要確認" : assessment.status === "unknown" ? "根拠不足または判定不能" : "式との対応は未確認です";
 
   return <Modal title="登録式の関連レポート" onClose={close} closeDisabled={saving} wide>
-    <div className="formula-report">
+    <div className="formula-report" onPointerDownCapture={cancelDeferredCaret} onKeyDownCapture={cancelDeferredCaret} onInputCapture={cancelDeferredCaret} onClickCapture={cancelDeferredCaret} onSelectCapture={cancelDeferredCaret}>
       <p>登録式の説明資料です。計算定義・数値的な計算根拠・数学的証明とは別に扱います。</p>
       <p role="status">{state}</p>{assessment.reason && <p>{assessment.reason}</p>}
       <details><summary>確認済みの意味と保証範囲</summary><p>利用者がこの式の説明として内容を確認したという意味です。式文字列の一致は数学的同値性や証明の正しさを保証しません。由緒・出典の信頼性も自動検証しません。開くだけ・計算成功だけでは確認済みになりません。変数は登録式の構文から抽出した定義で、実行時入力値とは別です。確認履歴は最大20件、履歴本文も含めレポート全体1,000,000バイトまで。上限では履歴を削除せず保存を停止します。</p></details>
@@ -252,11 +283,11 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
           const next = insertQuoteAtCursor(body, markdown, quoteSelection.current.start, quoteSelection.current.end);
           setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setDifferenceUndo(null); setBody(next.body); setQuotePicker(false);
           setNotice({ text: "計算根拠を引用しました。未保存です。", failed: false });
-          requestAnimationFrame(() => { editorRef.current?.focus(); editorRef.current?.setSelectionRange(next.caret, next.caret); });
+          scheduleInsertedCaret(next.body, next.caret);
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
       }} />}
       <FormulaReportAudit key={auditContext}
-        body={body} formulaId={formulaId} editing={dirty} disabled={saving}
+        body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict || savedContextUncertain || heldContextUncertain} disabled={saving}
         onNavigate={(start, end) => {
           const epoch = auditNavigationEpoch.current;
           setPreview(false);
