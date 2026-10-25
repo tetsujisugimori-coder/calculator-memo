@@ -812,10 +812,29 @@ async function exerciseFormulaQuotes(prefix) {
   const auditDialog = () => page.getByRole("dialog", { name: "レポート全体の根拠点検", exact: true });
   const auditList = () => auditDialog().getByRole("list", { name: "本文順の根拠一覧", exact: true });
   const auditEntry = () => report().getByRole("button", { name: "根拠点検", exact: true });
+  const auditTitle = "点検 | ` <script>タイトル</script> " + "長い点検タイトル".repeat(9);
+  await report().getByLabel("レポートタイトル", { exact: true }).fill(auditTitle);
+  await page.evaluate(() => Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async text => { window.__auditMarkdownCopy = text; } } }));
+  const copyAudit = async () => {
+    await activate(auditDialog().getByRole("button", { name: "点検結果をコピー", exact: true }));
+    await expect(auditDialog().getByRole("status").filter({ hasText: "点検結果をコピーしました" })).toBeVisible();
+    return page.evaluate(() => window.__auditMarkdownCopy);
+  };
   await activate(auditEntry());
   await expect(auditDialog()).toContainText("編集中の本文が対象");
   await expect(auditList()).toContainText("未照合");
   await expect(auditList().locator(":scope > li")).toHaveCount(2);
+  const uncheckedAudit = await copyAudit();
+  assert.ok(uncheckedAudit.includes("点検状態：未照合。"));
+  assert.ok(uncheckedAudit.includes("認識できた出現数：2件。見直し対象：2件。"));
+  assert.deepEqual([...uncheckedAudit.matchAll(/^### (\d+)\. (比較差分|固定引用)$/gm)].map(match => [match[1], match[2]]), [["1", "比較差分"], ["2", "固定引用"]], "Independent output preserves draft occurrence order rather than source-ID grouping");
+  assert.ok(!uncheckedAudit.includes("保存記録と一致"), "Unchecked export must not promote embedded snapshots to a matched source");
+  assert.ok(uncheckedAudit.includes(formula.id) && uncheckedAudit.includes(savedReport.id) && uncheckedAudit.includes(auditTitle), "Export identifies the actual draft including full unsafe-looking title");
+  assert.ok(uncheckedAudit.includes(record.id) && uncheckedAudit.includes(comparisonRecord.id), "Both verified source IDs are exported in full");
+  assert.ok(!uncheckedAudit.includes('"calculationEvidence"') && !uncheckedAudit.includes('"evaluator":"calculator-memo-v1"'), "Audit output is not a snapshot or full-document dump");
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await expect(editor()).toHaveValue(afterSecondInsert);
+  await passed(prefix + ": audit Markdown export identifies unsaved mixed evidence without implicit acquisition or storage writes and retains full source IDs and literal title");
   await activate(auditDialog().getByRole("button", { name: "保存記録と照合", exact: true }));
   await expect(auditDialog()).toContainText("出現 2件／見直し対象 0件");
   for (const theme of ["light", "dark"]) {
@@ -829,6 +848,38 @@ async function exerciseFormulaQuotes(prefix) {
   await page.keyboard.press("Escape"); await expect(auditDetailTrigger()).toBeFocused();
   await auditDialog().getByLabel("表示する状態").selectOption("review");
   await expect(auditList().locator(":scope > li")).toHaveCount(0);
+  const checkedAudit = await copyAudit();
+  assert.ok(checkedAudit.includes("認識できた出現数：2件。見直し対象：0件。"));
+  assert.ok(checkedAudit.includes("点検状態：照合済み"));
+  const auditAcquiredAt = checkedAudit.match(/^原本の観測取得日時（UTC、ISO 8601）：([^\n]+)$/m)?.[1];
+  assert.ok(auditAcquiredAt && Number.isFinite(Date.parse(auditAcquiredAt)), "Checked output records the existing acquisition time separately from export time");
+  assert.equal((checkedAudit.match(/保存記録と一致/g) || []).length, 3, "Export must retain all three source assessments while review filter displays no rows");
+  const auditDownloadPromise = page.waitForEvent("download");
+  await activate(auditDialog().getByRole("button", { name: "点検結果を.md出力", exact: true }));
+  const auditDownload = await auditDownloadPromise;
+  const downloadedAudit = await readFile(await auditDownload.path(), "utf8");
+  assert.ok(auditDownload.suggestedFilename().endsWith(".md") && !/[<>:"/\\|?*]/.test(auditDownload.suggestedFilename()), "Audit download uses a safe filename");
+  // Only the independent output timestamp may differ between two explicit exports.
+  const normalizeAuditOutputTime = text => text.replace(/^出力日時（UTC、ISO 8601）：[^\n]+$/m, "出力日時（UTC、ISO 8601）：<export-time>");
+  assert.equal(normalizeAuditOutputTime(downloadedAudit), normalizeAuditOutputTime(checkedAudit));
+  await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error("synthetic audit clipboard refusal"); }; });
+  await activate(auditDialog().getByRole("button", { name: "点検結果をコピー", exact: true }));
+  await expect(auditDialog().getByRole("alert").filter({ hasText: "点検結果のコピーに失敗しました" })).toBeVisible();
+  await expect(auditDialog().getByRole("status").filter({ hasText: "点検結果をコピーしました" })).toHaveCount(0);
+  const manualAudit = auditDialog().getByLabel("点検結果Markdown全文（手動コピー用）", { exact: true });
+  await expect(manualAudit).toHaveAttribute("readonly", "");
+  assert.equal(normalizeAuditOutputTime(await manualAudit.inputValue()), normalizeAuditOutputTime(checkedAudit));
+  await manualAudit.focus();
+  assert.deepEqual(await manualAudit.evaluate(element => [element.selectionStart, element.selectionEnd]), [0, (await manualAudit.inputValue()).length], "Manual recovery selects the complete output, not a truncated preview");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+    assert.ok(await manualAudit.evaluate(element => element.scrollWidth <= element.clientWidth + 1), "Full Markdown manual-copy field wraps long IDs and titles");
+  }
+  await page.evaluate(() => { document.documentElement.style.fontSize = ""; navigator.clipboard.writeText = async text => { window.__auditMarkdownCopy = text; }; });
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await expect(editor()).toHaveValue(afterSecondInsert);
+  await passed(prefix + ": all-item audit copy and downloaded Markdown agree despite empty filter; copy refusal provides complete readonly recovery with both themes 200 percent and no persistence");
   await auditDialog().getByLabel("表示する状態").selectOption("all");
   await activate(auditDialog().getByRole("button", { name: "根拠2の本文へ移動", exact: true }));
   await expect(auditDialog()).toHaveCount(0); await expect(editor()).toBeFocused();
@@ -848,6 +899,14 @@ async function exerciseFormulaQuotes(prefix) {
     await expect(sourceAudit()).toHaveCount(0);
     await expect(auditList()).toContainText("未照合");
     await expect(auditList()).not.toContainText("保存記録と一致");
+    const staleAudit = await copyAudit();
+    assert.ok(staleAudit.includes("失効") && staleAudit.includes("未照合"), "Real other-tab update exports an explicit expired assessment");
+    assert.ok(!staleAudit.includes(auditAcquiredAt), "Expired output must not reuse the prior acquisition time as a valid current observation");
+    assert.ok(staleAudit.includes("認識できた出現数：2件。見直し対象：2件。"));
+    assert.ok(!staleAudit.includes("保存記録と一致"), "No old matched state survives into an expired export");
+    assert.ok(staleAudit.includes(record.id) && staleAudit.includes(comparisonRecord.id), "Expired source assessment still identifies the fixed references without substituting current values");
+    assert.deepEqual(await storage(), changedForAudit);
+    await expect(editor()).toHaveValue(afterSecondInsert);
     await activate(auditDialog().getByRole("button", { name: "保存記録と照合", exact: true }));
     await expect(auditList()).toContainText("保存記録の変更");
     await activate(auditDetailTrigger());

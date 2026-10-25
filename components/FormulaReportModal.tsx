@@ -128,7 +128,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
     } catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "保存に失敗しました。編集内容は保持しています。", failed: true }); }
     finally { savingRef.current = false; setSaving(false); }
   };
-  const auditContext = JSON.stringify([id, formulaReportSignature(report), formulaId, formulaDefinitionSignature(formula), body, links, originalGeneration, generation, evidence.fetchedAt, conflict]);
+  const auditContext = JSON.stringify([id, title, formula?.title, dirty, formulaReportSignature(report), formulaId, formulaDefinitionSignature(formula), body, links, originalGeneration, generation, evidence.fetchedAt, conflict]);
   const auditContextRef = useRef(auditContext);
   useLayoutEffect(() => { auditContextRef.current = auditContext; return () => { auditContextRef.current = ""; }; }, [auditContext]);
   const insertionKey = JSON.stringify([id, formulaId, title, body, links, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, saving]);
@@ -256,7 +256,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
       }} />}
       <FormulaReportAudit key={auditContext}
-        body={body} formulaId={formulaId} editing={dirty} disabled={saving}
+        body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict} disabled={saving}
         onNavigate={(start, end) => {
           const epoch = auditNavigationEpoch.current;
           setPreview(false);

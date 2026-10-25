@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { parseReportAudit, assessReportAudit, type AuditItem, type AuditAcquisition } from "../lib/formula-report-audit";
+import { buildAuditMarkdown, bodyLabels, sourceLabels } from "../lib/formula-report-audit-export";
+import { downloadMarkdownReport } from "../lib/markdown-report";
 import { loadData, STORAGE_KEY } from "../lib/storage";
 import { Modal } from "./Modal";
 import { RecordInfo, BlockInfo } from "./EvidenceRecordDetails";
@@ -9,38 +11,76 @@ import { FormulaQuoteComparison, type QuoteSource } from "./FormulaQuoteComparis
 import { DifferenceSourceDialog } from "./FormulaDifferenceSources";
 
 type Acquisition = AuditAcquisition & { fetchedAt: string; raw: string | null };
-type Props = { body: string; formulaId: string; editing: boolean; disabled?: boolean; onNavigate: (start: number, end: number) => void };
-const bodyLabels = { intact: "本文対応あり", edited: "本文編集・対応未保証", invalid: "未知・不正／対応不明", untracked: "追跡情報不足" };
-const sourceLabels = { unverified: "未照合", matched: "保存記録と一致", changed: "保存記録の変更", missing: "記録・ブロック欠落", invalid: "未知・不正", unavailable: "取得失敗" };
+type Props = { body: string; formulaId: string; formulaTitle?: string; reportId?: string; reportTitle?: string; editing: boolean; unsavedChanges?: boolean; savedContextChanged?: boolean; disabled?: boolean; onNavigate: (start: number, end: number) => void };
 const short = (value: string) => value.length > 24 ? `${value.slice(0, 24)}…` : value;
 
 /** Mounted for one report/body/definition/link/original generation by the editor.
  * No original is read until the user explicitly requests one acquisition. */
-export function FormulaReportAudit({ body, formulaId, editing, disabled, onNavigate }: Props) {
+export function FormulaReportAudit({ body, formulaId, formulaTitle, reportId, reportTitle, editing, unsavedChanges, savedContextChanged, disabled, onNavigate }: Props) {
   const [open, setOpen] = useState(false);
   const [acquisition, setAcquisition] = useState<Acquisition>();
   const [stale, setStale] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState("all");
+  const [exportNotice, setExportNotice] = useState<{ text: string; failed: boolean } | null>(null);
+  const [manualCopy, setManualCopy] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  // A synchronous token invalidates async completion before a queued React render.
+  const exportEpoch = useRef(0);
+  const staleRef = useRef(false);
+  const exportBusy = useRef(false);
+  useLayoutEffect(() => () => { exportEpoch.current += 1; }, []);
+  const invalidateExport = () => {
+    exportEpoch.current += 1; exportBusy.current = false;
+    setExporting(false); setExportNotice(null); setManualCopy(null);
+  };
+  const closeAudit = () => { invalidateExport(); setOpen(false); setSelected(null); };
   const inventory = useMemo(() => parseReportAudit(body, formulaId), [body, formulaId]);
   const items = useMemo(() => assessReportAudit(inventory, stale ? undefined : acquisition), [inventory, acquisition, stale]);
   useEffect(() => {
     const observe = (event: StorageEvent) => {
-      if ((event.key === STORAGE_KEY || event.key === null) && acquisition && event.newValue !== acquisition.raw) {
-        setStale(true); setSelected(null);
+      if ((event.key === STORAGE_KEY || event.key === null) && (!acquisition || event.newValue !== acquisition.raw)) {
+        exportEpoch.current += 1; exportBusy.current = false;
+        setExporting(false); setExportNotice(null); setManualCopy(null);
+        staleRef.current = true; setStale(true); setSelected(null);
       }
     };
     window.addEventListener("storage", observe);
     return () => window.removeEventListener("storage", observe);
   }, [acquisition]);
   const refresh = () => {
+    invalidateExport();
     setSelected(null);
     const loaded = loadData();
     const fetchedAt = new Date().toISOString();
     setAcquisition(loaded.status === "error"
       ? { notes: [], links: [], raw: loaded.raw, fetchedAt, error: "保存原本を取得・検証できません。欠落とは断定しません。", invalidData: loaded.reason !== "storage-unavailable" }
       : { notes: structuredClone(loaded.data.notes), links: structuredClone(loaded.data.formulaReports?.entries.find(report => report.formulaId === formulaId)?.evidence?.links ?? []), raw: loaded.status === "ok" ? loaded.raw : null, fetchedAt });
-    setStale(false);
+    staleRef.current = false; setStale(false);
+  };
+  const exportAudit = async (download: boolean) => {
+    if (exportBusy.current) return;
+    const epoch = ++exportEpoch.current;
+    exportBusy.current = true; setExporting(true); setExportNotice(null); setManualCopy(null);
+    let markdown: string | undefined;
+    try {
+      // Synchronous generation freezes one render's body, assessment and acquisition.
+      const output = buildAuditMarkdown({ body, formulaId, formulaTitle, reportId, reportTitle, editing, unsavedChanges, savedContextChanged,
+        inventory, items, state: staleRef.current || stale ? "stale" : acquisition ? "checked" : "unverified",
+        fetchedAt: !staleRef.current && !stale ? acquisition?.fetchedAt : undefined,
+        acquisitionError: !staleRef.current && !stale ? acquisition?.error : undefined, exportedAt: new Date().toISOString() });
+      markdown = output.markdown;
+      if (download) downloadMarkdownReport(output);
+      else await navigator.clipboard.writeText(output.markdown);
+      if (exportEpoch.current !== epoch) return;
+      setExportNotice({ text: download ? "点検結果のダウンロードを要求しました。保存完了はブラウザで確認してください。" : "点検結果をコピーしました。出力開始時点の記録です。", failed: false });
+    } catch (cause) {
+      if (exportEpoch.current !== epoch) return;
+      setExportNotice({ text: `${download ? "点検結果を出力できませんでした。" : "点検結果のコピーに失敗しました。"}${cause instanceof Error ? cause.message : "出力処理を完了できません。"}${markdown ? "下の全文欄から手動でコピーできます。" : "部分的な点検結果は出力していません。"}`, failed: true });
+      setManualCopy(markdown ?? null);
+    } finally {
+      if (exportEpoch.current === epoch) { exportBusy.current = false; setExporting(false); }
+    }
   };
   const selectedItem = items.find(item => item.key === selected);
   const source: QuoteSource = acquisition && !stale ? acquisition : { notes: [], fetchedAt: "未取得（未照合）", stale: true };
@@ -49,9 +89,11 @@ export function FormulaReportAudit({ body, formulaId, editing, disabled, onNavig
   const visible = items.filter(item => filter === "all" || (filter === "review" ? item.needsReview : item.sources.some(source => source.status === "unverified")));
   return <section className="quote-tools report-audit-entry" aria-label="レポート全体の根拠点検">
     <button type="button" disabled={disabled} onClick={() => setOpen(true)}>根拠点検</button>
-    {open && <Modal title="レポート全体の根拠点検" onClose={() => { setOpen(false); setSelected(null); }} wide>
+    {open && <Modal title="レポート全体の根拠点検" onClose={closeAudit} wide>
       <section className="formula-report quote-tools report-audit">
         <p>{editing ? "編集中の本文が対象です。未保存の本文だけを一覧化し、保存本文とは混在させません。" : "現在表示しているレポート本文が対象です。"}</p>
+        {savedContextChanged && <p role="alert">登録式または保存済みレポートが変更されています。出力対象は開いた時点から画面に保持した本文で、現在の保存内容との一致は確認不能です。</p>}
+        {unsavedChanges && !editing && !savedContextChanged && <p>本文は保存済みの内容ですが、タイトル・関連付けなどに未保存変更があります。</p>}
         <p>出典一致・本文対応・利用者の明示確認・数学的正しさは別です。保存記録の変更だけで過去の引用が誤りとは判定しません。閲覧・照合・移動では保存も再計算も行いません。</p>
         <button type="button" onClick={refresh}>保存記録と照合</button>
         {!acquisition || stale ? <p role="status">未照合です。{stale ? "保存原本の更新を検知したため以前の結果と詳細を失効しました。" : "照合は明示操作で開始します。"}</p> : <p>原本の観測取得日時：{acquisition.fetchedAt}。保存日時・計算日時・利用者確認日時ではありません。</p>}
@@ -59,6 +101,11 @@ export function FormulaReportAudit({ body, formulaId, editing, disabled, onNavig
         <p role="status">認識できた出現 {items.length}件／見直し対象 {reviewCount}件。分母は本文上の出現数です。複数の問題がある項目も見直し対象は1件として数えます。未照合も見直し対象です。</p>
         <p role={inventory.complete ? undefined : "alert"}>{inventory.reason}</p>
         {!items.length && <p>列挙できる根拠項目がありません。全件一致・点検完了を意味しません。</p>}
+        <p>コピー・.md出力は絞り込みや詳細選択に関係なく、認識できた全項目を本文順に出力します。本文・snapshot全文は含めず、元データの復元用ではありません。ファイル名のみ安全化・短縮し、出力内のタイトル・IDは省略しません。</p>
+        <div className="modal-actions"><button type="button" disabled={exporting} onClick={() => void exportAudit(false)}>点検結果をコピー</button><button type="button" disabled={exporting} onClick={() => void exportAudit(true)}>点検結果を.md出力</button></div>
+        {exporting && <p role="status">出力開始時点の点検結果をコピーしています。対象変更後の完了通知は表示しません。</p>}
+        {exportNotice && <p role={exportNotice.failed ? "alert" : "status"}>{exportNotice.text}</p>}
+        {manualCopy !== null && <div><label htmlFor="audit-export-manual-copy">点検結果Markdown全文（手動コピー用）</label><textarea id="audit-export-manual-copy" readOnly className="code-input" rows={10} value={manualCopy} onFocus={event => event.target.select()} /></div>}
         <label>表示する状態<select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
         <ol aria-label="本文順の根拠一覧">{visible.map(item => {
           const snapshot = item.quote?.snapshot ?? item.difference?.snapshot?.quote;
@@ -69,13 +116,13 @@ export function FormulaReportAudit({ body, formulaId, editing, disabled, onNavig
             {snapshot && <details><summary>識別情報の全文</summary><p>ID：{identifier}／メモID：{snapshot.memoId}／引用時記録ID：{snapshot.record.id}／ブロックID：{snapshot.blockId}</p>{item.difference?.snapshot && <p>比較先記録ID：{item.difference.snapshot.after.id}</p>}</details>}
             {!item.sources.length && <p>出典：追跡情報不足または未知・不正のため照合できません。</p>}
             {item.sources.map(state => <div key={state.side}><p>{state.side === "before" ? "比較元" : state.side === "after" ? "比較先" : "引用元"}：{sourceLabels[state.status]}</p><p>{state.reason}</p>{state.linked === false && <p>関連付け解除・保存済み根拠リンクなし（記録欠落とは別）。自動追加しません。</p>}</div>)}
-            <div className="modal-actions"><button type="button" onClick={() => setSelected(item.key)}>根拠{item.order}の詳細</button><button type="button" disabled={!item.canNavigate} onClick={() => { setSelected(null); setOpen(false); onNavigate(item.start, item.end); }}>根拠{item.order}の本文へ移動</button></div>
+            <div className="modal-actions"><button type="button" onClick={() => setSelected(item.key)}>根拠{item.order}の詳細</button><button type="button" disabled={!item.canNavigate} onClick={() => { closeAudit(); onNavigate(item.start, item.end); }}>根拠{item.order}の本文へ移動</button></div>
             {!item.canNavigate && <p>本文との対応位置を安全に確定できないため移動できません。</p>}
           </li>;
         })}</ol>
         {items.length > 0 && !visible.length && <p>この絞り込みに該当する項目はありません。点検完了の判定ではありません。</p>}
         <p>原本の常時最新性・任意の外部書込みとの原子的整合性は保証しません。変更を検知したときは明示照合が必要です。</p>
-        <button type="button" onClick={() => { setOpen(false); setSelected(null); }}>根拠点検を閉じる</button>
+        <button type="button" onClick={closeAudit}>根拠点検を閉じる</button>
         {selectedItem && <AuditDetails item={selectedItem} body={body} formulaId={formulaId} source={source} links={links} onRefresh={refresh} onClose={() => setSelected(null)} />}
       </section>
     </Modal>}

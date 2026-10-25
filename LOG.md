@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: 根拠点検結果の Markdown 出力（Issue #86）
+
+- 着手: PR #85 の 14:41:57 JST merge と main `9c1cbd2c77131e9d717b6206ac54c7a6c389d235` を確認。新規 clean clone から `feat/audit-markdown-export`、既存作業ツリーは不変。重複Issueを検索し [Issue #86](https://github.com/tetsujisugimori-coder/calculator-memo/issues/86) を作成。
+- 調査・設計: 既存 inventory/assessment と Acquisition.fetchedAt を再利用。第一希望は同じ世代の全項目を純粋builderへ渡す方式で採用。DOM抽出/別parser/暗黙再取得/新規永続化は不採用。設計を実装前に `docs/agent/formula-report-audit-export.md` へ記録。
+- 実装: 絞り込み非依存の全件コピー/.md出力、本文種別・未保存状態・ID・出力/取得時刻・未照合/失効・両側の状態理由・集計制約。既存 safe fence/上限/filename/download を再利用し、失敗時は全文手動コピー欄。失効/閉鎖/切替/再取得の同期epochで遅い通知と旧全文欄を無効化。
+- 非破壊: 本文/snapshot/原本/確認履歴・schema/version/容量/計算engine/挿入取消は不変。出力は独立記録で、数学的正しさ・真正性や常時最新性を保証しない。開始済みOS clipboard書込取消・OSファイル保存完了は保証外。
+- ローカル検証: 追加47件（pure33/UI14）、全単体1756件/72files、CI契約37件、型検査・lint・通常/Pages build成功。ローカルNode24.22.1とCI固定22.13.0を区別する。初回依存取得は既定cache不在で失敗し、一時cache指定で成功。Chromiumは実行環境のsocket制約により起動前停止、GUI成功とは扱わない。最終HEAD実CI・実GUI結果はPRへ追記する。
+- 独立レビュー: 同IDの保存レポート外部変更/削除後に保持中の旧本文を現在の保存済み本文と誤認させるP2を独立再現し修正。再照合後も保持本文/保存競合の制約を記載し、本文編集とタイトル等の未保存変更を分離。独立再検証47件成功、P1/P2残件なし。比較基準の文言も直近保存で更新される編集基準本文へ訂正。
+- focused GUIで手動コピー欄の暗黙ラベルが全文をaccessible nameへ含める問題を再現し、明示label/textarea関連へ修正。全文・失敗判定・exact label検査は維持。
+- 未検証/残余: 実機Safari/VoiceOver/OSソフトキーボード。#85初回CIの選択位置ずれは原因未特定を維持し、今回成功で根本解決としない。既存6条件/30分/画像trace方針を変更しない。
+
+
 ## 2026-10-25 JST: レポート全体の根拠点検（Issue #84）
 
 - 着手: PR #83 merged を API で確認、clean な作業ツリーを main `163e31dbdc07c37da49da5f2b5741cfa3bba4f2b` へ fast-forward し `feat/report-evidence-audit` を作成。既存の根拠点検 Issue は検索0件のため [Issue #84](https://github.com/tetsujisugimori-coder/calculator-memo/issues/84) を作成。
