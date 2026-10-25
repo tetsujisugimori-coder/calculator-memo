@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: レポート全体の根拠点検（Issue #84）
+
+- 着手: PR #83 merged を API で確認、clean な作業ツリーを main `163e31dbdc07c37da49da5f2b5741cfa3bba4f2b` へ fast-forward し `feat/report-evidence-audit` を作成。既存の根拠点検 Issue は検索0件のため [Issue #84](https://github.com/tetsujisugimori-coder/calculator-memo/issues/84) を作成。
+- 方針: parser / strict scanner / snapshot検証 / 原本照合 / 既存詳細表示を再利用。点検専用の一時 inventory と明示取得世代を分離し、本文順・出現単位、本文編集と現在出典を独立表示する。単純な既存一覧結合は不採用。設計・次善策・保証境界は `docs/agent/formula-report-audit.md`。
+- 保存形式・容量・確認履歴・計算エンジン・挿入/専用取消は変更しない。実装・検証結果は後続に記録する。
+- 実装: 本文解析を共有した出現単位inventory、初期未照合と単一明示取得、本文/出典の独立表示、片側ごとの状態、関連解除、絞り込み、既存詳細と厳密位置移動。親アプリの確定保存世代と storage event により詳細/結果を失効し、明示再照合のみ許可する。
+- ローカル: 追加49件（pure30/UI19）、全単体1709件/70files、CI契約37件、型検査・lint・通常/Pages build成功。既存保存writer/schema/確認条件/engineは変更しない。既存挿入/取消境界も回帰を継続。
+- 独立レビュー: 未取得リンクを不存在扱いするP2、本文移動RAF待ち中の世代変更で古い位置を選択するP2を独立に再現。取得済み/非stale時だけリンク不存在を表示し、layout更新context-refと単調増加のstorage通知epochで遅延位置移動を守る。最終レビューで別タブ更新の同種レースも再現し、繰返し通知を含む回帰を追加した。独立再検証3件＋関連258件/型/diff確認成功、P0/P1/P2残件なし（実CIは別途確認）。
+- 実GUI: 隔離Playwright Chromium touch375/390pxで各13検査・71touch成功。両テーマ200%、長い記録ID、混在一覧・詳細/絞り込み/本文移動・Escape/フォーカス、実際の別タブからの原本変更→失効→明示再照合、固定snapshot/未保存本文/原本/履歴保持を確認。初回は引用前後の文章まで選択する誤った試験期待値で失敗し、引用だけの厳密範囲へ訂正。製品の位置判定は緩めていない。
+- CI: 全6条件を維持し各2検査追加、契約762検査/mobile986touch/geometry562、代表PNG114・成功trace非保存・30分上限は維持。最終HEAD実Actionsの結果はPRに記録し、未実行/実行中を成功扱いしない。ローカルWebKitは利用可能なbrowser実体がないため未実施、実CIのWebKitと区別する。
+- 未検証: 実機iPhone Safari/VoiceOver/OSソフトキーボード。通常buildのchunk-size警告、ローカルlintの既存/一時GUIコピーに由来するunused警告は残る（エラー0）。任意外部writerとの原子的排他、常時最新性、数学的正しさ・真正性は保証しない。rollbackはコードrevertで本文移行不要。
+
 ## 2026-10-25 JST: PR #83 P2 比較差分フェンスの境界保護
 
 - 対象: [PR #83](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83)、[review 5640533497](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83#pullrequestreview-5640533497)、行コメント4368884046。開始時remote/local HEADは `4e6a49ef99399a11b8df8f5cdf16797233ce6cba` 一致、作業ツリーclean。既存枝を継続しIssue #82を再利用、新PRなし。

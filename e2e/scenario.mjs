@@ -802,6 +802,57 @@ async function exerciseFormulaQuotes(prefix) {
   await expect(editor()).toHaveValue(afterSecondInsert);
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
   await passed(prefix + ": source updates discard current comparison, explicit refresh separates changed current evidence from immutable insertion snapshots and leaves draft and raw history untouched");
+  // Report-wide inventory uses its own explicit acquisition and the actual draft.
+  const auditDialog = () => page.getByRole("dialog", { name: "レポート全体の根拠点検", exact: true });
+  const auditList = () => auditDialog().getByRole("list", { name: "本文順の根拠一覧", exact: true });
+  const auditEntry = () => report().getByRole("button", { name: "根拠点検", exact: true });
+  await activate(auditEntry());
+  await expect(auditDialog()).toContainText("編集中の本文が対象");
+  await expect(auditList()).toContainText("未照合");
+  await expect(auditList().locator(":scope > li")).toHaveCount(2);
+  await activate(auditDialog().getByRole("button", { name: "保存記録と照合", exact: true }));
+  await expect(auditDialog()).toContainText("出現 2件／見直し対象 0件");
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  const auditDetailTrigger = () => auditDialog().getByRole("button", { name: "根拠1の詳細", exact: true });
+  await auditDetailTrigger().focus(); await activate(auditDetailTrigger());
+  await expect(sourceAudit()).toContainText(record.id);
+  await page.keyboard.press("Escape"); await expect(auditDetailTrigger()).toBeFocused();
+  await auditDialog().getByLabel("表示する状態").selectOption("review");
+  await expect(auditList().locator(":scope > li")).toHaveCount(0);
+  await auditDialog().getByLabel("表示する状態").selectOption("all");
+  await activate(auditDialog().getByRole("button", { name: "根拠2の本文へ移動", exact: true }));
+  await expect(auditDialog()).toHaveCount(0); await expect(editor()).toBeFocused();
+  const selection = await editor().evaluate(element => element.value.slice(element.selectionStart, element.selectionEnd));
+  const quoteBegin = quotedBody.indexOf("```text");
+  const quoteMetadata = quotedBody.indexOf("```calculator-memo-evidence-v1");
+  const quoteEnd = quotedBody.indexOf("\n```", quoteMetadata) + 4;
+  assert.equal(selection, quotedBody.slice(quoteBegin, quoteEnd), "Audit selects the exact citation, excluding surrounding prose");
+  await expect(editor()).toHaveValue(afterSecondInsert);
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+  await passed(prefix + ": report-wide evidence audit explicitly checks one saved generation, lists mixed draft evidence in body order, filters per occurrence, navigates exact source ranges and preserves raw snapshots with both themes 200 percent and focus return");
+  await activate(auditEntry()); await activate(auditDetailTrigger());
+  const secondTab = await context.newPage();
+  try {
+    await secondTab.goto(base);
+    await secondTab.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), changedForAudit);
+    await expect(sourceAudit()).toHaveCount(0);
+    await expect(auditList()).toContainText("未照合");
+    await expect(auditList()).not.toContainText("保存記録と一致");
+    await activate(auditDialog().getByRole("button", { name: "保存記録と照合", exact: true }));
+    await expect(auditList()).toContainText("保存記録の変更");
+    await activate(auditDetailTrigger());
+    await activate(sourceAudit().getByRole("button", { name: "引用時点の比較を再確認", exact: true }));
+    await expect(page.getByRole("region", { name: "引用時点の比較差分", exact: true })).not.toContainText("source audit changed display");
+    await page.keyboard.press("Escape"); await page.keyboard.press("Escape");
+    await activate(auditDialog().getByRole("button", { name: "根拠点検を閉じる", exact: true }));
+    await expect(auditEntry()).toBeFocused();
+    await expect(editor()).toHaveValue(afterSecondInsert); assert.deepEqual(await storage(), changedForAudit);
+  } finally { await secondTab.close(); }
+  await passed(prefix + ": real second-tab storage update invalidates report-wide audit results and details, explicit reacquisition detects change without replacing fixed snapshots or saving edited report and history");
   await page.evaluate(data => localStorage.setItem("calculation-memo:data", JSON.stringify(data)), original);
   await page.reload();
 }

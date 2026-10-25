@@ -18,8 +18,10 @@ import { compareQuoteToRecord } from "../lib/formula-quote-comparison";
 import { FormulaDifferenceSources } from "./FormulaDifferenceSources";
 import type { DifferenceInsertion } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
+import { FormulaReportAudit } from "./FormulaReportAudit";
 
 type Props = {
+  originalGeneration?: string | null;
   formulaId: string; formula?: RegisteredFormula; report?: FormulaReport;
   writable: boolean; onClose: () => void;
   onSave: (request: FormulaReportSaveRequest) => Promise<FormulaReport | string>;
@@ -33,7 +35,7 @@ function acquireEvidence(formulaId: string) {
 }
 
 /** Expectations are frozen when opened; prop changes never silently rebase a draft. */
-export function FormulaReportModal({ formulaId, formula, report, writable, onClose, onSave }: Props) {
+export function FormulaReportModal({ originalGeneration, formulaId, formula, report, writable, onClose, onSave }: Props) {
   const [baseline, setBaseline] = useState(() => ({ report: report ? structuredClone(report) : undefined, expression: formula?.expression ?? null, definition: formulaDefinitionSignature(formula) }));
   const [openedFormulaId] = useState(formulaId);
   const [id] = useState(() => report?.id ?? crypto.randomUUID());
@@ -47,17 +49,14 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
   const diffSelection = useRef({ start: 0, end: 0 });
   const [differenceUndo, setDifferenceUndo] = useState<{ before: string; after: string } | null>(null);
   const insertionKeyRef = useRef("");
+  const auditNavigationEpoch = useRef(0);
 
   const headings = useMemo(() => body.length <= 100_000 ? extractMarkdownHeadings(body) : [], [body]);
   const [templateUndo, setTemplateUndo] = useState<{ before: string; after: string } | null>(null);
-  const navigateHeading = (heading: MarkdownHeading) => {
-    if (preview) {
-      const target = document.getElementById(markdownHeadingDomId(headingPrefix, heading.id));
-      target?.focus(); target?.scrollIntoView({ block: "nearest" });
-    } else {
+  const selectBodyRange = (start: number, end: number) => {
       editorRef.current?.focus();
       const offset = (position: number) => body.slice(0, position).replace(/\r\n?/g, "\n").length;
-      editorRef.current?.setSelectionRange(offset(heading.start), offset(heading.end));
+      editorRef.current?.setSelectionRange(offset(start), offset(end));
       const editor = editorRef.current;
       if (editor) {
         // Selection alone does not consistently scroll a textarea in every engine.
@@ -67,13 +66,20 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
         for (const property of ["font", "line-height", "letter-spacing", "padding", "text-indent", "tab-size"]) mirror.style.setProperty(property, style.getPropertyValue(property));
         Object.assign(mirror.style, { position: "fixed", top: "0", left: "0", visibility: "hidden", pointerEvents: "none", width: `${editor.clientWidth}px`, boxSizing: "border-box", whiteSpace: "pre-wrap", overflowWrap: "break-word" });
         mirror.setAttribute("aria-hidden", "true");
-        mirror.textContent = editor.value.slice(0, offset(heading.start));
+        mirror.textContent = editor.value.slice(0, offset(start));
         const marker = document.createElement("span"); marker.textContent = "|"; mirror.append(marker);
         document.body.append(mirror);
         editor.scrollTop = Math.max(0, marker.offsetTop - editor.clientHeight / 2);
         mirror.remove();
         editor.scrollIntoView({ block: "nearest" });
       }
+  };
+  const navigateHeading = (heading: MarkdownHeading) => {
+    if (preview) {
+      const target = document.getElementById(markdownHeadingDomId(headingPrefix, heading.id));
+      target?.focus(); target?.scrollIntoView({ block: "nearest" });
+    } else {
+      selectBodyRange(heading.start, heading.end);
     }
   };
   const [links, setLinks] = useState<FormulaReportEvidenceLink[]>(() => structuredClone(report?.evidence?.links ?? []));
@@ -97,7 +103,11 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     return () => window.removeEventListener("beforeunload", warn);
   }, [unsaved]);
   useEffect(() => {
-    const observe = (event: StorageEvent) => { if ((event.key === STORAGE_KEY || event.key === null) && event.newValue !== evidence.raw) setEvidenceChanged(true); };
+    const observe = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY && event.key !== null) return;
+      auditNavigationEpoch.current += 1;
+      if (event.newValue !== evidence.raw) setEvidenceChanged(true);
+    };
     window.addEventListener("storage", observe);
     return () => window.removeEventListener("storage", observe);
   }, [evidence.raw]);
@@ -118,6 +128,9 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
     } catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "保存に失敗しました。編集内容は保持しています。", failed: true }); }
     finally { savingRef.current = false; setSaving(false); }
   };
+  const auditContext = JSON.stringify([id, formulaReportSignature(report), formulaId, formulaDefinitionSignature(formula), body, links, originalGeneration, generation, evidence.fetchedAt, conflict]);
+  const auditContextRef = useRef(auditContext);
+  useLayoutEffect(() => { auditContextRef.current = auditContext; return () => { auditContextRef.current = ""; }; }, [auditContext]);
   const insertionKey = JSON.stringify([id, formulaId, title, body, links, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, saving]);
   useLayoutEffect(() => { insertionKeyRef.current = insertionKey; }, [insertionKey]);
   if (differenceUndo && conflict) setDifferenceUndo(null);
@@ -242,6 +255,13 @@ export function FormulaReportModal({ formulaId, formula, report, writable, onClo
           requestAnimationFrame(() => { editorRef.current?.focus(); editorRef.current?.setSelectionRange(next.caret, next.caret); });
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
       }} />}
+      <FormulaReportAudit key={auditContext}
+        body={body} formulaId={formulaId} editing={dirty} disabled={saving}
+        onNavigate={(start, end) => {
+          const epoch = auditNavigationEpoch.current;
+          setPreview(false);
+          requestAnimationFrame(() => { if (auditContextRef.current === auditContext && auditNavigationEpoch.current === epoch) selectBodyRange(start, end); });
+        }} />
       <details className="report-heading-navigation"><summary>章一覧（{headings.length}件）</summary>
         <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
         {body.length > 100_000 ? <p>上限超過のため章一覧を停止しています。本文は保持しています。</p> : headings.length ? <nav aria-label="レポートの章一覧"><ol>{headings.map(heading => <li key={heading.id} style={{ paddingInlineStart: `${(heading.level - 1) * .5}rem` }}><button type="button" disabled={saving} onClick={() => navigateHeading(heading)}>H{heading.level}：{heading.text}</button></li>)}</ol></nav> : <p>見出しがありません。行頭の #〜###### と空白で見出しを作成できます。</p>}

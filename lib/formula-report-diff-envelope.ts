@@ -4,12 +4,12 @@ import { validateDifferenceSnapshot, type DifferenceSnapshot } from './formula-r
 const PREFIX = 'calculator-memo-difference';
 export const DIFFERENCE_START = `${PREFIX}-start-v1`;
 export const DIFFERENCE_END = `${PREFIX}-v1`;
-type Envelope = { start: number; end: number; closed: boolean; status: 'complete' | 'orphan' | 'invalid' | 'untracked'; reason: string; snapshot?: DifferenceSnapshot };
+export type DifferenceEnvelope = { start: number; end: number; closed: boolean; status: 'complete' | 'orphan' | 'invalid' | 'untracked'; reason: string; snapshot?: DifferenceSnapshot };
 const invalid = '差分の開始・終了情報が未知・不正・重複または対応不明です。推測せず本文を保持しています。';
 
 /** The renderer's source ranges exclude the final newline. An EOF code block
  * without its actual closing fence must never count as a complete marker. */
-function closedCode(body: string, block: MarkdownBlock): boolean {
+export function closedCode(body: string, block: MarkdownBlock): boolean {
   const lines = body.slice(block.start, block.end).replace(/\r\n?/g, '\n').split('\n');
   if (lines.length < 2) return false;
   const opening = lines[0].match(/^ {0,3}(`{3,}|~{3,})/);
@@ -22,10 +22,10 @@ function closedCode(body: string, block: MarkdownBlock): boolean {
  * reserved unknown/corrupt/nested marker makes pairing ambiguous, retain the
  * original start through EOF; a later plausible marker cannot repair it.
  * This does not search raw strings inside ordinary code/math blocks. */
-export function scanDifferenceEnvelopes(body: string): Envelope[] {
-  const results: Envelope[] = [];
+export function scanDifferenceEnvelopes(body: string, blocks: MarkdownBlock[] = parseMarkdownBlocks(body)): DifferenceEnvelope[] {
+  const results: DifferenceEnvelope[] = [];
   let pending: { start: number; id?: string; poisoned: boolean } | undefined;
-  for (const block of parseMarkdownBlocks(body)) {
+  for (const block of blocks) {
     if (block.kind !== 'code' || !block.language.startsWith(PREFIX)) continue;
     if (pending?.poisoned) continue;
     if (block.language === DIFFERENCE_END && closedCode(body, block)) {
