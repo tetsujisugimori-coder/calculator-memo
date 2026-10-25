@@ -93,7 +93,7 @@ describe('audit Markdown uses the shared report-wide audit', () => {
   });
   it('marks a frozen opened body separately from the current saved report', () => {
     const { markdown } = buildAuditMarkdown({ ...input('ordinary'), editing: false, savedContextChanged: true });
-    expect(markdown).toContain('開いた時点から保持している本文');
+    expect(markdown).toContain('画面に保持している本文');
     expect(markdown).not.toContain('現在表示中の保存済み本文');
     expect(markdown).toContain('保存原本との照合結果とは別の制約');
     expect(markdown).toContain('本文の未保存変更（現在の編集基準本文との比較）：なし');

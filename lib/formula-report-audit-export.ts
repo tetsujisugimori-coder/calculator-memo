@@ -43,12 +43,12 @@ export function buildAuditMarkdown(input: AuditMarkdownInput): MarkdownReport {
   field('登録式タイトル', input.formulaTitle ?? '未提供（推測しません）');
   field('レポート ID', input.reportId ?? '未提供（推測しません）');
   field('レポートタイトル', input.reportTitle ?? '未提供（推測しません）');
-  lines.push(`対象本文：${input.savedContextChanged ? '開いた時点から保持している本文（現在の保存内容との一致は確認不能）' : input.editing ? '現在の編集中本文（本文に未保存変更あり）' : '現在表示中の保存済み本文（本文に未保存変更なし）'}。`, '',
+  lines.push(`対象本文：${input.savedContextChanged ? '画面に保持している本文（現在の保存本文との一致は未確認）' : input.editing ? '現在の編集中本文（本文に未保存変更あり）' : '現在表示中の保存済み本文（本文に未保存変更なし）'}。`, '',
     `本文の未保存変更（現在の編集基準本文との比較）：${input.editing ? 'あり' : 'なし'}。`, '',
     `レポートの未保存変更（タイトル・関連付けを含む）：${(input.unsavedChanges ?? input.editing) ? 'あり' : 'なし'}。`, '',
     `出力日時（UTC、ISO 8601）：${utc(input.exportedAt)}`, '',
     '出力日時は保存原本の取得日時・計算日時・保存日時・利用者確認日時ではありません。', '');
-  if (input.savedContextChanged) lines.push('登録式または保存済みレポートの変更・削除を検知しています。出力対象は画面に保持した本文であり、現在の保存済み本文とは断定しません。保存原本との照合結果とは別の制約です。', '');
+  if (input.savedContextChanged) lines.push('保存領域の更新等を検知しています。対象レポートの変更・削除は断定しません。出力対象は画面に保持した本文であり、現在の保存済み本文とは断定しません。出典の再照合は本文と現在の保存内容との一致確認ではありません。保存原本との照合結果とは別の制約です。', '');
   if (input.state === 'checked') {
     lines.push('点検状態：照合済み（明示取得した世代を使用。取得失敗・未知／不正を含む結果であり、全件一致や点検完了を意味しません）。', '');
     lines.push(input.fetchedAt

@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: PR #87 再レビュー P2・実 storage 通知後の保持本文
+
+- 着手時：作業ツリー clean、PR #87 Draft/open、branch `feat/audit-markdown-export` と remote HEAD `ad15bfffe5104779cda707c36fa2ae75926c6233` 一致。main `9c1cbd2c77131e9d717b6206ac54c7a6c389d235`。既存追加変更の破棄なし。
+- 訂正：下段の前回「外部変更/削除後の保持本文P2修正済み」は report props を差し替える試験経路だけだった。実 CalculatorApp は storage 通知後も旧 data/confirmedSerialized を保持するため警告が伝播せず、未修正だった実経路を今回独立再現した。前回の履歴は消さず保証範囲をここで訂正する。
+- 修正前：実 CalculatorApp 統合の本文変更/削除2件が失敗。別 build の旧 HEAD を Chromium 141/375px で起動し、同 browser context の別ページから保存データを実更新した2件でも旧本文を「現在表示中の保存済み本文」と出力することを確認。
+- 原因／修正：親の既存保存保護を Library→Report→Audit に伝播。storage 通知に対する本文一致未確認は一時状態として保持し、出典再照合では解除しない。同期通知→描画前出力と遅延コピー完了も既存epochで保護。対象変更・削除とは断定せず、未保存編集との差を別表示。第一希望の既存通知再利用を採用、追加取得による比較は暗黙取得と編集基準の複雑化を避け不採用。
+- 保存保護：旧本文・タイトル・関連付け・snapshot・保存原本・確認履歴は不変。既存上書き停止、共有判定、保存schema/容量/engine/挿入取消契約を変更しない。出力からの保存領域read/writeを追加しない。
+- 独立再レビュー：実装担当と別 agent がソース＋jsdom を点検、関連57件と独立3件成功、P0/P1/P2/P3新規指摘なし。描画前storage→出力、Library未mount時更新→元bytes復帰、storage通知なし親保護変更→遅延コピーを独立検証。実ブラウザ／CIの証拠とは区別する。
+- 最終ローカル：全単体1766件/73files・関連57件・CI契約37件・lint・型・通常/Pages build成功。focused Chromium141/375・390各6チェック成功、local WebKit26.5は後処理close停止で完走成功とはしない。詳細は `docs/agent/formula-report-audit-storage-verification.md`。最終HEAD実CIはPR本文へ追記し、この記録コミット前に先取りしない。実機Safari/VoiceOver未検証、PR #85初回CI選択位置ずれ原因未特定を維持。
+
 ## 2026-10-25 JST: 根拠点検結果の Markdown 出力（Issue #86）
 
 - 着手: PR #85 の 14:41:57 JST merge と main `9c1cbd2c77131e9d717b6206ac54c7a6c389d235` を確認。新規 clean clone から `feat/audit-markdown-export`、既存作業ツリーは不変。重複Issueを検索し [Issue #86](https://github.com/tetsujisugimori-coder/calculator-memo/issues/86) を作成。

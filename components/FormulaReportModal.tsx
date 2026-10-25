@@ -21,6 +21,7 @@ import { Modal } from "./Modal";
 import { FormulaReportAudit } from "./FormulaReportAudit";
 
 type Props = {
+  savedContextUncertain?: boolean;
   originalGeneration?: string | null;
   formulaId: string; formula?: RegisteredFormula; report?: FormulaReport;
   writable: boolean; onClose: () => void;
@@ -35,7 +36,7 @@ function acquireEvidence(formulaId: string) {
 }
 
 /** Expectations are frozen when opened; prop changes never silently rebase a draft. */
-export function FormulaReportModal({ originalGeneration, formulaId, formula, report, writable, onClose, onSave }: Props) {
+export function FormulaReportModal({ savedContextUncertain, originalGeneration, formulaId, formula, report, writable, onClose, onSave }: Props) {
   const [baseline, setBaseline] = useState(() => ({ report: report ? structuredClone(report) : undefined, expression: formula?.expression ?? null, definition: formulaDefinitionSignature(formula) }));
   const [openedFormulaId] = useState(formulaId);
   const [id] = useState(() => report?.id ?? crypto.randomUUID());
@@ -86,6 +87,8 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
   const [evidence, setEvidence] = useState(() => acquireEvidence(formulaId));
   const [generation, setGeneration] = useState(0);
   const [evidenceChanged, setEvidenceChanged] = useState(false);
+  // A source refresh cannot establish that the retained editing baseline is current.
+  const [heldContextUncertain, setHeldContextUncertain] = useState(false);
   const [preview, setPreview] = useState(Boolean(report));
   const [remarks, setRemarks] = useState("");
   const remarksInvalid = remarks.length > 500;
@@ -106,7 +109,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
     const observe = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY && event.key !== null) return;
       auditNavigationEpoch.current += 1;
-      if (event.newValue !== evidence.raw) setEvidenceChanged(true);
+      if (event.newValue !== evidence.raw) { setEvidenceChanged(true); setHeldContextUncertain(true); }
     };
     window.addEventListener("storage", observe);
     return () => window.removeEventListener("storage", observe);
@@ -256,7 +259,7 @@ export function FormulaReportModal({ originalGeneration, formulaId, formula, rep
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
       }} />}
       <FormulaReportAudit key={auditContext}
-        body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict} disabled={saving}
+        body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict || savedContextUncertain || heldContextUncertain} disabled={saving}
         onNavigate={(start, end) => {
           const epoch = auditNavigationEpoch.current;
           setPreview(false);

@@ -130,15 +130,30 @@ it.each(['changed', 'deleted'])('independent regression: exports the frozen open
   await act(async () => root.render(createElement(FormulaReportModal, { formulaId: 'f', formula, report: change === 'changed' ? updated : undefined, writable: true, onClose: close, onSave: save })));
   await openAudit(); await exportCopy();
   expect(copied()).toContain('difference1');
-  expect(copied()).toContain('開いた時点');
-  expect(copied()).toContain('現在の保存内容との一致は確認不能');
+  expect(copied()).toContain('画面に保持している本文');
+  expect(copied()).toContain('現在の保存本文との一致は未確認');
   expect(copied()).toContain('現在の保存済み本文とは断定しません');
   expect(copied()).toContain('未照合');
   await click('保存記録と照合'); await exportCopy();
   // Reacquiring source records cannot silently turn the frozen editor body into
   // the current saved report; the warning must survive explicit comparison.
   expect(copied()).toContain('difference1');
-  expect(copied()).toContain('現在の保存内容との一致は確認不能');
+  expect(copied()).toContain('現在の保存本文との一致は未確認');
   expect(copied()).toContain('現在の保存済み本文とは断定しません');
   expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(save).not.toHaveBeenCalled();
+});
+
+it.each(['resolve', 'reject'])('parent protection without a storage event invalidates delayed clipboard %s', async outcome => {
+  seed();
+  const render = (savedContextChanged: boolean) => act(async () => root.render(createElement(FormulaReportAudit, { body: tracked(), formulaId: 'f', editing: false, savedContextChanged, onNavigate: navigate })));
+  await render(false); await openAudit();
+  let settle!: () => void;
+  copy.mockImplementationOnce(() => new Promise<void>((resolve, reject) => { settle = outcome === 'resolve' ? resolve : () => reject(new Error('late failure')); }));
+  await exportCopy();
+  await render(true);
+  await act(async () => settle());
+  expect(host.textContent).not.toContain('点検結果をコピーしました');
+  expect(host.querySelector('#audit-export-manual-copy')).toBeNull();
+  expect(button('点検結果をコピー').disabled).toBe(false);
+  await exportCopy(); expect(copied()).toContain('現在の保存本文との一致は未確認');
 });
