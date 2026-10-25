@@ -695,9 +695,14 @@ async function exerciseFormulaQuotes(prefix) {
   const damagedDifference = afterSecondInsert.replace("```calculator-memo-difference-v1", "```calculator-memo-difference-preview\n{}\n```\n\n保護対象😀文章\n\n```calculator-memo-difference-v1");
   assert.notEqual(damagedDifference, afterSecondInsert);
   await editor().fill(damagedDifference);
+  await expect(editor()).toHaveValue(damagedDifference);
   const protectedStart = damagedDifference.indexOf("保護対象😀文章") + "保護対象😀".length;
   const protectedEnd = protectedStart + 2;
-  const setProtectedSelection = async () => editor().evaluate((element, selection) => { element.focus(); element.setSelectionRange(selection.start, selection.end); }, { start: protectedStart, end: protectedEnd });
+  const readProtectedSelection = () => editor().evaluate(element => [element.selectionStart, element.selectionEnd]);
+  const setProtectedSelection = async () => {
+    await editor().evaluate((element, selection) => { element.focus(); element.setSelectionRange(selection.start, selection.end); }, { start: protectedStart, end: protectedEnd });
+    assert.deepEqual(await readProtectedSelection(), [protectedStart, protectedEnd], "Protected-range selection must be established before opening an insertion dialog");
+  };
   const assertProtectedDraft = async () => {
     await expect(editor()).toHaveValue(damagedDifference);
     assert.deepEqual(await editor().evaluate(element => [element.selectionStart, element.selectionEnd]), [protectedStart, protectedEnd]);
@@ -710,6 +715,7 @@ async function exerciseFormulaQuotes(prefix) {
   await setProtectedSelection();
   const quoteTrigger = report().getByRole("button", { name: "計算根拠を引用", exact: true });
   await activate(quoteTrigger);
+  assert.deepEqual(await readProtectedSelection(), [protectedStart, protectedEnd], "Opening quote picker must preserve the protected textarea selection");
   await picker().getByLabel("引用する保存済み計算記録", { exact: true }).selectOption(JSON.stringify([memo.id, record.id]));
   await picker().getByLabel("引用するブロック", { exact: true }).selectOption("quote-result");
   await activate(picker().getByRole("button", { name: "引用の挿入前プレビュー", exact: true }));
