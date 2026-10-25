@@ -9,6 +9,8 @@ import type { EvidenceRecord } from '../lib/calculation-evidence';
 import type { FormulaReport, Memo, RegisteredFormula } from '../lib/types';
 import { defaultData, STORAGE_KEY } from '../lib/storage';
 import * as download from '../lib/markdown-report';
+import { buildQuoteDifferenceMarkdown } from '../lib/formula-report-diff';
+import { createTrackedDifferenceMarkdown, readDifferenceAssessments } from '../lib/formula-report-diff-tracking';
 
 const at = '2026-10-24T00:00:00.000Z';
 const formula: RegisteredFormula = { id: 'f', title: '式', expression: 'x*2', createdAt: at, updatedAt: at };
@@ -148,4 +150,37 @@ it('a template operation replaces its own undo without retaining stale differenc
 it('insertion restores focus to the editor without replacing the original selection text', async () => {
   seed(); await open(); await insert(); await act(async () => new Promise(resolve => setTimeout(resolve, 40)));
   expect(document.activeElement).toBe(editor()); expect(editor().selectionStart).toBe(editor().selectionEnd); expect(editor().value.slice(editor().selectionEnd)).toBe(body.slice(3));
+});
+
+// P2 regression: an unrelated reserved-prefix fence must never close the envelope.
+it.each(['quote', 'difference'] as const)('rejects %s insertion after an unknown intermediate fence without changing draft, selection or saved evidence', async path => {
+  const markdown = buildQuoteDifferenceMarkdown({ status: 'matched', reason: '', start: 0, end: quote.length, snapshot }, 'f', notes(), links, targetKey);
+  const tracked = createTrackedDifferenceMarkdown(markdown, snapshot, target, 'protected-difference', at);
+  const unknown = '```calculator-memo-difference-preview\n{}\n```\n\n保護対象😀文章\n\n';
+  const protectedBody = `${tracked.replace('```calculator-memo-difference-v1', unknown + '```calculator-memo-difference-v1')}\n\n${body}`;
+  const r = { ...report, body: protectedBody };
+  const raw = seed(r); const originalSnapshot = JSON.stringify(snapshot), targetSnapshot = JSON.stringify(target);
+  await open(r);
+  const start = protectedBody.indexOf('保護対象😀文章') + '保護対象😀'.length, end = start + 2;
+  editor().setSelectionRange(start, end);
+  if (path === 'difference') {
+    await prepare(); expect(preview()).toBeNull();
+  } else {
+    await click('計算根拠を引用');
+    const select = async (label: string, value: string) => act(async () => {
+      const item = [...host.querySelectorAll('label')].find(item => item.textContent === label)!;
+      const field = document.getElementById(item.htmlFor) as HTMLSelectElement;
+      field.value = value; field.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await select('引用する保存済み計算記録', JSON.stringify(['m', 'original']));
+    await select('引用するブロック', 'b'); await click('引用の挿入前プレビュー'); await click('この引用を本文へ挿入');
+  }
+  expect(host.textContent).toContain('比較差分');
+  expect(editor().value).toBe(protectedBody); expect(editor().selectionStart).toBe(start); expect(editor().selectionEnd).toBe(end);
+  expect(JSON.stringify(snapshot)).toBe(originalSnapshot); expect(JSON.stringify(target)).toBe(targetSnapshot);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(saved).not.toHaveBeenCalled();
+  expect(JSON.parse(raw).formulaReports.entries[0].evidence.confirmations).toEqual([]);
+  expect(readDifferenceAssessments(editor().value, 'f', notes()).every(item => item.status !== 'tracked')).toBe(true);
+  expect(button('直前の差分挿入を取り消す').disabled).toBe(true);
+  expect(button('直前の引用を取り消す').disabled).toBe(true);
 });

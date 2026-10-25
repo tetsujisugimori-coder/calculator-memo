@@ -1,22 +1,16 @@
 import type { EvidenceRecord } from './calculation-evidence';
 import { buildQuoteDifferenceMarkdown } from './formula-report-diff';
 import { reportEvidenceLinkKey, resolveReportEvidence } from './formula-report-evidence';
-import { validateQuoteSnapshot, type QuoteSnapshot } from './formula-report-quotes';
+import { validateDifferenceSnapshot, type DifferenceSnapshot, type QuoteSnapshot } from './formula-report-snapshots';
+import { scanDifferenceEnvelopes, DIFFERENCE_START as START, DIFFERENCE_END as END } from './formula-report-diff-envelope';
+export { validateDifferenceSnapshot, type DifferenceSnapshot } from './formula-report-snapshots';
 import { parseMarkdownBlocks } from './markdown-blocks';
 import type { Memo } from './types';
 
-const PREFIX = 'calculator-memo-difference';
-const START = `${PREFIX}-start-v1`;
-const END = `${PREFIX}-v1`;
 const HEADING = '引用時の計算記録と保存記録の差分';
 const normalize = (text: string) => text.replace(/\r\n?/g, '\n');
-const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
-const id = (value: unknown): value is string => typeof value === 'string' && !!value.trim() && value.length <= 120;
-const timestamp = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value));
-const exact = (value: Record<string, unknown>, keys: string[]) => Object.keys(value).length === keys.length && Object.keys(value).every(key => keys.includes(key));
 
 /** The preparation timestamp is an observed UI event, not a source confirmation time. */
-export type DifferenceSnapshot = { version: 1; differenceId: string; preparedAt: string; quote: QuoteSnapshot; after: EvidenceRecord; quoteBodyEdited: boolean };
 export type DifferenceSourceAssessment = { status: 'matched' | 'changed' | 'missing' | 'invalid' | 'unavailable' | 'stale'; reason: string; record?: EvidenceRecord };
 export type DifferenceAssessment = {
   status: 'tracked' | 'edited' | 'invalid' | 'untracked'; reason: string; start: number; end: number;
@@ -26,15 +20,6 @@ export type DifferenceAssessment = {
 function syntheticMemo(memoId: string, record: EvidenceRecord): Memo {
   return { id: memoId, type: 'plain-calculation', title: '', content: '', createdAt: '', updatedAt: '', calculationEvidence: { version: 1, records: [record] } } as Memo;
 }
-export function validateDifferenceSnapshot(value: unknown): asserts value is DifferenceSnapshot {
-  if (!object(value) || !exact(value, ['version', 'differenceId', 'preparedAt', 'quote', 'after', 'quoteBodyEdited']) || value.version !== 1
-    || !id(value.differenceId) || !timestamp(value.preparedAt) || typeof value.quoteBodyEdited !== 'boolean') throw new Error('未対応または不正な差分追跡情報です。本文は保持しています。');
-  validateQuoteSnapshot(value.quote);
-  const after = value.after as EvidenceRecord;
-  const source = resolveReportEvidence([syntheticMemo(value.quote.memoId, after)], [{ memoId: value.quote.memoId, recordId: object(after) && typeof after.id === 'string' ? after.id : '' }])[0];
-  if (source.status !== 'available' || !source.record || !id(source.record.id) || source.record.id === value.quote.record.id) throw new Error('比較先の引用時保存記録を検証できません。本文は保持しています。');
-}
-
 /** The same formatter/comparison is used on creation and readback, never current values. */
 export function rebuildDifferenceMarkdown(snapshot: DifferenceSnapshot): string {
   validateDifferenceSnapshot(snapshot);
@@ -82,40 +67,23 @@ export function readDifferenceAssessments(body: string, formulaId: string, notes
   if (body.length > 100_000) return [{ status: 'invalid', reason: '本文上限超過のため差分の照合を停止しています。本文は保持しています。', start: 0, end: body.length }];
   const blocks = parseMarkdownBlocks(body);
   const results: DifferenceAssessment[] = [];
-  let pending: { index: number; differenceId?: string; valid: boolean } | undefined;
-  for (let index = 0; index < blocks.length; index++) {
-    const block = blocks[index];
-    if (block.kind !== 'code' || !block.language.startsWith(PREFIX)) continue;
-    if (block.language.startsWith(`${PREFIX}-start`)) {
-      const nested = !!pending;
-      if (pending) results.push({ status: 'invalid', reason: '差分の開始情報が重複・入れ子になっています。対応付けできません。', start: blocks[pending.index].start, end: block.start });
-      pending = { index, valid: false };
-      try {
-        const marker: unknown = JSON.parse(block.text);
-        if (object(marker) && exact(marker, ['version', 'differenceId']) && marker.version === 1 && id(marker.differenceId)) pending = { index, differenceId: marker.differenceId, valid: block.language === START && !nested };
-      } catch { /* Preserve malformed markers. */ }
-      continue;
-    }
-    const result: DifferenceAssessment = { status: 'invalid', reason: '未対応または不正な差分追跡情報です。本文は保持しています。', start: pending ? blocks[pending.index].start : block.start, end: block.end };
+  for (const range of scanDifferenceEnvelopes(body)) {
+    const result: DifferenceAssessment = { status: range.status === 'untracked' ? 'untracked' : 'invalid', reason: range.reason, start: range.start, end: range.end };
     results.push(result);
-    const opening = pending;
-    pending = undefined;
-    try {
-      if (block.language !== END) continue;
-      const snapshot: unknown = JSON.parse(block.text);
-      validateDifferenceSnapshot(snapshot);
-      if (snapshot.quote.formulaId !== formulaId) { result.reason = '別の登録式IDの差分です。出典を対応付けできません。'; continue; }
-      if (opening && (!opening.valid || opening.differenceId !== snapshot.differenceId)) { result.reason = '差分IDまたは開始形式が一致しません。出典を対応付けできません。'; continue; }
-      result.snapshot = snapshot;
-      result.before = assessSource(snapshot.quote.memoId, snapshot.quote.record, notes, availability);
-      result.after = assessSource(snapshot.quote.memoId, snapshot.after, notes, availability);
-      if (!opening) { result.status = 'edited'; result.reason = '差分の開始情報が欠落しています。追跡情報の記録は保持していますが、本文との対応は保証できません。'; continue; }
-      const actual = normalize(body.slice(result.start, result.end));
-      result.status = actual === normalize(envelope(snapshot)) ? 'tracked' : 'edited';
-      result.reason = result.status === 'tracked' ? '引用時の差分本文と追跡情報が一致しています。現在の出典状態とは別の確認です。' : '差分本文または形式が編集されています。比較対象は追跡情報内の記録であり、編集後の文章ではありません。';
-    } catch { /* No repairs, inferred records, or current-value replacement. */ }
+    const snapshot = range.snapshot;
+    if (!snapshot) continue;
+    if (snapshot.quote.formulaId !== formulaId) { result.reason = '別の登録式IDの差分です。出典を対応付けできません。'; continue; }
+    let expected: string | undefined;
+    try { if (range.status !== 'orphan') expected = envelope(snapshot); }
+    catch { result.reason = '引用時の比較を安全に再構成できません。追跡情報と本文は保持しています。'; continue; }
+    result.snapshot = snapshot;
+    result.before = assessSource(snapshot.quote.memoId, snapshot.quote.record, notes, availability);
+    result.after = assessSource(snapshot.quote.memoId, snapshot.after, notes, availability);
+    if (range.status === 'orphan') { result.status = 'edited'; result.reason = '差分の開始情報が欠落しています。追跡情報の記録は保持していますが、本文との対応は保証できません。'; continue; }
+    const actual = normalize(body.slice(result.start, result.end));
+    result.status = actual === normalize(expected!) ? 'tracked' : 'edited';
+    result.reason = result.status === 'tracked' ? '引用時の差分本文と追跡情報が一致しています。現在の出典状態とは別の確認です。' : '差分本文または形式が編集されています。比較対象は追跡情報内の記録であり、編集後の文章ではありません。';
   }
-  if (pending) results.push({ status: pending.valid ? 'untracked' : 'invalid', reason: pending.valid ? '差分追跡情報が欠落しています。開始IDだけでは引用時の出典を検証できません。' : '差分開始情報が未知・不正な形式です。推測せず本文を保持しています。', start: blocks[pending.index].start, end: body.length });
   for (const block of blocks) {
     if (block.kind === 'heading' && block.level === 2 && block.text === HEADING && !results.some(result => block.start >= result.start && block.start < result.end)) {
       results.push({ status: 'untracked', reason: '追跡情報なし：旧形式または情報が削除された差分です。本文だけから出典を推測しません。', start: block.start, end: block.end });

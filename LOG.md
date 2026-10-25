@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: PR #83 P2 比較差分フェンスの境界保護
+
+- 対象: [PR #83](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83)、[review 5640533497](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83#pullrequestreview-5640533497)、行コメント4368884046。開始時remote/local HEADは `4e6a49ef99399a11b8df8f5cdf16797233ce6cba` 一致、作業ツリーclean。既存枝を継続しIssue #82を再利用、新PRなし。
+- 修正前再現: 正規の両固定snapshotを持つ差分の開始/終端間に `calculator-memo-difference-preview` を追加し、その後・正規終端より前へ挿入。引用/差分の両経路 × LF/CRLFの4回帰すべて旧実装で拒否されず失敗した。UIの両経路でも本文変更または不正な挿入プレビューを再現。原因は予約接頭辞だけで終了を判定するガードで、読取側にも同種の早期解除があった。
+- 採用: 完全一致v1開始/終端、実フェンス閉鎖、既存validator、同一IDを共通scannerで確認。未知・破損・将来版・重複/入れ子で曖昧になれば元の開始からEOFまで保護し、後続のもっともらしい終端で復旧しない。両挿入と出典状態表示を同一境界へ統一する。循環依存を避けるためsnapshot型/validatorだけ中立モジュールへ移動し既存exportを維持。
+- 第一希望/妥協: 安全な境界だけを許す。壊れた差分以降の無関係な文章にも挿入できない場合があるが、推測回復より原本保全を優先する。通常v1直前/直後、複数正常差分間は維持。マーカーが完全削除された文章の元範囲復元は対象外。詳細は `docs/agent/formula-report-diff-tracking.md`。
+- 不変: snapshot・既存Markdown・追跡情報の自動更新/修復/削除なし。保存schema/version/容量/計算エンジン/確認判定/確認履歴、専用取消を変更しない。選択は削除しないため開始位置だけを挿入境界とする既存契約を維持。
+- 検証: 追加境界74件（両経路、LF/CRLF、UTF-16日本語/絵文字、未来/破損/未知/入れ子/欠落、正常境界、選択、原情報不変）が成功。全単体1660件/68ファイル、CI契約37件、lint/型検査/通常・Pages build成功。独立再レビューは影響237件と追加927境界assertionsでP0/P1/P2残件なし。実Chromium375/390pxのfocused検査各11件・61touchで両テーマ200%、本文/選択/原本/確認履歴不変とフォーカス復帰を確認。全6条件Chromium/WebKitはこの記録を含む最終HEADの実CIで確認し、結果をPRへ記録する。未完了を成功扱いしない。
+- CI方針: 既存6条件を維持し異常挿入拒否1群/条件を追加。30分上限、代表PNG114枚、成功trace非保存、保存上限は変更しない。実機Safari/VoiceOver/OSソフトキーボードは未検証。
+
 ## 2026-10-25 JST: 比較差分の出典追跡・根拠確認（Issue #82）
 
 - 着手調査: 最新 main `5e003bfc5e7a543a7b686f1997eafb8beec0b7aa` と PR #81 のマージ（2026-10-24 23:58 JST）を確認し、専用枝 `feat/82-difference-source-tracking` を作成。依頼全文を [Issue #82](https://github.com/tetsujisugimori-coder/calculator-memo/issues/82) に保持し、読戻し一致を確認。既存 checkout は変更しない。

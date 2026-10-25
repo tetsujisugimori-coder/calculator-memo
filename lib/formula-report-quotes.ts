@@ -1,26 +1,15 @@
-import type { EvidenceRecord } from './calculation-evidence';
+import { validateQuoteSnapshot, type QuoteSnapshot } from './formula-report-snapshots';
+import { scanDifferenceEnvelopes } from './formula-report-diff-envelope';
 import { resolveReportEvidence } from './formula-report-evidence';
 import { parseMarkdownBlocks } from './markdown-blocks';
 import type { FormulaReportEvidenceLink, Memo } from './types';
 
-export type QuoteSnapshot = { version: 1; quoteId: string; formulaId: string; memoId: string; blockId: string; citedAt: string; record: EvidenceRecord };
+export type { QuoteSnapshot } from './formula-report-snapshots';
+export { validateQuoteSnapshot } from './formula-report-snapshots';
 export type QuoteStatus = 'matched' | 'source-changed' | 'source-missing' | 'unavailable' | 'edited' | 'invalid';
 export type QuoteAssessment = { status: QuoteStatus; reason: string; snapshot?: QuoteSnapshot; start: number; end: number };
 const LANGUAGE = 'calculator-memo-evidence-v1';
-const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
-const identifier = (v: unknown): v is string => typeof v === 'string' && !!v.trim() && v.length <= 120;
 const normalizeLines = (value: string) => value.replace(/\r\n?/g, '\n');
-function savedSnapshotRecord(value: unknown, memoId: string) {
-  const memo = { id: memoId, type: 'plain-calculation', title: '', content: '', createdAt: '', updatedAt: '', calculationEvidence: { version: 1, records: [value] } } as Memo;
-  return resolveReportEvidence([memo], [{ memoId, recordId: object(value) && typeof value.id === 'string' ? value.id : '' }])[0];
-}
-export function validateQuoteSnapshot(value: unknown): asserts value is QuoteSnapshot {
-  if (!object(value) || value.version !== 1 || Object.keys(value).some(key => !['version', 'quoteId', 'formulaId', 'memoId', 'blockId', 'citedAt', 'record'].includes(key))
-    || !identifier(value.quoteId) || !identifier(value.formulaId) || !identifier(value.memoId) || !identifier(value.blockId)
-    || typeof value.citedAt !== 'string' || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(value.citedAt) || !Number.isFinite(Date.parse(value.citedAt))) throw new Error('未対応または不正な引用形式です。本文は保持しています。');
-  const resolved = savedSnapshotRecord(value.record, value.memoId);
-  if (resolved.status !== 'available' || !resolved.record?.blocks.some(block => block.blockId === value.blockId)) throw new Error('引用時の保存記録を安全に検証できません。本文は保持しています。');
-}
 /** The caller must supply links from the saved report, not uncommitted link edits. */
 export function quoteCandidates(notes: Memo[], persistedLinks: FormulaReportEvidenceLink[]) {
   return resolveReportEvidence(notes, persistedLinks).filter(item => item.status === 'available' && item.record);
@@ -124,17 +113,11 @@ export function insertQuoteAtCursor(body: string, quote: string, selectionStart:
   }
   // Difference tracking has a structured envelope. Do not split its body from
   // its metadata, including future or damaged envelopes, when inserting quotes.
-  const blocks = parseMarkdownBlocks(body);
-  let differenceStart: number | null = null;
-  for (const block of blocks) {
-    if (block.kind !== 'code') continue;
-    if (block.language.startsWith('calculator-memo-difference-start')) differenceStart ??= block.start;
-    else if (block.language.startsWith('calculator-memo-difference') && differenceStart !== null) {
-      if (start > differenceStart && start < block.end) throw new Error('比較差分の本文・追跡情報の内部へは挿入できません。差分全体の外へカーソルを移してください。');
-      differenceStart = null;
+  for (const range of scanDifferenceEnvelopes(body)) {
+    if (start > range.start && (start < range.end || (!range.closed && start === range.end))) {
+      throw new Error('比較差分の本文・追跡情報の内部、または終了を確認できない範囲へは挿入できません。本文を保持し、差分全体の前へカーソルを移してください。');
     }
   }
-  if (differenceStart !== null && start > differenceStart) throw new Error('比較差分の終了情報を確認できません。本文を保持し、この差分の前へカーソルを移してください。');
   // Insert before the selected range; never delete the selected or surrounding prose.
   const addition = `${start ? '\n\n' : ''}${quote}\n\n`;
   const next = body.slice(0, start) + addition + body.slice(start);

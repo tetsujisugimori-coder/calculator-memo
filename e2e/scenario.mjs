@@ -691,6 +691,47 @@ async function exerciseFormulaQuotes(prefix) {
   await editor().fill(quotedBody);
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
   await passed(prefix + ": diff preview cancel and Escape preserve storage, explicit cursor insertion preserves quote and selection, exact undo cannot erase later edits, both themes 200 percent fit and keyboard focus return");
+  // P2: unknown reserved-prefix fences must not unlock the remainder of a tracked difference.
+  const damagedDifference = afterSecondInsert.replace("```calculator-memo-difference-v1", "```calculator-memo-difference-preview\n{}\n```\n\n保護対象😀文章\n\n```calculator-memo-difference-v1");
+  assert.notEqual(damagedDifference, afterSecondInsert);
+  await editor().fill(damagedDifference);
+  const protectedStart = damagedDifference.indexOf("保護対象😀文章") + "保護対象😀".length;
+  const protectedEnd = protectedStart + 2;
+  const setProtectedSelection = async () => editor().evaluate((element, selection) => { element.focus(); element.setSelectionRange(selection.start, selection.end); }, { start: protectedStart, end: protectedEnd });
+  const assertProtectedDraft = async () => {
+    await expect(editor()).toHaveValue(damagedDifference);
+    assert.deepEqual(await editor().evaluate(element => [element.selectionStart, element.selectionEnd]), [protectedStart, protectedEnd]);
+    assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
+    assert.deepEqual((await storage()).formulaReports.entries[0].evidence.confirmations, []);
+    await expect(report().getByRole("button", { name: "直前の差分挿入を取り消す", exact: true })).toBeDisabled();
+    await expect(report().getByRole("button", { name: "直前の引用を取り消す", exact: true })).toBeDisabled();
+    await expect(report().getByRole("region", { name: "比較差分の出典", exact: true })).not.toContainText("引用時の差分本文と追跡情報が一致しています");
+  };
+  await setProtectedSelection();
+  const quoteTrigger = report().getByRole("button", { name: "計算根拠を引用", exact: true });
+  await activate(quoteTrigger);
+  await picker().getByLabel("引用する保存済み計算記録", { exact: true }).selectOption(JSON.stringify([memo.id, record.id]));
+  await picker().getByLabel("引用するブロック", { exact: true }).selectOption("quote-result");
+  await activate(picker().getByRole("button", { name: "引用の挿入前プレビュー", exact: true }));
+  await activate(picker().getByRole("button", { name: "この引用を本文へ挿入", exact: true }));
+  await expect(picker()).toHaveCount(0); await expect(quoteTrigger).toBeFocused();
+  await expect(report().getByRole("alert").filter({ hasText: "比較差分" })).toBeVisible();
+  await assertProtectedDraft();
+  await setProtectedSelection(); await openComparison();
+  await activate(comparison().getByRole("button", { name: "差分をレポートに挿入", exact: true }));
+  await expect(insertionPreview()).toHaveCount(0);
+  await expect(comparison().getByRole("alert").filter({ hasText: "比較差分" })).toBeVisible();
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
+    await assertHorizontalFit();
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = "");
+  await assertProtectedDraft();
+  await activate(comparison().getByRole("button", { name: "比較表示を閉じる", exact: true }));
+  await expect(comparisonTrigger()).toBeFocused();
+  await assertProtectedDraft();
+  await editor().fill(quotedBody);
+  await passed(prefix + ": unknown intermediate difference fence rejects both insertion paths while preserving selection snapshots raw storage and confirmation history with focus return and two-theme 200 percent errors");
   await openComparison();
   await prepareDifference();
   const changed = await storage();
