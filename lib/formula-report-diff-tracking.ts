@@ -2,9 +2,9 @@ import type { EvidenceRecord } from './calculation-evidence';
 import { buildQuoteDifferenceMarkdown } from './formula-report-diff';
 import { reportEvidenceLinkKey, resolveReportEvidence } from './formula-report-evidence';
 import { validateDifferenceSnapshot, type DifferenceSnapshot, type QuoteSnapshot } from './formula-report-snapshots';
-import { scanDifferenceEnvelopes, DIFFERENCE_START as START, DIFFERENCE_END as END } from './formula-report-diff-envelope';
+import { scanDifferenceEnvelopes, DIFFERENCE_START as START, DIFFERENCE_END as END, type DifferenceEnvelope } from './formula-report-diff-envelope';
 export { validateDifferenceSnapshot, type DifferenceSnapshot } from './formula-report-snapshots';
-import { parseMarkdownBlocks } from './markdown-blocks';
+import { parseMarkdownBlocks, type MarkdownBlock } from './markdown-blocks';
 import type { Memo } from './types';
 
 const HEADING = '引用時の計算記録と保存記録の差分';
@@ -48,7 +48,7 @@ export function createTrackedDifferenceMarkdown(markdown: string, quote: QuoteSn
   return result;
 }
 
-function assessSource(memoId: string, frozen: EvidenceRecord, notes: Memo[], availability: { error?: string; stale?: boolean; invalidData?: boolean }): DifferenceSourceAssessment {
+export function assessDifferenceSource(memoId: string, frozen: EvidenceRecord, notes: Memo[], availability: { error?: string; stale?: boolean; invalidData?: boolean }): DifferenceSourceAssessment {
   if (availability.invalidData) return { status: 'invalid', reason: '保存データが未知・不正な形式のため照合できません。原本は保持しています。' };
   if (availability.error) return { status: 'unavailable', reason: '原本取得失敗：出典を照合できません。欠落とは断定しません。' };
   if (availability.stale) return { status: 'stale', reason: '根拠未照合：原本の更新を検知しました。明示再取得が必要です。' };
@@ -63,11 +63,11 @@ function assessSource(memoId: string, frozen: EvidenceRecord, notes: Memo[], ava
 /** Structural fences bind each visible section to two validated snapshots. Text alone
  * is only an untracked warning, never a guessed source association or authentication.
  */
-export function readDifferenceAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean; invalidData?: boolean } = {}): DifferenceAssessment[] {
+export function readDifferenceAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean; invalidData?: boolean } = {}, parsed?: { blocks: MarkdownBlock[]; ranges: DifferenceEnvelope[] }): DifferenceAssessment[] {
   if (body.length > 100_000) return [{ status: 'invalid', reason: '本文上限超過のため差分の照合を停止しています。本文は保持しています。', start: 0, end: body.length }];
-  const blocks = parseMarkdownBlocks(body);
+  const blocks = parsed?.blocks ?? parseMarkdownBlocks(body);
   const results: DifferenceAssessment[] = [];
-  for (const range of scanDifferenceEnvelopes(body)) {
+  for (const range of parsed?.ranges ?? scanDifferenceEnvelopes(body, blocks)) {
     const result: DifferenceAssessment = { status: range.status === 'untracked' ? 'untracked' : 'invalid', reason: range.reason, start: range.start, end: range.end };
     results.push(result);
     const snapshot = range.snapshot;
@@ -77,8 +77,8 @@ export function readDifferenceAssessments(body: string, formulaId: string, notes
     try { if (range.status !== 'orphan') expected = envelope(snapshot); }
     catch { result.reason = '引用時の比較を安全に再構成できません。追跡情報と本文は保持しています。'; continue; }
     result.snapshot = snapshot;
-    result.before = assessSource(snapshot.quote.memoId, snapshot.quote.record, notes, availability);
-    result.after = assessSource(snapshot.quote.memoId, snapshot.after, notes, availability);
+    result.before = assessDifferenceSource(snapshot.quote.memoId, snapshot.quote.record, notes, availability);
+    result.after = assessDifferenceSource(snapshot.quote.memoId, snapshot.after, notes, availability);
     if (range.status === 'orphan') { result.status = 'edited'; result.reason = '差分の開始情報が欠落しています。追跡情報の記録は保持していますが、本文との対応は保証できません。'; continue; }
     const actual = normalize(body.slice(result.start, result.end));
     result.status = actual === normalize(expected!) ? 'tracked' : 'edited';

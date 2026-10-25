@@ -1,7 +1,7 @@
 import { validateQuoteSnapshot, type QuoteSnapshot } from './formula-report-snapshots';
 import { scanDifferenceEnvelopes } from './formula-report-diff-envelope';
 import { resolveReportEvidence } from './formula-report-evidence';
-import { parseMarkdownBlocks } from './markdown-blocks';
+import { parseMarkdownBlocks, type MarkdownBlock } from './markdown-blocks';
 import type { FormulaReportEvidenceLink, Memo } from './types';
 
 export type { QuoteSnapshot } from './formula-report-snapshots';
@@ -41,9 +41,9 @@ export function createQuoteMarkdown(snapshot: QuoteSnapshot): string {
   return markdown;
 }
 
-export function readQuoteAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean } = {}): QuoteAssessment[] {
+export function readQuoteAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean } = {}, parsedBlocks?: MarkdownBlock[]): QuoteAssessment[] {
   if (body.length > 100_000) return [{ status: 'unavailable', reason: '本文上限超過のため引用照合を停止しています。本文は保持しています。', start: 0, end: body.length }];
-  const blocks = parseMarkdownBlocks(body);
+  const blocks = parsedBlocks ?? parseMarkdownBlocks(body);
   const results: QuoteAssessment[] = [];
   for (let index = 0; index < blocks.length; index++) {
     const metadata = blocks[index];

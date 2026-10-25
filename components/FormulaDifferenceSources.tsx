@@ -23,7 +23,7 @@ export function FormulaDifferenceSources({ body, formulaId, reportId, links, sou
   </section>;
 }
 
-function DifferenceSourceDialog({ assessment, source, links, onRefresh, onClose }: { assessment: DifferenceAssessment; source: QuoteSource; links: FormulaReportEvidenceLink[]; onRefresh: () => void; onClose: () => void }) {
+export function DifferenceSourceDialog({ assessment, source, links, onRefresh, onClose }: { assessment: DifferenceAssessment; source: QuoteSource; links: FormulaReportEvidenceLink[]; onRefresh: () => void; onClose: () => void }) {
   const [view, setView] = useState<{ kind: 'historical' | 'current' | 'before' | 'after'; notes: QuoteSource['notes']; fetchedAt: string; links: FormulaReportEvidenceLink[]; error?: string; stale?: boolean } | null>(null);
   const valid = view && view.notes === source.notes && view.fetchedAt === source.fetchedAt && view.links === links && view.error === source.error && view.stale === source.stale;
   if (view && !valid) setView(null);
@@ -42,7 +42,7 @@ function DifferenceSourceDialog({ assessment, source, links, onRefresh, onClose 
     <p role="status">{assessment.reason}</p>
     <p>保存原本取得日時：{source.fetchedAt}。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。</p>
     {source.error && <p role="alert">{source.invalidData ? "保存データが未知・不正な形式のため照合できません。原本は保持しています。" : "原本取得失敗。欠落とは断定しません。引用時点の証拠は保持しています。"}</p>}
-    {source.stale && <p role="alert">根拠未照合：原本の更新を検知しました。明示再取得が必要です。</p>}
+    {source.stale && <p role="alert">{source.fetchedAt === "未取得（未照合）" ? "根拠未照合：明示取得が必要です。" : "根拠未照合：原本の更新を検知しました。明示再取得が必要です。"}</p>}
     <button type="button" onClick={() => { setView(null); onRefresh(); }}>差分出典の保存原本を再取得</button>
     {snapshot && <>
       <p>差分ID：{snapshot.differenceId}　元引用ID：{snapshot.quote.quoteId}　登録式ID：{snapshot.quote.formulaId}</p>
@@ -55,7 +55,7 @@ function DifferenceSourceDialog({ assessment, source, links, onRefresh, onClose 
         return <section key={side} aria-label={side === 'before' ? '比較元の出典' : '比較先の出典'}><h3>{side === 'before' ? '比較元（引用時点）' : '比較先（引用時点）'}</h3><p>メモID：{snapshot.quote.memoId}</p><RecordInfo record={record} />
           <p>確認日時：計算記録には記録なし。レポートの確認履歴とは別です。</p>
           <p role="status">現在の出典：{state?.reason ?? '確認不能'}</p>
-          {!links.some(link => link.memoId === snapshot.quote.memoId && link.recordId === record.id) && <p>現在の保存済み根拠リンクにはありません。引用時点の証拠は保持しています。自動再関連付けは行いません。</p>}
+          {!source.error && !source.stale && !links.some(link => link.memoId === snapshot.quote.memoId && link.recordId === record.id) && <p>現在の保存済み根拠リンクにはありません。引用時点の証拠は保持しています。自動再関連付けは行いません。</p>}
           <button type="button" disabled={!state?.record || !!source.error || !!source.stale} onClick={() => open(side)}>{side === 'before' ? '比較元の保存記録を開く' : '比較先の保存記録を開く'}</button>
         </section>;
       })}</div>

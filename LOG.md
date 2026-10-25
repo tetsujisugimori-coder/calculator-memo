@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-25 JST: レポート全体の根拠点検（Issue #84）
+
+- 着手: PR #83 merged を API で確認、clean な作業ツリーを main `163e31dbdc07c37da49da5f2b5741cfa3bba4f2b` へ fast-forward し `feat/report-evidence-audit` を作成。既存の根拠点検 Issue は検索0件のため [Issue #84](https://github.com/tetsujisugimori-coder/calculator-memo/issues/84) を作成。
+- 方針: parser / strict scanner / snapshot検証 / 原本照合 / 既存詳細表示を再利用。点検専用の一時 inventory と明示取得世代を分離し、本文順・出現単位、本文編集と現在出典を独立表示する。単純な既存一覧結合は不採用。設計・次善策・保証境界は `docs/agent/formula-report-audit.md`。
+- 保存形式・容量・確認履歴・計算エンジン・挿入/専用取消は変更しない。実装・検証結果は後続に記録する。
+- 実装: 本文解析を共有した出現単位inventory、初期未照合と単一明示取得、本文/出典の独立表示、片側ごとの状態、関連解除、絞り込み、既存詳細と厳密位置移動。親アプリの確定保存世代と storage event により詳細/結果を失効し、明示再照合のみ許可する。
+- ローカル: 追加49件（pure30/UI19）、全単体1709件/70files、CI契約37件、型検査・lint・通常/Pages build成功。既存保存writer/schema/確認条件/engineは変更しない。既存挿入/取消境界も回帰を継続。
+- 独立レビュー: 未取得リンクを不存在扱いするP2、本文移動RAF待ち中の世代変更で古い位置を選択するP2を独立に再現。取得済み/非stale時だけリンク不存在を表示し、layout更新context-refと単調増加のstorage通知epochで遅延位置移動を守る。最終レビューで別タブ更新の同種レースも再現し、繰返し通知を含む回帰を追加した。独立再検証3件＋関連258件/型/diff確認成功、P0/P1/P2残件なし（実CIは別途確認）。
+- 実GUI: 隔離Playwright Chromium touch375/390pxで各13検査・71touch成功。両テーマ200%、長い記録ID、混在一覧・詳細/絞り込み/本文移動・Escape/フォーカス、実際の別タブからの原本変更→失効→明示再照合、固定snapshot/未保存本文/原本/履歴保持を確認。初回は引用前後の文章まで選択する誤った試験期待値で失敗し、引用だけの厳密範囲へ訂正。製品の位置判定は緩めていない。
+- CI: 全6条件を維持し各2検査追加、契約762検査/mobile986touch/geometry562、代表PNG114・成功trace非保存・30分上限は維持。最終HEAD実Actionsの結果はPRに記録し、未実行/実行中を成功扱いしない。ローカルWebKitは利用可能なbrowser実体がないため未実施、実CIのWebKitと区別する。
+- 未検証: 実機iPhone Safari/VoiceOver/OSソフトキーボード。通常buildのchunk-size警告、ローカルlintの既存/一時GUIコピーに由来するunused警告は残る（エラー0）。任意外部writerとの原子的排他、常時最新性、数学的正しさ・真正性は保証しない。rollbackはコードrevertで本文移行不要。
+
 ## 2026-10-25 JST: PR #83 P2 比較差分フェンスの境界保護
 
 - 対象: [PR #83](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83)、[review 5640533497](https://github.com/tetsujisugimori-coder/calculator-memo/pull/83#pullrequestreview-5640533497)、行コメント4368884046。開始時remote/local HEADは `4e6a49ef99399a11b8df8f5cdf16797233ce6cba` 一致、作業ツリーclean。既存枝を継続しIssue #82を再利用、新PRなし。
@@ -1130,3 +1142,10 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - GUI予備実行: Chromium375pxは96検査/87幅/799タッチ成功。desktopは既存の非同期保存pollが保存前のundefinedへアクセスして即時失敗。期待値・待機時間を変えずoptional-chainで再試行可能にした。最終モデルを再ビルドし全6条件を再実行する。
 - 正式CI初回（HEAD76951047fd9dc572172e39c0733902e9b0e39f19、run39749464226）は全工程成功。成果物を読戻し、HEAD/SHA256一致、Chromium/WebKit全6条件576検査・526横幅チェック・モバイル各799タップ、PNG114枚・成功trace0を実測確認した。1043単体/28契約、lint/型/両ビルド成功。最終記録コミットのCIとReady切替時CIはPRで追跡する。
 - ローカルWebKit26は標準OSライブラリ不足のため、公式Debian署名/パッケージhashを確認し一時ディレクトリへ展開したライブラリと一時起動アダプタで実行。システム導入/セキュリティ設定/CI設定変更なし。実iPhone Safari/VoiceOverは未検証。参考画面は別途合成データで取得し、正式CIの画像予算とは分離した。
+
+### 2026-10-25 13:07 JST: 根拠点検 CI 初回の失敗を保存
+
+- PR #85 / HEAD `9abf8f6a6a5d357dc0b09e9a387c57a8534647b9` / run `40159030869` は約21分で GUI 失敗。30分上限ではなく、Chromium 4条件と WebKit 375px は成功、WebKit 390px の既存挿入拒否検査が失敗した。
+- 失敗 trace の実際の表示は「コード・数式ブロック内へは引用を挿入できません」で、安全側の拒否。期待した差分内の文章位置とは異なる位置の捕捉が疑われる。trace の本文を抽出し、指定 UTF-16 4432..4434 を純粋挿入処理へ渡す独立再現では「比較差分…」拒否になる。現時点で製品 parser の退行とは断定しない。
+- GUI に本文反映確認、選択設定直後と引用ダイアログ開始直後の選択読戻しを追加し、位置不一致をその場で診断する。拒否文言の OR 化、検査削減、時間上限延長、成功扱いはしない。再実行結果は最終 HEAD の PR / CI 記録へ追記する。
+- 失敗 artifact ZIP SHA-256 `d1c22394f956e6b6faca8de5768f8f2d6c94d6293042b7054695e53a6c4765ed` を取得ファイルで照合済み。PNG 101・失敗 trace 1。成功時 trace 抑制は維持。
