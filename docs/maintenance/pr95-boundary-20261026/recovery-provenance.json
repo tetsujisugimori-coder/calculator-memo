@@ -1,0 +1,126 @@
+{
+  "recoveryCheckedAt": "2026-10-26T19:36:00Z",
+  "baselineHead": "d7d6031b8a7e4bb5a296ba199febf04d5b073592",
+  "previousCandidateTreeUnrecoverable": "1938446d48103ff6fb728b066ca8d63d90acb998",
+  "currentWorkspace": "/workspace/scratch/e622c1e9421e/calculator-pr95-recovered",
+  "node": "v24.22.1",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "recoveredFiles": [
+    {
+      "path": "LOG.md",
+      "gitBlob": "a58767020554313972aabd24dbb9d945e227f563",
+      "sha256": "9669841d4a12d86684ae9ec8596be9c35e12cc5774c3d16692cb83acda0d441b"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/README.md",
+      "gitBlob": "266686ca474879944f59e557c059d5ffa28ac8b7",
+      "sha256": "e5855ed009417a8e1783b2bcc3ca63dbb757c40c2c7c46667e18649ec96ad8e4"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/green-duplicate-status-timing.json",
+      "gitBlob": "cf7681bd04997f0b13c74c3541239c32bbacc8c1",
+      "sha256": "9ca83d1ceb6f40a12f6cd80fc00edaf62a53fd66e50e48ea5c9cf4aff1d9370f"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/green-duplicate-status.log",
+      "gitBlob": "38b501e9f4f1467dd4229247fe9d7d1d6461eb29",
+      "sha256": "094b9ddb44bed978214a5a9b90c88e46eeb43fe095cb4a47e2d3c3df12149101"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/independent-review.md",
+      "gitBlob": "9cd3890dfe69323b9526c083f9317c2278c6fb6b",
+      "sha256": "2b26c1dfffad2a511a20230e22d776b107e7eb42e3d72ff230191d3065f28af5"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/red-duplicate-status-timing.json",
+      "gitBlob": "304da33ab6c5fa3366850fb02a212cb918fbfb35",
+      "sha256": "7081a430326ae1dce78d2721c05d895df9fc79af7f1d6aa02304362cc9e880a1"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/red-duplicate-status.log",
+      "gitBlob": "259f98f3cb6f57119b02db521523a544ff83ee63",
+      "sha256": "f2908580e056d1383b01352a15375aafb811d7cc37e56e5e19b894a6fbe5d4c6"
+    },
+    {
+      "path": "docs/maintenance/pr95-boundary-20261026/normal-build.log",
+      "gitBlob": "6f2dc5cd8a062f700a7630b324bc859686c0db4a",
+      "sha256": "45fa917b55f6358a2dbf14e639c166e29da0646de709bc0a1a890c80114efb38"
+    },
+    {
+      "path": "e2e/README.md",
+      "gitBlob": "3e7e0ae00ced0193b464fc50ba827e1b1319dc2e",
+      "sha256": "cfae7495ec307f9cea94531defc91fe789a5116a56a426b8087096b80523acce"
+    },
+    {
+      "path": "e2e/audit-comparison-insertion.mjs",
+      "gitBlob": "90e81b04098a8f04162ebd342565e6b89ac1c3db",
+      "sha256": "8e1f99773d8bd40ecb9fb8b33dae2f8c41709a8ccdab651041b2c2b65cf5c1cc"
+    },
+    {
+      "path": "e2e/ci-contract.mjs",
+      "gitBlob": "f9800ff06d1aa434d5114401803de18e43d19d52",
+      "sha256": "2a456c590daa52ae0ef2e3dc8b524312f293c78ec287d5b829b946d445bf8d1f"
+    },
+    {
+      "path": "e2e/ci-contract.node-test.mjs",
+      "gitBlob": "e04a7d74908e96e91733531a9aa5914219b85201",
+      "sha256": "a6256281529cf4b12f3e828e7ee9c192e436a6d6dca2775787961e1fd4c1370b"
+    },
+    {
+      "path": "lib/formula-report-audit-comparison-record.ts",
+      "gitBlob": "ecb456c1cf510440c94066dec56ae208eb40e1a1",
+      "sha256": "23a4ec7af705e24a2c9104e9a03d70a68233f9eb5c6ff44d105c227eedac1775"
+    },
+    {
+      "path": "tests/formula-comparison-boundary-independent.test.ts",
+      "gitBlob": "2838729bed4ae66b5682c74b2418e955da2515bb",
+      "sha256": "61c1ea65093b17a90732ca8533b78b447e84d8774b8b99e8c3f3c752b3267cc0"
+    },
+    {
+      "path": "tests/formula-comparison-boundary-ui.test.ts",
+      "gitBlob": "29217c2501433deffdfdb6d83269710a6e9fb078",
+      "sha256": "1329d2db1c83d0b28b46a0ab119d63116f6fdaaa4854477264b7fdabb1e1d073"
+    },
+    {
+      "path": "tests/formula-report-audit-comparison-record.test.ts",
+      "gitBlob": "8d23932ef56fab58a182080c2df3bd2605a468c6",
+      "sha256": "4f21f6f9a6f6797e21aa35990079224bcf12e8c518d3023299549329e637fdae"
+    },
+    {
+      "path": "docs/agent/formula-report-audit-comparison-insertion.md",
+      "gitBlob": "1ee20c87a95cb357b3aa857b429b2b01f6600276",
+      "sha256": "6ba316eecac073b721d48996b2b1db58adda94facfe7d3e2dd914fb53c480956"
+    }
+  ],
+  "unrecoveredHistoricalFiles": [
+    "contracts-corrected-timing.json",
+    "contracts-corrected.log",
+    "contracts-timing.json",
+    "contracts.log",
+    "green-independent-timing.json",
+    "green-independent.log",
+    "green-own-timing.json",
+    "green-own.log",
+    "lint-timing.json",
+    "lint.log",
+    "local-build-sha256.json",
+    "native-chromium390.json",
+    "native-chromium390.log",
+    "normal-build-timing.json",
+    "pages-build-timing.json",
+    "pages-build.log",
+    "prior-artifact.json",
+    "red-independent-timing.json",
+    "red-independent.log",
+    "red-own-timing.json",
+    "red-own.log",
+    "timeout-diagnostic-timing.json",
+    "timeout-diagnostic.log",
+    "types-timing.json",
+    "types.log",
+    "unit-timing.json",
+    "unit.log"
+  ],
+  "unrecoveredCount": 27,
+  "recoveryPolicy": "Preserve historical narrative; do not reconstruct missing logs or relabel new measurements as old evidence."
+}

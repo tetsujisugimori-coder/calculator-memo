@@ -20,6 +20,26 @@ const fixed = (text = '比較不能：両側0件。取得成功は根拠一致�
 const marker = (value: unknown, language: string) => reportCode(JSON.stringify(value), language);
 
 describe('fixed A/B comparison explanatory material, not another audit', () => {
+  it.each(['\n', '\r\n', '\r'])('does not release internal records/evidence at an ambiguous same-ID early end %j', newline => {
+    const innerAudit = createAuditRecordMarkdown('internal B', { ...auditInfo, recordId: 'audit-b', comparison: snapshot });
+    const start = marker({ version: 1, ...info }, START), end = marker({ version: 1, materialId: info.materialId }, END);
+    const prefix = `${audit}\n\n${q}\n\n`;
+    const body = `${prefix}${start}\n\n${end}\n\ninternal-gap\n\n${innerAudit}\n\n${q}\n\n${d}\n\n${end}`.replace(/\n/g, newline);
+    const ranges = scanAuditComparisonRecordEnvelopes(body);
+    expect.soft(ranges).toHaveLength(1);
+    expect.soft(ranges[0]).toMatchObject({ start: prefix.replace(/\n/g, newline).length, end: body.length, closed: false, status: 'invalid' });
+    expect.soft(ranges[0].metadata).toBeUndefined();
+    expect.soft(scanAuditRecordEnvelopes(body).map(entry => [entry.status, entry.metadata?.recordId])).toEqual([['complete', 'audit-a']]);
+    const inventory = parseReportAudit(body, 'f');
+    expect.soft(inventory.complete).toBe(false);
+    expect.soft(inventory.reason).toContain('集計は不完全');
+    expect.soft(inventory.items.map(item => [item.kind, item.bodyStatus])).toEqual([['quote', 'intact']]);
+    expect.soft(readQuoteAssessments(body, 'f', [])).toHaveLength(1);
+    expect.soft(readDifferenceAssessments(body, 'f', [])).toEqual([]);
+    const internalPosition = body.slice(0, body.indexOf('internal-gap') + 3).replace(/\r\n?/g, '\n').length;
+    expect.soft(() => insertQuoteAtCursor(body, 'NEW', internalPosition)).toThrow();
+    expect.soft(() => insertDifferenceAtCursor(body, 'NEW', 'f', internalPosition)).toThrow();
+  });
   it.each(['\n', '\r\n', '\r'])('preserves outer real quote, difference and audit candidates before duplicate detection %j', newline => {
     const inner = fixed(`${q}\n\n${d}\n\n${audit}`);
     const body = `${q}\n\n${inner}\n\n${d}\n\n${audit}`.replace(/\n/g, newline);

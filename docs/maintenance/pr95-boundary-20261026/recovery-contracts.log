@@ -1,0 +1,68 @@
+✔ unit: command failure propagates and leaves the diagnostic log (123.328917ms)
+✔ normal_build: command failure propagates and leaves the diagnostic log (100.175397ms)
+✔ pages_build: command failure propagates and leaves the diagnostic log (86.567766ms)
+✔ apt_config: command failure propagates and leaves the diagnostic log (108.407761ms)
+✔ os_install: command failure propagates and leaves the diagnostic log (84.164111ms)
+✔ browser_install: command failure propagates and leaves the diagnostic log (82.043569ms)
+✔ workflow retains strict failure, exact HEAD, timeout and artifact contracts (0.740647ms)
+✔ log storage failure cannot be concealed by a successful command (85.081024ms)
+✔ complete six-context contract preserves 966 original checks plus 6 ambiguous-boundary regressions and 568 geometry checkpoints (3.128708ms)
+✔ coverage rejects one scenario never ran (2.369247ms)
+✔ coverage rejects duplicate context replaces omitted context (1.530989ms)
+✔ coverage rejects child failed (0.641467ms)
+✔ coverage rejects scenario still running (0.554406ms)
+✔ coverage rejects checkout SHA mismatch (0.267363ms)
+✔ coverage rejects expected SHA mismatch (0.32469ms)
+✔ coverage rejects served SHA mismatch (0.392722ms)
+✔ coverage rejects incorrect mobile environment (0.554006ms)
+✔ coverage rejects entire new fixed-insertion coverage absent (0.514045ms)
+✔ coverage rejects legacy touch count without fixed-insertion operations (0.951575ms)
+✔ coverage rejects acceptance check missing (0.524431ms)
+✔ coverage rejects duplicate acceptance check (0.673326ms)
+✔ coverage rejects check from another context (5.503825ms)
+✔ coverage rejects duplicate geometry checkpoint (0.439122ms)
+✔ coverage rejects geometry checkpoint missing (1.453432ms)
+✔ coverage rejects geometry checkpoint failed (0.479283ms)
+✔ coverage rejects touch activation omitted (0.399903ms)
+✔ coverage rejects runtime or network error (0.938004ms)
+✔ stage process launch failure remains failed with timing evidence (100.53553ms)
+✔ missing-context validation is nonzero at the process boundary (69.797381ms)
+✔ isolated preview ports are distinct and allowed by Fetch before any transport (7.661855ms)
+✔ successful memo save waits for persistence without delaying read-only storage observations (1.849599ms)
+✔ modal overflow diagnostics are failure-only bounded and retain the strict geometry assertion (2.24796ms)
+✔ deb822 source rewrite preserves signing, suites, components and unrelated sources (0.988331ms)
+✔ legacy sources preserve options and other hosts; Azure security gets official security endpoint (0.286632ms)
+✔ unknown URI, suite and wrapped or ambiguous fields fail closed (1.075542ms)
+✔ APT configuration is restricted to root GitHub Ubuntu 24.04 and transport settings (0.588678ms)
+✔ OS and browser acquisition have separate bounded budgets without dependency omissions (0.389387ms)
+✖ bounded acquisition timeout fails and preserves its stage log and timing (195.180987ms)
+✔ official hosted-runner mirror+file indirection preserves signed source semantics (2.077513ms)
+✔ resource evidence separates Node usage from visible browser descendants (4.055165ms)
+✔ activation timing preserves real input and touch observation while splitting dispatch costs (2.123623ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 40
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1196.669215
+
+✖ failing tests:
+
+test at e2e/ci-contract.node-test.mjs:239:1
+✖ bounded acquisition timeout fails and preserves its stage log and timing (195.180987ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /synthetic stalled acquisition/. Input:
+  
+  'timeout: sending signal TERM to command ‘/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node’\n'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/e2e/ci-contract.node-test.mjs:247:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'timeout: sending signal TERM to command ‘/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node’\n',
+    expected: /synthetic stalled acquisition/,
+    operator: 'match',
+    diff: 'simple'
+  }

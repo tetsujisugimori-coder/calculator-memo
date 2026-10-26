@@ -1,5 +1,12 @@
 # A/B比較結果の本文固定挿入
 
+## PR #95 P2追加: 正規終端が一意でない資料
+同じ資料IDの正規終端が早期に複製され後方にも残る場合、最初の終端を確定境界として採用すると内部点検記録がA/B候補へ漏れる。厳密なMarkdown blockと既知JSONから、同じIDの次の厳密valid startまでの正規終端一意性を事前に確認する。複数なら元開始からEOFを不完全領域として保護し、後方のもっともらしい終端で回復しない。異なるIDの開始・未知/不正開始ではこの検査をリセットしない。
+
+ID重複は出力rangeのmetadataからではなく、厳密valid start全件から数える。poisonや交差でmetadataが消えても既知の重複を忘れず、他の資料をcompleteへ格上げしない。未知・不正startは推測計数しない。
+
+正常にそれぞれ閉じた同ID資料二つは従来の重複ID判定を維持し、間の独立根拠や旧v1/v2記録まで無根拠に消さない。普通のコードフェンス中のマーカー風文字列は不活性。形式・保存schema・比較結果・Markdown bytes/日時・明示挿入/失効/取消・容量保護は不変更。[再現と独立検証](../maintenance/pr95-boundary-20261026/README.md)。
+
 ## 実装前調査・採用設計（2026-10-26 JST、Issue #94）
 PR #93は10:36:31 UTCにマージ済み。GitHub APIとfetchでmain `969d173c16aba208d727f088641712e5b4a0856d`、tree `ecde1a5c061377141fca20f13881a6c930e95c69`を確認した。既存2 worktreeはcleanで保持し、クラウド独立worktreeのmainをfast-forwardのみで確認後 `feat/audit-comparison-fixed-insertion` を作成。利用者のWindowsは操作していない。open PR #80/#71は別目的で不変更。
 

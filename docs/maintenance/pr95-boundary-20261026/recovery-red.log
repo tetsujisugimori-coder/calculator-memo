@@ -1,0 +1,1042 @@
+
+ RUN  v3.2.4 /tmp/pr95-baseline-red
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts (21 tests | 15 failed) 54ms
+   × independent same-ID boundary review "\n" > does not reset ambiguity at other-valid-material 17ms
+     → expected [ Array(3) ] to deeply equal [ { start: 486, end: 1676, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\n" > does not reset ambiguity at unknown-start 3ms
+     → expected [ Array(2) ] to deeply equal [ { start: 486, end: 1567, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\n" > does not reset ambiguity at broken-start 4ms
+     → expected [ Array(2) ] to deeply equal [ { start: 486, end: 1438, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\n" > does not use equal global start/end totals as proof of unique pairing 1ms
+     → expected [ Array(2) ] to deeply equal [ { start: 486, end: 1567, …(3) } ]
+     → expected [ 'A', 'B' ] to deeply equal [ 'A' ]
+   × independent same-ID boundary review "\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned 2ms
+     → expected [ { start: +0, end: 307, …(3) }, …(2) ] to deeply equal [ { start: +0, end: 307, …(3) }, …(1) ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+   ✓ independent same-ID boundary review "\n" > retains independent old v1/v2 records between and after individually closed duplicate-ID materials 1ms
+   ✓ independent same-ID boundary review "\n" > ignores exact marker text inside an ordinary fenced value and preserves following evidence candidates 1ms
+   × independent same-ID boundary review "\r\n" > does not reset ambiguity at other-valid-material 2ms
+     → expected [ Array(3) ] to deeply equal [ { start: 496, end: 1718, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\r\n" > does not reset ambiguity at unknown-start 2ms
+     → expected [ Array(2) ] to deeply equal [ { start: 496, end: 1603, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\r\n" > does not reset ambiguity at broken-start 2ms
+     → expected [ Array(2) ] to deeply equal [ { start: 496, end: 1474, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\r\n" > does not use equal global start/end totals as proof of unique pairing 1ms
+     → expected [ Array(2) ] to deeply equal [ { start: 496, end: 1603, …(3) } ]
+     → expected [ 'A', 'B' ] to deeply equal [ 'A' ]
+   × independent same-ID boundary review "\r\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned 2ms
+     → expected [ { start: +0, end: 315, …(3) }, …(2) ] to deeply equal [ { start: +0, end: 315, …(3) }, …(1) ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+   ✓ independent same-ID boundary review "\r\n" > retains independent old v1/v2 records between and after individually closed duplicate-ID materials 1ms
+   ✓ independent same-ID boundary review "\r\n" > ignores exact marker text inside an ordinary fenced value and preserves following evidence candidates 1ms
+   × independent same-ID boundary review "\r" > does not reset ambiguity at other-valid-material 2ms
+     → expected [ Array(3) ] to deeply equal [ { start: 486, end: 1676, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\r" > does not reset ambiguity at unknown-start 2ms
+     → expected [ Array(2) ] to deeply equal [ { start: 486, end: 1567, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\r" > does not reset ambiguity at broken-start 2ms
+     → expected [ Array(2) ] to deeply equal [ { start: 486, end: 1438, …(3) } ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+     → expected [Function] to throw an error
+   × independent same-ID boundary review "\r" > does not use equal global start/end totals as proof of unique pairing 1ms
+     → expected [ Array(2) ] to deeply equal [ { start: 486, end: 1567, …(3) } ]
+     → expected [ 'A', 'B' ] to deeply equal [ 'A' ]
+   × independent same-ID boundary review "\r" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned 2ms
+     → expected [ { start: +0, end: 307, …(3) }, …(2) ] to deeply equal [ { start: +0, end: 307, …(3) }, …(1) ]
+     → expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+   ✓ independent same-ID boundary review "\r" > retains independent old v1/v2 records between and after individually closed duplicate-ID materials 1ms
+   ✓ independent same-ID boundary review "\r" > ignores exact marker text inside an ordinary fenced value and preserves following evidence candidates 1ms
+ ❯ tests/formula-report-audit-comparison-record.test.ts (45 tests | 3 failed) 163ms
+   × fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n" 29ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+     → expected { start: 1265, end: 1580, …(4) } to match object { start: 1265, end: 5202, …(2) }
+(8 matching properties omitted from actual)
+     → expected { materialId: 'material-1', …(5) } to be undefined
+     → expected [ [ 'complete', 'audit-a' ], …(1) ] to deeply equal [ [ 'complete', 'audit-a' ] ]
+     → expected [ [ 'quote', 'invalid' ], …(2) ] to deeply equal [ [ 'quote', 'intact' ] ]
+     → expected [ { status: 'invalid', …(4) }, …(1) ] to have a length of 1 but got 2
+     → expected [ { status: 'tracked', …(6) } ] to deeply equal []
+     → expected [Function] to throw an error
+     → expected [Function] to throw an error
+   × fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n" 13ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+     → expected { start: 1303, end: 1624, …(4) } to match object { start: 1303, end: 5397, …(2) }
+(8 matching properties omitted from actual)
+     → expected { materialId: 'material-1', …(5) } to be undefined
+     → expected [ [ 'complete', 'audit-a' ], …(1) ] to deeply equal [ [ 'complete', 'audit-a' ] ]
+     → expected [ [ 'quote', 'invalid' ], …(2) ] to deeply equal [ [ 'quote', 'intact' ] ]
+     → expected [ { status: 'invalid', …(4) }, …(1) ] to have a length of 1 but got 2
+     → expected [ { status: 'tracked', …(6) } ] to deeply equal []
+     → expected [Function] to throw an error
+     → expected [Function] to throw an error
+   × fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r" 11ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+     → expected { start: 1265, end: 1580, …(4) } to match object { start: 1265, end: 5202, …(2) }
+(8 matching properties omitted from actual)
+     → expected { materialId: 'material-1', …(5) } to be undefined
+     → expected [ [ 'complete', 'audit-a' ], …(1) ] to deeply equal [ [ 'complete', 'audit-a' ] ]
+     → expected [ [ 'quote', 'invalid' ], …(2) ] to deeply equal [ [ 'quote', 'intact' ] ]
+     → expected [ { status: 'invalid', …(4) }, …(1) ] to have a length of 1 but got 2
+     → expected [ { status: 'tracked', …(6) } ] to deeply equal []
+     → expected [Function] to throw an error
+     → expected [Function] to throw an error
+   ✓ fixed A/B comparison explanatory material, not another audit > preserves outer real quote, difference and audit candidates before duplicate detection "\n" 7ms
+   ✓ fixed A/B comparison explanatory material, not another audit > preserves outer real quote, difference and audit candidates before duplicate detection "\r\n" 9ms
+   ✓ fixed A/B comparison explanatory material, not another audit > preserves outer real quote, difference and audit candidates before duplicate detection "\r" 10ms
+   ✓ fixed A/B comparison explanatory material, not another audit > stores exact output including CRLF, Unicode, long values and hostile inert text without extra snapshots 1ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not reinterpret changed output 1ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not reinterpret matched output 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not reinterpret incomparable output 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not reinterpret unavailable output 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not reinterpret unknown output 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps future poisoned to EOF even after a later plausible end 6ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps suffix poisoned to EOF even after a later plausible end 6ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps broken poisoned to EOF even after a later plausible end 6ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps extra poisoned to EOF even after a later plausible end 5ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps wrong-id poisoned to EOF even after a later plausible end 4ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps wrong-version poisoned to EOF even after a later plausible end 5ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps missing-end poisoned to EOF even after a later plausible end 5ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps orphan-end poisoned to EOF even after a later plausible end 6ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps unclosed-end poisoned to EOF even after a later plausible end 5ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps nested poisoned to EOF even after a later plausible end 5ms
+   ✓ fixed A/B comparison explanatory material, not another audit > keeps fake-end poisoned to EOF even after a later plausible end 4ms
+   ✓ fixed A/B comparison explanatory material, not another audit > invalidates duplicate material IDs while retaining external audit candidates and evidence 6ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects structural recursive construction and unclosed code/math instead of repairing 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not detect marker-looking plain paragraphs or nested ordinary code as envelopes 1ms
+   ✓ fixed A/B comparison explanatory material, not another audit > protects full readable interior for quote insertion and allows exact boundaries 1ms
+   ✓ fixed A/B comparison explanatory material, not another audit > protects full readable interior for difference insertion and allows exact boundaries 1ms
+   ✓ fixed A/B comparison explanatory material, not another audit > inserts before a selected range without deleting or normalizing surrounding text "\n" 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > inserts before a selected range without deleting or normalizing surrounding text "\r\n" 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > inserts before a selected range without deleting or normalizing surrounding text "\r" 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > preserves invalid outer difference rather than erasing it when it encloses material 2ms
+   ✓ fixed A/B comparison explanatory material, not another audit > does not treat a split quote across material as matched or complete 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > marks an enclosing historical audit invalid and ineligible, not another matching record 1ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing, long or ill-formed materialId without mutation 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing, long or ill-formed formulaId without mutation 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing, long or ill-formed reportId without mutation 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing, long or ill-formed beforeRecordId without mutation 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing, long or ill-formed afterRecordId without mutation 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing timezone or invalid preparation time 2026-10-26 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing timezone or invalid preparation time not a date 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects missing timezone or invalid preparation time 2026-10-26T10:00:00 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects the same record twice and unknown metadata keys 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > rejects malformed UTF-16 without replacing it; retains valid surrogate pairs 0ms
+   ✓ fixed A/B comparison explanatory material, not another audit > distinguishes output capacity from insertion capacity and never returns partial bytes 3ms
+ ❯ tests/formula-comparison-boundary-ui.test.ts (3 tests | 3 failed) 62ms
+   × keeps outer A eligible but never promotes B between duplicate same-ID ends "\n" 46ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+   × keeps outer A eligible but never promotes B between duplicate same-ID ends "\r\n" 9ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+   × keeps outer A eligible but never promotes B between duplicate same-ID ends "\r" 7ms
+     → expected [ …(2) ] to have a length of 1 but got 2
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 21 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at other-valid-material
+AssertionError: expected [ Array(3) ] to deeply equal [ { start: 486, end: 1676, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "closed": false,
+-     "end": 1676,
++     "closed": true,
++     "end": 770,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
+      "reason": Any<String>,
+      "start": 486,
++     "status": "complete",
++   },
++   {
++     "closed": true,
++     "end": 1590,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "N",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": "過去の点検記録同士を比較した固定資料です。現在の根拠・点検記録候補ではなく、自動更新・保存・確認・数学的証明を意味しません。",
++     "start": 1283,
++     "status": "complete",
++   },
++   {
++     "closed": false,
++     "end": 1676,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1592,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:29:29
+     27|     const prefix = lines(outer + '\n\n');
+     28|     const body = prefix + lines([start, end, 'unprotected-looking gap'…
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at broken-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at broken-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at broken-start
+AssertionError: expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+
+- Expected
++ Received
+
+  [
+    [
+      "complete",
+      "A",
+    ],
++   [
++     "complete",
++     "B",
++   ],
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:31:84
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+       |                                                                                    ^
+     32|     expect.soft(body.slice(candidates[0].start, candidates[0].end)).to…
+     33|     expect.soft(parseReportAudit(body, 'f')).toMatchObject({ complete:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at broken-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at broken-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at other-valid-material
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at broken-start
+AssertionError: expected [Function] to throw an error
+ ❯ tests/formula-comparison-boundary-independent.test.ts:35:67
+     33|     expect.soft(parseReportAudit(body, 'f')).toMatchObject({ complete:…
+     34|     const position = body.slice(0, body.indexOf('unprotected-looking g…
+     35|     expect.soft(() => insertQuoteAtCursor(body, 'NEW', position)).toTh…
+       |                                                                   ^
+     36|   });
+     37| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at unknown-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at unknown-start
+AssertionError: expected [ Array(2) ] to deeply equal [ { start: 486, end: 1567, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "closed": true,
++     "end": 770,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": Any<String>,
++     "start": 486,
++     "status": "complete",
++   },
++   {
+      "closed": false,
+      "end": 1567,
+-     "reason": Any<String>,
+-     "start": 486,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1283,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:29:29
+     27|     const prefix = lines(outer + '\n\n');
+     28|     const body = prefix + lines([start, end, 'unprotected-looking gap'…
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not reset ambiguity at broken-start
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not reset ambiguity at broken-start
+AssertionError: expected [ Array(2) ] to deeply equal [ { start: 486, end: 1438, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "closed": true,
++     "end": 770,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": Any<String>,
++     "start": 486,
++     "status": "complete",
++   },
++   {
+      "closed": false,
+      "end": 1438,
+-     "reason": Any<String>,
+-     "start": 486,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1283,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:29:29
+     27|     const prefix = lines(outer + '\n\n');
+     28|     const body = prefix + lines([start, end, 'unprotected-looking gap'…
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not use equal global start/end totals as proof of unique pairing
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not use equal global start/end totals as proof of unique pairing
+AssertionError: expected [ Array(2) ] to deeply equal [ { start: 486, end: 1567, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "closed": true,
++     "end": 770,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": Any<String>,
++     "start": 486,
++     "status": "complete",
++   },
++   {
+      "closed": false,
+      "end": 1567,
+-     "reason": Any<String>,
+-     "start": 486,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1258,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:41:29
+     39|     const prefix = lines(outer + '\n\n');
+     40|     const body = prefix + lines([start, end, internal, end, start, 'un…
+     41|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     42|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => entry.meta…
+     43|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not use equal global start/end totals as proof of unique pairing
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not use equal global start/end totals as proof of unique pairing
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not use equal global start/end totals as proof of unique pairing
+AssertionError: expected [ 'A', 'B' ] to deeply equal [ 'A' ]
+
+- Expected
++ Received
+
+  [
+    "A",
++   "B",
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:42:88
+     40|     const body = prefix + lines([start, end, internal, end, start, 'un…
+     41|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+     42|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => entry.meta…
+       |                                                                                        ^
+     43|   });
+     44| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+AssertionError: expected [ { start: +0, end: 307, …(3) }, …(2) ] to deeply equal [ { start: +0, end: 307, …(3) }, …(1) ]
+
+- Expected
++ Received
+
+@@ -5,12 +5,19 @@
+      "reason": Any<String>,
+      "start": 0,
+      "status": "invalid",
+    },
+    {
++     "closed": true,
++     "end": 1079,
++     "reason": Any<String>,
++     "start": 795,
++     "status": "invalid",
++   },
++   {
+      "closed": false,
+      "end": 1651,
+-     "reason": Any<String>,
+-     "start": 795,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1567,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:50:25
+     48|     const body = prefix + lines([start, end, internal, end].join('\n\n…
+     49|     const ranges = scan(body);
+     50|     expect.soft(ranges).toEqual([
+       |                         ^
+     51|       { start: 0, end: first.length, closed: true, status: 'invalid', …
+     52|       { start: prefix.length, end: body.length, closed: false, status:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+AssertionError: expected [ [ 'complete', 'A' ], …(1) ] to deeply equal [ [ 'complete', 'A' ] ]
+
+- Expected
++ Received
+
+  [
+    [
+      "complete",
+      "A",
+    ],
++   [
++     "complete",
++     "B",
++   ],
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:55:81
+     53|     ]);
+     54|     const records = scanAuditRecordEnvelopes(body);
+     55|     expect.soft(records.map(entry => [entry.status, entry.metadata?.re…
+       |                                                                                 ^
+     56|     expect.soft(body.slice(records[0].start, records[0].end)).toBe(lin…
+     57|     expect.soft(parseReportAudit(body, 'f')).toMatchObject({ complete:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at other-valid-material
+AssertionError: expected [ Array(3) ] to deeply equal [ { start: 496, end: 1718, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
+-     "closed": false,
+-     "end": 1718,
++     "closed": true,
++     "end": 786,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
+      "reason": Any<String>,
+      "start": 496,
++     "status": "complete",
++   },
++   {
++     "closed": true,
++     "end": 1628,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "N",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": "過去の点検記録同士を比較した固定資料です。現在の根拠・点検記録候補ではなく、自動更新・保存・確認・数学的証明を意味しません。",
++     "start": 1313,
++     "status": "complete",
++   },
++   {
++     "closed": false,
++     "end": 1718,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1632,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:29:29
+     27|     const prefix = lines(outer + '\n\n');
+     28|     const body = prefix + lines([start, end, 'unprotected-looking gap'…
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at unknown-start
+AssertionError: expected [ Array(2) ] to deeply equal [ { start: 496, end: 1603, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "closed": true,
++     "end": 786,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": Any<String>,
++     "start": 496,
++     "status": "complete",
++   },
++   {
+      "closed": false,
+      "end": 1603,
+-     "reason": Any<String>,
+-     "start": 496,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1313,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:29:29
+     27|     const prefix = lines(outer + '\n\n');
+     28|     const body = prefix + lines([start, end, 'unprotected-looking gap'…
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not reset ambiguity at broken-start
+AssertionError: expected [ Array(2) ] to deeply equal [ { start: 496, end: 1474, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "closed": true,
++     "end": 786,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": Any<String>,
++     "start": 496,
++     "status": "complete",
++   },
++   {
+      "closed": false,
+      "end": 1474,
+-     "reason": Any<String>,
+-     "start": 496,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1313,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:29:29
+     27|     const prefix = lines(outer + '\n\n');
+     28|     const body = prefix + lines([start, end, 'unprotected-looking gap'…
+     29|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     30|     const candidates = scanAuditRecordEnvelopes(body);
+     31|     expect.soft(candidates.map(entry => [entry.status, entry.metadata?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not use equal global start/end totals as proof of unique pairing
+AssertionError: expected [ Array(2) ] to deeply equal [ { start: 496, end: 1603, …(3) } ]
+
+- Expected
++ Received
+
+  [
+    {
++     "closed": true,
++     "end": 786,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
++     "reason": Any<String>,
++     "start": 496,
++     "status": "complete",
++   },
++   {
+      "closed": false,
+      "end": 1603,
+-     "reason": Any<String>,
+-     "start": 496,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1286,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:41:29
+     39|     const prefix = lines(outer + '\n\n');
+     40|     const body = prefix + lines([start, end, internal, end, start, 'un…
+     41|     expect.soft(scan(body)).toEqual([{ start: prefix.length, end: body…
+       |                             ^
+     42|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => entry.meta…
+     43|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+AssertionError: expected [ { start: +0, end: 315, …(3) }, …(2) ] to deeply equal [ { start: +0, end: 315, …(3) }, …(1) ]
+
+- Expected
++ Received
+
+@@ -5,12 +5,19 @@
+      "reason": Any<String>,
+      "start": 0,
+      "status": "invalid",
+    },
+    {
++     "closed": true,
++     "end": 1105,
++     "reason": Any<String>,
++     "start": 815,
++     "status": "invalid",
++   },
++   {
+      "closed": false,
+      "end": 1691,
+-     "reason": Any<String>,
+-     "start": 815,
++     "reason": "固定比較資料の境界が未知・不正・重複または不完全です。内部の根拠・点検記録を推測せず除外し、集計は不完全です。",
++     "start": 1605,
+      "status": "invalid",
+    },
+  ]
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:50:25
+     48|     const body = prefix + lines([start, end, internal, end].join('\n\n…
+     49|     const ranges = scan(body);
+     50|     expect.soft(ranges).toEqual([
+       |                         ^
+     51|       { start: 0, end: first.length, closed: true, status: 'invalid', …
+     52|       { start: prefix.length, end: body.length, closed: false, status:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/69]⎯
+
+ FAIL  tests/formula-comparison-boundary-ui.test.ts > keeps outer A eligible but never promotes B between duplicate same-ID ends "\n"
+ FAIL  tests/formula-comparison-boundary-ui.test.ts > keeps outer A eligible but never promotes B between duplicate same-ID ends "\r\n"
+ FAIL  tests/formula-comparison-boundary-ui.test.ts > keeps outer A eligible but never promotes B between duplicate same-ID ends "\r"
+AssertionError: expected [ …(2) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/formula-comparison-boundary-ui.test.ts:24:23
+     22|     for (const select of selects) {
+     23|       const choices = [...select.options].filter(option => option.valu…
+     24|       expect(choices).toHaveLength(1);
+       |                       ^
+     25|       expect(choices[0].textContent).toContain('outer-A');
+     26|       expect([...select.options].some(option => option.textContent?.in…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [ …(2) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:29:25
+     27|     const body = `${prefix}${start}\n\n${end}\n\ninternal-gap\n\n${inn…
+     28|     const ranges = scanAuditComparisonRecordEnvelopes(body);
+     29|     expect.soft(ranges).toHaveLength(1);
+       |                         ^
+     30|     expect.soft(ranges[0]).toMatchObject({ start: prefix.replace(/\n/g…
+     31|     expect.soft(ranges[0].metadata).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected { start: 1265, end: 1580, …(4) } to match object { start: 1265, end: 5202, …(2) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "closed": false,
+-   "end": 5202,
++   "closed": true,
++   "end": 1580,
+    "start": 1265,
+-   "status": "invalid",
++   "status": "complete",
+  }
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:30:28
+     28|     const ranges = scanAuditComparisonRecordEnvelopes(body);
+     29|     expect.soft(ranges).toHaveLength(1);
+     30|     expect.soft(ranges[0]).toMatchObject({ start: prefix.replace(/\n/g…
+       |                            ^
+     31|     expect.soft(ranges[0].metadata).toBeUndefined();
+     32|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => [entry.sta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected { materialId: 'material-1', …(5) } to be undefined
+
+- Expected: 
+undefined
+
++ Received: 
+{
+  "afterRecordId": "audit-b",
+  "beforeRecordId": "audit-a",
+  "formulaId": "f",
+  "materialId": "material-1",
+  "preparedAt": "2026-10-26T10:00:00+09:00",
+  "reportId": "r",
+}
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:31:37
+     29|     expect.soft(ranges).toHaveLength(1);
+     30|     expect.soft(ranges[0]).toMatchObject({ start: prefix.replace(/\n/g…
+     31|     expect.soft(ranges[0].metadata).toBeUndefined();
+       |                                     ^
+     32|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => [entry.sta…
+     33|     const inventory = parseReportAudit(body, 'f');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [ [ 'complete', 'audit-a' ], …(1) ] to deeply equal [ [ 'complete', 'audit-a' ] ]
+
+- Expected
++ Received
+
+  [
+    [
+      "complete",
+      "audit-a",
+    ],
++   [
++     "complete",
++     "audit-b",
++   ],
+  ]
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:32:104
+     30|     expect.soft(ranges[0]).toMatchObject({ start: prefix.replace(/\n/g…
+     31|     expect.soft(ranges[0].metadata).toBeUndefined();
+     32|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => [entry.sta…
+       |                                                                                                        ^
+     33|     const inventory = parseReportAudit(body, 'f');
+     34|     expect.soft(inventory.complete).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [ [ 'quote', 'invalid' ], …(2) ] to deeply equal [ [ 'quote', 'intact' ] ]
+
+- Expected
++ Received
+
+  [
+    [
+      "quote",
++     "invalid",
++   ],
++   [
++     "quote",
++     "invalid",
++   ],
++   [
++     "difference",
+      "intact",
+    ],
+  ]
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:36:76
+     34|     expect.soft(inventory.complete).toBe(false);
+     35|     expect.soft(inventory.reason).toContain('集計は不完全');
+     36|     expect.soft(inventory.items.map(item => [item.kind, item.bodyStatu…
+       |                                                                            ^
+     37|     expect.soft(readQuoteAssessments(body, 'f', [])).toHaveLength(1);
+     38|     expect.soft(readDifferenceAssessments(body, 'f', [])).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [ { status: 'invalid', …(4) }, …(1) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:37:54
+     35|     expect.soft(inventory.reason).toContain('集計は不完全');
+     36|     expect.soft(inventory.items.map(item => [item.kind, item.bodyStatu…
+     37|     expect.soft(readQuoteAssessments(body, 'f', [])).toHaveLength(1);
+       |                                                      ^
+     38|     expect.soft(readDifferenceAssessments(body, 'f', [])).toEqual([]);
+     39|     const internalPosition = body.slice(0, body.indexOf('internal-gap'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [ { status: 'tracked', …(6) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "after": {
++       "reason": "出典の保存記録が欠落しています。引用時の証拠は保持しています。",
++       "status": "missing",
++     },
++     "before": {
++       "reason": "出典の保存記録が欠落しています。引用時の証拠は保持しています。",
++       "status": "missing",
++     },
++     "end": 5107,
++     "reason": "引用時の差分本文と追跡情報が一致しています。現在の出典状態とは別の確認です。",
++     "snapshot": {
++       "after": {
++         "blocks": [
++           {
++             "blockId": "b",
++             "expression": "1",
++             "inputs": [],
++             "position": 1,
++             "result": "1",
++             "resultText": "1",
++             "status": "success",
++           },
++         ],
++         "calculatedAt": "2026-10-26T01:00:00.000Z",
++         "evaluator": "calculator-memo-v1",
++         "id": "after",
++         "persistedAt": "2026-10-26T01:00:00.000Z",
++         "status": "confirmed",
++       },
++       "differenceId": "d",
++       "preparedAt": "2026-10-26T01:00:00.000Z",
++       "quote": {
++         "blockId": "b",
++         "citedAt": "2026-10-26T01:00:00.000Z",
++         "formulaId": "f",
++         "memoId": "m",
++         "quoteId": "q",
++         "record": {
++           "blocks": [
++             {
++               "blockId": "b",
++               "expression": "1",
++               "inputs": [],
++               "position": 1,
++               "result": "1",
++               "resultText": "1",
++               "status": "success",
++             },
++           ],
++           "calculatedAt": "2026-10-26T01:00:00.000Z",
++           "evaluator": "calculator-memo-v1",
++           "id": "before",
++           "persistedAt": "2026-10-26T01:00:00.000Z",
++           "status": "confirmed",
++         },
++         "version": 1,
++       },
++       "quoteBodyEdited": false,
++       "version": 1,
++     },
++     "start": 2852,
++     "status": "tracked",
++   },
++ ]
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:38:59
+     36|     expect.soft(inventory.items.map(item => [item.kind, item.bodyStatu…
+     37|     expect.soft(readQuoteAssessments(body, 'f', [])).toHaveLength(1);
+     38|     expect.soft(readDifferenceAssessments(body, 'f', [])).toEqual([]);
+       |                                                           ^
+     39|     const internalPosition = body.slice(0, body.indexOf('internal-gap'…
+     40|     expect.soft(() => insertQuoteAtCursor(body, 'NEW', internalPositio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [Function] to throw an error
+ ❯ tests/formula-report-audit-comparison-record.test.ts:40:75
+     38|     expect.soft(readDifferenceAssessments(body, 'f', [])).toEqual([]);
+     39|     const internalPosition = body.slice(0, body.indexOf('internal-gap'…
+     40|     expect.soft(() => insertQuoteAtCursor(body, 'NEW', internalPositio…
+       |                                                                           ^
+     41|     expect.soft(() => insertDifferenceAtCursor(body, 'NEW', 'f', inter…
+     42|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r"
+AssertionError: expected [Function] to throw an error
+ ❯ tests/formula-report-audit-comparison-record.test.ts:41:85
+     39|     const internalPosition = body.slice(0, body.indexOf('internal-gap'…
+     40|     expect.soft(() => insertQuoteAtCursor(body, 'NEW', internalPositio…
+     41|     expect.soft(() => insertDifferenceAtCursor(body, 'NEW', 'f', inter…
+       |                                                                                     ^
+     42|   });
+     43|   it.each(['\n', '\r\n', '\r'])('preserves outer real quote, differenc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/69]⎯
+
+ FAIL  tests/formula-report-audit-comparison-record.test.ts > fixed A/B comparison explanatory material, not another audit > does not release internal records/evidence at an ambiguous same-ID early end "\r\n"
+AssertionError: expected { start: 1303, end: 1624, …(4) } to match object { start: 1303, end: 5397, …(2) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "closed": false,
+-   "end": 5397,
++   "closed": true,
++   "end": 1624,
+    "start": 1303,
+-   "status": "invalid",
++   "status": "complete",
+  }
+
+ ❯ tests/formula-report-audit-comparison-record.test.ts:30:28
+     28|     const ranges = scanAuditComparisonRecordEnvelopes(body);
+     29|     expect.soft(ranges).toHaveLength(1);
+     30|     expect.soft(ranges[0]).toMatchObject({ start: prefix.replace(/\n/g…
+       |                            ^
+     31|     expect.soft(ranges[0].metadata).toBeUndefined();
+     32|     expect.soft(scanAuditRecordEnvelopes(body).map(entry => [entry.sta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/69]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  21 failed | 48 passed (69)
+   Start at  04:37:41
+   Duration  2.36s (transform 493ms, setup 0ms, collect 2.36s, tests 280ms, environment 272ms, prepare 179ms)
+

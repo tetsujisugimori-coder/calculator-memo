@@ -1,0 +1,16 @@
+{
+  "stage": "recovery-unit",
+  "command": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--maxWorkers=2"
+  ],
+  "startedAt": "2026-10-26T19:36:33.563Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 59777.678176,
+  "finishedAt": "2026-10-26T19:37:33.340Z",
+  "status": "passed"
+}

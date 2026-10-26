@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-comparison-insertion
+
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 447ms
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  23:15:20
+   Duration  45.93s (transform 9.62s, setup 0ms, collect 33.91s, tests 447ms, environment 2ms, prepare 3.57s)
+

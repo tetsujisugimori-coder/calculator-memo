@@ -1,0 +1,15 @@
+{
+  "stage": "recovery-contracts",
+  "command": "node",
+  "args": [
+    "--test",
+    "e2e/ci-contract.node-test.mjs"
+  ],
+  "startedAt": "2026-10-26T19:35:31.051Z",
+  "node": "v24.22.1",
+  "exitCode": 1,
+  "signal": null,
+  "durationMs": 1294.932729,
+  "finishedAt": "2026-10-26T19:35:32.346Z",
+  "status": "failed"
+}

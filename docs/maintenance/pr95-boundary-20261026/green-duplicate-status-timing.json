@@ -1,0 +1,17 @@
+{
+  "stage": "green-duplicate-status",
+  "command": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/formula-comparison-boundary-independent.test.ts",
+    "--maxWorkers=2"
+  ],
+  "startedAt": "2026-10-26T14:15:09.846Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 57391.965574,
+  "finishedAt": "2026-10-26T14:16:07.238Z",
+  "status": "passed"
+}

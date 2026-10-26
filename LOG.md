@@ -1,5 +1,18 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: PR #95 P2 同一ID早期終端の内部漏出防止
+
+- 基準・最新PR HEAD `d7d6031b8a7e4bb5a296ba199febf04d5b073592`、Draft/open/未マージをAPI照合。既存Issue #94/PR #95を継続し、cleanなクラウドworktreeから作業。他worktree・Windows・mainは変更しない。旧最終CIの成功は今回の未検査境界の証明に流用しない。
+- 再現: 外側A→資料M開始→同ID正規終端の早期複製→内部B→本来終端。LF/CRLF/CR全てで最初の終端がcompleteとして確定し、後続終端からのみinvalid保護を張るため、中間Bが正常候補へ漏れた。内部引用による外側引用の重複扱い、内部差分の二重計上、隙間段落への挿入も再現。集計不完全表示だけでは防げなかった。
+- 第一希望の局所scanner修正: 既存の厳密なMarkdown blockとJSONから、同IDの厳密valid startごとに正規終端の一意性を先に調べる。複数終端がある開始は完全とせず、既存の開始〜EOF不完全保護へ落とす。未知形式の推測修復・範囲短縮・新形式なし。正常に閉じた重複ID資料間の独立根拠は従来どおり保持する。後戻り修復や単純全域終端数は不採用。
+- 同期待値RED: 実装担当48件中6失敗/42成功、独立担当18件中12失敗/6成功。新規24件のうち18件が欠陥を検出。製品修正後の担当48件は48/48成功。全量・独立GREEN・正式CIは後続実測で確定し、未実行をPASSにしない。
+- 独立GREENも18/18成功、局所計66件は18失敗→0。全量ローカル2134件は2126成功/8件5000ms timeout、worker1診断10条件は7成功/3既存timeout。原因UNKNOWN・期待値/timeout不変更で失敗履歴を保存。契約はログ先env継承の手順不備32/41を訂正し40/41（既知100ms fixture残）。lint/型/両build成功。局所native Chromium390は2/9群後に既存fill待機timeout、新群未到達。提出時PARTIAL/マージNO、最終HEAD正式CIと成果物はPR/Issueへ別途確定する。
+- commit前の追加P2: 後方同ID資料のpoisonでmetadataが消えると、range由来のID計数が先行資料をcompleteへ格上げすることを独立3改行でRED（21件中3失敗）再現し同期待値21/21 GREEN。ID重複の事実を出力metadataの有無から分離し、厳密valid start全件から計数する最小補正。新27件・最終予定2137件。先行全量/build/nativeはこの補正前であり最終CIへ流用しない。
+- 正式GUIは既存966群を削らず同じ6条件に各1群を追加、972群。geometry568・PNG120・成功trace0・3worker・30分は維持。実編集欄・実操作で外側A保持、内部B除外、不完全表示、非保存を検査する。詳細と残余は[今回検証](docs/maintenance/pr95-boundary-20261026/README.md)。
+
+### 2026-10-27 04:36 JST: 承認後の環境回収
+旧worktree消失を確認し、同じクラウドworkspaceへ同一baselineを再取得。製品・テスト・GUI契約・文書を既知Git blob SHA一致で回収。旧rawログ27ファイルは未回収、歴史的結果を削除せず、新実測を別名で保持する。設計文書7行は本人の明示承認後に保存成功。詳細は上記検証索引とrecovery-provenanceを参照。旧全量失敗を取り消した扱いにはしない。 新環境の最終コードは全単体2137/2137・92 files、同一期待値69局所はbaseline21失敗から69成功、lint/型/両build成功。契約は40/41（既知100ms残）。旧失敗を根治扱いせず最終HEAD実CI/成果物待ち。
+
 ## 2026-10-26 JST: 固定A/B比較資料の本文挿入と専用取消（Issue #94）
 
 - 着手: PR #93のmergeと最新main `969d173c16aba208d727f088641712e5b4a0856d` をAPI/fetchで確認。既存worktreeを保持し、クラウドの独立worktree/専用branchで作業。Windowsのローカルmainは操作していない。単一点検の#88、独立出力の#92との対象差を確認し、[Issue #94](https://github.com/tetsujisugimori-coder/calculator-memo/issues/94) を実装前に作成。

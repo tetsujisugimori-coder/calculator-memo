@@ -1,0 +1,62 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 build
+> vinext build
+
+
+  vinext build  (Vite 8.0.13)
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProxy environment variables detected. We'll use your proxy for fetch requests.[0m
+
+
+[1/5] analyze client references...
+[2Ktransforming...✓ 134 modules transformed.
+rendering chunks...
+[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - vinext:google-fonts (78%)
+  - rsc:virtual-client-package (6%)
+  - vinext:react-canary (4%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 34.91s
+[2/5] analyze server references...
+[2Ktransforming...✓ 2900 modules transformed.
+rendering chunks...
+✓ built in 2.51s
+[3/5] build rsc environment...
+[2Ktransforming...✓ 140 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 476ms
+[4/5] build client environment...
+[2Ktransforming...✓ 4843 modules transformed.
+rendering chunks...
+computing gzip size...
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.51s
+[5/5] build ssr environment...
+[2Ktransforming...✓ 2921 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 2.71s
+[0m
+  Route (app)
+  ─ ? /
+
+  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

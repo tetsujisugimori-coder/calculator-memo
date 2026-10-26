@@ -1,0 +1,15 @@
+{
+  "stage": "recovery-normal-build",
+  "command": "npm",
+  "args": [
+    "run",
+    "build"
+  ],
+  "startedAt": "2026-10-26T19:38:16.048Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 46131.498924,
+  "finishedAt": "2026-10-26T19:39:02.180Z",
+  "status": "passed"
+}

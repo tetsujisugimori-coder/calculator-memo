@@ -138,7 +138,24 @@ export async function exerciseAuditComparisonInsertion({ page, context, base, ex
     await click('根拠点検を閉じる'); await expect(editor()).toHaveValue(persistedBody);
     assert.equal(JSON.parse(await raw()).formulaReports.entries[0].body, persistedBody);
     await passed(prefix + ': insertion inside an existing fixed comparison material is rejected in the real editor without splitting its protected body or altering saved content');
-    assert.equal(activations, 69, 'New helper real button activations are deterministic and cannot silently drop operations');
+    const materialId = 'ambiguous-material';
+    const startMarker = '```calculator-memo-audit-comparison-record-start-v1\n' + JSON.stringify({ version: 1, materialId, formulaId, reportId, beforeRecordId: 'insert-A', afterRecordId: 'insert-B', preparedAt: at }) + '\n```';
+    const endMarker = '```calculator-memo-audit-comparison-record-end-v1\n' + JSON.stringify({ version: 1, materialId }) + '\n```';
+    const ambiguous = [fixed('insert-A', 1, true), startMarker, endMarker, fixed('insert-B', 2, true), endMarker].join('\n\n');
+    const unchangedStorage = await raw();
+    await editor().fill(ambiguous); await click('根拠点検');
+    await expect(audit()).toContainText('集計は不完全');
+    await expect(audit()).toContainText('認識できた出現 0件');
+    for (const label of ['比較元A', '比較先B']) {
+      const options = comparison().getByRole('combobox', { name: label, exact: true }).locator('option');
+      await expect(options).toHaveCount(2);
+      await expect(options.nth(1)).toContainText('insert-A'); await expect(options.nth(1)).toBeEnabled();
+      await expect(options.filter({ hasText: 'insert-B' })).toHaveCount(0);
+    }
+    await expect(result()).toHaveCount(0); await click('根拠点検を閉じる');
+    await expect(editor()).toHaveValue(ambiguous); assert.equal(await raw(), unchangedStorage);
+    await passed(prefix + ': duplicate same-ID early material end cannot expose its internal audit as either A B candidate while outer A remains eligible incomplete aggregation is shown and storage is unchanged');
+    assert.equal(activations, 71, 'New helper real button activations are deterministic and cannot silently drop operations');
   } finally {
     await second.close();
     await page.evaluate(({ key, original }) => { if (original === null) localStorage.removeItem(key); else localStorage.setItem(key, original); document.documentElement.style.fontSize = ''; }, { key, original });

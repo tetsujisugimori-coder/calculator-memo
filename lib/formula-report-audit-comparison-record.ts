@@ -39,18 +39,39 @@ function metadata(value: unknown): AuditComparisonRecordMetadata | undefined {
 export function scanAuditComparisonRecordEnvelopes(body: string, blocks?: MarkdownBlock[]): AuditComparisonRecordEnvelope[] {
   if (!body.includes(PREFIX)) return [];
   blocks ??= parseMarkdownBlocks(body);
-  const ranges: AuditComparisonRecordEnvelope[] = [];
-  let pending: { start: number; metadata?: AuditComparisonRecordMetadata; poisoned: boolean } | undefined;
-  for (const block of blocks) {
-    if (block.kind !== 'code' || !block.language.startsWith(PREFIX) || pending?.poisoned) continue;
+  const markers = blocks.flatMap(block => {
+    if (block.kind !== 'code' || !block.language.startsWith(PREFIX)) return [];
     let value: unknown;
     try { value = JSON.parse(block.text); } catch { /* Never repair identifiers. */ }
-    if (!pending && block.language === AUDIT_COMPARISON_RECORD_START && closedCode(body, block)) {
-      const parsed = metadata(value);
-      if (parsed) { pending = { start: block.start, metadata: parsed, poisoned: false }; continue; }
+    const closed = closedCode(body, block);
+    const startMetadata = closed && block.language === AUDIT_COMPARISON_RECORD_START ? metadata(value) : undefined;
+    const endId = closed && block.language === AUDIT_COMPARISON_RECORD_END && object(value)
+      && keys(value, ['version', 'materialId']) && value.version === 1 && typeof value.materialId === 'string' ? value.materialId : undefined;
+    return [{ block, startMetadata, endId }];
+  });
+  // Do not certify the first end before checking for a second exact end of the
+  // same start. Only another exact, valid start of that ID begins a new interval;
+  // unrelated/unknown markers cannot release the earlier ambiguous interior.
+  // Individually closed duplicate-ID materials retain their existing separate
+  // ranges (and duplicate-ID status), preserving independent evidence between.
+  const lastStart = new Map<string, { start: number; ended: boolean }>();
+  const ambiguousStarts = new Set<number>();
+  for (const { block, startMetadata, endId } of markers) {
+    if (startMetadata) lastStart.set(startMetadata.materialId, { start: block.start, ended: false });
+    if (endId !== undefined) {
+      const start = lastStart.get(endId);
+      if (start?.ended) ambiguousStarts.add(start.start);
+      if (start) start.ended = true;
     }
-    if (pending?.metadata && block.language === AUDIT_COMPARISON_RECORD_END && closedCode(body, block)
-      && object(value) && keys(value, ['version', 'materialId']) && value.version === 1 && value.materialId === pending.metadata.materialId) {
+  }
+  const ranges: AuditComparisonRecordEnvelope[] = [];
+  let pending: { start: number; metadata?: AuditComparisonRecordMetadata; poisoned: boolean } | undefined;
+  for (const { block, startMetadata, endId } of markers) {
+    if (pending?.poisoned) continue;
+    if (!pending && startMetadata) {
+      pending = { start: block.start, metadata: startMetadata, poisoned: ambiguousStarts.has(block.start) }; continue;
+    }
+    if (pending?.metadata && endId === pending.metadata.materialId) {
       ranges.push({ start: pending.start, end: block.end, closed: true, status: 'complete', metadata: pending.metadata,
         reason: '過去の点検記録同士を比較した固定資料です。現在の根拠・点検記録候補ではなく、自動更新・保存・確認・数学的証明を意味しません。' });
       pending = undefined; continue;
@@ -65,7 +86,8 @@ export function scanAuditComparisonRecordEnvelopes(body: string, blocks?: Markdo
     }
   }
   const counts = new Map<string, number>();
-  for (const range of ranges) if (range.metadata) counts.set(range.metadata.materialId, (counts.get(range.metadata.materialId) ?? 0) + 1);
+  // Poison/crossing may erase output metadata, not the observed duplicate ID.
+  for (const { startMetadata } of markers) if (startMetadata) counts.set(startMetadata.materialId, (counts.get(startMetadata.materialId) ?? 0) + 1);
   for (const range of ranges) if (range.metadata && counts.get(range.metadata.materialId)! > 1) { range.status = 'invalid'; range.reason = invalid; delete range.metadata; }
   return ranges;
 }
