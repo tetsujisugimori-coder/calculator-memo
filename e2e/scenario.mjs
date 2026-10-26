@@ -1,5 +1,6 @@
 // Synthetic-only PR GUI regression harness. Run from the repository root.
 import assert from "node:assert/strict";
+import { runtimeResources } from "./runtime-resources.mjs";
 import { assertHistoricalSourceText, expectedHistoricalBlocks } from "./source-evidence-contract.mjs";
 import { exerciseAuditRecordComparison } from "./audit-record-comparison.mjs";
 import { exerciseAuditFixedRecord } from "./audit-fixed-record.mjs";
@@ -28,7 +29,7 @@ const metadata = {
   expectedSha: process.env.EXPECTED_SHA || null,
   branch: process.env.PR_BRANCH || null, pr: process.env.PR_NUMBER || null,
   run: process.env.GITHUB_RUN_ID || "local", attempt: process.env.GITHUB_RUN_ATTEMPT || "1",
-  startedAt: new Date().toISOString(), node: process.version,
+  startedAt: new Date().toISOString(), node: process.version, resourcesAtStart: runtimeResources(),
   runner: { os: process.env.RUNNER_OS, image: process.env.ImageOS, version: process.env.ImageVersion },
   syntheticDataOnly: true, productionDeployed: false,
   method: "Playwright Chromium and WebKit on loopback-only Pages preview; mobile/touch emulation, not physical iPhone Safari",
@@ -4260,6 +4261,7 @@ try {
   }
   if (log) log.end();
   metadata.finishedAt = new Date().toISOString();
+  metadata.resourcesAtEnd = runtimeResources();
   metadata.timings.stages.push({ name: metadata.stage, durationMs: performance.now() - stageStarted });
   await persist();
 }

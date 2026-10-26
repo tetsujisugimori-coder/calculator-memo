@@ -36,3 +36,6 @@
 
 ## CI試験安定化の独立追補（2026-10-26 JST）
 別担当が実CIのUUID `...-999d-...` 衝突をログから確認し、厳密metadata除外＋両側detail完全比較を実装・再レビュー。11件のnegative controlでUUID/日時は計算値と混同せず、計算値999混入・余計な除外内容を拒否した。2workerのWebKit先行queueは全6条件一度ずつ、元index port/集約順、検査/geometry/PNG/trace/上限不変更を確認。対象eslint/構文/diff確認成功。遅延原因は未確定、実CI時間内完走は別証拠を要する。
+
+## 本人承認後3workerの独立再レビュー
+2026-10-26 JST、別担当が3workerとsummaryの一致、元indexのID/port/集約順、全6重複防止、coverage/DPR/912検査/562geometry/114PNG/成功trace0/30分の維持を確認。資源記録はNode自身とbrowser子processを区別し、不明制約はnullで保持。新13契約は独立実行全成功（1.84秒）、diff-check成功、新P0〜P2指摘なし。既存local100ms起動fixtureは2回とも36/37成功として失敗履歴を保持。最終実CIの30分内完走は未確認であり別証拠を要する。

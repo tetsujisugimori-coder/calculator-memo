@@ -33,7 +33,7 @@ it('worker queue preserves all six scenario identities and original port mapping
  const smoke = readFileSync(new URL('../e2e/smoke.mjs', import.meta.url), 'utf8');
  expect(smoke).toContain('executionOrder[next++]');
  expect(smoke).toContain('port: scenarioPort(index)');
- expect(smoke).toContain('Promise.allSettled([runWorker(), runWorker()])');
+ expect(smoke).toContain('Promise.allSettled([runWorker(), runWorker(), runWorker()])');
  expect(smoke).toContain('summary.workers.sort((a,b) => scenarios.findIndex(s=>s.id===a.id) - scenarios.findIndex(s=>s.id===b.id))');
 });
 
@@ -42,4 +42,24 @@ it('GUI negative control: legitimate timestamp milliseconds 999 are not numeric 
  expect(() => contract.assertHistoricalSourceText(identity + stamps.join(''), identity, 'quote-formula', stamps)).not.toThrow();
  expect(() => contract.assertHistoricalSourceText(identity + stamps.join('') + '実使用内部値999', identity, 'quote-formula', stamps)).toThrow('Current calculation sentinel');
  expect(() => contract.assertHistoricalSourceText(identity + stamps.join('') + '999', identity, 'quote-formula', [stamps[0] + '999'])).toThrow('Only exact timestamp');
+});
+
+it('approved three-worker limit preserves the single job thirty-minute coverage boundary', () => {
+ const smoke = readFileSync(new URL('../e2e/smoke.mjs', import.meta.url), 'utf8');
+ const workflow = readFileSync(new URL('../.github/workflows/verify-pr-gui.yml', import.meta.url), 'utf8');
+ expect(smoke).toContain('concurrency: 3');
+ expect(smoke).toContain('records, summary.sha');
+ expect(smoke).toContain('resourcesAtStart: runtimeResources()');
+ expect(smoke).toContain('summary.resourcesAtEnd = runtimeResources()');
+ expect(workflow).toContain('timeout-minutes: 30');
+});
+it('resource diagnostics distinguish host observations and Node usage without inferring browser consumption', async () => {
+ const source = readFileSync(new URL('../e2e/runtime-resources.mjs', import.meta.url), 'utf8');
+ const { runtimeResources } = await import(/* @vite-ignore */ 'data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
+ const r = runtimeResources();
+ expect(r.logicalCpuCount).toBeGreaterThan(0); expect(r.availableParallelism).toBeGreaterThan(0);
+ expect(r.totalMemoryBytes).toBeGreaterThan(0); expect(r.loadAverage).toHaveLength(3);
+ expect(r.nodeProcessUsage.userCPUTime).toBeGreaterThanOrEqual(0);
+ expect(r.interpretation).toContain('excludes browser child usage');
+ expect(Object.keys(r.cgroupV2)).toEqual(['cpuMax', 'memoryMax', 'memoryCurrent']);
 });

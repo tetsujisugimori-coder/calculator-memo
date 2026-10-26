@@ -51,3 +51,6 @@ worker2で同一の全1995件/85files（既存1937＋今回58）成功、失敗/
 独立診断でChromium失敗は `not.toContainText("999")` が計算値ではなく生成UUID `cf886864-22dd-4ace-999d-858cfab8e426` に一致したことを確認。根拠値混入ではない。第一希望は検査対象の意味を正確にすること：厳密な識別・日時paragraphのみを全文sentinel検査から除外し、開いた両側保存記録detailの式/モード/順序/実入力参照元/内部値/表示値をfixture snapshotと完全一致で検査する。UUIDや日時に999があっても通り、計算値999や除外paragraphへの余分な999は失敗するnegative controlを追加。UUID生成のmock固定という次善策は実製品経路を変えるため不採用。製品・比較判定・保存形式に変更なし。
 
 WebKit390の既存quotesは2runで583秒/558秒、375は318秒/298秒。math-reports等も広く遅く、PNG/geometryの差だけでは説明できない。DPR3/2や資源負荷の寄与は未確定。2worker・全6条件・DPR・操作・assertion・geometry562・PNG114・成功trace0・30分job上限を維持し、長時間のWebKit2条件を先行する実行queueのみ変更した。元indexによるID/port割当と集約順を維持し、全6条件exactly onceを単体契約で検査。時間内完走を順序変更だけで保証しない。tap/clickの既存actionability/実touch確認を変えず、stage別入力wall時間/count/maxを追加測定する。
+
+## 本人承認後の3worker検証（2026-10-26 11:49 JST）
+同じ30分jobで3workerとする次善策を本人が了承した。先行run40255569307ではWebKit3901480.8秒/375930.2秒で完走した一方、後続Chromium touch2条件が未完となり、順序変更だけでは足りなかった。全条件/DPR/期待値/PNG/geometry/trace/単一job上限は維持し、資源並列数だけ3へ変更する。元index port/集約順と全6一度ずつの契約を保ち、CPU数/利用可能CPU/host memory/load/cgroup制約/Node usageを開始終了に記録する。Node usageはbrowser子processの使用量を含まず、host観測からCPU不足を断定しない。3workerでの完走も従来遅延の根本原因解消を意味しない。前runの失敗はPR本文とLOGに保持する。

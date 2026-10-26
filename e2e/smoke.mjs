@@ -7,11 +7,12 @@ import { performance } from 'node:perf_hooks';
 import assert from 'node:assert/strict';
 import { scenarios, scenarioPort, executionOrder } from './scenario-config.mjs';
 import { validateCoverage } from './ci-contract.mjs';
+import { runtimeResources } from './runtime-resources.mjs';
 process.chdir(fileURLToPath(new URL('../', import.meta.url)));
 const output = 'gui-evidence';
 await mkdir(output, { recursive: true });
 const started = performance.now();
-const summary = { schemaVersion: 3, status: 'running', startedAt: new Date().toISOString(), concurrency: 2, executionOrder: executionOrder.map(index => scenarios[index].id), workers: [], scenarios: [], checks: [], errors: [] };
+const summary = { schemaVersion: 3, status: 'running', startedAt: new Date().toISOString(), concurrency: 3, resourcesAtStart: runtimeResources(), executionOrder: executionOrder.map(index => scenarios[index].id), workers: [], scenarios: [], checks: [], errors: [] };
 const persist = () => writeFile(output + '/provenance.json', JSON.stringify(summary, null, 2) + '\n');
 let next = 0;
 async function runWorker() {
@@ -46,7 +47,7 @@ try {
   summary.servedIdentity = { sha: summary.sha, branch: process.env.PR_BRANCH || execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { encoding: "utf8" }).trim(), run: process.env.GITHUB_RUN_ID || "local", attempt: process.env.GITHUB_RUN_ATTEMPT || "1" };
   await writeFile("dist-pages/__gui_provenance.json", JSON.stringify(summary.servedIdentity) + "\n");
   await persist();
-  const workers = await Promise.allSettled([runWorker(), runWorker()]);
+  const workers = await Promise.allSettled([runWorker(), runWorker(), runWorker()]);
   assert.ok(workers.every(worker => worker.status === "fulfilled"), "Worker orchestration failure: " + workers.filter(worker => worker.status === "rejected").map(worker => String(worker.reason)).join("; "));
   summary.workers.sort((a,b) => scenarios.findIndex(s=>s.id===a.id) - scenarios.findIndex(s=>s.id===b.id));
   assert.ok(summary.workers.every(worker => worker.status === 'passed'), 'One or more scenario workers failed; inspect each worker evidence');
@@ -64,5 +65,6 @@ try {
   // Full per-worker records live once in their own directories, not duplicated in aggregate JSON.
   summary.workers = summary.workers.map(({ record, ...worker }) => ({ ...worker, evidence: worker.id + '/provenance.json', ...(record ? { checkCount: record.checks.length } : {}) }));
   summary.finishedAt = new Date().toISOString();
+  summary.resourcesAtEnd = runtimeResources();
   await persist();
 }

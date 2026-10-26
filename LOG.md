@@ -13,6 +13,8 @@
 - 全GUI再検証: run40251667766も30分cancelled。Chromium narrow390の既存999不在検査が生成UUID中999へ衝突した試験誤判定を独立確認、厳密metadata除外と両側根拠値完全比較へ修正しnegative controlを追加。WK390の既存stage遅延は原因未確定。2worker/全6条件/DPR/検査/30分を保持してWK先行queueと入力時間計測を追加し、次の最終HEADで再検証。[詳細](docs/agent/formula-report-audit-comparison-export.md)。
 - 安定化検証: 全2006単体/86files（既存1937＋出力58＋試験negative control11）成功・失敗/skip0、worker2・191.79秒。lint/型/構文成功。local契約は既知100ms起動fixtureのみ失敗を保持。独立担当が11対照/queue契約を確認、製品hash不変更。
 - 試験修正後native確認: Chromium non-touch390の全151検査/93geometryを同一製品buildで再実行して完走、errors0・exit0。既存sourceAudit誤判定箇所を含めた全経路を確認。正式6条件/30分内完走とは別に扱う。
+- 3worker承認: 2026-10-26 11:49 JST、本人の「よいです」により同じjob/30分/全検査を維持する3worker案を承認。先行2worker run40255569307は両WebKit/desktop/narrow完走だがtouch2条件未完、644/912検査・405/562geometry・PNG83/114、artifact12623158459 digest `5c18fe88458da5208390f4d618e31655f8f06c2b0684f04175f97d8c6bdc8df8`/HEAD照合済み。失敗を消さず、3workerとCPU/memory/worker時刻記録を追加。製品・画面DPR・検査数・上限不変更、時間内完走/遅延根因解消は未確認として次HEADを検証する。
+- 承認後最終local確認: 全2008単体/86files（既存1937＋機能58＋試験安定化13）成功・失敗/skip0、worker2・330.42秒。対象lint/型/独立13契約成功、新P0〜P2なし。local100ms契約fixtureは失敗として保持し、新HEAD実CIで37件を別照合する。
 - 残余: 実機Safari/VoiceOver/OS文字拡大未検証。PR #85 初回選択位置ずれ原因未特定を維持。数学的証明/真正性/変更理由/原子的外部一致を保証しない。
 
 ## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）
