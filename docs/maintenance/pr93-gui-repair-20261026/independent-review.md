@@ -152,3 +152,13 @@ CSS overrideなしの実製品候補 `/tmp/pr93-timing-candidate390-r1.json.trac
 `/tmp/pr93-timing-candidate375-r1.json` を独立再読。2026-10-26T07:50:26.074Z開始、07:50:50.133Z終了、status failed。最初のgotoは終了したが、fixture準備中の `page.reload` がload待機10000ms上限で失敗（単調時計16379.156→26431.294ms）。events/checksはともに空であり、0/76 activation・0/13 quote検査。pageerror配列が空でも成功ではない。
 
 375の修正後操作時間は未取得として扱い、390の改善で代替しない。原因UNKNOWN、失敗JSON/traceを保持し、再試行成功だけへの置換はしない。正式6条件CIは次の受入ゲートであり、現時点の全体PASS/マージ推奨YESは不可。本独立レビュー文書はここでfreezeし、最終HEAD CI・成果物の後続監査は別の追跡結果として親担当へ報告する。
+
+## 正式CI第1回成果物の独立監査（17:26 JST）
+
+承認された文書追記として、run `40289595913` attempt `1`、実装HEAD `4c30fd663839c30daa297bdefa480100086379d0` の成果物を監査した。ZIP `/tmp/pr93-repair-40289595913.zip` の実SHA-256を再計算し、`4f6634ee472ced4335a793c5429e3370201041855681c3629a2e8031ffd33ba7`、37,678,740 bytesで担当が取得したAPI digest/sizeと一致。API応答自体の取得は親担当、実ZIP再計算と展開内容照合は本レビュー担当が行った。
+
+6条件のprovenance全件でstatus passed、errors 0、SHA/branch/run/attemptとbrowserが取得したservedIdentityが一致。検査数はdesktop153、non-touch390 152、touch390 153、touch375 153、WebKit390 153、WebKit375 154、合計918。geometry checkpointは合計562、実PNG114、trace ZIP0。旧912に追加6件で、既存geometry/PNG件数は維持。全6条件が成功した実CIであり、ローカル診断の代替判定ではない。
+
+unit.logは87 files・2011 tests成功、ci-contract.logは39成功/0失敗/0skip。ci-outcomes.jsonのunit/lint/types/normal_build/pages_build/guiを含む全段階success、failedStages空。3worker契約をroot provenanceで確認。GUI単調時計durationは1102.896秒（18分22.896秒）、08:05:32.917Z〜08:23:55.813Z。これはGUI処理時間であり、job全体の時間と混同しない。
+
+この実装HEADについて正式GUI受入数値は満たされた。今後の文書確定commitは別HEADとなるため、最終HEADのCI再実行と成果物照合を引き続き必要とする。実機Safari/VoiceOver/実OS文字拡大は未検証。375局所reload失敗や旧CI失敗を削除・修正済みへの言い換えはしない。本監査範囲で新規P0〜P2指摘なし。

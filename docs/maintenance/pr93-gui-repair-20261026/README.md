@@ -63,3 +63,7 @@ CSS後のcandidate assets: JS `7306c56f8fe4abd53943f2c7d9de26fd35f16525f1a710dc5
 ## 最終CSS候補のnative回帰
 
 [overflow-final-native-summary.json](overflow-final-native-summary.json): 6条件×2ID×両テーマ×文字100/200%の48 layout成功、12 fixtureのsingle→nested→source→nested→single 60 phase成功、pageerror0。全文・44px・focus・保存bytes不変。旧CSSのnested filter省略期待は文字100%でも失敗するnegative controlを保持。独立担当は実操作を代行したのではなく、全48/60証拠とviewport矩形・SHAを独立照合した。正式6条件全シナリオの代替ではない。
+
+## 実装HEADの正式CI
+
+[formal-ci-40289595913.json](formal-ci-40289595913.json) に実装HEAD `4c30fd66…` の全量成功を記録。918/562/114/trace0、単体2011、契約39、全前段成功。GUI18分22.896秒、job21分09秒。ZIP/API SHA一致と6条件のserved identityを確認。文書追記HEADは別CIで再検証し、PR/Issue最終Checksを参照する。この記録を未来HEADの検証済み表明としない。

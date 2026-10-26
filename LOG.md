@@ -14,6 +14,15 @@
 - 最終CSSの局所native: 同じ6条件/2ID/両theme/100・200%で48/48 layout、単一→二重→三重→二重→単一の60/60 backdrop phase成功、pageerror0。旧CSSの同じnested none期待は100%でもRED。独立担当が結果・矩形・hashを読み直し、新規P0〜P2なし（静的/証拠読解/独立unitの範囲）。最終HEADの正式CIは未確認で、局所成功や旧HEADの結果を流用しない。結果は以下の追記と最終PR Checks/Issueへ記録する。
 - 証拠/設計/残余: [今回の調査索引](docs/maintenance/pr93-gui-repair-20261026/README.md)、[横超過](docs/maintenance/pr93-gui-repair-20261026/overflow.md)、[時間診断](docs/maintenance/pr93-gui-repair-20261026/webkit-timing.md)、[独立レビュー](docs/maintenance/pr93-gui-repair-20261026/independent-review.md)。実機Safari/VoiceOver/OS文字拡大・背景化、WebKitの低層原因、PR85初回選択位置問題は保証外。最終CI受入未達ならPARTIAL/マージNOを維持。[Issue92](https://github.com/tetsujisugimori-coder/calculator-memo/issues/92) / [Draft PR93](https://github.com/tetsujisugimori-coder/calculator-memo/pull/93)、マージ/公開は人間判断。
 
+### 修復実装HEADの正式CI確認（2026-10-26 17:26 JST）
+
+- HEAD `4c30fd663839c30daa297bdefa480100086379d0` / tree `75a14724494c5cbb3e847d4201b2d5d8936efe6d`、[run40289595913 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40289595913) は成功。単体2011/87files、契約39、lint/型/通常・Pages build成功。ローカル100ms fixture失敗は削除せず、正式Node22.13.0で同39期待値が成功したことを区別する。
+- 全6条件GUI918/918（旧912＋新6）、geometry562/562、PNG114/114、trace0、3worker。検査/geometryはdesktop153/95、non-touch390152/93、touch390153/93、touch375153/93、WebKit390153/93、WebKit375154/95。全mobile1101実touchを維持。
+- job 08:02:54–08:24:03 UTC＝21分09秒、GUI単調時計1102.896秒＝18分22.896秒。既存30分上限内、前回PR91の24分16.672秒よりGUIは353.776秒短いが、別HEAD/runの参考比較であり恒常性能保証ではない。
+- WebKit390の旧quotes集約と同範囲の4stage合算は717.9→256.700秒、同186tap461.6→126.504秒。375は391.9→157.510秒、203.7→58.036秒。単独診断と3worker正式測定の環境を混同しない。390全worker1102.834秒、375713.070秒。低層待機原因UNKNOWNとローカル375開始前timeoutは保持。
+- [artifact12636514116](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40289595913/artifacts/12636514116)、37,678,740 bytes、実ZIP SHA-256 `4f6634ee472ced4335a793c5429e3370201041855681c3629a2e8031ffd33ba7` がAPI digest一致。全条件HEAD/run/attempt/served identity一致。[機械記録](docs/maintenance/pr93-gui-repair-20261026/formal-ci-40289595913.json)。ZIPにはserved identity/build logを含むがbuild asset全bytesは含まないため、ローカルasset SHAと同一の測定とは称しない。
+- この追記は実装HEADの結果であり、文書追記commit自身の正式CI成功は先取りしない。最終文書HEADを再度全量検証し、PR/Issueの最終Checks・成果物照合へ記録する。Draft維持、マージと公開は行わない。
+
 ## 2026-10-26 JST: 固定点検記録の2時点比較結果Markdown出力（Issue #92）
 
 - 着手: PR #91 merged、最新main `2a91599fa8454e097d2eca3a5d552f115da68819` を確認。既存clean worktreeを保持し、別worktree / `feat/audit-comparison-markdown-export`。open/関連closedの重複確認後 [Issue #92](https://github.com/tetsujisugimori-coder/calculator-memo/issues/92) を実作成。
