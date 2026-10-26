@@ -5,18 +5,18 @@ import { createWriteStream } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
 import assert from 'node:assert/strict';
-import { scenarios, scenarioPort } from './scenario-config.mjs';
+import { scenarios, scenarioPort, executionOrder } from './scenario-config.mjs';
 import { validateCoverage } from './ci-contract.mjs';
 process.chdir(fileURLToPath(new URL('../', import.meta.url)));
 const output = 'gui-evidence';
 await mkdir(output, { recursive: true });
 const started = performance.now();
-const summary = { schemaVersion: 3, status: 'running', startedAt: new Date().toISOString(), concurrency: 2, workers: [], scenarios: [], checks: [], errors: [] };
+const summary = { schemaVersion: 3, status: 'running', startedAt: new Date().toISOString(), concurrency: 2, executionOrder: executionOrder.map(index => scenarios[index].id), workers: [], scenarios: [], checks: [], errors: [] };
 const persist = () => writeFile(output + '/provenance.json', JSON.stringify(summary, null, 2) + '\n');
 let next = 0;
 async function runWorker() {
   while (next < scenarios.length) {
-    const index = next++, scenario = scenarios[index];
+    const index = executionOrder[next++], scenario = scenarios[index];
     const directory = output + '/' + scenario.id;
     await mkdir(directory, { recursive: true });
     const start = performance.now();

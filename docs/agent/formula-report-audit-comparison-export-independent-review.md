@@ -33,3 +33,6 @@
 独立担当が差分を再確認したところ、比較/失効/保存契約の変更はなく、親の `.formula-report .modal-actions` のwrapと既存button min-height44pxを再利用する最小修正だった。独立9件＋実アプリUI16件＝25件、2 files成功、失敗/skip0、13.92秒。diff-check成功。新規P0〜P3残件なし。寸法や実画面の最終PASSは担当の実ブラウザ再検証結果に限定し、本jsdom実行だけで保証しない。
 
 更新後UI SHA-256: `8acf1589617abbd3a26815b0084d510267e1b15a2a23d9257dca4ce3f0e1f081`。builder SHA-256は上記から不変。
+
+## CI試験安定化の独立追補（2026-10-26 JST）
+別担当が実CIのUUID `...-999d-...` 衝突をログから確認し、厳密metadata除外＋両側detail完全比較を実装・再レビュー。11件のnegative controlでUUID/日時は計算値と混同せず、計算値999混入・余計な除外内容を拒否した。2workerのWebKit先行queueは全6条件一度ずつ、元index port/集約順、検査/geometry/PNG/trace/上限不変更を確認。対象eslint/構文/diff確認成功。遅延原因は未確定、実CI時間内完走は別証拠を要する。

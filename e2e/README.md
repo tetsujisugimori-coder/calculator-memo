@@ -629,3 +629,5 @@ The existing six contexts each add one explicit A/B comparison of distinct, chec
 
 ## Issue #92 比較結果Markdown出力
 既存6条件の固定点検記録比較に、同一プレビュー/clipboard引数/native download bytes、コピー/生成失敗、非同期コピー中の実別ページstorage通知、0件比較不能の出力と入替失効を追加する。合成clipboard sinkはOSクリップボードの権限試験ではない。downloadは実ブラウザのファイルbytesを照合するがOSでの保存完了を保証しない。両テーマCSS200%、focus、保存原本非変更を含む。既存検査を削除せず、geometry562/PNG114/成功trace0/30分上限を維持する。実測件数と最終HEAD結果はLOG/PRで確認する。
+
+Issue #92 CI follow-up: the same two workers now schedule WebKit conditions first; original scenario indices still define ports and final report order. No condition, DPR, check, touch action, geometry, screenshot or timeout is removed. Input wall-time counters aid diagnosis. The historical source sentinel assertion excludes only strictly validated identifier/date paragraphs and verifies every selected snapshot calculation field exactly; negative controls reject leaked values and malformed exclusions. UUID/date digits are not calculation values.

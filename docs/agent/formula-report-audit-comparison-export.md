@@ -43,3 +43,11 @@ worker2で同一の全1995件/85files（既存1937＋今回58）成功、失敗/
 最終UI版の全1995件/85filesは同じworker2・5秒上限で再実行し、223.42秒、失敗/skip0。出力builder SHA-256 `24a9ff7f5933b8593e4e3a18031d4ff6318524d9dec887a76f795a4ef0048ab1`、UI `8acf1589617abbd3a26815b0084d510267e1b15a2a23d9257dca4ce3f0e1f081`、Pages JS `index-DqF1ujqC.js` / `f0fa87e45a098b8c14f71292a5d01b6946b9142bf0c3b9d1cfb3f7f98e852afb` を最終局所GUI対象として固定した。
 
 最終Pages buildの局所実GUIはChromium141のdesktop1365/non-touch390/touch390/touch375、WebKit26.0のtouch390/touch375の既存6条件で各11群、計66成功、各mobile65実tap、pageerror0、全process exit0。プレビュー/copy/native .md bytes同一、両theme/CSS200/focus/44px操作/別page storage/非破壊性を確認。clipboard成功・失敗は注入sinkでありOS許諾未検証。正式全GUIは24群追加の912検査、geometry562、PNG114、成功trace0、30分上限を維持し最終HEADで別照合する。 局所最終runはWebKit390が09:04:29〜09:07:39 JST、残り5条件が09:12:17〜09:16:11 JST。同じ最終製品hashを使用し、初回中断履歴と区別する。
+
+## 2026-10-26 JST: 全GUI再検証で確認した試験誤判定と長尾対策
+
+製品変更なしのHEAD `ebe343753f2d1bcacc79499f95a2584ba4cb5f7b` / run40251667766 attempt1も30分job上限でcancelled。artifact12620839604のZIP SHA-256 `d3ff7d267b55c1235eaaba0c310e4867d5671cf841b97fbb0c07b4f1e0e3e3b1` はAPIと一致、HEAD/run/attemptも一致。4条件完走、Chromium non-touch390は既存検査失敗、WebKit390は既存dependency-graph-limit-fallbackまで100検査で未完。成功とは扱わない。
+
+独立診断でChromium失敗は `not.toContainText("999")` が計算値ではなく生成UUID `cf886864-22dd-4ace-999d-858cfab8e426` に一致したことを確認。根拠値混入ではない。第一希望は検査対象の意味を正確にすること：厳密な識別・日時paragraphのみを全文sentinel検査から除外し、開いた両側保存記録detailの式/モード/順序/実入力参照元/内部値/表示値をfixture snapshotと完全一致で検査する。UUIDや日時に999があっても通り、計算値999や除外paragraphへの余分な999は失敗するnegative controlを追加。UUID生成のmock固定という次善策は実製品経路を変えるため不採用。製品・比較判定・保存形式に変更なし。
+
+WebKit390の既存quotesは2runで583秒/558秒、375は318秒/298秒。math-reports等も広く遅く、PNG/geometryの差だけでは説明できない。DPR3/2や資源負荷の寄与は未確定。2worker・全6条件・DPR・操作・assertion・geometry562・PNG114・成功trace0・30分job上限を維持し、長時間のWebKit2条件を先行する実行queueのみ変更した。元indexによるID/port割当と集約順を維持し、全6条件exactly onceを単体契約で検査。時間内完走を順序変更だけで保証しない。tap/clickの既存actionability/実touch確認を変えず、stage別入力wall時間/count/maxを追加測定する。

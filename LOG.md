@@ -10,6 +10,9 @@
 - 実GUI: 最終Pages buildの局所実GUIはChromium141のdesktop1365/non-touch390/touch390/touch375、WebKit26.0のtouch390/touch375の既存6条件で各11群、計66成功、各mobile65実tap、pageerror0、全process exit0。プレビュー/copy/native .md bytes同一、両theme/CSS200/focus/44px操作/別page storage/非破壊性を確認。clipboard成功・失敗は注入sinkでありOS許諾未検証。正式全GUIは24群追加の912検査、geometry562、PNG114、成功trace0、30分上限を維持し最終HEADで別照合する。
 - 提出: [Draft PR #93](https://github.com/tetsujisugimori-coder/calculator-memo/pull/93)。CLI pushは認証不足のため認可済みGitHub connectorで同一tree `2877189304554c496dfb905396fff07ea26a969a` を提出。初回remote commit `f5d465842b2ea6edc98e78a3ef917d9ff72ea8b7`、製品差分なしのPR関連付け追記後HEADでも実CIを確認する。正式CI結果はPR Checks/追記コメントを正本として照合し、本文記録commit自身の成功を先取りしない。
 - 正式CI初回: HEAD `0a1cdb58a9369ce78930a73cd06398fe2d8b42d4` / [run40248969572 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40248969572) は30分job上限でcancelled。1995単体/37契約/型/lint/両build成功。Chromium4とWebKit375完走、WebKit390は既存manual-block-referencesの86/152検査で未完・errors0、追加出力検査未到達。PNG100/114、全GUI成功とはしない。既存quotes stageが390で583秒/375で318秒等の広い遅延を観測し、環境負荷の可能性はあるが根本原因未確定。artifact12620372751のZIP実測digest `ec9d081d57de521349bc78a746947132c158c844980ab0db4a71db311d1a328d` とAPI一致、HEAD/run/attempt一致。履歴を保存し、製品・検査・上限を変えずこの記録更新HEADで再検証する。
+- 全GUI再検証: run40251667766も30分cancelled。Chromium narrow390の既存999不在検査が生成UUID中999へ衝突した試験誤判定を独立確認、厳密metadata除外と両側根拠値完全比較へ修正しnegative controlを追加。WK390の既存stage遅延は原因未確定。2worker/全6条件/DPR/検査/30分を保持してWK先行queueと入力時間計測を追加し、次の最終HEADで再検証。[詳細](docs/agent/formula-report-audit-comparison-export.md)。
+- 安定化検証: 全2006単体/86files（既存1937＋出力58＋試験negative control11）成功・失敗/skip0、worker2・191.79秒。lint/型/構文成功。local契約は既知100ms起動fixtureのみ失敗を保持。独立担当が11対照/queue契約を確認、製品hash不変更。
+- 試験修正後native確認: Chromium non-touch390の全151検査/93geometryを同一製品buildで再実行して完走、errors0・exit0。既存sourceAudit誤判定箇所を含めた全経路を確認。正式6条件/30分内完走とは別に扱う。
 - 残余: 実機Safari/VoiceOver/OS文字拡大未検証。PR #85 初回選択位置ずれ原因未特定を維持。数学的証明/真正性/変更理由/原子的外部一致を保証しない。
 
 ## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）

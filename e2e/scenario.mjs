@@ -1,5 +1,6 @@
 // Synthetic-only PR GUI regression harness. Run from the repository root.
 import assert from "node:assert/strict";
+import { assertHistoricalSourceText, expectedHistoricalBlocks } from "./source-evidence-contract.mjs";
 import { exerciseAuditRecordComparison } from "./audit-record-comparison.mjs";
 import { exerciseAuditFixedRecord } from "./audit-fixed-record.mjs";
 import { exerciseAuditStorage } from "./audit-storage.mjs";
@@ -23,7 +24,7 @@ const port = Number(process.env.GUI_PORT);
 assert.ok(Number.isInteger(port) && port >= 1024 && port <= 65535, "Valid isolated preview port required");
 await mkdir(output, { recursive: true });
 const metadata = {
-  schemaVersion: 3, timings: { stages: [], screenshots: [], trace: [] }, screenshotCheckpoints: [], scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
+  schemaVersion: 3, timings: { stages: [], screenshots: [], trace: [], input: {} }, screenshotCheckpoints: [], scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
   expectedSha: process.env.EXPECTED_SHA || null,
   branch: process.env.PR_BRANCH || null, pr: process.env.PR_NUMBER || null,
   run: process.env.GITHUB_RUN_ID || "local", attempt: process.env.GITHUB_RUN_ATTEMPT || "1",
@@ -46,12 +47,19 @@ let currentScenario;
 let activeScenarioRecord;
 // Locator.tap emits touch input; desktop retains mouse clicks. No forced clicks.
 async function activate(locator) {
-  if (currentScenario.hasTouch) {
-    const before = await page.evaluate(() => window.__guiTouchStarts);
-    await locator.tap();
-    await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
-    activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
-  } else await locator.click();
+  const started = performance.now();
+  try {
+    if (currentScenario.hasTouch) {
+      const before = await page.evaluate(() => window.__guiTouchStarts);
+      await locator.tap();
+      await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
+      activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
+    } else await locator.click();
+  } finally {
+    const durationMs = performance.now() - started;
+    const input = metadata.timings.input[metadata.stage] ||= { count: 0, durationMs: 0, maxMs: 0 };
+    input.count += 1; input.durationMs += durationMs; input.maxMs = Math.max(input.maxMs, durationMs);
+  }
 }
 async function assertHorizontalFit(expectedWidth = currentScenario.width) {
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
@@ -643,7 +651,11 @@ async function exerciseFormulaQuotes(prefix) {
   await expect(sourceAudit()).toContainText(comparisonRecord.id);
   await expect(sourceAudit()).toContainText(memo.id);
   await expect(sourceAudit()).toContainText("quote-result");
-  await expect(sourceAudit()).not.toContainText("999");
+  const identityParagraph = sourceAudit().locator('p').filter({ hasText: /^差分ID：/ });
+  await expect(identityParagraph).toHaveCount(1);
+  const timestampParagraphs = sourceAudit().locator('p').filter({ hasText: /^(保存原本取得日時：|元引用日時：)/ });
+  await expect(timestampParagraphs).toHaveCount(2);
+  assertHistoricalSourceText(await sourceAudit().textContent(), await identityParagraph.textContent(), formula.id, await timestampParagraphs.allTextContents());
   for (const theme of ["light", "dark"]) {
     await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
     await assertHorizontalFit();
@@ -654,6 +666,14 @@ async function exerciseFormulaQuotes(prefix) {
     await trigger.focus(); await activate(trigger);
     const detail = page.getByRole("dialog", { name: "出典の保存記録詳細", exact: true });
     await expect(detail).toContainText(side === "比較元" ? record.id : comparisonRecord.id);
+    const expectedRecord = side === "比較元" ? record : comparisonRecord;
+    const observedBlocks = await detail.locator('.evidence-block-values').evaluateAll(nodes => nodes.map(node => {
+      const read = (root, label) => [...root.querySelectorAll('dt')].find(dt => dt.textContent === label)?.nextElementSibling?.textContent;
+      return { position: read(node, '本文順'), execution: read(node, '実行順'), mode: read(node, '計算モード'),
+        expression: read(node, '当時の入力式'), display: read(node, '当時の表示結果'), internal: read(node, '当時の内部結果'),
+        inputs: [...node.querySelectorAll('li')].map(input => ({ source: read(input, '実使用元ID'), value: read(input, '実使用内部値'), position: read(input, '参照元の当時の本文順') })) };
+    }));
+    assert.deepEqual(observedBlocks, expectedHistoricalBlocks(expectedRecord), 'Both selected historical records must retain exact expressions, actual inputs, internal values and display values');
     await assertHorizontalFit();
     await page.keyboard.press("Escape");
     await expect(trigger).toBeFocused();

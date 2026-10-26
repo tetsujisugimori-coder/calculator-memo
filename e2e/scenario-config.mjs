@@ -13,3 +13,8 @@ export function scenarioPort(index) {
   if (!Number.isInteger(index) || index < 0 || index >= scenarios.length) throw new Error('Unknown scenario port index');
   return 4280 + index;
 }
+
+// Start historically long WebKit conditions first without changing coverage or ports.
+// Original indices remain the source of identity, port assignment and report ordering.
+export const executionOrder = scenarios.map((_, index) => index).sort((a, b) =>
+  Number(scenarios[b].engine === "webkit") - Number(scenarios[a].engine === "webkit"));
