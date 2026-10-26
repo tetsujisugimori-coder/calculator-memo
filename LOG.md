@@ -8,6 +8,7 @@
 - 設計: [出力設計](docs/agent/formula-report-audit-comparison-export.md)。builder33/UI16/独立9の計58件成功、独立担当の確認範囲で新規P0〜P3なし。初回hooks lint3件と既存h4順序試験1件は製品側修正、期待値を維持して成功。初回全単体1984/1986成功の既存2timeoutと、local CI契約100ms起動fixtureの失敗を保持し、静穏再実行/最終CIで別照合する。最終CIは未確定。
 - 全単体: 既定並列初回1984/1986、独立9件追加後1994/1995（既存別件5秒timeout）。worker2で同じ全1995件/85files成功・失敗/skip0、初回184.84秒、最終UI版223.42秒。期待値/5秒上限/CI既定並列は不変更。lint/型/通常・Pages build成功、既存chunk警告は保持。正式CIは別に確認する。
 - 実GUI: 最終Pages buildの局所実GUIはChromium141のdesktop1365/non-touch390/touch390/touch375、WebKit26.0のtouch390/touch375の既存6条件で各11群、計66成功、各mobile65実tap、pageerror0、全process exit0。プレビュー/copy/native .md bytes同一、両theme/CSS200/focus/44px操作/別page storage/非破壊性を確認。clipboard成功・失敗は注入sinkでありOS許諾未検証。正式全GUIは24群追加の912検査、geometry562、PNG114、成功trace0、30分上限を維持し最終HEADで別照合する。
+- 提出: [Draft PR #93](https://github.com/tetsujisugimori-coder/calculator-memo/pull/93)。CLI pushは認証不足のため認可済みGitHub connectorで同一tree `2877189304554c496dfb905396fff07ea26a969a` を提出。初回remote commit `f5d465842b2ea6edc98e78a3ef917d9ff72ea8b7`、製品差分なしのPR関連付け追記後HEADでも実CIを確認する。正式CI結果はPR Checks/追記コメントを正本として照合し、本文記録commit自身の成功を先取りしない。
 - 残余: 実機Safari/VoiceOver/OS文字拡大未検証。PR #85 初回選択位置ずれ原因未特定を維持。数学的証明/真正性/変更理由/原子的外部一致を保証しない。
 
 ## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）
