@@ -1,0 +1,2419 @@
+{
+  "scope": "Focused native real CalculatorApp UI, not formal full 912-check CI nor physical Safari",
+  "sourceBefore": "fcada2b90accef0afec1ce0993b122f42b116bb4180ad897450e27c2e804792d",
+  "sourceAfter": "612211c4c5f55adff8b7d4edb24dd7aa60110c2e3f586423054e42dbf21e7b80",
+  "before": {
+    "status": "failed",
+    "startedAt": "2026-10-26T06:54:09.711Z",
+    "finishedAt": "2026-10-26T06:54:30.350Z",
+    "servedAssets": [
+      {
+        "url": "http://127.0.0.1:4395/calculator-memo/assets/index-DqF1ujqC.js",
+        "sha256": "f0fa87e45a098b8c14f71292a5d01b6946b9142bf0c3b9d1cfb3f7f98e852afb"
+      },
+      {
+        "url": "http://127.0.0.1:4395/calculator-memo/assets/index-CmODrOnu.css",
+        "sha256": "8b86a4b07c072908ef95c43ca27d2dd6d6a819b7534f13f9a8777018e4a28e23"
+      }
+    ],
+    "results": [
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 6,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 390,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 372,
+          "client": 352,
+          "nodes": 6,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      }
+    ]
+  },
+  "after": {
+    "status": "passed",
+    "startedAt": "2026-10-26T06:55:40.974Z",
+    "finishedAt": "2026-10-26T07:02:10.924Z",
+    "servedAssets": [
+      {
+        "url": "http://127.0.0.1:4395/calculator-memo/assets/index-pyvqzGKu.js",
+        "sha256": "53e4df16395dfb2e362c6d7358b13d83a2e245dc11e3a6f9b5c69c0f33e8c61c"
+      },
+      {
+        "url": "http://127.0.0.1:4395/calculator-memo/assets/index-BaMopeiA.css",
+        "sha256": "137bf021506b6fedd572ffc642628bafd9e3034c87ccef2d79fa93d0954078f0"
+      }
+    ],
+    "layoutCases": 48,
+    "interactionAndPersistenceFixtures": 12,
+    "results": [
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-desktop-1365px",
+          "engine": "chromium",
+          "width": 1365,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 898,
+          "client": 898
+        },
+        "identity": {
+          "scroll": 850,
+          "client": 850,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 1365,
+          "document": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "body": {
+            "scroll": 1365,
+            "client": 1365
+          },
+          "dialog": {
+            "x": 232.5,
+            "y": 60,
+            "width": 900,
+            "height": 880,
+            "top": 60,
+            "right": 1132.5,
+            "bottom": 940,
+            "left": 232.5
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-narrow-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 1000,
+          "isMobile": false,
+          "hasTouch": false,
+          "deviceScaleFactor": 1
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 70,
+            "width": 390,
+            "height": 930,
+            "top": 70,
+            "right": 390,
+            "bottom": 1000,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "chromium-mobile-375px",
+          "engine": "chromium",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "141.0.7390.37",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 388,
+          "client": 388
+        },
+        "identity": {
+          "scroll": 352,
+          "client": 352,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 390,
+          "document": {
+            "scroll": 390,
+            "client": 390
+          },
+          "body": {
+            "scroll": 390,
+            "client": 390
+          },
+          "dialog": {
+            "x": 0,
+            "y": 59.09375,
+            "width": 390,
+            "height": 784.90625,
+            "top": 59.09375,
+            "right": 390,
+            "bottom": 844,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "exact CI IDs",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "light",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 100,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      },
+      {
+        "scenario": {
+          "id": "webkit-mobile-375px",
+          "engine": "webkit",
+          "width": 375,
+          "height": 667,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 2
+        },
+        "browser": "26.0",
+        "fixture": "long Japanese Latin Unicode/full-width-space ID",
+        "theme": "dark",
+        "percent": 200,
+        "modal": {
+          "scroll": 373,
+          "client": 373
+        },
+        "identity": {
+          "scroll": 337,
+          "client": 337,
+          "nodes": 1,
+          "sha256": "7b1c4f280c18913107cd96e37a3de0ac3e2b5e9684281918bf66f8b87072e645"
+        },
+        "outer": {
+          "viewport": 375,
+          "document": {
+            "scroll": 375,
+            "client": 375
+          },
+          "body": {
+            "scroll": 375,
+            "client": 375
+          },
+          "dialog": {
+            "x": 0,
+            "y": 46.703125,
+            "width": 375,
+            "height": 620.296875,
+            "top": 46.703125,
+            "right": 375,
+            "bottom": 667,
+            "left": 0
+          }
+        },
+        "pageerrors": []
+      }
+    ]
+  },
+  "unit": {
+    "before": {
+      "passed": 0,
+      "failed": 3
+    },
+    "after": {
+      "passed": 3,
+      "failed": 0
+    },
+    "sameExpectations": true
+  },
+  "rawEvidence": {
+    "/tmp/pr93-overflow-native-red/results.json": "802781aa6a2ef4388b74456ad5da43e39c8d2815975487f7aa16f3edeaf057a2",
+    "/tmp/pr93-overflow-native-green/results.json": "f43a9c76167cd6fb233b66607ed07c27418f3036591a0edb1776a5d5f1d8723e",
+    "/tmp/pr93-overflow-green-build-sha256.txt": "f4785dd8c84d33b97528d536176faa9e623b9e5f1da3c81387e291453233cbfb",
+    "/tmp/pr93-overflow-unit-red.log": "f5223bae09b35de2f7a401970e0b9e2e8cdeac61b3e1667454c96b6564b1f5dc",
+    "/tmp/pr93-overflow-unit-green.log": "77b1f0d51e2fe37083e800e4d652d5826c8c9869c91823e511537ab12153256b"
+  },
+  "representativePng": {
+    "overflow-before-chromium390-200.png": {
+      "bytes": 266970,
+      "sha256": "e862df82bf5209cd297961ff690a9c41f2c82521f595fdbd59b393226b80ff28"
+    },
+    "overflow-after-chromium390-200.png": {
+      "bytes": 265972,
+      "sha256": "942b60cafd93e493fbd76b5242bc57ac2e05263843c49dedfdafcc6778b769c4"
+    }
+  }
+}

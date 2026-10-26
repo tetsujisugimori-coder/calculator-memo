@@ -1,5 +1,45 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: PR #93 正式GUI阻害の局所修復と時間診断（Issue #92）
+
+- 基準: 最新main `2a91599fa8454e097d2eca3a5d552f115da68819`、PR #93 / branch `feat/audit-comparison-markdown-export` のHEAD `5cbaf6f74ae15d7afccb73f50c64c0ce0380756c` とclean treeをAPI/fetchで照合し、既存worktreeを保全。旧run40261949353 attempt1のcancelled、770/912検査・487/562geometry・PNG99/114・失敗trace1を維持。ZIP/API digestとHEAD/run/attempt/served identityを再確認。
+- 横超過: Chromium touch390/文字200%の実アプリで同UUIDを用いた局所再現。隣接text node先頭U+3000の行外突出によりmodal390/388・段落372/352となる。既存折返しCSSは有効。全文を単一template literalにする1段落だけの修正で388/388・352/352へ改善。CSSによる隠蔽・切捨て・保存処理変更なし。新unit3件を同一期待値RED→GREEN、独立3件も成功。局所native6条件×2ID×両theme×100/200%=48組成功、全文・44px・開閉/focus・保存bytes不変。
+- 遅延の粒度訂正: 旧186「input」はtap/clickで、旧quotes stageには点検保存/固定記録/2時点比較も含まれる。文字入力・引用単機能の時間とはしない。同build単独引用76tap/13確認は390で356.07秒、375で196.22秒。別反復/準備の10秒timeoutも保持し、未達を成功へ置換しない。
+- 独立trace解析: 390のtap210.135秒中visible/enabled/stable待機186.991秒（89%）。scroll/navigationではなくactionability区間が主。Playwright1.56.1 LinuxのrAF安定確認を一次sourceで確認し、矩形移動retryのログはない。WebKit内部や環境変動の全原因はUNKNOWNを維持。
+- 事前計画9trial: baseline3/3と多重時filter省略3/3は同fixture/保存不変・実操作で成功、同4tap往復中央値5.546→2.186秒。独立traceでもactionability4.265→0.941秒。常時全filter省略は1/3成功・2件goto失敗、子のみ省略は無効、親だけ省略も不安定として不採用。
+- 採用: 単一Modalのblur3pxを保持し、入れ子Modal表示中だけ装飾backdrop filterを省く3行CSS。背景の暗化・fixed/z-index・操作・保存/比較意味論は維持。広いUI再設計・worker増加・検査削減・timeout緩和は行わない。正式既存delete/cancel操作にsingle→nested→singleのstyle/幅/focus/44px/保存不変を各条件1検査追加し、912既存＋6=918、geometry562/PNG114/成功trace0/3workers/30分を維持。
+- 計測: 単調時計でtapの前後、サブstage、観測/保存処理時間を分離。Linux可視子processの生CPUtick/RSSをNode自身と区別し、欠測はnull。診断用成功traceは正式成果物外で解析根拠として保全。新CI契約2件を追加し既存37＋2=39。
+- 全量ローカル: 2011/2011単体・87files成功（旧2008＋新3、worker2、257.39秒）。契約39中38成功/1失敗は既存100ms Node起動fixtureの最初のログ前timeoutで、上限/期待値不変更。lint（41.09秒、警告なし）・型（13.82秒）・通常build（52.31秒）・Pagesbuild（7.33秒）成功。既存chunk警告を維持。正式CIの既定unitと全39契約は別に照合する。[機械記録](docs/maintenance/pr93-gui-repair-20261026/local-validation.json)。
+- 修正版そのものの単独時間対照: WebKit390は同76操作/13確認成功、356.074→269.203秒（局所診断で約24.4%短縮）。独立traceのactionability合計186.991→116.103秒。WebKit375は最初の操作前reloadが10000ms timeoutし0/76・0/13、時間比較不能。失敗を残し、全遅延解消や正式全量PASSとはしない。
+- 最終CSSの局所native: 同じ6条件/2ID/両theme/100・200%で48/48 layout、単一→二重→三重→二重→単一の60/60 backdrop phase成功、pageerror0。旧CSSの同じnested none期待は100%でもRED。独立担当が結果・矩形・hashを読み直し、新規P0〜P2なし（静的/証拠読解/独立unitの範囲）。最終HEADの正式CIは未確認で、局所成功や旧HEADの結果を流用しない。結果は以下の追記と最終PR Checks/Issueへ記録する。
+- 証拠/設計/残余: [今回の調査索引](docs/maintenance/pr93-gui-repair-20261026/README.md)、[横超過](docs/maintenance/pr93-gui-repair-20261026/overflow.md)、[時間診断](docs/maintenance/pr93-gui-repair-20261026/webkit-timing.md)、[独立レビュー](docs/maintenance/pr93-gui-repair-20261026/independent-review.md)。実機Safari/VoiceOver/OS文字拡大・背景化、WebKitの低層原因、PR85初回選択位置問題は保証外。最終CI受入未達ならPARTIAL/マージNOを維持。[Issue92](https://github.com/tetsujisugimori-coder/calculator-memo/issues/92) / [Draft PR93](https://github.com/tetsujisugimori-coder/calculator-memo/pull/93)、マージ/公開は人間判断。
+
+### 修復実装HEADの正式CI確認（2026-10-26 17:26 JST）
+
+- HEAD `4c30fd663839c30daa297bdefa480100086379d0` / tree `75a14724494c5cbb3e847d4201b2d5d8936efe6d`、[run40289595913 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40289595913) は成功。単体2011/87files、契約39、lint/型/通常・Pages build成功。ローカル100ms fixture失敗は削除せず、正式Node22.13.0で同39期待値が成功したことを区別する。
+- 全6条件GUI918/918（旧912＋新6）、geometry562/562、PNG114/114、trace0、3worker。検査/geometryはdesktop153/95、non-touch390152/93、touch390153/93、touch375153/93、WebKit390153/93、WebKit375154/95。全mobile1101実touchを維持。
+- job 08:02:54–08:24:03 UTC＝21分09秒、GUI単調時計1102.896秒＝18分22.896秒。既存30分上限内、前回PR91の24分16.672秒よりGUIは353.776秒短いが、別HEAD/runの参考比較であり恒常性能保証ではない。
+- WebKit390の旧quotes集約と同範囲の4stage合算は717.9→256.700秒、同186tap461.6→126.504秒。375は391.9→157.510秒、203.7→58.036秒。単独診断と3worker正式測定の環境を混同しない。390全worker1102.834秒、375713.070秒。低層待機原因UNKNOWNとローカル375開始前timeoutは保持。
+- [artifact12636514116](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40289595913/artifacts/12636514116)、37,678,740 bytes、実ZIP SHA-256 `4f6634ee472ced4335a793c5429e3370201041855681c3629a2e8031ffd33ba7` がAPI digest一致。全条件HEAD/run/attempt/served identity一致。[機械記録](docs/maintenance/pr93-gui-repair-20261026/formal-ci-40289595913.json)。ZIPにはserved identity/build logを含むがbuild asset全bytesは含まないため、ローカルasset SHAと同一の測定とは称しない。
+- この追記は実装HEADの結果であり、文書追記commit自身の正式CI成功は先取りしない。最終文書HEADを再度全量検証し、PR/Issueの最終Checks・成果物照合へ記録する。Draft維持、マージと公開は行わない。
+
+## 2026-10-26 JST: 固定点検記録の2時点比較結果Markdown出力（Issue #92）
+
+- 着手: PR #91 merged、最新main `2a91599fa8454e097d2eca3a5d552f115da68819` を確認。既存clean worktreeを保持し、別worktree / `feat/audit-comparison-markdown-export`。open/関連closedの重複確認後 [Issue #92](https://github.com/tetsujisugimori-coder/calculator-memo/issues/92) を実作成。
+- 第一希望: 同じmetadata/result/世代を使う純粋Markdown builderと既存出力helperを再利用。出力時の再比較/暗黙取得という次善策は世代混同と非明示操作を招くため不採用。表示状態と情報不足をそのまま保持し、0件を一致へ格上げしない。
+- 保存保護: 本文/固定記録/snapshot/原本/確認履歴/schema/容量/engineを不変更。選択/入替/本文/対象/取得世代/storage/再比較で失効し、非同期コピーの古い完了を拒否する。将来の本文挿入は対象外。
+- 設計: [出力設計](docs/agent/formula-report-audit-comparison-export.md)。builder33/UI16/独立9の計58件成功、独立担当の確認範囲で新規P0〜P3なし。初回hooks lint3件と既存h4順序試験1件は製品側修正、期待値を維持して成功。初回全単体1984/1986成功の既存2timeoutと、local CI契約100ms起動fixtureの失敗を保持し、静穏再実行/最終CIで別照合する。最終CIは未確定。
+- 全単体: 既定並列初回1984/1986、独立9件追加後1994/1995（既存別件5秒timeout）。worker2で同じ全1995件/85files成功・失敗/skip0、初回184.84秒、最終UI版223.42秒。期待値/5秒上限/CI既定並列は不変更。lint/型/通常・Pages build成功、既存chunk警告は保持。正式CIは別に確認する。
+- 実GUI: 最終Pages buildの局所実GUIはChromium141のdesktop1365/non-touch390/touch390/touch375、WebKit26.0のtouch390/touch375の既存6条件で各11群、計66成功、各mobile65実tap、pageerror0、全process exit0。プレビュー/copy/native .md bytes同一、両theme/CSS200/focus/44px操作/別page storage/非破壊性を確認。clipboard成功・失敗は注入sinkでありOS許諾未検証。正式全GUIは24群追加の912検査、geometry562、PNG114、成功trace0、30分上限を維持し最終HEADで別照合する。
+- 提出: [Draft PR #93](https://github.com/tetsujisugimori-coder/calculator-memo/pull/93)。CLI pushは認証不足のため認可済みGitHub connectorで同一tree `2877189304554c496dfb905396fff07ea26a969a` を提出。初回remote commit `f5d465842b2ea6edc98e78a3ef917d9ff72ea8b7`、製品差分なしのPR関連付け追記後HEADでも実CIを確認する。正式CI結果はPR Checks/追記コメントを正本として照合し、本文記録commit自身の成功を先取りしない。
+- 正式CI初回: HEAD `0a1cdb58a9369ce78930a73cd06398fe2d8b42d4` / [run40248969572 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40248969572) は30分job上限でcancelled。1995単体/37契約/型/lint/両build成功。Chromium4とWebKit375完走、WebKit390は既存manual-block-referencesの86/152検査で未完・errors0、追加出力検査未到達。PNG100/114、全GUI成功とはしない。既存quotes stageが390で583秒/375で318秒等の広い遅延を観測し、環境負荷の可能性はあるが根本原因未確定。artifact12620372751のZIP実測digest `ec9d081d57de521349bc78a746947132c158c844980ab0db4a71db311d1a328d` とAPI一致、HEAD/run/attempt一致。履歴を保存し、製品・検査・上限を変えずこの記録更新HEADで再検証する。
+- 全GUI再検証: run40251667766も30分cancelled。Chromium narrow390の既存999不在検査が生成UUID中999へ衝突した試験誤判定を独立確認、厳密metadata除外と両側根拠値完全比較へ修正しnegative controlを追加。WK390の既存stage遅延は原因未確定。2worker/全6条件/DPR/検査/30分を保持してWK先行queueと入力時間計測を追加し、次の最終HEADで再検証。[詳細](docs/agent/formula-report-audit-comparison-export.md)。
+- 安定化検証: 全2006単体/86files（既存1937＋出力58＋試験negative control11）成功・失敗/skip0、worker2・191.79秒。lint/型/構文成功。local契約は既知100ms起動fixtureのみ失敗を保持。独立担当が11対照/queue契約を確認、製品hash不変更。
+- 試験修正後native確認: Chromium non-touch390の全151検査/93geometryを同一製品buildで再実行して完走、errors0・exit0。既存sourceAudit誤判定箇所を含めた全経路を確認。正式6条件/30分内完走とは別に扱う。
+- 3worker承認: 2026-10-26 11:49 JST、本人の「よいです」により同じjob/30分/全検査を維持する3worker案を承認。先行2worker run40255569307は両WebKit/desktop/narrow完走だがtouch2条件未完、644/912検査・405/562geometry・PNG83/114、artifact12623158459 digest `5c18fe88458da5208390f4d618e31655f8f06c2b0684f04175f97d8c6bdc8df8`/HEAD照合済み。失敗を消さず、3workerとCPU/memory/worker時刻記録を追加。製品・画面DPR・検査数・上限不変更、時間内完走/遅延根因解消は未確認として次HEADを検証する。
+- 承認後最終local確認: 全2008単体/86files（既存1937＋機能58＋試験安定化13）成功・失敗/skip0、worker2・330.42秒。対象lint/型/独立13契約成功、新P0〜P2なし。local100ms契約fixtureは失敗として保持し、新HEAD実CIで37件を別照合する。
+- 残余: 実機Safari/VoiceOver/OS文字拡大未検証。PR #85 初回選択位置ずれ原因未特定を維持。数学的証明/真正性/変更理由/原子的外部一致を保証しない。
+
 ## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）
 
 - 着手: 最新PR HEAD `eae5cc1882bb1f97647d63cf6f5b11eb28993d5c`、main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f`、Draft/未マージを確認。専用clean cloneで同じ `feat/audit-record-comparison` を継続し既存作業を保護。

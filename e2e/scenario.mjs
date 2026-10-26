@@ -1,5 +1,7 @@
 // Synthetic-only PR GUI regression harness. Run from the repository root.
 import assert from "node:assert/strict";
+import { runtimeResources } from "./runtime-resources.mjs";
+import { assertHistoricalSourceText, expectedHistoricalBlocks } from "./source-evidence-contract.mjs";
 import { exerciseAuditRecordComparison } from "./audit-record-comparison.mjs";
 import { exerciseAuditFixedRecord } from "./audit-fixed-record.mjs";
 import { exerciseAuditStorage } from "./audit-storage.mjs";
@@ -23,11 +25,11 @@ const port = Number(process.env.GUI_PORT);
 assert.ok(Number.isInteger(port) && port >= 1024 && port <= 65535, "Valid isolated preview port required");
 await mkdir(output, { recursive: true });
 const metadata = {
-  schemaVersion: 3, timings: { stages: [], screenshots: [], trace: [] }, screenshotCheckpoints: [], scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
+  schemaVersion: 3, timings: { stages: [], screenshots: [], trace: [], input: {}, activations: [] }, screenshotCheckpoints: [], scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
   expectedSha: process.env.EXPECTED_SHA || null,
   branch: process.env.PR_BRANCH || null, pr: process.env.PR_NUMBER || null,
   run: process.env.GITHUB_RUN_ID || "local", attempt: process.env.GITHUB_RUN_ATTEMPT || "1",
-  startedAt: new Date().toISOString(), node: process.version,
+  startedAt: new Date().toISOString(), node: process.version, resourcesAtStart: runtimeResources(),
   runner: { os: process.env.RUNNER_OS, image: process.env.ImageOS, version: process.env.ImageVersion },
   syntheticDataOnly: true, productionDeployed: false,
   method: "Playwright Chromium and WebKit on loopback-only Pages preview; mobile/touch emulation, not physical iPhone Safari",
@@ -46,12 +48,29 @@ let currentScenario;
 let activeScenarioRecord;
 // Locator.tap emits touch input; desktop retains mouse clicks. No forced clicks.
 async function activate(locator) {
-  if (currentScenario.hasTouch) {
-    const before = await page.evaluate(() => window.__guiTouchStarts);
-    await locator.tap();
-    await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
-    activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
-  } else await locator.click();
+  const started = performance.now();
+  const timing = { scenario: currentScenario.id, stage: metadata.stage, operation: currentScenario.hasTouch ? "tap" : "click", startMs: started };
+  try {
+    if (currentScenario.hasTouch) {
+      const before = await page.evaluate(() => window.__guiTouchStarts);
+      timing.dispatchStartMs = performance.now();
+      await locator.tap();
+      timing.dispatchEndMs = performance.now();
+      await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
+      timing.touchObservedMs = performance.now();
+      activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
+    } else {
+      timing.dispatchStartMs = performance.now();
+      await locator.click();
+      timing.dispatchEndMs = performance.now();
+    }
+  } finally {
+    timing.endMs = performance.now();
+    const durationMs = timing.endMs - started;
+    metadata.timings.activations.push({ ...timing, durationMs });
+    const input = metadata.timings.input[metadata.stage] ||= { count: 0, durationMs: 0, maxMs: 0 };
+    input.count += 1; input.durationMs += durationMs; input.maxMs = Math.max(input.maxMs, durationMs);
+  }
 }
 async function assertHorizontalFit(expectedWidth = currentScenario.width) {
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
@@ -87,6 +106,20 @@ async function assertHorizontalFit(expectedWidth = currentScenario.width) {
       }
       assert.ok(size.scroll <= size.client + 1, "Synthetic modal content must not be horizontally clipped: " + JSON.stringify(size));
     }
+  }
+}
+async function assertModalBackdropContract(expectedCount) {
+  const observed = await page.locator(".modal-backdrop").evaluateAll(elements => elements.map(element => {
+    const style = getComputedStyle(element), rect = element.getBoundingClientRect();
+    return { filter: style.backdropFilter, position: style.position, zIndex: style.zIndex,
+      nested: Boolean(element.parentElement.closest(".modal-backdrop")), hasNested: Boolean(element.querySelector(".modal-backdrop")),
+      left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: innerWidth, height: innerHeight };
+  }));
+  assert.equal(observed.length, expectedCount, "Exercise the intended single/nested modal state");
+  for (const item of observed) {
+    assert.equal(item.filter, item.nested || item.hasNested ? "none" : "blur(3px)", "Only nested modal stacks suppress backdrop filters");
+    assert.equal(item.position, "fixed"); assert.equal(item.zIndex, "100");
+    assert.ok(item.left >= -1 && item.right <= item.width + 1 && item.top >= -1 && item.bottom <= item.height + 1, "Removing a filter containing block must not move its nested backdrop outside the viewport");
   }
 }
 async function exerciseFormulaLibrary(prefix) {
@@ -132,8 +165,24 @@ async function exerciseFormulaLibrary(prefix) {
   await assertHorizontalFit();
   await screenshot(prefix + "-formula-library-controls", currentScenario.width, false, true);
   await activate(dialog().getByRole("button", { name: "Synthetic renamed formula", exact: true }));
-  await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
-  await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true }));
+  await assertModalBackdropContract(1);
+  const beforeNestedModal = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  const deleteTrigger = dialog().getByRole("button", { name: "登録式を削除", exact: true });
+  await deleteTrigger.focus();
+  await activate(deleteTrigger);
+  await assertModalBackdropContract(2);
+  await assertHorizontalFit();
+  const deleteCancel = page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true });
+  if (currentScenario.hasTouch) {
+    const target = await deleteCancel.boundingBox();
+    assert.ok(target && target.width >= 44 && target.height >= 44, "Nested modal cancel retains its 44px touch target");
+  }
+  await activate(deleteCancel);
+  await assertModalBackdropContract(1);
+  await expect(deleteTrigger).toBeFocused();
+  await assertHorizontalFit();
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeNestedModal);
+  await passed(prefix + ": single nested and restored modal filters preserve viewport geometry focus touch targets and saved state");
   await expect(dialog()).toContainText("price * quantity + tax");
   await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
   await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "削除する", exact: true }));
@@ -643,7 +692,11 @@ async function exerciseFormulaQuotes(prefix) {
   await expect(sourceAudit()).toContainText(comparisonRecord.id);
   await expect(sourceAudit()).toContainText(memo.id);
   await expect(sourceAudit()).toContainText("quote-result");
-  await expect(sourceAudit()).not.toContainText("999");
+  const identityParagraph = sourceAudit().locator('p').filter({ hasText: /^差分ID：/ });
+  await expect(identityParagraph).toHaveCount(1);
+  const timestampParagraphs = sourceAudit().locator('p').filter({ hasText: /^(保存原本取得日時：|元引用日時：)/ });
+  await expect(timestampParagraphs).toHaveCount(2);
+  assertHistoricalSourceText(await sourceAudit().textContent(), await identityParagraph.textContent(), formula.id, await timestampParagraphs.allTextContents());
   for (const theme of ["light", "dark"]) {
     await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = "200%"; }, theme);
     await assertHorizontalFit();
@@ -654,6 +707,14 @@ async function exerciseFormulaQuotes(prefix) {
     await trigger.focus(); await activate(trigger);
     const detail = page.getByRole("dialog", { name: "出典の保存記録詳細", exact: true });
     await expect(detail).toContainText(side === "比較元" ? record.id : comparisonRecord.id);
+    const expectedRecord = side === "比較元" ? record : comparisonRecord;
+    const observedBlocks = await detail.locator('.evidence-block-values').evaluateAll(nodes => nodes.map(node => {
+      const read = (root, label) => [...root.querySelectorAll('dt')].find(dt => dt.textContent === label)?.nextElementSibling?.textContent;
+      return { position: read(node, '本文順'), execution: read(node, '実行順'), mode: read(node, '計算モード'),
+        expression: read(node, '当時の入力式'), display: read(node, '当時の表示結果'), internal: read(node, '当時の内部結果'),
+        inputs: [...node.querySelectorAll('li')].map(input => ({ source: read(input, '実使用元ID'), value: read(input, '実使用内部値'), position: read(input, '参照元の当時の本文順') })) };
+    }));
+    assert.deepEqual(observedBlocks, expectedHistoricalBlocks(expectedRecord), 'Both selected historical records must retain exact expressions, actual inputs, internal values and display values');
     await assertHorizontalFit();
     await page.keyboard.press("Escape");
     await expect(trigger).toBeFocused();
@@ -1387,7 +1448,16 @@ async function exerciseStickyOffset(prefix) {
   await passed(prefix + ": real-app sticky offset follows header growth/shrink at 721/800/1365px and 200/100% text sizes");
 }
 let stageStarted = performance.now();
-async function stage(name) { metadata.timings.stages.push({ name: metadata.stage, durationMs: performance.now() - stageStarted }); stageStarted = performance.now(); metadata.stage = name; await persist(); }
+async function stage(name) {
+  const endMs = performance.now();
+  metadata.timings.stages.push({ name: metadata.stage, scenario: selected.id, startMs: stageStarted, endMs, durationMs: endMs - stageStarted });
+  stageStarted = endMs; metadata.stage = name;
+  const observation = { stage: name, monotonicMs: endMs, ...runtimeResources() };
+  (metadata.resourcesByStage ||= []).push(observation);
+  const persistStarted = performance.now();
+  await persist();
+  observation.persistDurationMs = performance.now() - persistStarted;
+}
 async function passed(name) { metadata.checks.push(name); console.log("PASS:", name); await persist(); }
 async function screenshot(name, expectedWidth = currentScenario.width, fullPage = true, overlayTop = false) {
   const checkpointStarted = performance.now();
@@ -4146,8 +4216,11 @@ async function exercise(scenario) {
   await exerciseFormulaLibrary(prefix);
   await exerciseFormulaReports(prefix);
   await exerciseFormulaQuotes(prefix);
+  await stage(prefix + ": formula-audit-storage");
   await exerciseAuditStorage({ page, context, base, expect, passed, prefix, assertHorizontalFit });
+  await stage(prefix + ": formula-audit-fixed-record");
   await exerciseAuditFixedRecord({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
+  await stage(prefix + ": formula-audit-record-comparison");
   await exerciseAuditRecordComparison({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
@@ -4240,6 +4313,7 @@ try {
   }
   if (log) log.end();
   metadata.finishedAt = new Date().toISOString();
+  metadata.resourcesAtEnd = runtimeResources();
   metadata.timings.stages.push({ name: metadata.stage, durationMs: performance.now() - stageStarted });
   await persist();
 }

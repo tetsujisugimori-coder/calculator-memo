@@ -146,6 +146,9 @@ kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-w
 .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }.tags span { background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); font-size: 10px; padding: 4px 6px; }
 
 .modal-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(15,17,15,.62); display: grid; place-items: center; padding: 18px; backdrop-filter: blur(3px); }
+/* Keep the single-dialog treatment, but do not rasterize overlapping filtered
+   backdrops while dialogs are nested. Dimming and the fixed stacking order stay. */
+.modal-backdrop:has(.modal-backdrop), .modal-backdrop .modal-backdrop { backdrop-filter: none; }
 .modal { width: min(540px, 100%); max-height: min(88dvh, 900px); overflow: hidden; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 25px 70px rgba(0,0,0,.32); display: flex; flex-direction: column; }
 .modal-wide { width: min(900px, 100%); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 2px solid var(--ink); }

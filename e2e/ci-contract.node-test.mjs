@@ -99,17 +99,17 @@ const { validateCoverage } = await import('./ci-contract.mjs');
 const { scenarios } = await import('./scenario-config.mjs');
 const sha = 'a'.repeat(40);
 function completedContexts() {
-  const counts = [148, 147, 148, 148, 148, 149], checkpointCounts = [95, 93, 93, 93, 93, 95];
+  const counts = [153, 152, 153, 153, 153, 154], checkpointCounts = [95, 93, 93, 93, 93, 95];
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1089 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1101 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
 }
-test('complete six-context contract preserves 888 checks and 562 geometry checkpoints', () => {
-  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 888, horizontalCheckpoints: 562 });
+test('complete six-context contract preserves 912 original checks plus 6 modal regressions and 562 geometry checkpoints', () => {
+  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 918, horizontalCheckpoints: 562 });
 });
 const mutations = {
   'one scenario never ran': records => records.pop(),
@@ -253,4 +253,26 @@ test('official hosted-runner mirror+file indirection preserves signed source sem
   const security = source.replace('noble noble-updates noble-backports', 'noble-security');
   assert.equal(rewriteUbuntuSources(security, 'sources').text, security.replace('mirror+file:/etc/apt/apt-mirrors.txt', 'https://security.ubuntu.com/ubuntu'));
   assert.throws(() => rewriteUbuntuSources(source.replace('apt-mirrors.txt', 'unknown-mirrors.txt'), 'sources'));
+});
+
+test('resource evidence separates Node usage from visible browser descendants', async () => {
+  const { runtimeResources } = await import('./runtime-resources.mjs');
+  const resource = runtimeResources();
+  assert.ok(resource.nodeProcessUsage);
+  assert.match(resource.interpretation, /excludes browser child usage/);
+  if (process.platform === 'linux' && !resource.processTree.unavailable) {
+    const rootProcess = resource.processTree.processes.find(item => item.pid === process.pid);
+    assert.ok(rootProcess);
+    assert.ok(rootProcess.userCpuTicks >= 0 && rootProcess.systemCpuTicks >= 0);
+    assert.ok(rootProcess.residentKiB === null || (Number.isFinite(rootProcess.residentKiB) && rootProcess.residentKiB >= 0));
+    assert.match(resource.processTree.scope, /raw clock ticks/);
+  }
+});
+
+test('activation timing preserves real input and touch observation while splitting dispatch costs', async () => {
+  const source = await readFile(join(root, 'e2e/scenario.mjs'), 'utf8');
+  const activate = source.slice(source.indexOf('async function activate('), source.indexOf('async function assertHorizontalFit('));
+  for (const contract of ['await locator.tap()', 'await locator.click()', 'toBeGreaterThan(before)', 'timing.dispatchStartMs', 'timing.dispatchEndMs', 'timing.touchObservedMs', 'timing.endMs', 'performance.now()']) assert.ok(activate.includes(contract), contract);
+  assert.ok(!activate.includes('force: true'));
+  assert.ok(!activate.includes('waitForTimeout'));
 });

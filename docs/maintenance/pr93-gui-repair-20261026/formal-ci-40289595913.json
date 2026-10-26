@@ -1,0 +1,355 @@
+{
+  "head": "4c30fd663839c30daa297bdefa480100086379d0",
+  "tree": "75a14724494c5cbb3e847d4201b2d5d8936efe6d",
+  "run": 40289595913,
+  "attempt": 1,
+  "conclusion": "success",
+  "jobStartedAt": "2026-10-26T08:02:54Z",
+  "jobCompletedAt": "2026-10-26T08:24:03Z",
+  "jobDurationSeconds": 1269,
+  "guiDurationMs": 1102896.039239,
+  "artifact": {
+    "id": 12636514116,
+    "bytes": 37678740,
+    "apiDigest": "sha256:4f6634ee472ced4335a793c5429e3370201041855681c3629a2e8031ffd33ba7",
+    "actualZipSha256": "4f6634ee472ced4335a793c5429e3370201041855681c3629a2e8031ffd33ba7"
+  },
+  "unit": {
+    "passed": 2011,
+    "previous": 2008,
+    "added": 3,
+    "files": 87
+  },
+  "contracts": {
+    "passed": 39,
+    "previous": 37,
+    "added": 2
+  },
+  "gui": {
+    "passed": 918,
+    "previous": 912,
+    "added": 6,
+    "geometry": 562,
+    "png": 114,
+    "trace": 0,
+    "workers": 3,
+    "conditions": [
+      {
+        "condition": "chromium-desktop-1365px",
+        "checks": 153,
+        "geometry": 95,
+        "png": 19,
+        "touchActivations": null,
+        "status": "passed",
+        "servedIdentity": {
+          "sha": "4c30fd663839c30daa297bdefa480100086379d0",
+          "branch": "feat/audit-comparison-markdown-export",
+          "run": "40289595913",
+          "attempt": "1"
+        },
+        "durationMs": 338464.586193,
+        "comparableOldQuotesStageMs": 88604.588207,
+        "comparableOldQuotesActivationCount": 186,
+        "comparableOldQuotesActivationMs": 17035.192774999894,
+        "stageDetails": [
+          {
+            "name": "chromium-desktop-1365px: formula-calculation-quotes",
+            "scenario": "chromium-desktop-1365px",
+            "startMs": 60488.49869,
+            "endMs": 106907.875612,
+            "durationMs": 46419.376922
+          },
+          {
+            "name": "chromium-desktop-1365px: formula-audit-storage",
+            "scenario": "chromium-desktop-1365px",
+            "startMs": 106907.875612,
+            "endMs": 118842.002167,
+            "durationMs": 11934.126554999995
+          },
+          {
+            "name": "chromium-desktop-1365px: formula-audit-fixed-record",
+            "scenario": "chromium-desktop-1365px",
+            "startMs": 118842.002167,
+            "endMs": 130241.362849,
+            "durationMs": 11399.360681999999
+          },
+          {
+            "name": "chromium-desktop-1365px: formula-audit-record-comparison",
+            "scenario": "chromium-desktop-1365px",
+            "startMs": 130241.362849,
+            "endMs": 149093.086897,
+            "durationMs": 18851.724048000004
+          }
+        ],
+        "provenanceSha256": "de1186a391d92eb8b0584e37a2cfb7ea478a8104f7d42f80dec01e69cbf3ada5"
+      },
+      {
+        "condition": "chromium-mobile-375px",
+        "checks": 153,
+        "geometry": 93,
+        "png": 19,
+        "touchActivations": 1101,
+        "status": "passed",
+        "servedIdentity": {
+          "sha": "4c30fd663839c30daa297bdefa480100086379d0",
+          "branch": "feat/audit-comparison-markdown-export",
+          "run": "40289595913",
+          "attempt": "1"
+        },
+        "durationMs": 344132.78616599995,
+        "comparableOldQuotesStageMs": 85343.896828,
+        "comparableOldQuotesActivationCount": 186,
+        "comparableOldQuotesActivationMs": 21798.78921499991,
+        "stageDetails": [
+          {
+            "name": "chromium-mobile-375px: formula-calculation-quotes",
+            "scenario": "chromium-mobile-375px",
+            "startMs": 86229.357486,
+            "endMs": 131572.203959,
+            "durationMs": 45342.84647300001
+          },
+          {
+            "name": "chromium-mobile-375px: formula-audit-storage",
+            "scenario": "chromium-mobile-375px",
+            "startMs": 131572.203959,
+            "endMs": 142652.228915,
+            "durationMs": 11080.024956000008
+          },
+          {
+            "name": "chromium-mobile-375px: formula-audit-fixed-record",
+            "scenario": "chromium-mobile-375px",
+            "startMs": 142652.228915,
+            "endMs": 154331.686286,
+            "durationMs": 11679.457370999997
+          },
+          {
+            "name": "chromium-mobile-375px: formula-audit-record-comparison",
+            "scenario": "chromium-mobile-375px",
+            "startMs": 154331.686286,
+            "endMs": 171573.254314,
+            "durationMs": 17241.56802799998
+          }
+        ],
+        "provenanceSha256": "f4eec6d4d0aeb5743d1254f4f5626e63ed8bdc5b4e1e869435c3ae303c36752e"
+      },
+      {
+        "condition": "chromium-mobile-390px",
+        "checks": 153,
+        "geometry": 93,
+        "png": 19,
+        "touchActivations": 1101,
+        "status": "passed",
+        "servedIdentity": {
+          "sha": "4c30fd663839c30daa297bdefa480100086379d0",
+          "branch": "feat/audit-comparison-markdown-export",
+          "run": "40289595913",
+          "attempt": "1"
+        },
+        "durationMs": 351489.341121,
+        "comparableOldQuotesStageMs": 82438.14722700001,
+        "comparableOldQuotesActivationCount": 186,
+        "comparableOldQuotesActivationMs": 21061.862799999813,
+        "stageDetails": [
+          {
+            "name": "chromium-mobile-390px: formula-calculation-quotes",
+            "scenario": "chromium-mobile-390px",
+            "startMs": 87333.438318,
+            "endMs": 130812.572651,
+            "durationMs": 43479.134332999995
+          },
+          {
+            "name": "chromium-mobile-390px: formula-audit-storage",
+            "scenario": "chromium-mobile-390px",
+            "startMs": 130812.572651,
+            "endMs": 141291.843435,
+            "durationMs": 10479.270783999993
+          },
+          {
+            "name": "chromium-mobile-390px: formula-audit-fixed-record",
+            "scenario": "chromium-mobile-390px",
+            "startMs": 141291.843435,
+            "endMs": 152384.697735,
+            "durationMs": 11092.854300000006
+          },
+          {
+            "name": "chromium-mobile-390px: formula-audit-record-comparison",
+            "scenario": "chromium-mobile-390px",
+            "startMs": 152384.697735,
+            "endMs": 169771.585545,
+            "durationMs": 17386.887810000015
+          }
+        ],
+        "provenanceSha256": "3fe45bd1f74cfe8900824d9d22fb157800b19649c2c8db8f7625471216dae1e5"
+      },
+      {
+        "condition": "chromium-narrow-390px",
+        "checks": 152,
+        "geometry": 93,
+        "png": 19,
+        "touchActivations": null,
+        "status": "passed",
+        "servedIdentity": {
+          "sha": "4c30fd663839c30daa297bdefa480100086379d0",
+          "branch": "feat/audit-comparison-markdown-export",
+          "run": "40289595913",
+          "attempt": "1"
+        },
+        "durationMs": 340840.47655099997,
+        "comparableOldQuotesStageMs": 85885.74193699998,
+        "comparableOldQuotesActivationCount": 186,
+        "comparableOldQuotesActivationMs": 16079.935584999941,
+        "stageDetails": [
+          {
+            "name": "chromium-narrow-390px: formula-calculation-quotes",
+            "scenario": "chromium-narrow-390px",
+            "startMs": 71191.998441,
+            "endMs": 115773.995116,
+            "durationMs": 44581.996675
+          },
+          {
+            "name": "chromium-narrow-390px: formula-audit-storage",
+            "scenario": "chromium-narrow-390px",
+            "startMs": 115773.995116,
+            "endMs": 128214.421472,
+            "durationMs": 12440.426355999996
+          },
+          {
+            "name": "chromium-narrow-390px: formula-audit-fixed-record",
+            "scenario": "chromium-narrow-390px",
+            "startMs": 128214.421472,
+            "endMs": 139664.991981,
+            "durationMs": 11450.570508999997
+          },
+          {
+            "name": "chromium-narrow-390px: formula-audit-record-comparison",
+            "scenario": "chromium-narrow-390px",
+            "startMs": 139664.991981,
+            "endMs": 157077.740378,
+            "durationMs": 17412.74839699999
+          }
+        ],
+        "provenanceSha256": "36bc30e5dfa4894f85011dc703362c282a6b61ed26ffc5567f16282176cc6af5"
+      },
+      {
+        "condition": "webkit-mobile-375px",
+        "checks": 154,
+        "geometry": 95,
+        "png": 19,
+        "touchActivations": 1101,
+        "status": "passed",
+        "servedIdentity": {
+          "sha": "4c30fd663839c30daa297bdefa480100086379d0",
+          "branch": "feat/audit-comparison-markdown-export",
+          "run": "40289595913",
+          "attempt": "1"
+        },
+        "durationMs": 713070.141811,
+        "comparableOldQuotesStageMs": 157509.66316899998,
+        "comparableOldQuotesActivationCount": 186,
+        "comparableOldQuotesActivationMs": 58035.86383299992,
+        "stageDetails": [
+          {
+            "name": "webkit-mobile-375px: formula-calculation-quotes",
+            "scenario": "webkit-mobile-375px",
+            "startMs": 162993.511737,
+            "endMs": 228850.365717,
+            "durationMs": 65856.85398000001
+          },
+          {
+            "name": "webkit-mobile-375px: formula-audit-storage",
+            "scenario": "webkit-mobile-375px",
+            "startMs": 228850.365717,
+            "endMs": 257606.698823,
+            "durationMs": 28756.333106000006
+          },
+          {
+            "name": "webkit-mobile-375px: formula-audit-fixed-record",
+            "scenario": "webkit-mobile-375px",
+            "startMs": 257606.698823,
+            "endMs": 282934.165278,
+            "durationMs": 25327.466454999987
+          },
+          {
+            "name": "webkit-mobile-375px: formula-audit-record-comparison",
+            "scenario": "webkit-mobile-375px",
+            "startMs": 282934.165278,
+            "endMs": 320503.174906,
+            "durationMs": 37569.00962799997
+          }
+        ],
+        "provenanceSha256": "15df9391a09ac2ae69f60857080aa3d8f98fcfc7fe4ced9c8ae07f9d01df03f8"
+      },
+      {
+        "condition": "webkit-mobile-390px",
+        "checks": 153,
+        "geometry": 93,
+        "png": 19,
+        "touchActivations": 1101,
+        "status": "passed",
+        "servedIdentity": {
+          "sha": "4c30fd663839c30daa297bdefa480100086379d0",
+          "branch": "feat/audit-comparison-markdown-export",
+          "run": "40289595913",
+          "attempt": "1"
+        },
+        "durationMs": 1102833.645476,
+        "comparableOldQuotesStageMs": 256700.26609400002,
+        "comparableOldQuotesActivationCount": 186,
+        "comparableOldQuotesActivationMs": 126504.43736200006,
+        "stageDetails": [
+          {
+            "name": "webkit-mobile-390px: formula-calculation-quotes",
+            "scenario": "webkit-mobile-390px",
+            "startMs": 270343.424008,
+            "endMs": 370811.66457,
+            "durationMs": 100468.24056200002
+          },
+          {
+            "name": "webkit-mobile-390px: formula-audit-storage",
+            "scenario": "webkit-mobile-390px",
+            "startMs": 370811.66457,
+            "endMs": 421245.548932,
+            "durationMs": 50433.88436199998
+          },
+          {
+            "name": "webkit-mobile-390px: formula-audit-fixed-record",
+            "scenario": "webkit-mobile-390px",
+            "startMs": 421245.548932,
+            "endMs": 462911.257642,
+            "durationMs": 41665.70870999998
+          },
+          {
+            "name": "webkit-mobile-390px: formula-audit-record-comparison",
+            "scenario": "webkit-mobile-390px",
+            "startMs": 462911.257642,
+            "endMs": 527043.690102,
+            "durationMs": 64132.43246000004
+          }
+        ],
+        "provenanceSha256": "e5d895d06bbb34790fda6e0d1974ffb8e10b4d847fbbfff6b0560cca1b4b4d2b"
+      }
+    ]
+  },
+  "outcomes": {
+    "checkout": "success",
+    "node": "success",
+    "app_install": "success",
+    "ci_contract": "success",
+    "unit": "success",
+    "lint": "success",
+    "types": "success",
+    "normal_build": "success",
+    "pages_build": "success",
+    "gui_install": "success",
+    "apt_config": "success",
+    "os_install": "success",
+    "browser_install": "success",
+    "gui": "success"
+  },
+  "limits": [
+    "Cloud Playwright, not physical Safari/VoiceOver/OS text enlargement",
+    "Diagnostic local375 reload timeout and low-level WebKit waiting cause remain recorded",
+    "This records the tested implementation HEAD; documentation follow-up HEAD must receive its own CI",
+    "Artifact includes served identity and build logs, not the full built asset bytes; local build SHA evidence is separate"
+  ]
+}

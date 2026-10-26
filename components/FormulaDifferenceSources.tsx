@@ -45,7 +45,9 @@ export function DifferenceSourceDialog({ assessment, source, links, onRefresh, o
     {source.stale && <p role="alert">{source.fetchedAt === "未取得（未照合）" ? "根拠未照合：明示取得が必要です。" : "根拠未照合：原本の更新を検知しました。明示再取得が必要です。"}</p>}
     <button type="button" onClick={() => { setView(null); onRefresh(); }}>差分出典の保存原本を再取得</button>
     {snapshot && <>
-      <p>差分ID：{snapshot.differenceId}　元引用ID：{snapshot.quote.quoteId}　登録式ID：{snapshot.quote.formulaId}</p>
+      {/* Keep one text node: Chromium can hang a leading U+3000 in an adjacent
+          text node outside the line box, even with overflow-wrap:anywhere. */}
+      <p>{`差分ID：${snapshot.differenceId}　元引用ID：${snapshot.quote.quoteId}　登録式ID：${snapshot.quote.formulaId}`}</p>
       <p>元引用日時：{snapshot.quote.citedAt}。差分プレビュー準備日時：{snapshot.preparedAt}（保存完了・確認日時ではありません）。</p>
       <p>比較対象：同じメモID {snapshot.quote.memoId} 内の記録全体。初期選択ブロックID：{snapshot.quote.blockId}。別メモの名前や式から対応を推測しません。</p>
       {assessment.status === 'edited' && <p role="alert">本文が編集されています。以下の引用時点の比較は追跡情報内の両記録であり、編集後の文章そのものとの対応は保証できません。</p>}
