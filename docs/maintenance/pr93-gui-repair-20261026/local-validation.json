@@ -1,0 +1,104 @@
+{
+  "scope": "Local Node24.22.1; not final GitHub CI; source working tree before commit",
+  "unit": {
+    "passed": 2011,
+    "failed": 0,
+    "skipped": 0,
+    "files": 87,
+    "previous": 2008,
+    "added": 3,
+    "workers": 2
+  },
+  "contracts": {
+    "passed": 38,
+    "failed": 1,
+    "skipped": 0,
+    "previous": 37,
+    "added": 2,
+    "failure": "Existing 100ms synthetic acquisition Node-startup fixture times out before first log; unchanged assertion/timeout; requires exact final HEAD CI verification"
+  },
+  "stages": [
+    {
+      "name": "build-final",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "startedAt": "2026-10-26T07:36:53Z",
+      "durationSeconds": 52.31209585900069,
+      "exitCode": 0
+    },
+    {
+      "name": "contracts-final",
+      "command": [
+        "node",
+        "--test",
+        "e2e/ci-contract.node-test.mjs"
+      ],
+      "startedAt": "2026-10-26T07:35:54Z",
+      "durationSeconds": 4.639690841999254,
+      "exitCode": 1
+    },
+    {
+      "name": "lint-final",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-26T07:35:58Z",
+      "durationSeconds": 41.09318568500021,
+      "exitCode": 0
+    },
+    {
+      "name": "pages-final",
+      "command": [
+        "npm",
+        "run",
+        "build:pages"
+      ],
+      "startedAt": "2026-10-26T07:37:45Z",
+      "durationSeconds": 7.328074336997815,
+      "exitCode": 0
+    },
+    {
+      "name": "types-final",
+      "command": [
+        "./node_modules/.bin/tsc",
+        "--noEmit"
+      ],
+      "startedAt": "2026-10-26T07:36:39Z",
+      "durationSeconds": 13.81787044799421,
+      "exitCode": 0
+    },
+    {
+      "name": "unit-final",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--minWorkers=2"
+      ],
+      "startedAt": "2026-10-26T07:31:36Z",
+      "durationSeconds": 257.394761552001,
+      "exitCode": 0
+    }
+  ],
+  "source_sha256": {
+    "app/globals.css": "61919536e52db6c3180ceb8865f2659bc71f508232e316494f227cda91916ff4",
+    "components/FormulaDifferenceSources.tsx": "612211c4c5f55adff8b7d4edb24dd7aa60110c2e3f586423054e42dbf21e7b80",
+    "lib/formula-report-audit-comparison-export.ts": "24a9ff7f5933b8593e4e3a18031d4ff6318524d9dec887a76f795a4ef0048ab1",
+    "lib/formula-report-audit-comparison.ts": "c2c32fc138be86d07f3033d686ae45ef0fe4aaf872d6f209bed699a9ce3490e4",
+    "components/FormulaAuditRecordComparison.tsx": "8acf1589617abbd3a26815b0084d510267e1b15a2a23d9257dca4ce3f0e1f081"
+  },
+  "build_assets": {
+    "dist-pages/assets/index-CbF8FLsK.css": "ee46801777c05830802bd0c59afdc6f0a1da860b84331a436308df244adda962",
+    "dist-pages/assets/index-DVc8aHr-.js": "7306c56f8fe4abd53943f2c7d9de26fd35f16525f1a710dc5337241d75253cfd"
+  },
+  "warnings": [
+    "Existing chunk-size warning retained; no limit adjustment",
+    "Local acquisition contract failure is retained, not success"
+  ]
+}

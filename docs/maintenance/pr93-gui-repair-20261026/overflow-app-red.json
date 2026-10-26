@@ -1,0 +1,52 @@
+{
+  "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+  "servedIdentity": {
+    "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+    "branch": "feat/audit-comparison-markdown-export",
+    "run": "local",
+    "attempt": "1"
+  },
+  "startedAt": "2026-10-26T06:33:52.019Z",
+  "finishedAt": "2026-10-26T06:34:53.473Z",
+  "status": "failed",
+  "failure": {
+    "message": "Synthetic modal content must not be horizontally clipped: {\"scroll\":390,\"client\":388,\"diagnostic\":{\"container\":{\"left\":1,\"right\":389,\"width\":388},\"inspected\":50,\"totalDescendants\":50,\"offenders\":[{\"tag\":\"SECTION\",\"class\":\"formula-report quote-tools saved-evidence\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"minmax(0px, 1fr)\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true},{\"tag\":\"P\",\"class\":\"\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"none\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true}]}}",
+    "stack": "AssertionError [ERR_ASSERTION]: Synthetic modal content must not be horizontally clipped: {\"scroll\":390,\"client\":388,\"diagnostic\":{\"container\":{\"left\":1,\"right\":389,\"width\":388},\"inspected\":50,\"totalDescendants\":50,\"offenders\":[{\"tag\":\"SECTION\",\"class\":\"formula-report quote-tools saved-evidence\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"minmax(0px, 1fr)\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true},{\"tag\":\"P\",\"class\":\"\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"none\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true}]}}\n    at assertHorizontalFit (file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/gui-evidence/overflow-scenario.mjs:97:14)\n    at async exerciseFormulaQuotes (file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/gui-evidence/overflow-scenario.mjs:665:5)\n    at async exercise (file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/gui-evidence/overflow-scenario.mjs:3832:3)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/gui-evidence/overflow-scenario.mjs:3876:5",
+    "stage": "chromium-mobile-390px: formula-calculation-quotes",
+    "classification": "test-or-application: requires diagnosis"
+  },
+  "playwright": "1.56.1",
+  "method": "Playwright Chromium and WebKit on loopback-only Pages preview; mobile/touch emulation, not physical iPhone Safari",
+  "identityText": "差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula",
+  "identitySha256": "b82dcb68be9ee5e768e28a7ed32947b3062c58e64a3b522717a2da60f60922f5",
+  "scenarios": [
+    {
+      "id": "chromium-mobile-390px",
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "deviceScaleFactor": 3,
+      "browserVersion": "141.0.7390.37",
+      "startedAt": "2026-10-26T06:33:56.334Z",
+      "status": "failed",
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+        "maxTouchPoints": 1,
+        "coarsePointer": true,
+        "innerWidth": 390,
+        "devicePixelRatio": 3
+      },
+      "touchActivations": 30,
+      "touchStarts": 1,
+      "finishedAt": "2026-10-26T06:34:45.921Z",
+      "failureStage": "chromium-mobile-390px: formula-calculation-quotes"
+    }
+  ],
+  "initialNonReproduction": {
+    "path": "gui-evidence/overflow-before/provenance.json",
+    "status": "passed",
+    "reason": "initial fixed UUID queue consumed by cancel/retry preparation; displayed identifiers differed; not proof of correction"
+  }
+}

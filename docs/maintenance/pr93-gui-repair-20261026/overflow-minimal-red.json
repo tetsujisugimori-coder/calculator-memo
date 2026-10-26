@@ -1,0 +1,302 @@
+[
+  {
+    "scale": "100%",
+    "items": [
+      {
+        "text": "保存原本取得日時：2026-10-26T03:22:21.693Z。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula元引用日時：2026-10-26T03:22:15.150Z。差分プレビュー準備日時：2026-10-26T03:22:40.026Z（保存完了・確認日時ではありません）。",
+        "tag": "DIV",
+        "scroll": 388,
+        "client": 388,
+        "rect": {
+          "x": 1,
+          "y": 519,
+          "width": 388,
+          "height": 324,
+          "top": 519,
+          "right": 389,
+          "bottom": 843,
+          "left": 1
+        },
+        "style": {
+          "width": "388px",
+          "minWidth": "auto",
+          "maxWidth": "none",
+          "padding": "18px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "16px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "保存原本取得日時：2026-10-26T03:22:21.693Z。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula元引用日時：2026-10-26T03:22:15.150Z。差分プレビュー準備日時：2026-10-26T03:22:40.026Z（保存完了・確認日時ではありません）。",
+        "tag": "SECTION",
+        "scroll": 352,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 537,
+          "width": 352,
+          "height": 288,
+          "top": 537,
+          "right": 371,
+          "bottom": 825,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "100%",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "16px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "保存原本取得日時：2026-10-26T03:22:21.693Z。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。",
+        "tag": "P",
+        "scroll": 352,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 537,
+          "width": 352,
+          "height": 96,
+          "top": 537,
+          "right": 371,
+          "bottom": 633,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "none",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "16px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula",
+        "tag": "P",
+        "scroll": 352,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 633,
+          "width": 352,
+          "height": 96,
+          "top": 633,
+          "right": 371,
+          "bottom": 729,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "none",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "16px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "元引用日時：2026-10-26T03:22:15.150Z。差分プレビュー準備日時：2026-10-26T03:22:40.026Z（保存完了・確認日時ではありません）。",
+        "tag": "P",
+        "scroll": 352,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 729,
+          "width": 352,
+          "height": 96,
+          "top": 729,
+          "right": 371,
+          "bottom": 825,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "none",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "16px",
+          "letterSpacing": "normal"
+        }
+      }
+    ]
+  },
+  {
+    "scale": "200%",
+    "items": [
+      {
+        "text": "保存原本取得日時：2026-10-26T03:22:21.693Z。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula元引用日時：2026-10-26T03:22:15.150Z。差分プレビュー準備日時：2026-10-26T03:22:40.026Z（保存完了・確認日時ではありません）。",
+        "tag": "DIV",
+        "scroll": 390,
+        "client": 388,
+        "rect": {
+          "x": 1,
+          "y": 60.09375,
+          "width": 388,
+          "height": 782.90625,
+          "top": 60.09375,
+          "right": 389,
+          "bottom": 843,
+          "left": 1
+        },
+        "style": {
+          "width": "388px",
+          "minWidth": "auto",
+          "maxWidth": "none",
+          "padding": "18px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "32px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "保存原本取得日時：2026-10-26T03:22:21.693Z。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula元引用日時：2026-10-26T03:22:15.150Z。差分プレビュー準備日時：2026-10-26T03:22:40.026Z（保存完了・確認日時ではありません）。",
+        "tag": "SECTION",
+        "scroll": 372,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 78.09375,
+          "width": 352,
+          "height": 1008,
+          "top": 78.09375,
+          "right": 371,
+          "bottom": 1086.09375,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "100%",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "32px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "保存原本取得日時：2026-10-26T03:22:21.693Z。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。",
+        "tag": "P",
+        "scroll": 352,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 78.09375,
+          "width": 352,
+          "height": 336,
+          "top": 78.09375,
+          "right": 371,
+          "bottom": 414.09375,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "none",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "32px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "差分ID：f94c198b-b4b1-4a41-a86e-11d63e9013bd　元引用ID：965d1c53-3da3-4ae2-a73c-fd94df1efe4f　登録式ID：quote-formula",
+        "tag": "P",
+        "scroll": 372,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 414.09375,
+          "width": 352,
+          "height": 336,
+          "top": 414.09375,
+          "right": 371,
+          "bottom": 750.09375,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "none",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "32px",
+          "letterSpacing": "normal"
+        }
+      },
+      {
+        "text": "元引用日時：2026-10-26T03:22:15.150Z。差分プレビュー準備日時：2026-10-26T03:22:40.026Z（保存完了・確認日時ではありません）。",
+        "tag": "P",
+        "scroll": 352,
+        "client": 352,
+        "rect": {
+          "x": 19,
+          "y": 750.09375,
+          "width": 352,
+          "height": 336,
+          "top": 750.09375,
+          "right": 371,
+          "bottom": 1086.09375,
+          "left": 19
+        },
+        "style": {
+          "width": "352px",
+          "minWidth": "0px",
+          "maxWidth": "none",
+          "padding": "0px",
+          "border": "0px solid rgb(32, 35, 31)",
+          "overflowWrap": "anywhere",
+          "wordBreak": "normal",
+          "whiteSpace": "normal",
+          "fontFamily": "\"Yu Gothic UI\", \"Yu Gothic\", \"Hiragino Kaku Gothic ProN\", Meiryo, sans-serif, \"Yu Gothic UI\", sans-serif",
+          "fontSize": "32px",
+          "letterSpacing": "normal"
+        }
+      }
+    ]
+  }
+]

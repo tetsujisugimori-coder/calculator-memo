@@ -1,0 +1,625 @@
+{
+  "diagnosticOnly": true,
+  "baselineBuildManifestSha256": "ac1d2c97d0aa080a2803310c901139a224236221007cce704eecd2dcd754924f",
+  "measurements": [
+    {
+      "name": "pr93-timing-baseline390-r1",
+      "status": "passed",
+      "browser": "26.0",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T06:35:20.682Z",
+      "finishedAt": "2026-10-26T06:41:33.206Z",
+      "scope": "complete original exerciseFormulaQuotes",
+      "completedActivations": 76,
+      "attemptedActivations": 76,
+      "passedChecks": 13,
+      "durationMs": 356073.53499,
+      "activationDurationMs": 225809.73559100006,
+      "dispatchDurationMs": 215187.48316800024,
+      "touchObservationDurationMs": 6213.2099519999065,
+      "pageErrors": [],
+      "failure": null,
+      "rawEvidence": "/tmp/pr93-timing-baseline390-r1.json",
+      "rawSha256": "db53d0c57e159fda763cdb34e192f0c65d3a2f523f6b0a1fa0487eea314804ad",
+      "traceSha256": "b279029270710ded305dc4a121c5d1d126a4d1c61e8cf4bc5ff9da78900b17f0"
+    },
+    {
+      "name": "pr93-timing-baseline375-r1",
+      "status": "passed",
+      "browser": "26.0",
+      "scenario": {
+        "id": "webkit-mobile-375px",
+        "width": 375,
+        "height": 667,
+        "deviceScaleFactor": 2
+      },
+      "startedAt": "2026-10-26T06:50:03.018Z",
+      "finishedAt": "2026-10-26T06:53:34.463Z",
+      "scope": "complete original exerciseFormulaQuotes",
+      "completedActivations": 76,
+      "attemptedActivations": 76,
+      "passedChecks": 13,
+      "durationMs": 196221.143235,
+      "activationDurationMs": 88825.2063810001,
+      "dispatchDurationMs": 80905.70298799992,
+      "touchObservationDurationMs": 4113.490024000192,
+      "pageErrors": [],
+      "failure": null,
+      "rawEvidence": "/tmp/pr93-timing-baseline375-r1.json",
+      "rawSha256": "bd477eb9673b9d792b43cd70c891fc89152620fba98a5448deb3bd411a56c43d",
+      "traceSha256": "d5f21e4962bca42ad3d49bdc7a660e31c1ac9616e02a7a6600b151724edac9d6",
+      "apiTimings": {
+        "goto": {
+          "count": 1,
+          "durationMs": 1749.4093949999988
+        },
+        "evaluate": {
+          "count": 700,
+          "durationMs": 52450.29088499983
+        },
+        "reload": {
+          "count": 3,
+          "durationMs": 13521.688825000005
+        },
+        "selectOption": {
+          "count": 17,
+          "durationMs": 2992.041080999952
+        },
+        "inputValue": {
+          "count": 6,
+          "durationMs": 463.8156430000163
+        },
+        "focus": {
+          "count": 15,
+          "durationMs": 1056.8901699999842
+        },
+        "evaluateAll": {
+          "count": 9,
+          "durationMs": 716.4010489999782
+        },
+        "fill": {
+          "count": 8,
+          "durationMs": 5675.866821000018
+        }
+      }
+    },
+    {
+      "name": "pr93-paired390-r1",
+      "status": "failed",
+      "browser": "26.0",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T06:41:41.746Z",
+      "finishedAt": "2026-10-26T06:44:01.755Z",
+      "scope": "partial quote setup; A/B not reached",
+      "completedActivations": 19,
+      "attemptedActivations": 20,
+      "passedChecks": 1,
+      "durationMs": null,
+      "activationDurationMs": 62243.48938000001,
+      "dispatchDurationMs": 58082.919807000006,
+      "touchObservationDurationMs": 1290.1193259999854,
+      "pageErrors": [],
+      "failure": "locator.tap: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: '引用時の記録と別の保存記録を比較', exact: true }).getByRole('button', { name: '比較表示を閉じる', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\">比較表示を閉じる</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n    at activate (/tmp/pr93-paired-timing.mjs:31:243)\n    at async file:///tmp/pr93-paired-timing.mjs:37:1",
+      "rawEvidence": "/tmp/pr93-paired390-r1.json",
+      "rawSha256": "afed34ad2c7c9d899ed8ccd35ec89c6a7ffc8ee079af934be54b78197f9e4ffe",
+      "traceSha256": "1863f8e8e5ae14644a991e990c92f6066bf3178f2d49d2d2be9b77f4fd332f53",
+      "apiTimings": {
+        "goto": {
+          "count": 1,
+          "durationMs": 4916.812626999999
+        },
+        "evaluate": {
+          "count": 152,
+          "durationMs": 18257.025034000053
+        },
+        "reload": {
+          "count": 2,
+          "durationMs": 10926.850251
+        },
+        "selectOption": {
+          "count": 5,
+          "durationMs": 695.8046609999947
+        },
+        "inputValue": {
+          "count": 2,
+          "durationMs": 276.8291869999957
+        },
+        "focus": {
+          "count": 1,
+          "durationMs": 103.38219999999274
+        },
+        "evaluateAll": {
+          "count": 1,
+          "durationMs": 93.18428299999505
+        }
+      }
+    },
+    {
+      "name": "pr93-paired390-r2-header",
+      "status": "failed",
+      "browser": "26.0",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T06:45:32.060Z",
+      "finishedAt": "2026-10-26T06:47:28.016Z",
+      "scope": "partial quote setup; A/B not reached",
+      "completedActivations": 17,
+      "attemptedActivations": 18,
+      "passedChecks": 0,
+      "durationMs": null,
+      "activationDurationMs": 57884.97409700002,
+      "dispatchDurationMs": 55474.499511999995,
+      "touchObservationDurationMs": 1572.5392529999917,
+      "pageErrors": [],
+      "failure": "locator.tap: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: '引用元の保存記録・ブロック', exact: true }).getByRole('button', { name: '引用元表示を閉じる', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\">引用元表示を閉じる</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n    at activate (/tmp/pr93-paired-timing.mjs:31:243)\n    at async exerciseFormulaQuotes (<anonymous>:97:3)\n    at async file:///tmp/pr93-paired-timing.mjs:35:68",
+      "rawEvidence": "/tmp/pr93-paired390-r2-header.json",
+      "rawSha256": "6723eaa942761d5b926341f159bc9f88286c1e60d4d982ec690f7fa1a2e70b8d",
+      "traceSha256": "6e1754f89522ec7c7a9faa3d4c35815a8ac8110df0991797ca6786dea4906c2c",
+      "apiTimings": {
+        "goto": {
+          "count": 1,
+          "durationMs": 4595.125388
+        },
+        "evaluate": {
+          "count": 145,
+          "durationMs": 17149.399808000006
+        },
+        "reload": {
+          "count": 2,
+          "durationMs": 11584.148494999998
+        },
+        "selectOption": {
+          "count": 4,
+          "durationMs": 316.72128199999133
+        },
+        "inputValue": {
+          "count": 2,
+          "durationMs": 305.60536700000375
+        }
+      }
+    },
+    {
+      "name": "pr93-timing-baseline390-r2",
+      "status": "failed",
+      "scope": "complete quote-function attempt",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T07:07:07.658Z",
+      "finishedAt": "2026-10-26T07:08:05.577Z",
+      "completedActivations": 4,
+      "attemptedActivations": 5,
+      "passedChecks": 0,
+      "durationMs": null,
+      "failure": "locator.tap: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: '計算根拠を引用', exact: true }).getByRole('button', { name: '引用選択を取り消す', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\">引用選択を取り消す</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - performing tap action\u001b[22m\n\n    at activate (/workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/quote-timing-diagnostic.mjs:32:243)\n    at async exerciseFormulaQuotes (<anonymous>:59:3)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/quote-timing-diagnostic.mjs:36:68",
+      "paired": null,
+      "rawEvidence": "/tmp/pr93-timing-baseline390-r2.json",
+      "rawSha256": "1ffebff5d6ce525bc978b02e467a1e4c0f3bbbebdf96acf94086ca651591f87e",
+      "traceSha256": "ef7018fd7e52c57e2e3d37d2a8093aa4dbbca3aefca2d24dc04a908832e569ec"
+    },
+    {
+      "name": "pr93-fixed-paired390-r1",
+      "status": "passed",
+      "scope": "sequential in-context exploratory CSS contrast",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T07:03:28.998Z",
+      "finishedAt": "2026-10-26T07:05:08.578Z",
+      "completedActivations": 40,
+      "attemptedActivations": 40,
+      "passedChecks": 0,
+      "durationMs": 86948.606654,
+      "failure": null,
+      "paired": [
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 35935.457502,
+          "endMs": 40107.753268,
+          "firstEvent": 4,
+          "lastEvent": 5
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 40114.519298,
+          "endMs": 43040.632745,
+          "firstEvent": 6,
+          "lastEvent": 7
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 43043.088801,
+          "endMs": 45778.416974,
+          "firstEvent": 8,
+          "lastEvent": 9
+        },
+        {
+          "condition": "no-blur",
+          "repeat": 0,
+          "startMs": 45801.255353,
+          "endMs": 50058.433688,
+          "firstEvent": 10,
+          "lastEvent": 11
+        },
+        {
+          "condition": "no-blur",
+          "repeat": 1,
+          "startMs": 50059.681735,
+          "endMs": 51066.576112,
+          "firstEvent": 12,
+          "lastEvent": 13
+        },
+        {
+          "condition": "no-blur",
+          "repeat": 2,
+          "startMs": 51067.538042,
+          "endMs": 52244.905548,
+          "firstEvent": 14,
+          "lastEvent": 15
+        },
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 52453.241525,
+          "endMs": 56981.666632,
+          "firstEvent": 16,
+          "lastEvent": 17
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 56985.093957,
+          "endMs": 60060.983523,
+          "firstEvent": 18,
+          "lastEvent": 19
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 60062.76924,
+          "endMs": 62869.160459,
+          "firstEvent": 20,
+          "lastEvent": 21
+        },
+        {
+          "condition": "nested-only",
+          "repeat": 0,
+          "startMs": 62895.014009,
+          "endMs": 66617.446671,
+          "firstEvent": 22,
+          "lastEvent": 23
+        },
+        {
+          "condition": "nested-only",
+          "repeat": 1,
+          "startMs": 66627.6286,
+          "endMs": 69068.622203,
+          "firstEvent": 24,
+          "lastEvent": 25
+        },
+        {
+          "condition": "nested-only",
+          "repeat": 2,
+          "startMs": 69069.875167,
+          "endMs": 71460.749325,
+          "firstEvent": 26,
+          "lastEvent": 27
+        },
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 71751.377339,
+          "endMs": 76577.796662,
+          "firstEvent": 28,
+          "lastEvent": 29
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 76580.233239,
+          "endMs": 80303.285083,
+          "firstEvent": 30,
+          "lastEvent": 31
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 80308.010922,
+          "endMs": 83534.096369,
+          "firstEvent": 32,
+          "lastEvent": 33
+        },
+        {
+          "condition": "nested-only",
+          "repeat": 0,
+          "startMs": 83584.456271,
+          "endMs": 93844.559915,
+          "firstEvent": 34,
+          "lastEvent": 35
+        },
+        {
+          "condition": "nested-only",
+          "repeat": 1,
+          "startMs": 93849.145835,
+          "endMs": 97182.943118,
+          "firstEvent": 36,
+          "lastEvent": 37
+        },
+        {
+          "condition": "nested-only",
+          "repeat": 2,
+          "startMs": 97187.043379,
+          "endMs": 100357.642248,
+          "firstEvent": 38,
+          "lastEvent": 39
+        }
+      ],
+      "rawEvidence": "/tmp/pr93-fixed-paired390-r1.json",
+      "rawSha256": "ea6177312724edf65f4ef75403bd8ec3ebd470c3cb40f86415d8e7626fef2d67",
+      "traceSha256": "f4c2d3da5ccfc2a4b500ef61b32ae719be89ad02c8011f9e35edf57f019625db"
+    },
+    {
+      "name": "pr93-fixed-paired390-r2",
+      "status": "failed",
+      "scope": "sequential in-context exploratory CSS contrast",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T07:10:18.491Z",
+      "finishedAt": "2026-10-26T07:12:20.174Z",
+      "completedActivations": 43,
+      "attemptedActivations": 44,
+      "passedChecks": 0,
+      "durationMs": null,
+      "failure": "locator.tap: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '選択した2記録を比較', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\">選択した2記録を比較</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n    at activate (/workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:33:243)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:50:5",
+      "paired": [
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 30422.951232,
+          "endMs": 36506.5179,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 36507.65809,
+          "endMs": 45210.28854,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 45217.222739,
+          "endMs": 51978.543986,
+          "firstEvent": 12,
+          "lastEvent": 15
+        },
+        {
+          "condition": "underlay-only",
+          "repeat": 0,
+          "startMs": 52026.433047,
+          "endMs": 61514.270579,
+          "firstEvent": 16,
+          "lastEvent": 19
+        },
+        {
+          "condition": "underlay-only",
+          "repeat": 1,
+          "startMs": 61517.487497,
+          "endMs": 64798.308285,
+          "firstEvent": 20,
+          "lastEvent": 23
+        },
+        {
+          "condition": "underlay-only",
+          "repeat": 2,
+          "startMs": 64801.580109,
+          "endMs": 68396.226235,
+          "firstEvent": 24,
+          "lastEvent": 27
+        },
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 68514.671577,
+          "endMs": 75338.161304,
+          "firstEvent": 28,
+          "lastEvent": 31
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 75344.446551,
+          "endMs": 80069.638285,
+          "firstEvent": 32,
+          "lastEvent": 35
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 80071.3913,
+          "endMs": 90583.917468,
+          "firstEvent": 36,
+          "lastEvent": 39
+        }
+      ],
+      "rawEvidence": "/tmp/pr93-fixed-paired390-r2.json",
+      "rawSha256": "95faa4dca4fff395b1c54d43f840e88ecca5a6bf06ea90849d494bf4fcaf71dd",
+      "traceSha256": "940c278c70639336cc3534dd57b084fb4355211acb3a234dc50d481ccaa98333"
+    },
+    {
+      "name": "pr93-fixed-paired390-r3",
+      "status": "failed",
+      "scope": "sequential in-context exploratory CSS contrast",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T07:14:51.423Z",
+      "finishedAt": "2026-10-26T07:15:48.076Z",
+      "completedActivations": 10,
+      "attemptedActivations": 11,
+      "passedChecks": 0,
+      "durationMs": null,
+      "failure": "locator.tap: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '比較元Aと比較先Bを入れ替える', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\">比較元Aと比較先Bを入れ替える</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n    at activate (/workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:33:243)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:49:5",
+      "paired": [
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 25494.390679,
+          "endMs": 31197.031796,
+          "firstEvent": 4,
+          "lastEvent": 7
+        }
+      ],
+      "rawEvidence": "/tmp/pr93-fixed-paired390-r3.json",
+      "rawSha256": "48ec490267e5ae927ff4415b774669b90c3c8602b7405253257a5514c435d1c9",
+      "traceSha256": "87da0114e8cabc91a08891797fd6c61872959175c69d6e62e94b645c638f5555"
+    },
+    {
+      "name": "pr93-timing-candidate390-r1",
+      "status": "passed",
+      "browser": "26.0",
+      "scenario": {
+        "id": "webkit-mobile-390px",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3
+      },
+      "startedAt": "2026-10-26T07:45:11.260Z",
+      "finishedAt": "2026-10-26T07:49:55.237Z",
+      "scope": "complete original exerciseFormulaQuotes on rebuilt product, no CSS override",
+      "completedActivations": 76,
+      "attemptedActivations": 76,
+      "passedChecks": 13,
+      "durationMs": 269202.662799,
+      "activationDurationMs": 148394.66613500004,
+      "dispatchDurationMs": 139456.4765530001,
+      "touchObservationDurationMs": 4923.329576999924,
+      "pageErrors": [],
+      "failure": null,
+      "rawEvidence": "/tmp/pr93-timing-candidate390-r1.json",
+      "rawSha256": "1cdb06dddbe739ae315d7243f069d3db357d7ede39b89a0ddb1a16bf8cbe2f18",
+      "traceSha256": "9a7ff49fb55d6e9288ed478ae359266f02595f9b2c43b9ca83881d8dc3457fb6",
+      "apiTimings": {
+        "evaluate": {
+          "count": 700,
+          "durationMs": 63532.79190699996
+        },
+        "evaluateAll": {
+          "count": 9,
+          "durationMs": 708.4472309999692
+        },
+        "fill": {
+          "count": 8,
+          "durationMs": 6326.542976999946
+        },
+        "focus": {
+          "count": 15,
+          "durationMs": 1006.6939490000368
+        },
+        "goto": {
+          "count": 1,
+          "durationMs": 4252.111227000001
+        },
+        "inputValue": {
+          "count": 6,
+          "durationMs": 309.0060810000141
+        },
+        "reload": {
+          "count": 3,
+          "durationMs": 12643.73369099997
+        },
+        "selectOption": {
+          "count": 17,
+          "durationMs": 2542.3704280000165
+        }
+      }
+    },
+    {
+      "name": "pr93-timing-candidate375-r1",
+      "status": "failed",
+      "browser": "26.0",
+      "scenario": {
+        "id": "webkit-mobile-375px",
+        "width": 375,
+        "height": 667,
+        "deviceScaleFactor": 2
+      },
+      "startedAt": "2026-10-26T07:50:26.074Z",
+      "finishedAt": "2026-10-26T07:50:50.133Z",
+      "scope": "complete original exerciseFormulaQuotes on rebuilt product, no CSS override",
+      "completedActivations": 0,
+      "attemptedActivations": 0,
+      "passedChecks": 0,
+      "durationMs": null,
+      "activationDurationMs": 0,
+      "dispatchDurationMs": 0,
+      "touchObservationDurationMs": 0,
+      "pageErrors": [],
+      "failure": "page.reload: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for navigation until \"load\"\u001b[22m\n\n    at object.<computed> (/workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/quote-timing-diagnostic.mjs:27:157)\n    at exerciseFormulaQuotes (<anonymous>:26:14)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/quote-timing-diagnostic.mjs:38:137",
+      "rawEvidence": "/tmp/pr93-timing-candidate375-r1.json",
+      "rawSha256": "ec313340d90b314163eaf57b005aa46fd4c06053fdf16a38b1de1d009c411511",
+      "traceSha256": "d23fdecc50a8df8a95085da479fb4688d7564380ed5df4667dc18a287054e79a",
+      "apiTimings": {
+        "evaluate": {
+          "count": 4,
+          "durationMs": 3042.372250000002
+        },
+        "goto": {
+          "count": 1,
+          "durationMs": 1994.2192269999996
+        },
+        "reload": {
+          "count": 1,
+          "durationMs": 10052.138450999999
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Local cloud native WebKit26.0, not physical Safari or GitHub hosted runner.",
+    "Browser event/RAF and DOM/process observations add overhead; this is not formal whole-scenario timing.",
+    "First390 run lacks API-category wrapper used by375; the comparable390repeat failed at its fifth activation; no complete repeat time is available.",
+    "API timings overlap nested calls and are not additive.",
+    "React-specific computation is not separately measured.",
+    "The 2 paired attempts failed in setup before any A/B comparison."
+  ],
+  "candidateBuildManifestSha256": "73a2019e2c9b804e02267e002e31ab9fa66c5a3972148e13ecb86a6bfa26949a",
+  "candidateSourceHashes": {
+    "app/globals.css": "61919536e52db6c3180ceb8865f2659bc71f508232e316494f227cda91916ff4",
+    "components/FormulaDifferenceSources.tsx": "612211c4c5f55adff8b7d4edb24dd7aa60110c2e3f586423054e42dbf21e7b80",
+    "e2e/scenario.mjs": "d0858f07e6f24a423f986802e8dc9a9657c13f3fbfaa6ad90ce802ce2f74ef90"
+  }
+}

@@ -25,7 +25,7 @@ const port = Number(process.env.GUI_PORT);
 assert.ok(Number.isInteger(port) && port >= 1024 && port <= 65535, "Valid isolated preview port required");
 await mkdir(output, { recursive: true });
 const metadata = {
-  schemaVersion: 3, timings: { stages: [], screenshots: [], trace: [], input: {} }, screenshotCheckpoints: [], scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
+  schemaVersion: 3, timings: { stages: [], screenshots: [], trace: [], input: {}, activations: [] }, screenshotCheckpoints: [], scenarios: [], status: "running", stage: "provenance", checks: [], errors: [],
   expectedSha: process.env.EXPECTED_SHA || null,
   branch: process.env.PR_BRANCH || null, pr: process.env.PR_NUMBER || null,
   run: process.env.GITHUB_RUN_ID || "local", attempt: process.env.GITHUB_RUN_ATTEMPT || "1",
@@ -49,15 +49,25 @@ let activeScenarioRecord;
 // Locator.tap emits touch input; desktop retains mouse clicks. No forced clicks.
 async function activate(locator) {
   const started = performance.now();
+  const timing = { scenario: currentScenario.id, stage: metadata.stage, operation: currentScenario.hasTouch ? "tap" : "click", startMs: started };
   try {
     if (currentScenario.hasTouch) {
       const before = await page.evaluate(() => window.__guiTouchStarts);
+      timing.dispatchStartMs = performance.now();
       await locator.tap();
+      timing.dispatchEndMs = performance.now();
       await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
+      timing.touchObservedMs = performance.now();
       activeScenarioRecord.touchActivations = (activeScenarioRecord.touchActivations || 0) + 1;
-    } else await locator.click();
+    } else {
+      timing.dispatchStartMs = performance.now();
+      await locator.click();
+      timing.dispatchEndMs = performance.now();
+    }
   } finally {
-    const durationMs = performance.now() - started;
+    timing.endMs = performance.now();
+    const durationMs = timing.endMs - started;
+    metadata.timings.activations.push({ ...timing, durationMs });
     const input = metadata.timings.input[metadata.stage] ||= { count: 0, durationMs: 0, maxMs: 0 };
     input.count += 1; input.durationMs += durationMs; input.maxMs = Math.max(input.maxMs, durationMs);
   }
@@ -96,6 +106,20 @@ async function assertHorizontalFit(expectedWidth = currentScenario.width) {
       }
       assert.ok(size.scroll <= size.client + 1, "Synthetic modal content must not be horizontally clipped: " + JSON.stringify(size));
     }
+  }
+}
+async function assertModalBackdropContract(expectedCount) {
+  const observed = await page.locator(".modal-backdrop").evaluateAll(elements => elements.map(element => {
+    const style = getComputedStyle(element), rect = element.getBoundingClientRect();
+    return { filter: style.backdropFilter, position: style.position, zIndex: style.zIndex,
+      nested: Boolean(element.parentElement.closest(".modal-backdrop")), hasNested: Boolean(element.querySelector(".modal-backdrop")),
+      left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: innerWidth, height: innerHeight };
+  }));
+  assert.equal(observed.length, expectedCount, "Exercise the intended single/nested modal state");
+  for (const item of observed) {
+    assert.equal(item.filter, item.nested || item.hasNested ? "none" : "blur(3px)", "Only nested modal stacks suppress backdrop filters");
+    assert.equal(item.position, "fixed"); assert.equal(item.zIndex, "100");
+    assert.ok(item.left >= -1 && item.right <= item.width + 1 && item.top >= -1 && item.bottom <= item.height + 1, "Removing a filter containing block must not move its nested backdrop outside the viewport");
   }
 }
 async function exerciseFormulaLibrary(prefix) {
@@ -141,8 +165,24 @@ async function exerciseFormulaLibrary(prefix) {
   await assertHorizontalFit();
   await screenshot(prefix + "-formula-library-controls", currentScenario.width, false, true);
   await activate(dialog().getByRole("button", { name: "Synthetic renamed formula", exact: true }));
-  await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
-  await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true }));
+  await assertModalBackdropContract(1);
+  const beforeNestedModal = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
+  const deleteTrigger = dialog().getByRole("button", { name: "登録式を削除", exact: true });
+  await deleteTrigger.focus();
+  await activate(deleteTrigger);
+  await assertModalBackdropContract(2);
+  await assertHorizontalFit();
+  const deleteCancel = page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "キャンセル", exact: true });
+  if (currentScenario.hasTouch) {
+    const target = await deleteCancel.boundingBox();
+    assert.ok(target && target.width >= 44 && target.height >= 44, "Nested modal cancel retains its 44px touch target");
+  }
+  await activate(deleteCancel);
+  await assertModalBackdropContract(1);
+  await expect(deleteTrigger).toBeFocused();
+  await assertHorizontalFit();
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeNestedModal);
+  await passed(prefix + ": single nested and restored modal filters preserve viewport geometry focus touch targets and saved state");
   await expect(dialog()).toContainText("price * quantity + tax");
   await activate(dialog().getByRole("button", { name: "登録式を削除", exact: true }));
   await activate(page.getByRole("dialog", { name: "登録式を削除しますか？", exact: true }).getByRole("button", { name: "削除する", exact: true }));
@@ -1408,7 +1448,16 @@ async function exerciseStickyOffset(prefix) {
   await passed(prefix + ": real-app sticky offset follows header growth/shrink at 721/800/1365px and 200/100% text sizes");
 }
 let stageStarted = performance.now();
-async function stage(name) { metadata.timings.stages.push({ name: metadata.stage, durationMs: performance.now() - stageStarted }); stageStarted = performance.now(); metadata.stage = name; await persist(); }
+async function stage(name) {
+  const endMs = performance.now();
+  metadata.timings.stages.push({ name: metadata.stage, scenario: selected.id, startMs: stageStarted, endMs, durationMs: endMs - stageStarted });
+  stageStarted = endMs; metadata.stage = name;
+  const observation = { stage: name, monotonicMs: endMs, ...runtimeResources() };
+  (metadata.resourcesByStage ||= []).push(observation);
+  const persistStarted = performance.now();
+  await persist();
+  observation.persistDurationMs = performance.now() - persistStarted;
+}
 async function passed(name) { metadata.checks.push(name); console.log("PASS:", name); await persist(); }
 async function screenshot(name, expectedWidth = currentScenario.width, fullPage = true, overlayTop = false) {
   const checkpointStarted = performance.now();
@@ -4167,8 +4216,11 @@ async function exercise(scenario) {
   await exerciseFormulaLibrary(prefix);
   await exerciseFormulaReports(prefix);
   await exerciseFormulaQuotes(prefix);
+  await stage(prefix + ": formula-audit-storage");
   await exerciseAuditStorage({ page, context, base, expect, passed, prefix, assertHorizontalFit });
+  await stage(prefix + ": formula-audit-fixed-record");
   await exerciseAuditFixedRecord({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
+  await stage(prefix + ": formula-audit-record-comparison");
   await exerciseAuditRecordComparison({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);

@@ -1,0 +1,791 @@
+{
+  "plan": {
+    "plannedAt": "2026-10-26T07:18:00Z",
+    "purpose": "one predeclared independent fresh-browser matrix; failed trials retained, no retries",
+    "build": "/tmp/pr93-baseline-dist-5cbaf6f",
+    "width": 390,
+    "dpr": 3,
+    "timeoutMs": 10000,
+    "trials": [
+      "baseline",
+      "no-blur",
+      "stack-no-blur",
+      "no-blur",
+      "stack-no-blur",
+      "baseline",
+      "stack-no-blur",
+      "baseline",
+      "no-blur"
+    ],
+    "perTrial": "fixture bootstrap then 3 A/B round trips, same native touch and assertions; branch-specific outcomes not substituted"
+  },
+  "summary": {
+    "no-blur": {
+      "passed": 1,
+      "failed": 2,
+      "medianCompletedFunctionDurationMs": 24793.218698,
+      "medianCompletedRoundTripDurationMs": 2301.1974609999997,
+      "successfulRoundTrips": 3,
+      "warning": "Failed trials are retained separately, never assigned zero time or replaced by reruns."
+    },
+    "baseline": {
+      "passed": 3,
+      "failed": 0,
+      "medianCompletedFunctionDurationMs": 42442.053962,
+      "medianCompletedRoundTripDurationMs": 5546.357757999998,
+      "successfulRoundTrips": 9,
+      "warning": "Failed trials are retained separately, never assigned zero time or replaced by reruns."
+    },
+    "stack-no-blur": {
+      "passed": 3,
+      "failed": 0,
+      "medianCompletedFunctionDurationMs": 23574.221995,
+      "medianCompletedRoundTripDurationMs": 2185.518398,
+      "successfulRoundTrips": 9,
+      "warning": "Failed trials are retained separately, never assigned zero time or replaced by reruns."
+    }
+  },
+  "trials": [
+    {
+      "trial": 1,
+      "condition": "baseline",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:18:28.038Z",
+      "finishedAt": "2026-10-26T07:19:24.502Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 42442.053962,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 3220.724728,
+      "contextDurationMs": 29.27081900000121,
+      "roundTrips": [
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 39756.407675,
+          "endMs": 47706.948726,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 47708.480404,
+          "endMs": 53254.838162,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 53256.717791,
+          "endMs": 61050.543192,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "baseline",
+          "controls": [
+            {
+              "filter": "blur(3px)",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "blur(3px)",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "blur(3px)",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "d3b5b7b7730820a3d1eb739407e6c5ae8716a35808424c8a5124c51f01239850",
+      "traceSha256": "6ce802cee25421eeec09217fd5773c42f35177507d149abcdb772d953675d0b5",
+      "resources": [
+        {
+          "atMs": 18552.310551,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.3 14856 codex\n      2       1  0.0  1888 bash\n     16       2 43.4 98760 MainThread\n     29      16 17.0 131980 MainThread\n     65      16  1.7  1948 bash\n     71      65 16.7 111824 MiniBrowser\n     84      71 13.1 54232 WPENetworkProce\n     86      71  166 450028 WPEWebProcess\n    138      16  0.0  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "0.81 1.40 1.99 6/513 140\n"
+        },
+        {
+          "atMs": 49663.730378,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.1 14856 codex\n      2       1  0.0  1888 bash\n     16       2 21.5 109028 MainThread\n     29      16  5.9 136780 MainThread\n     65      16  0.4  1948 bash\n     71      65  8.2 124096 MiniBrowser\n     84      71  3.1 54200 WPENetworkProce\n     86      71  274 702508 WPEWebProcess\n    148      16  100  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.73 1.79 2.10 3/504 150\n"
+        },
+        {
+          "atMs": 61055.405621,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.1 14856 codex\n      2       1  0.0  1888 bash\n     16       2 20.2 109920 MainThread\n     29      16  4.7 136780 MainThread\n     65      16  0.3  1948 bash\n     71      65 10.0 124004 MiniBrowser\n     84      71  2.4 54208 WPENetworkProce\n     86      71  299 713540 WPEWebProcess\n    151      16 66.6  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.96 1.89 2.13 3/504 153\n"
+        },
+        {
+          "atMs": 62422.305381,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.1 14856 codex\n      2       1  0.0  1888 bash\n     16       2 20.5 111324 MainThread\n     29      16  4.6 136780 MainThread\n    161      16  100  2492 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.96 1.89 2.13 1/445 163\n"
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "condition": "no-blur",
+      "status": "failed",
+      "startedAt": "2026-10-26T07:19:25.699Z",
+      "finishedAt": "2026-10-26T07:19:45.063Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": null,
+      "completedActivations": 0,
+      "attemptedActivations": 0,
+      "launchDurationMs": 865.0962509999999,
+      "contextDurationMs": 28.547985000000153,
+      "roundTrips": [],
+      "computedStyleControls": [],
+      "pageErrors": [],
+      "failure": "page.goto: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4396/calculator-memo/\", waiting until \"load\"\u001b[22m\n\n    at object.<computed> (/workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:28:157)\n    at open (<anonymous>:29:16)\n    at exerciseAuditRecordComparison (<anonymous>:41:9)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:37:79",
+      "rawSha256": "379aae2342d213e54a4b00535c41451cd174cea47060b7c24bc8c4e5cc780605",
+      "traceSha256": "61f56e00da85c0dc729db4bac0b937e186690e42d99471829baf155b90b48323",
+      "resources": [
+        {
+          "atMs": 6890.318704,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    164       2 25.8 97836 MainThread\n    177     164 21.3 128600 MainThread\n    213     164  0.1  1948 bash\n    219     213 20.8 111728 MiniBrowser\n    232     219  5.4 54420 WPENetworkProce\n    234     219  214 411916 WPEWebProcess\n    286     164  0.0  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.96 1.91 2.14 3/510 288\n"
+        },
+        {
+          "atMs": 20243.126932,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    164       2 18.0 116180 MainThread\n    177     164  7.9 130472 MainThread\n    295     164  0.0  2496 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.00 1.97 2.15 1/446 297\n"
+        }
+      ]
+    },
+    {
+      "trial": 3,
+      "condition": "stack-no-blur",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:19:46.181Z",
+      "finishedAt": "2026-10-26T07:20:17.545Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 24322.470773,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 975.7081699999999,
+      "contextDurationMs": 31.18315100000018,
+      "roundTrips": [
+        {
+          "condition": "stack-no-blur",
+          "repeat": 0,
+          "startMs": 24633.674554,
+          "endMs": 27210.264586,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "stack-no-blur",
+          "repeat": 1,
+          "startMs": 27211.09578,
+          "endMs": 29508.272468,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "stack-no-blur",
+          "repeat": 2,
+          "startMs": 29512.248491,
+          "endMs": 31895.90825,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "stack-no-blur",
+          "controls": [
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "none",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "4100cd048fb03b3e17631e3d00fdc572b69881787a21aa66d4c0356d08354ce5",
+      "traceSha256": "1a77574e34df9aa598a147c806be647cce79f0f57e8f262e3d6e52be5112a5a9",
+      "resources": [
+        {
+          "atMs": 7473.713423,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    298       2 24.0 97540 MainThread\n    311     298 24.2 132900 MainThread\n    347     298  0.1  1952 bash\n    353     347 10.6 111976 MiniBrowser\n    366     353  5.7 54196 WPENetworkProce\n    368     353  174 468040 WPEWebProcess\n    420     298 80.0  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.85 1.97 2.15 3/512 422\n"
+        },
+        {
+          "atMs": 28188.489176,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    298       2 14.2 107620 MainThread\n    311     298  7.2 136648 MainThread\n    347     298  0.0  1952 bash\n    353     347  7.0 124480 MiniBrowser\n    366     353  1.5 54308 WPENetworkProce\n    368     353  210 700620 WPEWebProcess\n    423     298 50.0  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.47 1.94 2.13 2/506 425\n"
+        },
+        {
+          "atMs": 31896.93045,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    298       2 14.8 108840 MainThread\n    311     298  6.4 136652 MainThread\n    347     298  0.0  1952 bash\n    353     347  6.9 124724 MiniBrowser\n    366     353  1.3 54312 WPENetworkProce\n    368     353  209 709640 WPEWebProcess\n    426     298  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.47 1.94 2.13 10/505 428\n"
+        },
+        {
+          "atMs": 32262.392044,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    298       2 15.0 110464 MainThread\n    311     298  6.3 136652 MainThread\n    436     298  0.0  2496 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.47 1.94 2.13 1/446 438\n"
+        }
+      ]
+    },
+    {
+      "trial": 4,
+      "condition": "no-blur",
+      "status": "failed",
+      "startedAt": "2026-10-26T07:20:18.607Z",
+      "finishedAt": "2026-10-26T07:20:52.970Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": null,
+      "completedActivations": 0,
+      "attemptedActivations": 0,
+      "launchDurationMs": 1779.0330439999998,
+      "contextDurationMs": 19.584689000000253,
+      "roundTrips": [],
+      "computedStyleControls": [],
+      "pageErrors": [],
+      "failure": "page.goto: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4396/calculator-memo/\", waiting until \"load\"\u001b[22m\n\n    at object.<computed> (/workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:28:157)\n    at open (<anonymous>:29:16)\n    at exerciseAuditRecordComparison (<anonymous>:41:9)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-comparison-export/docs/maintenance/pr93-gui-repair-20261026/fixed-record-paired-diagnostic.mjs:37:79",
+      "rawSha256": "d9bf1c5af0b12f9388bba9c12de64fb5b20e65a4ee96accd11b7be2ad6ac4b0a",
+      "traceSha256": "1bc69e1a00cee3ed46a9b87373528923d79d6100c76bf2da0a328df8881081e0",
+      "resources": [
+        {
+          "atMs": 9381.898666,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    439       2 21.9 97616 MainThread\n    452     439 13.7 130436 MainThread\n    488     439  0.0  1948 bash\n    494     488  8.8 111912 MiniBrowser\n    507     494  3.2 54620 WPENetworkProce\n    509     494  158 456892 WPEWebProcess\n    561     439 50.0  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.24 1.91 2.12 3/511 563\n"
+        },
+        {
+          "atMs": 35340.17757,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    439       2 27.5 115752 MainThread\n    452     439  8.9 132252 MainThread\n    571     439 50.0  2496 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "2.33 1.95 2.13 1/447 573\n"
+        }
+      ]
+    },
+    {
+      "trial": 5,
+      "condition": "stack-no-blur",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:20:56.938Z",
+      "finishedAt": "2026-10-26T07:21:24.058Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 20740.22788,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 956.6907570000003,
+      "contextDurationMs": 16.544451000000663,
+      "roundTrips": [
+        {
+          "condition": "stack-no-blur",
+          "repeat": 0,
+          "startMs": 24762.861475,
+          "endMs": 26652.728576,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "stack-no-blur",
+          "repeat": 1,
+          "startMs": 26654.51578,
+          "endMs": 28335.461069,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "stack-no-blur",
+          "repeat": 2,
+          "startMs": 28339.226022,
+          "endMs": 30191.129839,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "stack-no-blur",
+          "controls": [
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "none",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "6afbc460c1284f12d73e25d4414db9f015a19abe31fa0107da879ba34893e164",
+      "traceSha256": "3d6bed4ef455118336c8792ede0119abf479aef23b038986787ee3dc108993d3",
+      "resources": [
+        {
+          "atMs": 9395.177001,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    574       2 50.0 97972 MainThread\n    587     574 20.7 131188 MainThread\n    623     574  0.4  1948 bash\n    629     623 16.1 111824 MiniBrowser\n    642     629  5.3 56104 WPENetworkProce\n    644     629  194 411800 WPEWebProcess\n    696     574  0.0  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.16 2.13 2.18 3/509 698\n"
+        },
+        {
+          "atMs": 27334.24246,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    574       2 25.0 108304 MainThread\n    587     574  6.6 134976 MainThread\n    623     574  0.0  1948 bash\n    629     623  8.7 124488 MiniBrowser\n    642     629  1.9 54452 WPENetworkProce\n    644     629  222 718944 WPEWebProcess\n    699     574 66.6  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.13 2.18 2.20 9/506 701\n"
+        },
+        {
+          "atMs": 30192.474155,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    574       2 24.6 109024 MainThread\n    587     574  5.9 134976 MainThread\n    623     574  0.0  1948 bash\n    629     623  8.9 124584 MiniBrowser\n    642     629  1.6 54468 WPENetworkProce\n    644     629  228 722200 WPEWebProcess\n    702     574  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.04 2.17 2.20 9/504 704\n"
+        },
+        {
+          "atMs": 30658.629613,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    574       2 24.7 110452 MainThread\n    587     574  5.8 134976 MainThread\n    712     574  0.0  2496 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.04 2.17 2.20 1/445 714\n"
+        }
+      ]
+    },
+    {
+      "trial": 6,
+      "condition": "baseline",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:21:25.544Z",
+      "finishedAt": "2026-10-26T07:22:05.758Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 31836.452393,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 1264.7478059999999,
+      "contextDurationMs": 20.18863999999985,
+      "roundTrips": [
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 24854.670081,
+          "endMs": 30824.923002,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 30827.963352,
+          "endMs": 35965.542048,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 35968.788871,
+          "endMs": 40322.758329,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "baseline",
+          "controls": [
+            {
+              "filter": "blur(3px)",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "blur(3px)",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "blur(3px)",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "17fb8da6e2fdd606c606d45d996e63e7d97c435f727208f76ad93fea24d6e378",
+      "traceSha256": "a99664d1ba1e481e3b7a633d14f8cb392cbb2b96696d3d7351958d65e0071659",
+      "resources": [
+        {
+          "atMs": 8459.439778,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    715       2 26.8 97856 MainThread\n    728     715 18.5 130992 MainThread\n    764     715  0.1  1952 bash\n    770     764 12.6 111732 MiniBrowser\n    783     770 15.4 54440 WPENetworkProce\n    785     770  162 467104 WPEWebProcess\n    837     715  0.0  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.03 2.19 2.20 3/510 839\n"
+        },
+        {
+          "atMs": 33033.665668,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    715       2 15.3 109296 MainThread\n    728     715  5.4 134624 MainThread\n    764     715  0.0  1952 bash\n    770     764  6.7 124112 MiniBrowser\n    783     770  3.1 54708 WPENetworkProce\n    785     770  307 720344 WPEWebProcess\n    841     715 66.6  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.01 2.27 2.23 11/507 843\n"
+        },
+        {
+          "atMs": 40324.133542,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    715       2 15.6 109564 MainThread\n    728     715  4.7 134624 MainThread\n    764     715  0.0  1952 bash\n    770     764  6.7 124564 MiniBrowser\n    783     770  2.5 54716 WPENetworkProce\n    785     770  329 726816 WPEWebProcess\n    844     715 75.0  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.79 2.45 2.29 2/508 846\n"
+        },
+        {
+          "atMs": 41563.733808,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    715       2 15.7 105440 MainThread\n    728     715  4.6 134624 MainThread\n    854     715  100  2496 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.79 2.45 2.29 1/448 856\n"
+        }
+      ]
+    },
+    {
+      "trial": 7,
+      "condition": "stack-no-blur",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:22:06.894Z",
+      "finishedAt": "2026-10-26T07:22:38.960Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 23574.221995,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 1473.854706,
+      "contextDurationMs": 26.79011300000002,
+      "roundTrips": [
+        {
+          "condition": "stack-no-blur",
+          "repeat": 0,
+          "startMs": 25922.486708,
+          "endMs": 28108.005106,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "stack-no-blur",
+          "repeat": 1,
+          "startMs": 28109.007806,
+          "endMs": 29956.708759,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "stack-no-blur",
+          "repeat": 2,
+          "startMs": 29957.835057,
+          "endMs": 32572.407212,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "stack-no-blur",
+          "controls": [
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "none",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "f4fea04aad90aeef0e1756d782b011faca267d35673f71d34c83d102f4e241ac",
+      "traceSha256": "727519deb27bfce933f7306c37633b1cac9bf0c1c8436418691997e8c70ba508",
+      "resources": [
+        {
+          "atMs": 8946.501075,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    857       2 23.6 98756 MainThread\n    870     857 17.2 132384 MainThread\n    906     857  0.0  1948 bash\n    912     906  9.9 111660 MiniBrowser\n    925     912  6.2 56352 WPENetworkProce\n    927     912  185 431880 WPEWebProcess\n    979     857  100  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.83 2.51 2.31 5/512 981\n"
+        },
+        {
+          "atMs": 28873.904637,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    857       2 16.8 102712 MainThread\n    870     857  6.0 136324 MainThread\n    906     857  0.0  1948 bash\n    912     906  7.6 124148 MiniBrowser\n    925     912  3.2 54688 WPENetworkProce\n    927     912  215 698332 WPEWebProcess\n    982     857  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.67 2.55 2.33 1/507 984\n"
+        },
+        {
+          "atMs": 32573.543266,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    857       2 18.0 104304 MainThread\n    870     857  5.4 136328 MainThread\n    906     857  0.0  1948 bash\n    912     906  8.1 124236 MiniBrowser\n    925     912  2.8 54692 WPENetworkProce\n    927     912  218 695148 WPEWebProcess\n    986     857  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.18 2.68 2.37 10/507 988\n"
+        },
+        {
+          "atMs": 33054.616571,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    857       2 18.2 105476 MainThread\n    870     857  5.3 136328 MainThread\n    996     857  100  2496 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.18 2.68 2.37 2/447 998\n"
+        }
+      ]
+    },
+    {
+      "trial": 8,
+      "condition": "baseline",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:22:41.417Z",
+      "finishedAt": "2026-10-26T07:23:38.672Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 47668.440422,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 1190.647254,
+      "contextDurationMs": 38.48970899999949,
+      "roundTrips": [
+        {
+          "condition": "baseline",
+          "repeat": 0,
+          "startMs": 34560.370872,
+          "endMs": 48028.731606,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "baseline",
+          "repeat": 1,
+          "startMs": 48030.476975,
+          "endMs": 53358.902821,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "baseline",
+          "repeat": 2,
+          "startMs": 53360.354572,
+          "endMs": 58341.149987,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "baseline",
+          "controls": [
+            {
+              "filter": "blur(3px)",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "blur(3px)",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "blur(3px)",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "025c1dd006030c9443a5f024651e18a488d155ee77084dadce2b2c6bb5e4e963",
+      "traceSha256": "16f084151969c0cbf427d1d9c10d067b943c170c1e0cf1d43386c860559f76a5",
+      "resources": [
+        {
+          "atMs": 9820.250909,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    999       2 36.3 97420 MainThread\n   1012     999 16.7 128936 MainThread\n   1048     999  0.0  1952 bash\n   1054    1048 11.8 111768 MiniBrowser\n   1067    1054  4.4 54708 WPENetworkProce\n   1069    1054  185 462120 WPEWebProcess\n   1121     999  0.0  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "3.84 2.66 2.36 4/517 1123\n"
+        },
+        {
+          "atMs": 50694.897412,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    999       2 19.9 108872 MainThread\n   1012     999  3.9 133188 MainThread\n   1048     999  0.0  1952 bash\n   1054    1048  7.9 124048 MiniBrowser\n   1067    1054  0.8 54828 WPENetworkProce\n   1069    1054  308 705220 WPEWebProcess\n   1140     999  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.38 2.96 2.48 1/514 1142\n"
+        },
+        {
+          "atMs": 58343.872884,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    999       2 18.7 109664 MainThread\n   1012     999  3.4 133188 MainThread\n   1048     999  0.0  1952 bash\n   1054    1048  7.3 124408 MiniBrowser\n   1067    1054  0.7 54836 WPENetworkProce\n   1069    1054  331 705040 WPEWebProcess\n   1143     999  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.75 3.06 2.52 2/507 1145\n"
+        },
+        {
+          "atMs": 59589.998374,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n    999       2 18.6 110716 MainThread\n   1012     999  3.3 133188 MainThread\n   1154     999  0.0  2492 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "5.17 3.18 2.56 1/448 1156\n"
+        }
+      ]
+    },
+    {
+      "trial": 9,
+      "condition": "no-blur",
+      "status": "passed",
+      "startedAt": "2026-10-26T07:23:39.957Z",
+      "finishedAt": "2026-10-26T07:24:14.848Z",
+      "browser": "26.0",
+      "sourceSha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+      "buildDirectory": "/tmp/pr93-baseline-dist-5cbaf6f",
+      "diagnosticScriptSha256": "adf8deaf101c17aa9989c2f11aad703b3dab28f4549d666fb9b34bc5e74f29fd",
+      "fixtureSourceSha256": "ace26622a3a409adae658c57cb841035c013146bb7616bc68be538a34c3bc07a",
+      "durationMs": 24793.218698,
+      "completedActivations": 16,
+      "attemptedActivations": 16,
+      "launchDurationMs": 2683.2491760000003,
+      "contextDurationMs": 51.85327599999982,
+      "roundTrips": [
+        {
+          "condition": "no-blur",
+          "repeat": 0,
+          "startMs": 27777.638177,
+          "endMs": 30019.065428,
+          "firstEvent": 4,
+          "lastEvent": 7
+        },
+        {
+          "condition": "no-blur",
+          "repeat": 1,
+          "startMs": 30022.035001,
+          "endMs": 32323.232462,
+          "firstEvent": 8,
+          "lastEvent": 11
+        },
+        {
+          "condition": "no-blur",
+          "repeat": 2,
+          "startMs": 32325.577174,
+          "endMs": 35677.199987,
+          "firstEvent": 12,
+          "lastEvent": 15
+        }
+      ],
+      "computedStyleControls": [
+        {
+          "condition": "no-blur",
+          "controls": [
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": false
+            },
+            {
+              "filter": "none",
+              "hasNested": true,
+              "nested": true
+            },
+            {
+              "filter": "none",
+              "hasNested": false,
+              "nested": true
+            }
+          ]
+        }
+      ],
+      "pageErrors": [],
+      "failure": null,
+      "rawSha256": "ac74e0e06e07ccb92d519db85b9b411bac80886dba1eb3314465b79d69c19645",
+      "traceSha256": "71ecc9fb49fc980dabe2d1a3b3f723752b70f2e3ff23df377812a5791bea804d",
+      "resources": [
+        {
+          "atMs": 10837.7049,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n   1157       2 33.4 97876 MainThread\n   1170    1157 20.0 132708 MainThread\n   1206    1157  6.3  1952 bash\n   1212    1206 15.6 111556 MiniBrowser\n   1225    1212  6.8 54112 WPENetworkProce\n   1227    1212  173 426592 WPEWebProcess\n   1279    1157  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.68 3.14 2.55 3/513 1281\n"
+        },
+        {
+          "atMs": 30779.824056,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n   1157       2 18.8 121224 MainThread\n   1170    1157  8.1 136368 MainThread\n   1206    1157  1.8  1952 bash\n   1212    1206 10.3 124140 MiniBrowser\n   1225    1212  2.0 56204 WPENetworkProce\n   1227    1212  201 708164 WPEWebProcess\n   1283    1157  100  2524 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.23 3.13 2.56 3/511 1285\n"
+        },
+        {
+          "atMs": 35680.842653,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n   1157       2 18.9 122320 MainThread\n   1170    1157  6.9 136372 MainThread\n   1206    1157  1.5  1952 bash\n   1212    1206 10.0 123936 MiniBrowser\n   1225    1212  1.7 54300 WPENetworkProce\n   1227    1212  208 710684 WPEWebProcess\n   1287    1157  100  2520 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.61 3.23 2.59 7/510 1289\n"
+        },
+        {
+          "atMs": 36057.780134,
+          "processes": "    PID    PPID %CPU   RSS COMMAND\n      1       0  0.0 14856 codex\n      2       1  0.0  1936 bash\n   1157       2 19.2 123488 MainThread\n   1170    1157  6.9 136372 MainThread\n   1296    1157  0.0  2492 ps\n",
+          "cgroup": "0::/\n",
+          "loadAverage": "4.61 3.23 2.59 2/448 1298\n"
+        }
+      ]
+    }
+  ],
+  "scope": "diagnostic sequential fresh-browser matrix, not whole formal CI, not physical Safari",
+  "originalGuiChecksRemoved": 0
+}

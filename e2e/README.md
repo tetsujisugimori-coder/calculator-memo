@@ -1,5 +1,7 @@
 # PR GUI regression
 
+Current PR #93 repair acceptance: **918 groups (912 retained + 6 nested-modal regressions), 562 geometry checkpoints, 114 representative PNGs, and zero successful traces**, across the unchanged six conditions and three workers within the existing 30-minute job. Historical counts below describe their own revisions; completion evidence must identify the actual tested HEAD.
+
 Every ordinary `pull_request` runs `.github/workflows/verify-pr-gui.yml`, including draft PRs and forks (subject to GitHub's normal approval policy). This workflow never deploys. It uses only `contents: read`, no repository secrets, no `pull_request_target`, and no persisted checkout credential. The production Pages workflow is separate and unchanged.
 
 ## Coverage and identity
@@ -633,3 +635,18 @@ The existing six contexts each add one explicit A/B comparison of distinct, chec
 Issue #92 CI follow-up: the same two workers now schedule WebKit conditions first; original scenario indices still define ports and final report order. No condition, DPR, check, touch action, geometry, screenshot or timeout is removed. Input wall-time counters aid diagnosis. The historical source sentinel assertion excludes only strictly validated identifier/date paragraphs and verifies every selected snapshot calculation field exactly; negative controls reject leaked values and malformed exclusions. UUID/date digits are not calculation values.
 
 2026-10-26 JST owner-approved follow-up: concurrency is now three within the same existing 30-minute job, not three separate time budgets. Six conditions/DPR/912 checks/562 geometry/114 PNG/no successful traces are unchanged. Historical two-worker statements describe their then-current contract. Startup/end evidence records logical/available CPU, host memory/load, readable cgroup limits and Node process usage; these do not measure browser CPU or prove the delay cause. Whole-suite completion remains required.
+
+## PR #93 GUI acceptance repair
+
+The six original conditions now include one additional single/nested/restored modal decoration contract each: **918 checks = 912 retained + 6**, with **562 screenshot geometry checkpoints / 114 PNGs / zero exported successful formal traces**, three workers and the unchanged 30-minute job budget. Existing delete/cancel input is reused, not skipped or replaced with DOM mutation. Additional backdrop/focus/state assertions do not reduce any original coverage.
+
+The old `formula-calculation-quotes` timing also contained audit storage, fixed audit records, and audit comparison. New stage boundaries separate them; compare their **sum** with the old aggregate. Activation means tap/click plus touch confirmation, not text-entry or isolated React execution. Monotonic sub-timings and visible Linux descendant CPU ticks/RSS are diagnostic observations with recorded collection overhead and explicit missing-data limits. [Repair evidence and retained failures](../docs/maintenance/pr93-gui-repair-20261026/README.md).
+
+
+## PR #93 nested-modal timing repair (2026-10-26 JST)
+
+The added acceptance group reuses the existing formula-library delete/cancel controls: a single modal retains `blur(3px)`, a nested stack has no overlapping backdrop filters, and cancellation restores the single filter and trigger focus without changing saved data. Fixed position/z-index, both viewport axes, and the mobile 44px cancel target are checked. The original 912 groups and all native inputs remain; mobile touch activation count stays 1101. No screenshot checkpoint, PNG, successful-trace policy, worker, DPR, viewport, or timeout was reduced.
+
+Activation evidence separates monotonic pre-dispatch/post-dispatch/touch-observation timestamps from the total wrapper time. Quote, audit-storage, fixed-record, and record-comparison stages now have separate boundaries; earlier `formula-calculation-quotes` totals included all four. Stage resource snapshots record their own observation/persist costs and visible Linux descendant-process counters separately from Node resource usage. Missing `/proc` or cgroup observations remain explicitly unavailable. Raw CPU ticks are not seconds; RSS sums are not unique memory.
+
+The local CSS contrast is diagnostic evidence, not a formal whole-suite result. All initial timeouts and the predeclared matrix outcomes remain in [the repair timing record](../docs/maintenance/pr93-gui-repair-20261026/webkit-timing.md). The nested-stack visual blur change mitigates an observed actionability-delay contribution; exact low-level WebKit/environment causes remain unknown. Final CI must still complete every condition and artifact contract on the final HEAD.

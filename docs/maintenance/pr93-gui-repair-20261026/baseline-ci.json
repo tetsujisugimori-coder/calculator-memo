@@ -1,0 +1,2479 @@
+{
+  "observed_at": "2026-10-26T06:28:00Z",
+  "head": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+  "tree": "e447f4b8dfcd3008aa90c81e05c440c381be5d76",
+  "run": 40261949353,
+  "attempt": 1,
+  "artifact": 12625379653,
+  "zip_sha256": "87ca9c6869e3210a48bda53bbfe2ae08bbcfddfe04f71aaa38564186f744fd4c",
+  "artifact_api_digest_matches": true,
+  "png_count": 99,
+  "failed_trace_count": 1,
+  "scenarios": [
+    {
+      "scenario": "chromium-desktop-1365px",
+      "status": "passed",
+      "checks": 152,
+      "geometry": 95,
+      "stage": "complete",
+      "servedIdentity": {
+        "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+        "branch": "feat/audit-comparison-markdown-export",
+        "run": "40261949353",
+        "attempt": "1"
+      },
+      "failure": null,
+      "stage_timings": [
+        {
+          "name": "provenance",
+          "durationMs": 4.941699999999997
+        },
+        {
+          "name": "browser-tool-import",
+          "durationMs": 431.35306
+        },
+        {
+          "name": "preview-startup",
+          "durationMs": 431.841621
+        },
+        {
+          "name": "browser-launch",
+          "durationMs": 6.061474000000089
+        },
+        {
+          "name": "chromium-desktop-1365px-launch",
+          "durationMs": 336.50636600000007
+        },
+        {
+          "name": "chromium-desktop-1365px: browser-context",
+          "durationMs": 83.84465599999999
+        },
+        {
+          "name": "chromium-desktop-1365px: served-provenance",
+          "durationMs": 657.080884
+        },
+        {
+          "name": "chromium-desktop-1365px: responsive-header-guide-theme-scroll",
+          "durationMs": 2187.5656690000005
+        },
+        {
+          "name": "chromium-desktop-1365px: arithmetic-history-error-recovery",
+          "durationMs": 1182.9911000000002
+        },
+        {
+          "name": "chromium-desktop-1365px: single-memo-save-cancel-edit",
+          "durationMs": 519.6547599999994
+        },
+        {
+          "name": "chromium-desktop-1365px: block-memo-save",
+          "durationMs": 746.0656589999999
+        },
+        {
+          "name": "chromium-desktop-1365px: reload-persistence-visible-panels",
+          "durationMs": 939.1269799999991
+        },
+        {
+          "name": "chromium-desktop-1365px: trailing-number-edit-regression",
+          "durationMs": 2477.5272139999997
+        },
+        {
+          "name": "chromium-desktop-1365px: after-equals-state-transitions",
+          "durationMs": 5869.14365
+        },
+        {
+          "name": "chromium-desktop-1365px: small-result-chain-and-imported-editing",
+          "durationMs": 6849.879508
+        },
+        {
+          "name": "chromium-desktop-1365px: parentheses-percent-and-error-boundaries",
+          "durationMs": 3076.0262390000025
+        },
+        {
+          "name": "chromium-desktop-1365px: basic-math-expression-input-and-history",
+          "durationMs": 2523.918107999998
+        },
+        {
+          "name": "chromium-desktop-1365px: basic-math-errors-and-recovery",
+          "durationMs": 2804.7956319999976
+        },
+        {
+          "name": "chromium-desktop-1365px: basic-math-single-memo-edit",
+          "durationMs": 1053.083294
+        },
+        {
+          "name": "chromium-desktop-1365px: basic-math-block-save-and-recalculate",
+          "durationMs": 958.4655089999978
+        },
+        {
+          "name": "chromium-desktop-1365px: basic-math-url-and-reload",
+          "durationMs": 1805.276450999998
+        },
+        {
+          "name": "chromium-desktop-1365px: note-scoped-variables-order-and-editing",
+          "durationMs": 4867.889516000003
+        },
+        {
+          "name": "chromium-desktop-1365px: variable-scope-persistence-and-responsive-roles",
+          "durationMs": 8101.114455999996
+        },
+        {
+          "name": "chromium-desktop-1365px: legacy-block-opt-in-compatibility",
+          "durationMs": 1857.9555970000001
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-library-crud",
+          "durationMs": 7564.099936000006
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-math-reports",
+          "durationMs": 19498.645854999995
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-calculation-quotes",
+          "durationMs": 141833.58430699998
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-evidence-status-filters",
+          "durationMs": 6163.046197999996
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-detail-refresh-and-cancel",
+          "durationMs": 7513.375608000002
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-confirmation-timeline",
+          "durationMs": 4131.922326999978
+        },
+        {
+          "name": "chromium-desktop-1365px: identification-modes-and-native-input",
+          "durationMs": 11648.598376000009
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-execution-inputs-and-snapshots",
+          "durationMs": 5215.45066599999
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-execution-errors-and-reload",
+          "durationMs": 8455.927127000003
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-execution-definition-lifecycle",
+          "durationMs": 2102.208869999973
+        },
+        {
+          "name": "chromium-desktop-1365px: formula-execution-help-and-layout",
+          "durationMs": 9216.67281399999
+        },
+        {
+          "name": "chromium-desktop-1365px: block-extra-field-preservation",
+          "durationMs": 6702.752335999976
+        },
+        {
+          "name": "chromium-desktop-1365px: manual-block-references",
+          "durationMs": 14729.519277999992
+        },
+        {
+          "name": "chromium-desktop-1365px: default-id-calculations",
+          "durationMs": 16126.006185000006
+        },
+        {
+          "name": "chromium-desktop-1365px: calculation-state-diagnostics",
+          "durationMs": 15999.649761999957
+        },
+        {
+          "name": "chromium-desktop-1365px: dependency-graph-navigation",
+          "durationMs": 23302.569661999994
+        },
+        {
+          "name": "chromium-desktop-1365px: dependency-graph-limit-fallback",
+          "durationMs": 8389.777419999999
+        },
+        {
+          "name": "chromium-desktop-1365px: calculation-trial-preview",
+          "durationMs": 39615.05444799998
+        },
+        {
+          "name": "chromium-desktop-1365px: nested-percent-calculator",
+          "durationMs": 2230.598333000031
+        },
+        {
+          "name": "chromium-desktop-1365px: nested-percent-url",
+          "durationMs": 4760.981419999967
+        },
+        {
+          "name": "chromium-desktop-1365px: nested-percent-legacy-single",
+          "durationMs": 3693.7400100000086
+        },
+        {
+          "name": "chromium-desktop-1365px: nested-percent-legacy-blocks",
+          "durationMs": 2841.3525350000127
+        },
+        {
+          "name": "chromium-desktop-1365px: saved-markdown-report",
+          "durationMs": 9399.018630000006
+        },
+        {
+          "name": "chromium-desktop-1365px: calculation-evidence-snapshots",
+          "durationMs": 7411.845826999983
+        },
+        {
+          "name": "chromium-desktop-1365px: saved-record-comparison",
+          "durationMs": 35348.62606099999
+        },
+        {
+          "name": "complete",
+          "durationMs": 19903.098317999975
+        }
+      ],
+      "activation_timings": {
+        "chromium-desktop-1365px: responsive-header-guide-theme-scroll": {
+          "count": 6,
+          "durationMs": 365.6901669999993,
+          "maxMs": 89.3475370000001
+        },
+        "chromium-desktop-1365px: arithmetic-history-error-recovery": {
+          "count": 29,
+          "durationMs": 1028.4248540000008,
+          "maxMs": 47.33516700000018
+        },
+        "chromium-desktop-1365px: single-memo-save-cancel-edit": {
+          "count": 6,
+          "durationMs": 387.783273,
+          "maxMs": 86.43955300000016
+        },
+        "chromium-desktop-1365px: block-memo-save": {
+          "count": 5,
+          "durationMs": 390.83869199999754,
+          "maxMs": 114.50287099999969
+        },
+        "chromium-desktop-1365px: reload-persistence-visible-panels": {
+          "count": 2,
+          "durationMs": 124.28036200000042,
+          "maxMs": 75.65817700000025
+        },
+        "chromium-desktop-1365px: trailing-number-edit-regression": {
+          "count": 20,
+          "durationMs": 1439.3657119999998,
+          "maxMs": 121.15389700000014
+        },
+        "chromium-desktop-1365px: after-equals-state-transitions": {
+          "count": 48,
+          "durationMs": 3902.3983119999994,
+          "maxMs": 179.76961699999993
+        },
+        "chromium-desktop-1365px: small-result-chain-and-imported-editing": {
+          "count": 35,
+          "durationMs": 3315.5175379999982,
+          "maxMs": 345.4323519999998
+        },
+        "chromium-desktop-1365px: parentheses-percent-and-error-boundaries": {
+          "count": 7,
+          "durationMs": 522.0729070000016,
+          "maxMs": 94.4113010000001
+        },
+        "chromium-desktop-1365px: basic-math-expression-input-and-history": {
+          "count": 11,
+          "durationMs": 816.1128459999927,
+          "maxMs": 116.46619199999986
+        },
+        "chromium-desktop-1365px: basic-math-errors-and-recovery": {
+          "count": 12,
+          "durationMs": 789.5331759999972,
+          "maxMs": 98.84050900000148
+        },
+        "chromium-desktop-1365px: basic-math-single-memo-edit": {
+          "count": 5,
+          "durationMs": 523.1065329999983,
+          "maxMs": 179.70373699999982
+        },
+        "chromium-desktop-1365px: basic-math-block-save-and-recalculate": {
+          "count": 6,
+          "durationMs": 566.8087159999923,
+          "maxMs": 133.12585299999773
+        },
+        "chromium-desktop-1365px: basic-math-url-and-reload": {
+          "count": 3,
+          "durationMs": 402.71609400000307,
+          "maxMs": 169.56939299999794
+        },
+        "chromium-desktop-1365px: note-scoped-variables-order-and-editing": {
+          "count": 19,
+          "durationMs": 2610.610977999997,
+          "maxMs": 224.84638400000404
+        },
+        "chromium-desktop-1365px: variable-scope-persistence-and-responsive-roles": {
+          "count": 13,
+          "durationMs": 1971.2453660000174,
+          "maxMs": 215.01416400000016
+        },
+        "chromium-desktop-1365px: legacy-block-opt-in-compatibility": {
+          "count": 3,
+          "durationMs": 581.4033380000037,
+          "maxMs": 302.45022400000016
+        },
+        "chromium-desktop-1365px: formula-library-crud": {
+          "count": 26,
+          "durationMs": 3585.0388779999994,
+          "maxMs": 266.832024000003
+        },
+        "chromium-desktop-1365px: formula-math-reports": {
+          "count": 57,
+          "durationMs": 8690.785122000023,
+          "maxMs": 389.4957480000012
+        },
+        "chromium-desktop-1365px: formula-calculation-quotes": {
+          "count": 186,
+          "durationMs": 40089.720770999964,
+          "maxMs": 622.3005479999993
+        },
+        "chromium-desktop-1365px: formula-evidence-status-filters": {
+          "count": 15,
+          "durationMs": 2579.987696999917,
+          "maxMs": 379.0159130000102
+        },
+        "chromium-desktop-1365px: formula-detail-refresh-and-cancel": {
+          "count": 17,
+          "durationMs": 3381.4062529999937,
+          "maxMs": 728.2256209999905
+        },
+        "chromium-desktop-1365px: formula-confirmation-timeline": {
+          "count": 2,
+          "durationMs": 487.19861399999354,
+          "maxMs": 312.27324999999837
+        },
+        "chromium-desktop-1365px: identification-modes-and-native-input": {
+          "count": 21,
+          "durationMs": 2551.9419539999217,
+          "maxMs": 218.91841099999147
+        },
+        "chromium-desktop-1365px: formula-execution-inputs-and-snapshots": {
+          "count": 15,
+          "durationMs": 2762.8974550000567,
+          "maxMs": 343.0624490000191
+        },
+        "chromium-desktop-1365px: formula-execution-errors-and-reload": {
+          "count": 25,
+          "durationMs": 5143.338377000036,
+          "maxMs": 466.9651040000026
+        },
+        "chromium-desktop-1365px: formula-execution-definition-lifecycle": {
+          "count": 9,
+          "durationMs": 1570.4993970000942,
+          "maxMs": 254.43112000002293
+        },
+        "chromium-desktop-1365px: formula-execution-help-and-layout": {
+          "count": 17,
+          "durationMs": 3297.228660999972,
+          "maxMs": 397.35102499998175
+        },
+        "chromium-desktop-1365px: block-extra-field-preservation": {
+          "count": 12,
+          "durationMs": 2333.511637000076,
+          "maxMs": 298.31356499996036
+        },
+        "chromium-desktop-1365px: manual-block-references": {
+          "count": 28,
+          "durationMs": 5096.896048999799,
+          "maxMs": 288.9876960000256
+        },
+        "chromium-desktop-1365px: default-id-calculations": {
+          "count": 32,
+          "durationMs": 6258.177920999995,
+          "maxMs": 377.38635899999645
+        },
+        "chromium-desktop-1365px: calculation-state-diagnostics": {
+          "count": 39,
+          "durationMs": 6176.116335000028,
+          "maxMs": 288.18811799999094
+        },
+        "chromium-desktop-1365px: dependency-graph-navigation": {
+          "count": 45,
+          "durationMs": 8469.656299000315,
+          "maxMs": 350.02982400002657
+        },
+        "chromium-desktop-1365px: dependency-graph-limit-fallback": {
+          "count": 8,
+          "durationMs": 2806.054470999923,
+          "maxMs": 849.7157679999946
+        },
+        "chromium-desktop-1365px: calculation-trial-preview": {
+          "count": 64,
+          "durationMs": 12800.352095999813,
+          "maxMs": 611.6507560000173
+        },
+        "chromium-desktop-1365px: nested-percent-calculator": {
+          "count": 5,
+          "durationMs": 528.5062949999119,
+          "maxMs": 157.95201499998802
+        },
+        "chromium-desktop-1365px: nested-percent-url": {
+          "count": 8,
+          "durationMs": 1296.7314579999656,
+          "maxMs": 229.16364400001476
+        },
+        "chromium-desktop-1365px: nested-percent-legacy-single": {
+          "count": 8,
+          "durationMs": 1273.4530610000365,
+          "maxMs": 274.7937759999768
+        },
+        "chromium-desktop-1365px: nested-percent-legacy-blocks": {
+          "count": 2,
+          "durationMs": 318.8022650000057,
+          "maxMs": 205.08236000000034
+        },
+        "chromium-desktop-1365px: saved-markdown-report": {
+          "count": 29,
+          "durationMs": 4583.110265999974,
+          "maxMs": 310.05573600000935
+        },
+        "chromium-desktop-1365px: calculation-evidence-snapshots": {
+          "count": 23,
+          "durationMs": 3864.2009290000424,
+          "maxMs": 289.93643000000156
+        },
+        "chromium-desktop-1365px: saved-record-comparison": {
+          "count": 67,
+          "durationMs": 13192.049741000053,
+          "maxMs": 524.1884820000269
+        },
+        "chromium-desktop-1365px: nondestructive-storage-protection": {
+          "count": 33,
+          "durationMs": 3320.4701629999327,
+          "maxMs": 311.28171900002053
+        }
+      },
+      "screenshot_count": 95,
+      "trace_timings": [
+        {
+          "operation": "start",
+          "durationMs": 13.525351
+        },
+        {
+          "operation": "stop-discard-success",
+          "durationMs": 4.2410950000048615
+        }
+      ]
+    },
+    {
+      "scenario": "chromium-mobile-375px",
+      "status": "passed",
+      "checks": 152,
+      "geometry": 93,
+      "stage": "complete",
+      "servedIdentity": {
+        "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+        "branch": "feat/audit-comparison-markdown-export",
+        "run": "40261949353",
+        "attempt": "1"
+      },
+      "failure": null,
+      "stage_timings": [
+        {
+          "name": "provenance",
+          "durationMs": 15.860802000000007
+        },
+        {
+          "name": "browser-tool-import",
+          "durationMs": 1066.4386009999998
+        },
+        {
+          "name": "preview-startup",
+          "durationMs": 1006.6425579999998
+        },
+        {
+          "name": "browser-launch",
+          "durationMs": 23.334188000000267
+        },
+        {
+          "name": "chromium-mobile-375px-launch",
+          "durationMs": 180.38088199999993
+        },
+        {
+          "name": "chromium-mobile-375px: browser-context",
+          "durationMs": 123.01772000000028
+        },
+        {
+          "name": "chromium-mobile-375px: served-provenance",
+          "durationMs": 1296.530808
+        },
+        {
+          "name": "chromium-mobile-375px: responsive-header-guide-theme-scroll",
+          "durationMs": 3064.792726
+        },
+        {
+          "name": "chromium-mobile-375px: arithmetic-history-error-recovery",
+          "durationMs": 4654.939313
+        },
+        {
+          "name": "chromium-mobile-375px: single-memo-save-cancel-edit",
+          "durationMs": 3223.0390419999985
+        },
+        {
+          "name": "chromium-mobile-375px: block-memo-save",
+          "durationMs": 1061.4704500000007
+        },
+        {
+          "name": "chromium-mobile-375px: reload-persistence-visible-panels",
+          "durationMs": 1479.0699249999998
+        },
+        {
+          "name": "chromium-mobile-375px: trailing-number-edit-regression",
+          "durationMs": 5517.231883999997
+        },
+        {
+          "name": "chromium-mobile-375px: after-equals-state-transitions",
+          "durationMs": 13622.181985
+        },
+        {
+          "name": "chromium-mobile-375px: small-result-chain-and-imported-editing",
+          "durationMs": 11772.306038999996
+        },
+        {
+          "name": "chromium-mobile-375px: parentheses-percent-and-error-boundaries",
+          "durationMs": 3855.614450000001
+        },
+        {
+          "name": "chromium-mobile-375px: basic-math-expression-input-and-history",
+          "durationMs": 5979.570107
+        },
+        {
+          "name": "chromium-mobile-375px: basic-math-errors-and-recovery",
+          "durationMs": 4924.21931
+        },
+        {
+          "name": "chromium-mobile-375px: basic-math-single-memo-edit",
+          "durationMs": 2236.1829149999976
+        },
+        {
+          "name": "chromium-mobile-375px: basic-math-block-save-and-recalculate",
+          "durationMs": 2126.402679999992
+        },
+        {
+          "name": "chromium-mobile-375px: basic-math-url-and-reload",
+          "durationMs": 2587.3011200000037
+        },
+        {
+          "name": "chromium-mobile-375px: note-scoped-variables-order-and-editing",
+          "durationMs": 6515.612583999988
+        },
+        {
+          "name": "chromium-mobile-375px: variable-scope-persistence-and-responsive-roles",
+          "durationMs": 11033.674881999992
+        },
+        {
+          "name": "chromium-mobile-375px: legacy-block-opt-in-compatibility",
+          "durationMs": 1964.3675899999944
+        },
+        {
+          "name": "chromium-mobile-375px: formula-library-crud",
+          "durationMs": 7394.536707000007
+        },
+        {
+          "name": "chromium-mobile-375px: formula-math-reports",
+          "durationMs": 16879.911376000004
+        },
+        {
+          "name": "chromium-mobile-375px: formula-calculation-quotes",
+          "durationMs": 99413.66234400001
+        },
+        {
+          "name": "chromium-mobile-375px: formula-evidence-status-filters",
+          "durationMs": 4297.047763999988
+        },
+        {
+          "name": "chromium-mobile-375px: formula-detail-refresh-and-cancel",
+          "durationMs": 5222.713663000002
+        },
+        {
+          "name": "chromium-mobile-375px: formula-confirmation-timeline",
+          "durationMs": 3087.513693999994
+        },
+        {
+          "name": "chromium-mobile-375px: identification-modes-and-native-input",
+          "durationMs": 9000.921838999988
+        },
+        {
+          "name": "chromium-mobile-375px: formula-execution-inputs-and-snapshots",
+          "durationMs": 4898.975544999994
+        },
+        {
+          "name": "chromium-mobile-375px: formula-execution-errors-and-reload",
+          "durationMs": 5679.297231000004
+        },
+        {
+          "name": "chromium-mobile-375px: formula-execution-definition-lifecycle",
+          "durationMs": 1340.7773870000092
+        },
+        {
+          "name": "chromium-mobile-375px: formula-execution-help-and-layout",
+          "durationMs": 6092.910911000014
+        },
+        {
+          "name": "chromium-mobile-375px: block-extra-field-preservation",
+          "durationMs": 5353.025155999989
+        },
+        {
+          "name": "chromium-mobile-375px: manual-block-references",
+          "durationMs": 11598.40508300002
+        },
+        {
+          "name": "chromium-mobile-375px: default-id-calculations",
+          "durationMs": 11998.489538000023
+        },
+        {
+          "name": "chromium-mobile-375px: calculation-state-diagnostics",
+          "durationMs": 11819.355222999991
+        },
+        {
+          "name": "chromium-mobile-375px: dependency-graph-navigation",
+          "durationMs": 17971.08640899998
+        },
+        {
+          "name": "chromium-mobile-375px: dependency-graph-limit-fallback",
+          "durationMs": 6556.717790999974
+        },
+        {
+          "name": "chromium-mobile-375px: calculation-trial-preview",
+          "durationMs": 28081.93940600002
+        },
+        {
+          "name": "chromium-mobile-375px: nested-percent-calculator",
+          "durationMs": 1713.5531090000295
+        },
+        {
+          "name": "chromium-mobile-375px: nested-percent-url",
+          "durationMs": 3668.1874090000056
+        },
+        {
+          "name": "chromium-mobile-375px: nested-percent-legacy-single",
+          "durationMs": 3113.92223799997
+        },
+        {
+          "name": "chromium-mobile-375px: nested-percent-legacy-blocks",
+          "durationMs": 2380.754214000015
+        },
+        {
+          "name": "chromium-mobile-375px: saved-markdown-report",
+          "durationMs": 7016.935355999973
+        },
+        {
+          "name": "chromium-mobile-375px: calculation-evidence-snapshots",
+          "durationMs": 5875.184925999958
+        },
+        {
+          "name": "chromium-mobile-375px: saved-record-comparison",
+          "durationMs": 23033.062150999962
+        },
+        {
+          "name": "complete",
+          "durationMs": 13419.40697099996
+        }
+      ],
+      "activation_timings": {
+        "chromium-mobile-375px: served-provenance": {
+          "count": 1,
+          "durationMs": 134.95139699999982,
+          "maxMs": 134.95139699999982
+        },
+        "chromium-mobile-375px: responsive-header-guide-theme-scroll": {
+          "count": 6,
+          "durationMs": 674.8979610000006,
+          "maxMs": 163.15463400000044
+        },
+        "chromium-mobile-375px: arithmetic-history-error-recovery": {
+          "count": 33,
+          "durationMs": 4111.752309999999,
+          "maxMs": 1007.7067129999996
+        },
+        "chromium-mobile-375px: single-memo-save-cancel-edit": {
+          "count": 7,
+          "durationMs": 2811.111184999998,
+          "maxMs": 2038.938866999999
+        },
+        "chromium-mobile-375px: block-memo-save": {
+          "count": 5,
+          "durationMs": 718.6332689999999,
+          "maxMs": 234.38934999999947
+        },
+        "chromium-mobile-375px: reload-persistence-visible-panels": {
+          "count": 4,
+          "durationMs": 389.59617599999547,
+          "maxMs": 114.61049600000115
+        },
+        "chromium-mobile-375px: trailing-number-edit-regression": {
+          "count": 20,
+          "durationMs": 4576.1654160000035,
+          "maxMs": 1029.3174839999992
+        },
+        "chromium-mobile-375px: after-equals-state-transitions": {
+          "count": 56,
+          "durationMs": 11187.824472000022,
+          "maxMs": 1011.3533180000013
+        },
+        "chromium-mobile-375px: small-result-chain-and-imported-editing": {
+          "count": 43,
+          "durationMs": 8070.258549999999,
+          "maxMs": 1012.312871999995
+        },
+        "chromium-mobile-375px: parentheses-percent-and-error-boundaries": {
+          "count": 12,
+          "durationMs": 2016.481620999999,
+          "maxMs": 518.1690669999953
+        },
+        "chromium-mobile-375px: basic-math-expression-input-and-history": {
+          "count": 12,
+          "durationMs": 4202.8704020000005,
+          "maxMs": 1533.9492800000007
+        },
+        "chromium-mobile-375px: basic-math-errors-and-recovery": {
+          "count": 12,
+          "durationMs": 1674.5911500000002,
+          "maxMs": 250.6819370000012
+        },
+        "chromium-mobile-375px: basic-math-single-memo-edit": {
+          "count": 6,
+          "durationMs": 1693.8500359999962,
+          "maxMs": 1008.7367860000013
+        },
+        "chromium-mobile-375px: basic-math-block-save-and-recalculate": {
+          "count": 6,
+          "durationMs": 1719.6118990000105,
+          "maxMs": 975.6897000000026
+        },
+        "chromium-mobile-375px: basic-math-url-and-reload": {
+          "count": 5,
+          "durationMs": 980.289403999981,
+          "maxMs": 256.25359199999366
+        },
+        "chromium-mobile-375px: note-scoped-variables-order-and-editing": {
+          "count": 20,
+          "durationMs": 4010.6870200000412,
+          "maxMs": 339.0003340000112
+        },
+        "chromium-mobile-375px: variable-scope-persistence-and-responsive-roles": {
+          "count": 14,
+          "durationMs": 3243.3488500000094,
+          "maxMs": 700.6238270000031
+        },
+        "chromium-mobile-375px: legacy-block-opt-in-compatibility": {
+          "count": 4,
+          "durationMs": 884.2099940000189,
+          "maxMs": 318.3736199999985
+        },
+        "chromium-mobile-375px: formula-library-crud": {
+          "count": 26,
+          "durationMs": 4035.0808769999567,
+          "maxMs": 365.38659700000426
+        },
+        "chromium-mobile-375px: formula-math-reports": {
+          "count": 57,
+          "durationMs": 7991.789442999958,
+          "maxMs": 292.6210199999914
+        },
+        "chromium-mobile-375px: formula-calculation-quotes": {
+          "count": 186,
+          "durationMs": 26199.812947000246,
+          "maxMs": 336.39725799999724
+        },
+        "chromium-mobile-375px: formula-evidence-status-filters": {
+          "count": 15,
+          "durationMs": 1803.1398040000058,
+          "maxMs": 185.11601800000062
+        },
+        "chromium-mobile-375px: formula-detail-refresh-and-cancel": {
+          "count": 17,
+          "durationMs": 2596.238851000031,
+          "maxMs": 384.64092500001425
+        },
+        "chromium-mobile-375px: formula-confirmation-timeline": {
+          "count": 2,
+          "durationMs": 307.3704429999925,
+          "maxMs": 189.9103999999934
+        },
+        "chromium-mobile-375px: identification-modes-and-native-input": {
+          "count": 21,
+          "durationMs": 2513.3515520000074,
+          "maxMs": 195.30511599997408
+        },
+        "chromium-mobile-375px: formula-execution-inputs-and-snapshots": {
+          "count": 16,
+          "durationMs": 3334.4539979999827,
+          "maxMs": 1514.5433090000006
+        },
+        "chromium-mobile-375px: formula-execution-errors-and-reload": {
+          "count": 25,
+          "durationMs": 3573.587061999977,
+          "maxMs": 373.18151500000386
+        },
+        "chromium-mobile-375px: formula-execution-definition-lifecycle": {
+          "count": 9,
+          "durationMs": 1051.7122020000534,
+          "maxMs": 166.7648540000082
+        },
+        "chromium-mobile-375px: formula-execution-help-and-layout": {
+          "count": 17,
+          "durationMs": 2150.4829440000467,
+          "maxMs": 162.77553799998714
+        },
+        "chromium-mobile-375px: block-extra-field-preservation": {
+          "count": 16,
+          "durationMs": 2380.2549299999955,
+          "maxMs": 203.41039000000455
+        },
+        "chromium-mobile-375px: manual-block-references": {
+          "count": 34,
+          "durationMs": 5115.160845000006,
+          "maxMs": 218.51921699999366
+        },
+        "chromium-mobile-375px: default-id-calculations": {
+          "count": 38,
+          "durationMs": 5562.724348000251,
+          "maxMs": 270.6156840000185
+        },
+        "chromium-mobile-375px: calculation-state-diagnostics": {
+          "count": 42,
+          "durationMs": 5828.817592999956,
+          "maxMs": 235.80862199998228
+        },
+        "chromium-mobile-375px: dependency-graph-navigation": {
+          "count": 46,
+          "durationMs": 8215.4462430001,
+          "maxMs": 326.27444100001594
+        },
+        "chromium-mobile-375px: dependency-graph-limit-fallback": {
+          "count": 10,
+          "durationMs": 3089.406163000036,
+          "maxMs": 520.0089980000048
+        },
+        "chromium-mobile-375px: calculation-trial-preview": {
+          "count": 70,
+          "durationMs": 12244.2837289999,
+          "maxMs": 376.5620490000001
+        },
+        "chromium-mobile-375px: nested-percent-calculator": {
+          "count": 5,
+          "durationMs": 616.216986000014,
+          "maxMs": 191.08145800000057
+        },
+        "chromium-mobile-375px: nested-percent-url": {
+          "count": 8,
+          "durationMs": 1468.5902369999094,
+          "maxMs": 278.30658800003584
+        },
+        "chromium-mobile-375px: nested-percent-legacy-single": {
+          "count": 10,
+          "durationMs": 1388.3023100000573,
+          "maxMs": 206.6607349999831
+        },
+        "chromium-mobile-375px: nested-percent-legacy-blocks": {
+          "count": 4,
+          "durationMs": 598.7638409999781,
+          "maxMs": 196.0831739999703
+        },
+        "chromium-mobile-375px: saved-markdown-report": {
+          "count": 31,
+          "durationMs": 3830.993897999986,
+          "maxMs": 191.7883660000516
+        },
+        "chromium-mobile-375px: calculation-evidence-snapshots": {
+          "count": 25,
+          "durationMs": 3608.961564000114,
+          "maxMs": 261.13667800003896
+        },
+        "chromium-mobile-375px: saved-record-comparison": {
+          "count": 70,
+          "durationMs": 9455.41856999998,
+          "maxMs": 259.35412400000496
+        },
+        "chromium-mobile-375px: nondestructive-storage-protection": {
+          "count": 35,
+          "durationMs": 2936.175485999731,
+          "maxMs": 156.74169300001813
+        }
+      },
+      "screenshot_count": 93,
+      "trace_timings": [
+        {
+          "operation": "start",
+          "durationMs": 15.20144399999981
+        },
+        {
+          "operation": "stop-discard-success",
+          "durationMs": 7.45284600002924
+        }
+      ]
+    },
+    {
+      "scenario": "chromium-mobile-390px",
+      "status": "failed",
+      "checks": 32,
+      "geometry": 27,
+      "stage": "chromium-mobile-390px: formula-calculation-quotes",
+      "servedIdentity": {
+        "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+        "branch": "feat/audit-comparison-markdown-export",
+        "run": "40261949353",
+        "attempt": "1"
+      },
+      "failure": {
+        "message": "Synthetic modal content must not be horizontally clipped: {\"scroll\":390,\"client\":388,\"diagnostic\":{\"container\":{\"left\":1,\"right\":389,\"width\":388},\"inspected\":50,\"totalDescendants\":50,\"offenders\":[{\"tag\":\"SECTION\",\"class\":\"formula-report quote-tools saved-evidence\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"minmax(0px, 1fr)\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true},{\"tag\":\"P\",\"class\":\"\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"none\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true}]}}",
+        "stack": "AssertionError [ERR_ASSERTION]: Synthetic modal content must not be horizontally clipped: {\"scroll\":390,\"client\":388,\"diagnostic\":{\"container\":{\"left\":1,\"right\":389,\"width\":388},\"inspected\":50,\"totalDescendants\":50,\"offenders\":[{\"tag\":\"SECTION\",\"class\":\"formula-report quote-tools saved-evidence\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"minmax(0px, 1fr)\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true},{\"tag\":\"P\",\"class\":\"\",\"role\":\"\",\"left\":19,\"right\":371,\"width\":352,\"client\":352,\"scroll\":372,\"display\":\"block\",\"gridTemplateColumns\":\"none\",\"minWidth\":\"0px\",\"whiteSpace\":\"normal\",\"fontSize\":\"32px\",\"overflow\":20,\"visible\":true}]}}\n    at assertHorizontalFit (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:97:14)\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:459:9)\n    at process.callbackTrampoline (node:internal/async_hooks:130:17)\n    at async exerciseFormulaQuotes (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:662:5)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4169:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4232:5",
+        "stage": "chromium-mobile-390px: formula-calculation-quotes",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "stage_timings": [
+        {
+          "name": "provenance",
+          "durationMs": 7.435401999999996
+        },
+        {
+          "name": "browser-tool-import",
+          "durationMs": 882.50161
+        },
+        {
+          "name": "preview-startup",
+          "durationMs": 469.61335800000006
+        },
+        {
+          "name": "browser-launch",
+          "durationMs": 1.1468710000001465
+        },
+        {
+          "name": "chromium-mobile-390px-launch",
+          "durationMs": 114.93066799999997
+        },
+        {
+          "name": "chromium-mobile-390px: browser-context",
+          "durationMs": 117.33578200000011
+        },
+        {
+          "name": "chromium-mobile-390px: served-provenance",
+          "durationMs": 1551.1835380000002
+        },
+        {
+          "name": "chromium-mobile-390px: responsive-header-guide-theme-scroll",
+          "durationMs": 3878.156904
+        },
+        {
+          "name": "chromium-mobile-390px: arithmetic-history-error-recovery",
+          "durationMs": 3560.150935999999
+        },
+        {
+          "name": "chromium-mobile-390px: single-memo-save-cancel-edit",
+          "durationMs": 2710.165617999999
+        },
+        {
+          "name": "chromium-mobile-390px: block-memo-save",
+          "durationMs": 1001.4103479999994
+        },
+        {
+          "name": "chromium-mobile-390px: reload-persistence-visible-panels",
+          "durationMs": 1391.3041169999997
+        },
+        {
+          "name": "chromium-mobile-390px: trailing-number-edit-regression",
+          "durationMs": 3343.815542999999
+        },
+        {
+          "name": "chromium-mobile-390px: after-equals-state-transitions",
+          "durationMs": 12997.821529
+        },
+        {
+          "name": "chromium-mobile-390px: small-result-chain-and-imported-editing",
+          "durationMs": 13233.005921999997
+        },
+        {
+          "name": "chromium-mobile-390px: parentheses-percent-and-error-boundaries",
+          "durationMs": 4742.7431119999965
+        },
+        {
+          "name": "chromium-mobile-390px: basic-math-expression-input-and-history",
+          "durationMs": 4018.7482979999986
+        },
+        {
+          "name": "chromium-mobile-390px: basic-math-errors-and-recovery",
+          "durationMs": 6280.103665999995
+        },
+        {
+          "name": "chromium-mobile-390px: basic-math-single-memo-edit",
+          "durationMs": 2653.3394219999973
+        },
+        {
+          "name": "chromium-mobile-390px: basic-math-block-save-and-recalculate",
+          "durationMs": 1523.3684310000026
+        },
+        {
+          "name": "chromium-mobile-390px: basic-math-url-and-reload",
+          "durationMs": 2920.334333000006
+        },
+        {
+          "name": "chromium-mobile-390px: note-scoped-variables-order-and-editing",
+          "durationMs": 6127.0395290000015
+        },
+        {
+          "name": "chromium-mobile-390px: variable-scope-persistence-and-responsive-roles",
+          "durationMs": 10899.786319000006
+        },
+        {
+          "name": "chromium-mobile-390px: legacy-block-opt-in-compatibility",
+          "durationMs": 1910.0559749999957
+        },
+        {
+          "name": "chromium-mobile-390px: formula-library-crud",
+          "durationMs": 8935.146220999988
+        },
+        {
+          "name": "chromium-mobile-390px: formula-math-reports",
+          "durationMs": 23120.680297999992
+        },
+        {
+          "name": "chromium-mobile-390px: formula-calculation-quotes",
+          "durationMs": 36766.981682
+        }
+      ],
+      "activation_timings": {
+        "chromium-mobile-390px: served-provenance": {
+          "count": 1,
+          "durationMs": 117.83746500000007,
+          "maxMs": 117.83746500000007
+        },
+        "chromium-mobile-390px: responsive-header-guide-theme-scroll": {
+          "count": 6,
+          "durationMs": 1100.1164929999995,
+          "maxMs": 494.5428089999996
+        },
+        "chromium-mobile-390px: arithmetic-history-error-recovery": {
+          "count": 33,
+          "durationMs": 3113.791149999998,
+          "maxMs": 152.03808899999967
+        },
+        "chromium-mobile-390px: single-memo-save-cancel-edit": {
+          "count": 7,
+          "durationMs": 2240.065832999997,
+          "maxMs": 1525.2863149999994
+        },
+        "chromium-mobile-390px: block-memo-save": {
+          "count": 5,
+          "durationMs": 673.2138630000009,
+          "maxMs": 182.16522299999997
+        },
+        "chromium-mobile-390px: reload-persistence-visible-panels": {
+          "count": 4,
+          "durationMs": 409.5402610000001,
+          "maxMs": 129.98033399999986
+        },
+        "chromium-mobile-390px: trailing-number-edit-regression": {
+          "count": 20,
+          "durationMs": 2077.6724790000007,
+          "maxMs": 134.15949700000056
+        },
+        "chromium-mobile-390px: after-equals-state-transitions": {
+          "count": 56,
+          "durationMs": 10644.292667999998,
+          "maxMs": 1579.7428309999996
+        },
+        "chromium-mobile-390px: small-result-chain-and-imported-editing": {
+          "count": 43,
+          "durationMs": 9096.516482000014,
+          "maxMs": 1020.1384220000036
+        },
+        "chromium-mobile-390px: parentheses-percent-and-error-boundaries": {
+          "count": 12,
+          "durationMs": 2276.556746000002,
+          "maxMs": 477.2108819999994
+        },
+        "chromium-mobile-390px: basic-math-expression-input-and-history": {
+          "count": 12,
+          "durationMs": 1921.0984160000007,
+          "maxMs": 474.6527090000018
+        },
+        "chromium-mobile-390px: basic-math-errors-and-recovery": {
+          "count": 12,
+          "durationMs": 1710.6597419999962,
+          "maxMs": 225.7986400000009
+        },
+        "chromium-mobile-390px: basic-math-single-memo-edit": {
+          "count": 6,
+          "durationMs": 1944.518965000003,
+          "maxMs": 1079.6364470000044
+        },
+        "chromium-mobile-390px: basic-math-block-save-and-recalculate": {
+          "count": 6,
+          "durationMs": 1033.3091729999942,
+          "maxMs": 302.8060889999979
+        },
+        "chromium-mobile-390px: basic-math-url-and-reload": {
+          "count": 5,
+          "durationMs": 916.8947189999963,
+          "maxMs": 297.72295500000473
+        },
+        "chromium-mobile-390px: note-scoped-variables-order-and-editing": {
+          "count": 20,
+          "durationMs": 3508.8807770000276,
+          "maxMs": 314.39314000000013
+        },
+        "chromium-mobile-390px: variable-scope-persistence-and-responsive-roles": {
+          "count": 14,
+          "durationMs": 3297.991938999985,
+          "maxMs": 621.5025200000091
+        },
+        "chromium-mobile-390px: legacy-block-opt-in-compatibility": {
+          "count": 4,
+          "durationMs": 849.6376530000125,
+          "maxMs": 245.84031700000924
+        },
+        "chromium-mobile-390px: formula-library-crud": {
+          "count": 26,
+          "durationMs": 4641.573260999998,
+          "maxMs": 333.0816829999967
+        },
+        "chromium-mobile-390px: formula-math-reports": {
+          "count": 57,
+          "durationMs": 11552.821355000022,
+          "maxMs": 429.9748450000043
+        },
+        "chromium-mobile-390px: formula-calculation-quotes": {
+          "count": 29,
+          "durationMs": 7887.201020000066,
+          "maxMs": 458.633044000002
+        }
+      },
+      "screenshot_count": 27,
+      "trace_timings": [
+        {
+          "operation": "start",
+          "durationMs": 6.16285199999993
+        },
+        {
+          "operation": "stop-export-failure",
+          "durationMs": 614.6380940000236
+        }
+      ]
+    },
+    {
+      "scenario": "chromium-narrow-390px",
+      "status": "passed",
+      "checks": 151,
+      "geometry": 93,
+      "stage": "complete",
+      "servedIdentity": {
+        "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+        "branch": "feat/audit-comparison-markdown-export",
+        "run": "40261949353",
+        "attempt": "1"
+      },
+      "failure": null,
+      "stage_timings": [
+        {
+          "name": "provenance",
+          "durationMs": 13.050432999999998
+        },
+        {
+          "name": "browser-tool-import",
+          "durationMs": 845.083265
+        },
+        {
+          "name": "preview-startup",
+          "durationMs": 702.760937
+        },
+        {
+          "name": "browser-launch",
+          "durationMs": 17.916125000000193
+        },
+        {
+          "name": "chromium-narrow-390px-launch",
+          "durationMs": 269.499599
+        },
+        {
+          "name": "chromium-narrow-390px: browser-context",
+          "durationMs": 156.27199099999984
+        },
+        {
+          "name": "chromium-narrow-390px: served-provenance",
+          "durationMs": 1125.151601
+        },
+        {
+          "name": "chromium-narrow-390px: responsive-header-guide-theme-scroll",
+          "durationMs": 2813.8580090000005
+        },
+        {
+          "name": "chromium-narrow-390px: arithmetic-history-error-recovery",
+          "durationMs": 2615.1954369999994
+        },
+        {
+          "name": "chromium-narrow-390px: single-memo-save-cancel-edit",
+          "durationMs": 2513.687218000001
+        },
+        {
+          "name": "chromium-narrow-390px: block-memo-save",
+          "durationMs": 1172.3335509999997
+        },
+        {
+          "name": "chromium-narrow-390px: reload-persistence-visible-panels",
+          "durationMs": 1156.7946600000014
+        },
+        {
+          "name": "chromium-narrow-390px: trailing-number-edit-regression",
+          "durationMs": 2600.929835000001
+        },
+        {
+          "name": "chromium-narrow-390px: after-equals-state-transitions",
+          "durationMs": 8933.781358
+        },
+        {
+          "name": "chromium-narrow-390px: small-result-chain-and-imported-editing",
+          "durationMs": 9112.418218000003
+        },
+        {
+          "name": "chromium-narrow-390px: parentheses-percent-and-error-boundaries",
+          "durationMs": 3206.545140000002
+        },
+        {
+          "name": "chromium-narrow-390px: basic-math-expression-input-and-history",
+          "durationMs": 3689.9196850000008
+        },
+        {
+          "name": "chromium-narrow-390px: basic-math-errors-and-recovery",
+          "durationMs": 4451.687405999997
+        },
+        {
+          "name": "chromium-narrow-390px: basic-math-single-memo-edit",
+          "durationMs": 1457.7115699999995
+        },
+        {
+          "name": "chromium-narrow-390px: basic-math-block-save-and-recalculate",
+          "durationMs": 1469.5251370000042
+        },
+        {
+          "name": "chromium-narrow-390px: basic-math-url-and-reload",
+          "durationMs": 2213.3433730000033
+        },
+        {
+          "name": "chromium-narrow-390px: note-scoped-variables-order-and-editing",
+          "durationMs": 5107.406823999998
+        },
+        {
+          "name": "chromium-narrow-390px: variable-scope-persistence-and-responsive-roles",
+          "durationMs": 9443.464262000001
+        },
+        {
+          "name": "chromium-narrow-390px: legacy-block-opt-in-compatibility",
+          "durationMs": 1854.8897990000041
+        },
+        {
+          "name": "chromium-narrow-390px: formula-library-crud",
+          "durationMs": 8263.482380000001
+        },
+        {
+          "name": "chromium-narrow-390px: formula-math-reports",
+          "durationMs": 22182.784488000005
+        },
+        {
+          "name": "chromium-narrow-390px: formula-calculation-quotes",
+          "durationMs": 135719.834266
+        },
+        {
+          "name": "chromium-narrow-390px: formula-evidence-status-filters",
+          "durationMs": 5645.008140999998
+        },
+        {
+          "name": "chromium-narrow-390px: formula-detail-refresh-and-cancel",
+          "durationMs": 6894.075504000008
+        },
+        {
+          "name": "chromium-narrow-390px: formula-confirmation-timeline",
+          "durationMs": 3860.778201999987
+        },
+        {
+          "name": "chromium-narrow-390px: identification-modes-and-native-input",
+          "durationMs": 10654.34287599998
+        },
+        {
+          "name": "chromium-narrow-390px: formula-execution-inputs-and-snapshots",
+          "durationMs": 5923.653693
+        },
+        {
+          "name": "chromium-narrow-390px: formula-execution-errors-and-reload",
+          "durationMs": 6781.775910999975
+        },
+        {
+          "name": "chromium-narrow-390px: formula-execution-definition-lifecycle",
+          "durationMs": 962.0894790000166
+        },
+        {
+          "name": "chromium-narrow-390px: formula-execution-help-and-layout",
+          "durationMs": 6967.270117999986
+        },
+        {
+          "name": "chromium-narrow-390px: block-extra-field-preservation",
+          "durationMs": 7019.862576999993
+        },
+        {
+          "name": "chromium-narrow-390px: manual-block-references",
+          "durationMs": 13889.738550999959
+        },
+        {
+          "name": "chromium-narrow-390px: default-id-calculations",
+          "durationMs": 13856.947287000017
+        },
+        {
+          "name": "chromium-narrow-390px: calculation-state-diagnostics",
+          "durationMs": 13660.904913000006
+        },
+        {
+          "name": "chromium-narrow-390px: dependency-graph-navigation",
+          "durationMs": 21633.44858800003
+        },
+        {
+          "name": "chromium-narrow-390px: dependency-graph-limit-fallback",
+          "durationMs": 8207.64032799995
+        },
+        {
+          "name": "chromium-narrow-390px: calculation-trial-preview",
+          "durationMs": 36948.623594000004
+        },
+        {
+          "name": "chromium-narrow-390px: nested-percent-calculator",
+          "durationMs": 2222.6166700000176
+        },
+        {
+          "name": "chromium-narrow-390px: nested-percent-url",
+          "durationMs": 5134.353931999998
+        },
+        {
+          "name": "chromium-narrow-390px: nested-percent-legacy-single",
+          "durationMs": 3930.750092000002
+        },
+        {
+          "name": "chromium-narrow-390px: nested-percent-legacy-blocks",
+          "durationMs": 3483.5519579999964
+        },
+        {
+          "name": "chromium-narrow-390px: saved-markdown-report",
+          "durationMs": 8603.131409999973
+        },
+        {
+          "name": "chromium-narrow-390px: calculation-evidence-snapshots",
+          "durationMs": 7026.1440890000085
+        },
+        {
+          "name": "chromium-narrow-390px: saved-record-comparison",
+          "durationMs": 29708.365610999987
+        },
+        {
+          "name": "complete",
+          "durationMs": 18329.510582000017
+        }
+      ],
+      "activation_timings": {
+        "chromium-narrow-390px: responsive-header-guide-theme-scroll": {
+          "count": 6,
+          "durationMs": 747.5365320000005,
+          "maxMs": 236.91295200000013
+        },
+        "chromium-narrow-390px: arithmetic-history-error-recovery": {
+          "count": 33,
+          "durationMs": 2131.8312509999996,
+          "maxMs": 94.42463800000041
+        },
+        "chromium-narrow-390px: single-memo-save-cancel-edit": {
+          "count": 7,
+          "durationMs": 2133.072871999999,
+          "maxMs": 1542.817885999999
+        },
+        "chromium-narrow-390px: block-memo-save": {
+          "count": 5,
+          "durationMs": 747.2819850000033,
+          "maxMs": 228.98803600000065
+        },
+        "chromium-narrow-390px: reload-persistence-visible-panels": {
+          "count": 4,
+          "durationMs": 278.18346499999825,
+          "maxMs": 83.95229799999834
+        },
+        "chromium-narrow-390px: trailing-number-edit-regression": {
+          "count": 20,
+          "durationMs": 1400.2699500000017,
+          "maxMs": 96.52850899999976
+        },
+        "chromium-narrow-390px: after-equals-state-transitions": {
+          "count": 56,
+          "durationMs": 6492.178436999997,
+          "maxMs": 972.8225329999987
+        },
+        "chromium-narrow-390px: small-result-chain-and-imported-editing": {
+          "count": 43,
+          "durationMs": 5278.111956000001,
+          "maxMs": 972.1753449999997
+        },
+        "chromium-narrow-390px: parentheses-percent-and-error-boundaries": {
+          "count": 12,
+          "durationMs": 938.7002329999814,
+          "maxMs": 251.5890900000013
+        },
+        "chromium-narrow-390px: basic-math-expression-input-and-history": {
+          "count": 12,
+          "durationMs": 1460.3964720000004,
+          "maxMs": 454.0671809999985
+        },
+        "chromium-narrow-390px: basic-math-errors-and-recovery": {
+          "count": 12,
+          "durationMs": 1133.3514959999957,
+          "maxMs": 131.3291160000008
+        },
+        "chromium-narrow-390px: basic-math-single-memo-edit": {
+          "count": 6,
+          "durationMs": 841.9674480000031,
+          "maxMs": 241.35035300000163
+        },
+        "chromium-narrow-390px: basic-math-block-save-and-recalculate": {
+          "count": 6,
+          "durationMs": 781.9022600000098,
+          "maxMs": 160.02072000000044
+        },
+        "chromium-narrow-390px: basic-math-url-and-reload": {
+          "count": 5,
+          "durationMs": 658.464304999994,
+          "maxMs": 205.6444679999986
+        },
+        "chromium-narrow-390px: note-scoped-variables-order-and-editing": {
+          "count": 20,
+          "durationMs": 2434.420576000004,
+          "maxMs": 238.17037100000016
+        },
+        "chromium-narrow-390px: variable-scope-persistence-and-responsive-roles": {
+          "count": 14,
+          "durationMs": 2109.5767780000024,
+          "maxMs": 237.6286459999974
+        },
+        "chromium-narrow-390px: legacy-block-opt-in-compatibility": {
+          "count": 4,
+          "durationMs": 657.0233179999923,
+          "maxMs": 189.32137000000512
+        },
+        "chromium-narrow-390px: formula-library-crud": {
+          "count": 26,
+          "durationMs": 3897.8458819999505,
+          "maxMs": 1025.944875999994
+        },
+        "chromium-narrow-390px: formula-math-reports": {
+          "count": 57,
+          "durationMs": 7529.127485999998,
+          "maxMs": 360.54397700000845
+        },
+        "chromium-narrow-390px: formula-calculation-quotes": {
+          "count": 186,
+          "durationMs": 28407.831801999986,
+          "maxMs": 437.5408439999883
+        },
+        "chromium-narrow-390px: formula-evidence-status-filters": {
+          "count": 15,
+          "durationMs": 1948.4617449999787,
+          "maxMs": 234.9576240000024
+        },
+        "chromium-narrow-390px: formula-detail-refresh-and-cancel": {
+          "count": 17,
+          "durationMs": 2818.2904089999793,
+          "maxMs": 334.41528300000937
+        },
+        "chromium-narrow-390px: formula-confirmation-timeline": {
+          "count": 2,
+          "durationMs": 316.42850599999656,
+          "maxMs": 201.31922499998473
+        },
+        "chromium-narrow-390px: identification-modes-and-native-input": {
+          "count": 21,
+          "durationMs": 2147.683115999942,
+          "maxMs": 169.9962649999943
+        },
+        "chromium-narrow-390px: formula-execution-inputs-and-snapshots": {
+          "count": 16,
+          "durationMs": 3011.342718000029,
+          "maxMs": 1084.4086159999715
+        },
+        "chromium-narrow-390px: formula-execution-errors-and-reload": {
+          "count": 25,
+          "durationMs": 3493.689608000219,
+          "maxMs": 253.29088700003922
+        },
+        "chromium-narrow-390px: formula-execution-definition-lifecycle": {
+          "count": 9,
+          "durationMs": 697.6781460000202,
+          "maxMs": 123.35986000002595
+        },
+        "chromium-narrow-390px: formula-execution-help-and-layout": {
+          "count": 17,
+          "durationMs": 1955.7561069999938,
+          "maxMs": 171.36580299999332
+        },
+        "chromium-narrow-390px: block-extra-field-preservation": {
+          "count": 16,
+          "durationMs": 2564.984909999883,
+          "maxMs": 209.3827309999615
+        },
+        "chromium-narrow-390px: manual-block-references": {
+          "count": 34,
+          "durationMs": 4763.048131000192,
+          "maxMs": 232.1491410000017
+        },
+        "chromium-narrow-390px: default-id-calculations": {
+          "count": 38,
+          "durationMs": 5132.0200509997085,
+          "maxMs": 276.53003000002354
+        },
+        "chromium-narrow-390px: calculation-state-diagnostics": {
+          "count": 42,
+          "durationMs": 5574.849014999927,
+          "maxMs": 267.77642999996897
+        },
+        "chromium-narrow-390px: dependency-graph-navigation": {
+          "count": 46,
+          "durationMs": 7717.423054999905,
+          "maxMs": 459.62976099998923
+        },
+        "chromium-narrow-390px: dependency-graph-limit-fallback": {
+          "count": 10,
+          "durationMs": 3159.4302340000286,
+          "maxMs": 724.6294000000344
+        },
+        "chromium-narrow-390px: calculation-trial-preview": {
+          "count": 70,
+          "durationMs": 12587.563151999551,
+          "maxMs": 541.3034459999762
+        },
+        "chromium-narrow-390px: nested-percent-calculator": {
+          "count": 5,
+          "durationMs": 685.8747999999323,
+          "maxMs": 187.00494700000854
+        },
+        "chromium-narrow-390px: nested-percent-url": {
+          "count": 8,
+          "durationMs": 1510.1770530000795,
+          "maxMs": 295.48928499995964
+        },
+        "chromium-narrow-390px: nested-percent-legacy-single": {
+          "count": 10,
+          "durationMs": 1401.4360909999814,
+          "maxMs": 201.41689900000347
+        },
+        "chromium-narrow-390px: nested-percent-legacy-blocks": {
+          "count": 4,
+          "durationMs": 689.4526420000475,
+          "maxMs": 235.6130440000561
+        },
+        "chromium-narrow-390px: saved-markdown-report": {
+          "count": 31,
+          "durationMs": 3789.8679509999347,
+          "maxMs": 242.26582199998666
+        },
+        "chromium-narrow-390px: calculation-evidence-snapshots": {
+          "count": 25,
+          "durationMs": 3657.7703079997445,
+          "maxMs": 275.69027500000084
+        },
+        "chromium-narrow-390px: saved-record-comparison": {
+          "count": 70,
+          "durationMs": 9142.000503999996,
+          "maxMs": 258.9895210000104
+        },
+        "chromium-narrow-390px: nondestructive-storage-protection": {
+          "count": 35,
+          "durationMs": 3037.5644830001984,
+          "maxMs": 247.301456999965
+        }
+      },
+      "screenshot_count": 93,
+      "trace_timings": [
+        {
+          "operation": "start",
+          "durationMs": 10.908142000000225
+        },
+        {
+          "operation": "stop-discard-success",
+          "durationMs": 7.151593999995384
+        }
+      ]
+    },
+    {
+      "scenario": "webkit-mobile-375px",
+      "status": "passed",
+      "checks": 153,
+      "geometry": 95,
+      "stage": "complete",
+      "servedIdentity": {
+        "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+        "branch": "feat/audit-comparison-markdown-export",
+        "run": "40261949353",
+        "attempt": "1"
+      },
+      "failure": null,
+      "stage_timings": [
+        {
+          "name": "provenance",
+          "durationMs": 6.704067000000002
+        },
+        {
+          "name": "browser-tool-import",
+          "durationMs": 521.29306
+        },
+        {
+          "name": "preview-startup",
+          "durationMs": 508.970597
+        },
+        {
+          "name": "browser-launch",
+          "durationMs": 0.8716039999999339
+        },
+        {
+          "name": "webkit-mobile-375px-launch",
+          "durationMs": 984.389253
+        },
+        {
+          "name": "webkit-mobile-375px: browser-context",
+          "durationMs": 4269.511492
+        },
+        {
+          "name": "webkit-mobile-375px: served-provenance",
+          "durationMs": 6974.826597000001
+        },
+        {
+          "name": "webkit-mobile-375px: responsive-header-guide-theme-scroll",
+          "durationMs": 11279.002421
+        },
+        {
+          "name": "webkit-mobile-375px: arithmetic-history-error-recovery",
+          "durationMs": 8754.641911000002
+        },
+        {
+          "name": "webkit-mobile-375px: single-memo-save-cancel-edit",
+          "durationMs": 3531.0065539999996
+        },
+        {
+          "name": "webkit-mobile-375px: block-memo-save",
+          "durationMs": 3234.7370509999964
+        },
+        {
+          "name": "webkit-mobile-375px: reload-persistence-visible-panels",
+          "durationMs": 2438.7754510000013
+        },
+        {
+          "name": "webkit-mobile-375px: trailing-number-edit-regression",
+          "durationMs": 9527.575821999999
+        },
+        {
+          "name": "webkit-mobile-375px: after-equals-state-transitions",
+          "durationMs": 23399.644141999997
+        },
+        {
+          "name": "webkit-mobile-375px: small-result-chain-and-imported-editing",
+          "durationMs": 20538.307572000005
+        },
+        {
+          "name": "webkit-mobile-375px: parentheses-percent-and-error-boundaries",
+          "durationMs": 6096.547299999991
+        },
+        {
+          "name": "webkit-mobile-375px: basic-math-expression-input-and-history",
+          "durationMs": 5866.197264999995
+        },
+        {
+          "name": "webkit-mobile-375px: basic-math-errors-and-recovery",
+          "durationMs": 6338.340956
+        },
+        {
+          "name": "webkit-mobile-375px: basic-math-single-memo-edit",
+          "durationMs": 3515.9312219999993
+        },
+        {
+          "name": "webkit-mobile-375px: basic-math-block-save-and-recalculate",
+          "durationMs": 3864.593669000009
+        },
+        {
+          "name": "webkit-mobile-375px: basic-math-url-and-reload",
+          "durationMs": 4270.411508000005
+        },
+        {
+          "name": "webkit-mobile-375px: note-scoped-variables-order-and-editing",
+          "durationMs": 12689.282582999993
+        },
+        {
+          "name": "webkit-mobile-375px: variable-scope-persistence-and-responsive-roles",
+          "durationMs": 14244.02852600001
+        },
+        {
+          "name": "webkit-mobile-375px: legacy-block-opt-in-compatibility",
+          "durationMs": 3182.9668749999837
+        },
+        {
+          "name": "webkit-mobile-375px: formula-library-crud",
+          "durationMs": 19213.875532000005
+        },
+        {
+          "name": "webkit-mobile-375px: formula-math-reports",
+          "durationMs": 60836.088602
+        },
+        {
+          "name": "webkit-mobile-375px: formula-calculation-quotes",
+          "durationMs": 391929.857843
+        },
+        {
+          "name": "webkit-mobile-375px: formula-evidence-status-filters",
+          "durationMs": 12901.27125900006
+        },
+        {
+          "name": "webkit-mobile-375px: formula-detail-refresh-and-cancel",
+          "durationMs": 20258.845037999912
+        },
+        {
+          "name": "webkit-mobile-375px: formula-confirmation-timeline",
+          "durationMs": 7651.128644999932
+        },
+        {
+          "name": "webkit-mobile-375px: identification-modes-and-native-input",
+          "durationMs": 22974.914516000077
+        },
+        {
+          "name": "webkit-mobile-375px: formula-execution-inputs-and-snapshots",
+          "durationMs": 19276.890668999986
+        },
+        {
+          "name": "webkit-mobile-375px: formula-execution-errors-and-reload",
+          "durationMs": 22035.25817399996
+        },
+        {
+          "name": "webkit-mobile-375px: formula-execution-definition-lifecycle",
+          "durationMs": 5742.737398999976
+        },
+        {
+          "name": "webkit-mobile-375px: formula-execution-help-and-layout",
+          "durationMs": 18314.59427100001
+        },
+        {
+          "name": "webkit-mobile-375px: block-extra-field-preservation",
+          "durationMs": 15436.256257999921
+        },
+        {
+          "name": "webkit-mobile-375px: manual-block-references",
+          "durationMs": 35385.26594999991
+        },
+        {
+          "name": "webkit-mobile-375px: default-id-calculations",
+          "durationMs": 35121.01542300009
+        },
+        {
+          "name": "webkit-mobile-375px: calculation-state-diagnostics",
+          "durationMs": 34978.55080999993
+        },
+        {
+          "name": "webkit-mobile-375px: dependency-graph-navigation",
+          "durationMs": 48811.465726999915
+        },
+        {
+          "name": "webkit-mobile-375px: dependency-graph-limit-fallback",
+          "durationMs": 12703.951605000068
+        },
+        {
+          "name": "webkit-mobile-375px: calculation-trial-preview",
+          "durationMs": 75645.56877100002
+        },
+        {
+          "name": "webkit-mobile-375px: nested-percent-calculator",
+          "durationMs": 3543.147271999973
+        },
+        {
+          "name": "webkit-mobile-375px: nested-percent-url",
+          "durationMs": 9543.973925000057
+        },
+        {
+          "name": "webkit-mobile-375px: nested-percent-legacy-single",
+          "durationMs": 9515.350838000071
+        },
+        {
+          "name": "webkit-mobile-375px: nested-percent-legacy-blocks",
+          "durationMs": 5456.726539999945
+        },
+        {
+          "name": "webkit-mobile-375px: saved-markdown-report",
+          "durationMs": 22432.824285000097
+        },
+        {
+          "name": "webkit-mobile-375px: calculation-evidence-snapshots",
+          "durationMs": 16270.96419699979
+        },
+        {
+          "name": "webkit-mobile-375px: saved-record-comparison",
+          "durationMs": 91586.40790899983
+        },
+        {
+          "name": "complete",
+          "durationMs": 33841.66774199996
+        }
+      ],
+      "activation_timings": {
+        "webkit-mobile-375px: served-provenance": {
+          "count": 1,
+          "durationMs": 5616.379959,
+          "maxMs": 5616.379959
+        },
+        "webkit-mobile-375px: responsive-header-guide-theme-scroll": {
+          "count": 6,
+          "durationMs": 4389.795978999999,
+          "maxMs": 1164.360842
+        },
+        "webkit-mobile-375px: arithmetic-history-error-recovery": {
+          "count": 33,
+          "durationMs": 8297.622950000019,
+          "maxMs": 957.7655500000001
+        },
+        "webkit-mobile-375px: single-memo-save-cancel-edit": {
+          "count": 7,
+          "durationMs": 3173.733347000016,
+          "maxMs": 715.5991610000056
+        },
+        "webkit-mobile-375px: block-memo-save": {
+          "count": 5,
+          "durationMs": 2803.59047499999,
+          "maxMs": 755.0575189999945
+        },
+        "webkit-mobile-375px: reload-persistence-visible-panels": {
+          "count": 4,
+          "durationMs": 1523.5859719999935,
+          "maxMs": 795.521765999998
+        },
+        "webkit-mobile-375px: trailing-number-edit-regression": {
+          "count": 20,
+          "durationMs": 7873.686318999986,
+          "maxMs": 2035.7909530000034
+        },
+        "webkit-mobile-375px: after-equals-state-transitions": {
+          "count": 56,
+          "durationMs": 20929.15312500002,
+          "maxMs": 955.366955000005
+        },
+        "webkit-mobile-375px: small-result-chain-and-imported-editing": {
+          "count": 43,
+          "durationMs": 16289.675607999918,
+          "maxMs": 1817.6453889999975
+        },
+        "webkit-mobile-375px: parentheses-percent-and-error-boundaries": {
+          "count": 12,
+          "durationMs": 3850.0149979999987,
+          "maxMs": 691.6977159999951
+        },
+        "webkit-mobile-375px: basic-math-expression-input-and-history": {
+          "count": 12,
+          "durationMs": 3642.2601269999723,
+          "maxMs": 698.2048760000034
+        },
+        "webkit-mobile-375px: basic-math-errors-and-recovery": {
+          "count": 12,
+          "durationMs": 2882.489808999977,
+          "maxMs": 467.3934889999946
+        },
+        "webkit-mobile-375px: basic-math-single-memo-edit": {
+          "count": 6,
+          "durationMs": 2977.431611000022,
+          "maxMs": 781.425390000004
+        },
+        "webkit-mobile-375px: basic-math-block-save-and-recalculate": {
+          "count": 6,
+          "durationMs": 3354.428953000024,
+          "maxMs": 848.0465060000133
+        },
+        "webkit-mobile-375px: basic-math-url-and-reload": {
+          "count": 5,
+          "durationMs": 2638.8918739999935,
+          "maxMs": 894.1401990000013
+        },
+        "webkit-mobile-375px: note-scoped-variables-order-and-editing": {
+          "count": 20,
+          "durationMs": 9955.805968999965,
+          "maxMs": 763.7516119999927
+        },
+        "webkit-mobile-375px: variable-scope-persistence-and-responsive-roles": {
+          "count": 14,
+          "durationMs": 7594.231823999988,
+          "maxMs": 936.9450469999865
+        },
+        "webkit-mobile-375px: legacy-block-opt-in-compatibility": {
+          "count": 4,
+          "durationMs": 2038.8707930000091,
+          "maxMs": 687.5776780000015
+        },
+        "webkit-mobile-375px: formula-library-crud": {
+          "count": 26,
+          "durationMs": 13725.611726000061,
+          "maxMs": 1067.4141839999938
+        },
+        "webkit-mobile-375px: formula-math-reports": {
+          "count": 57,
+          "durationMs": 45546.069917000015,
+          "maxMs": 1684.1380039999785
+        },
+        "webkit-mobile-375px: formula-calculation-quotes": {
+          "count": 186,
+          "durationMs": 203683.23644600002,
+          "maxMs": 2612.659286000009
+        },
+        "webkit-mobile-375px: formula-evidence-status-filters": {
+          "count": 15,
+          "durationMs": 8302.008136000019,
+          "maxMs": 1142.3740100000286
+        },
+        "webkit-mobile-375px: formula-detail-refresh-and-cancel": {
+          "count": 17,
+          "durationMs": 14408.755930000101,
+          "maxMs": 1453.1007659999887
+        },
+        "webkit-mobile-375px: formula-confirmation-timeline": {
+          "count": 2,
+          "durationMs": 2052.312987999874,
+          "maxMs": 1043.9092349999119
+        },
+        "webkit-mobile-375px: identification-modes-and-native-input": {
+          "count": 21,
+          "durationMs": 11798.309539999813,
+          "maxMs": 1139.378515999997
+        },
+        "webkit-mobile-375px: formula-execution-inputs-and-snapshots": {
+          "count": 16,
+          "durationMs": 16263.269443999976,
+          "maxMs": 1882.7565010000253
+        },
+        "webkit-mobile-375px: formula-execution-errors-and-reload": {
+          "count": 25,
+          "durationMs": 18370.146738999756,
+          "maxMs": 1707.8135520000942
+        },
+        "webkit-mobile-375px: formula-execution-definition-lifecycle": {
+          "count": 9,
+          "durationMs": 5392.678811999969,
+          "maxMs": 1073.0702580000507
+        },
+        "webkit-mobile-375px: formula-execution-help-and-layout": {
+          "count": 17,
+          "durationMs": 10618.960596999852,
+          "maxMs": 1446.4547510000411
+        },
+        "webkit-mobile-375px: block-extra-field-preservation": {
+          "count": 16,
+          "durationMs": 9759.847794000525,
+          "maxMs": 1146.0470429999987
+        },
+        "webkit-mobile-375px: manual-block-references": {
+          "count": 34,
+          "durationMs": 19908.750326000387,
+          "maxMs": 1588.2294020000845
+        },
+        "webkit-mobile-375px: default-id-calculations": {
+          "count": 38,
+          "durationMs": 21556.55364900001,
+          "maxMs": 1069.443181999959
+        },
+        "webkit-mobile-375px: calculation-state-diagnostics": {
+          "count": 42,
+          "durationMs": 23242.796212000074,
+          "maxMs": 1256.018435999984
+        },
+        "webkit-mobile-375px: dependency-graph-navigation": {
+          "count": 46,
+          "durationMs": 30926.29699399986,
+          "maxMs": 1463.2091990000335
+        },
+        "webkit-mobile-375px: dependency-graph-limit-fallback": {
+          "count": 10,
+          "durationMs": 6466.46164899983,
+          "maxMs": 1084.1748730000108
+        },
+        "webkit-mobile-375px: calculation-trial-preview": {
+          "count": 70,
+          "durationMs": 48708.920495999395,
+          "maxMs": 1900.976318000001
+        },
+        "webkit-mobile-375px: nested-percent-calculator": {
+          "count": 5,
+          "durationMs": 1956.0768440000247,
+          "maxMs": 1065.3686360000866
+        },
+        "webkit-mobile-375px: nested-percent-url": {
+          "count": 8,
+          "durationMs": 6104.397227999754,
+          "maxMs": 1352.2611519999336
+        },
+        "webkit-mobile-375px: nested-percent-legacy-single": {
+          "count": 10,
+          "durationMs": 6488.737635000143,
+          "maxMs": 1084.8200129999314
+        },
+        "webkit-mobile-375px: nested-percent-legacy-blocks": {
+          "count": 4,
+          "durationMs": 2174.722793000168,
+          "maxMs": 877.8204799999949
+        },
+        "webkit-mobile-375px: saved-markdown-report": {
+          "count": 31,
+          "durationMs": 15939.375663999934,
+          "maxMs": 988.6084700000938
+        },
+        "webkit-mobile-375px: calculation-evidence-snapshots": {
+          "count": 25,
+          "durationMs": 12815.384930999717,
+          "maxMs": 1023.5538659999147
+        },
+        "webkit-mobile-375px: saved-record-comparison": {
+          "count": 70,
+          "durationMs": 62349.66125400108,
+          "maxMs": 2174.880921999924
+        },
+        "webkit-mobile-375px: nondestructive-storage-protection": {
+          "count": 35,
+          "durationMs": 13592.710308000445,
+          "maxMs": 1016.8329449999146
+        }
+      },
+      "screenshot_count": 95,
+      "trace_timings": [
+        {
+          "operation": "start",
+          "durationMs": 9.24710099999993
+        },
+        {
+          "operation": "stop-discard-success",
+          "durationMs": 6.188634000020102
+        }
+      ]
+    },
+    {
+      "scenario": "webkit-mobile-390px",
+      "status": "running",
+      "checks": 130,
+      "geometry": 84,
+      "stage": "webkit-mobile-390px: saved-record-comparison",
+      "servedIdentity": {
+        "sha": "5cbaf6f74ae15d7afccb73f50c64c0ce0380756c",
+        "branch": "feat/audit-comparison-markdown-export",
+        "run": "40261949353",
+        "attempt": "1"
+      },
+      "failure": null,
+      "stage_timings": [
+        {
+          "name": "provenance",
+          "durationMs": 5.512209999999996
+        },
+        {
+          "name": "browser-tool-import",
+          "durationMs": 543.788946
+        },
+        {
+          "name": "preview-startup",
+          "durationMs": 486.9793340000001
+        },
+        {
+          "name": "browser-launch",
+          "durationMs": 0.8525650000001406
+        },
+        {
+          "name": "webkit-mobile-390px-launch",
+          "durationMs": 982.2889149999999
+        },
+        {
+          "name": "webkit-mobile-390px: browser-context",
+          "durationMs": 4279.036505
+        },
+        {
+          "name": "webkit-mobile-390px: served-provenance",
+          "durationMs": 7291.163068
+        },
+        {
+          "name": "webkit-mobile-390px: responsive-header-guide-theme-scroll",
+          "durationMs": 13436.682788
+        },
+        {
+          "name": "webkit-mobile-390px: arithmetic-history-error-recovery",
+          "durationMs": 10486.049324
+        },
+        {
+          "name": "webkit-mobile-390px: single-memo-save-cancel-edit",
+          "durationMs": 8363.307154000002
+        },
+        {
+          "name": "webkit-mobile-390px: block-memo-save",
+          "durationMs": 5883.192063999995
+        },
+        {
+          "name": "webkit-mobile-390px: reload-persistence-visible-panels",
+          "durationMs": 3820.257798999999
+        },
+        {
+          "name": "webkit-mobile-390px: trailing-number-edit-regression",
+          "durationMs": 8271.003502
+        },
+        {
+          "name": "webkit-mobile-390px: after-equals-state-transitions",
+          "durationMs": 32720.028611
+        },
+        {
+          "name": "webkit-mobile-390px: small-result-chain-and-imported-editing",
+          "durationMs": 31035.100072
+        },
+        {
+          "name": "webkit-mobile-390px: parentheses-percent-and-error-boundaries",
+          "durationMs": 10006.626124999995
+        },
+        {
+          "name": "webkit-mobile-390px: basic-math-expression-input-and-history",
+          "durationMs": 8882.642189000006
+        },
+        {
+          "name": "webkit-mobile-390px: basic-math-errors-and-recovery",
+          "durationMs": 9789.449022999994
+        },
+        {
+          "name": "webkit-mobile-390px: basic-math-single-memo-edit",
+          "durationMs": 7049.591645000008
+        },
+        {
+          "name": "webkit-mobile-390px: basic-math-block-save-and-recalculate",
+          "durationMs": 8450.897945999983
+        },
+        {
+          "name": "webkit-mobile-390px: basic-math-url-and-reload",
+          "durationMs": 7167.527312999999
+        },
+        {
+          "name": "webkit-mobile-390px: note-scoped-variables-order-and-editing",
+          "durationMs": 32057.728352999984
+        },
+        {
+          "name": "webkit-mobile-390px: variable-scope-persistence-and-responsive-roles",
+          "durationMs": 32040.97338099999
+        },
+        {
+          "name": "webkit-mobile-390px: legacy-block-opt-in-compatibility",
+          "durationMs": 6212.73247800002
+        },
+        {
+          "name": "webkit-mobile-390px: formula-library-crud",
+          "durationMs": 45362.29780999996
+        },
+        {
+          "name": "webkit-mobile-390px: formula-math-reports",
+          "durationMs": 137065.06417000003
+        },
+        {
+          "name": "webkit-mobile-390px: formula-calculation-quotes",
+          "durationMs": 717902.4132929998
+        },
+        {
+          "name": "webkit-mobile-390px: formula-evidence-status-filters",
+          "durationMs": 21482.865200000117
+        },
+        {
+          "name": "webkit-mobile-390px: formula-detail-refresh-and-cancel",
+          "durationMs": 32799.07173299999
+        },
+        {
+          "name": "webkit-mobile-390px: formula-confirmation-timeline",
+          "durationMs": 6670.486560000107
+        },
+        {
+          "name": "webkit-mobile-390px: identification-modes-and-native-input",
+          "durationMs": 22281.273646000074
+        },
+        {
+          "name": "webkit-mobile-390px: formula-execution-inputs-and-snapshots",
+          "durationMs": 19861.062265999848
+        },
+        {
+          "name": "webkit-mobile-390px: formula-execution-errors-and-reload",
+          "durationMs": 29626.05540099996
+        },
+        {
+          "name": "webkit-mobile-390px: formula-execution-definition-lifecycle",
+          "durationMs": 7589.52994300006
+        },
+        {
+          "name": "webkit-mobile-390px: formula-execution-help-and-layout",
+          "durationMs": 22954.114054000005
+        },
+        {
+          "name": "webkit-mobile-390px: block-extra-field-preservation",
+          "durationMs": 14777.478346000193
+        },
+        {
+          "name": "webkit-mobile-390px: manual-block-references",
+          "durationMs": 34447.987999999896
+        },
+        {
+          "name": "webkit-mobile-390px: default-id-calculations",
+          "durationMs": 38041.89940399979
+        },
+        {
+          "name": "webkit-mobile-390px: calculation-state-diagnostics",
+          "durationMs": 38505.96421799995
+        },
+        {
+          "name": "webkit-mobile-390px: dependency-graph-navigation",
+          "durationMs": 48659.62286100001
+        },
+        {
+          "name": "webkit-mobile-390px: dependency-graph-limit-fallback",
+          "durationMs": 11664.48425400001
+        },
+        {
+          "name": "webkit-mobile-390px: calculation-trial-preview",
+          "durationMs": 62344.01497899997
+        },
+        {
+          "name": "webkit-mobile-390px: nested-percent-calculator",
+          "durationMs": 2043.7285730000585
+        },
+        {
+          "name": "webkit-mobile-390px: nested-percent-url",
+          "durationMs": 5326.4016430000775
+        },
+        {
+          "name": "webkit-mobile-390px: nested-percent-legacy-single",
+          "durationMs": 6733.054189000046
+        },
+        {
+          "name": "webkit-mobile-390px: nested-percent-legacy-blocks",
+          "durationMs": 3407.7724609998986
+        },
+        {
+          "name": "webkit-mobile-390px: saved-markdown-report",
+          "durationMs": 19789.817512999987
+        },
+        {
+          "name": "webkit-mobile-390px: calculation-evidence-snapshots",
+          "durationMs": 13785.015114000067
+        }
+      ],
+      "activation_timings": {
+        "webkit-mobile-390px: served-provenance": {
+          "count": 1,
+          "durationMs": 5769.686240999999,
+          "maxMs": 5769.686240999999
+        },
+        "webkit-mobile-390px: responsive-header-guide-theme-scroll": {
+          "count": 6,
+          "durationMs": 9193.297083,
+          "maxMs": 2809.0857539999997
+        },
+        "webkit-mobile-390px: arithmetic-history-error-recovery": {
+          "count": 33,
+          "durationMs": 10063.849242000004,
+          "maxMs": 713.3373449999999
+        },
+        "webkit-mobile-390px: single-memo-save-cancel-edit": {
+          "count": 7,
+          "durationMs": 8031.790532000006,
+          "maxMs": 1687.237562000002
+        },
+        "webkit-mobile-390px: block-memo-save": {
+          "count": 5,
+          "durationMs": 5548.094427000004,
+          "maxMs": 1805.4769880000022
+        },
+        "webkit-mobile-390px: reload-persistence-visible-panels": {
+          "count": 4,
+          "durationMs": 2743.5495169999995,
+          "maxMs": 1109.7238169999982
+        },
+        "webkit-mobile-390px: trailing-number-edit-regression": {
+          "count": 20,
+          "durationMs": 6974.888387999992,
+          "maxMs": 1189.2053429999942
+        },
+        "webkit-mobile-390px: after-equals-state-transitions": {
+          "count": 56,
+          "durationMs": 30008.108380000092,
+          "maxMs": 2935.438897
+        },
+        "webkit-mobile-390px: small-result-chain-and-imported-editing": {
+          "count": 43,
+          "durationMs": 26431.082760999998,
+          "maxMs": 2062.807904999994
+        },
+        "webkit-mobile-390px: parentheses-percent-and-error-boundaries": {
+          "count": 12,
+          "durationMs": 7132.933522000007,
+          "maxMs": 1296.7502070000046
+        },
+        "webkit-mobile-390px: basic-math-expression-input-and-history": {
+          "count": 12,
+          "durationMs": 6349.946392999991,
+          "maxMs": 1489.2093559999776
+        },
+        "webkit-mobile-390px: basic-math-errors-and-recovery": {
+          "count": 12,
+          "durationMs": 4811.794448999979,
+          "maxMs": 834.5116730000009
+        },
+        "webkit-mobile-390px: basic-math-single-memo-edit": {
+          "count": 6,
+          "durationMs": 6496.593591000012,
+          "maxMs": 1600.8586690000084
+        },
+        "webkit-mobile-390px: basic-math-block-save-and-recalculate": {
+          "count": 6,
+          "durationMs": 7854.29647099998,
+          "maxMs": 2241.3239920000196
+        },
+        "webkit-mobile-390px: basic-math-url-and-reload": {
+          "count": 5,
+          "durationMs": 5038.586372999998,
+          "maxMs": 1408.0799479999987
+        },
+        "webkit-mobile-390px: note-scoped-variables-order-and-editing": {
+          "count": 20,
+          "durationMs": 29849.47864700004,
+          "maxMs": 2175.953766999999
+        },
+        "webkit-mobile-390px: variable-scope-persistence-and-responsive-roles": {
+          "count": 14,
+          "durationMs": 19145.945948000008,
+          "maxMs": 2318.642182999989
+        },
+        "webkit-mobile-390px: legacy-block-opt-in-compatibility": {
+          "count": 4,
+          "durationMs": 4888.566847000009,
+          "maxMs": 1560.6142549999931
+        },
+        "webkit-mobile-390px: formula-library-crud": {
+          "count": 26,
+          "durationMs": 38083.00688800021,
+          "maxMs": 2780.038379000034
+        },
+        "webkit-mobile-390px: formula-math-reports": {
+          "count": 57,
+          "durationMs": 115566.6821160001,
+          "maxMs": 4629.184027999989
+        },
+        "webkit-mobile-390px: formula-calculation-quotes": {
+          "count": 186,
+          "durationMs": 461640.625985,
+          "maxMs": 6202.144311000011
+        },
+        "webkit-mobile-390px: formula-evidence-status-filters": {
+          "count": 15,
+          "durationMs": 17542.45304399985,
+          "maxMs": 1844.7460710001178
+        },
+        "webkit-mobile-390px: formula-detail-refresh-and-cancel": {
+          "count": 17,
+          "durationMs": 27481.113468999974,
+          "maxMs": 3243.657797999913
+        },
+        "webkit-mobile-390px: formula-confirmation-timeline": {
+          "count": 2,
+          "durationMs": 2492.1995990001597,
+          "maxMs": 1305.3267370001413
+        },
+        "webkit-mobile-390px: identification-modes-and-native-input": {
+          "count": 21,
+          "durationMs": 14834.593917000806,
+          "maxMs": 1122.3357170000672
+        },
+        "webkit-mobile-390px: formula-execution-inputs-and-snapshots": {
+          "count": 16,
+          "durationMs": 17898.70686099981,
+          "maxMs": 1771.3616580001544
+        },
+        "webkit-mobile-390px: formula-execution-errors-and-reload": {
+          "count": 25,
+          "durationMs": 27126.724459000397,
+          "maxMs": 1763.6267520000692
+        },
+        "webkit-mobile-390px: formula-execution-definition-lifecycle": {
+          "count": 9,
+          "durationMs": 7367.792482000077,
+          "maxMs": 1558.3428009999916
+        },
+        "webkit-mobile-390px: formula-execution-help-and-layout": {
+          "count": 17,
+          "durationMs": 15481.122266000137,
+          "maxMs": 1907.2025679999497
+        },
+        "webkit-mobile-390px: block-extra-field-preservation": {
+          "count": 16,
+          "durationMs": 10853.80842100014,
+          "maxMs": 1222.7691020001657
+        },
+        "webkit-mobile-390px: manual-block-references": {
+          "count": 34,
+          "durationMs": 21567.156206000363,
+          "maxMs": 1115.1114529999904
+        },
+        "webkit-mobile-390px: default-id-calculations": {
+          "count": 38,
+          "durationMs": 26385.574848999735,
+          "maxMs": 1157.8464230000973
+        },
+        "webkit-mobile-390px: calculation-state-diagnostics": {
+          "count": 42,
+          "durationMs": 28323.462447999744,
+          "maxMs": 1471.611914999783
+        },
+        "webkit-mobile-390px: dependency-graph-navigation": {
+          "count": 46,
+          "durationMs": 34597.7099480005,
+          "maxMs": 1512.1673390001524
+        },
+        "webkit-mobile-390px: dependency-graph-limit-fallback": {
+          "count": 10,
+          "durationMs": 6805.101953000063,
+          "maxMs": 989.9858399999794
+        },
+        "webkit-mobile-390px: calculation-trial-preview": {
+          "count": 70,
+          "durationMs": 42687.46378099965,
+          "maxMs": 1217.8879439998418
+        },
+        "webkit-mobile-390px: nested-percent-calculator": {
+          "count": 5,
+          "durationMs": 1145.975705999881,
+          "maxMs": 587.1520749998745
+        },
+        "webkit-mobile-390px: nested-percent-url": {
+          "count": 8,
+          "durationMs": 3589.8473939998075,
+          "maxMs": 625.8624609999824
+        },
+        "webkit-mobile-390px: nested-percent-legacy-single": {
+          "count": 10,
+          "durationMs": 5316.073218000587,
+          "maxMs": 712.9358230000362
+        },
+        "webkit-mobile-390px: nested-percent-legacy-blocks": {
+          "count": 4,
+          "durationMs": 1701.017393999733,
+          "maxMs": 578.900852000108
+        },
+        "webkit-mobile-390px: saved-markdown-report": {
+          "count": 31,
+          "durationMs": 14998.66720999917,
+          "maxMs": 660.3627959999721
+        },
+        "webkit-mobile-390px: calculation-evidence-snapshots": {
+          "count": 25,
+          "durationMs": 11938.475815999787,
+          "maxMs": 831.219044999918
+        },
+        "webkit-mobile-390px: saved-record-comparison": {
+          "count": 11,
+          "durationMs": 5978.784320999868,
+          "maxMs": 1121.9812600000296
+        }
+      },
+      "screenshot_count": 84,
+      "trace_timings": [
+        {
+          "operation": "start",
+          "durationMs": 7.366191000000072
+        }
+      ]
+    }
+  ]
+}

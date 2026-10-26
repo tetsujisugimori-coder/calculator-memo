@@ -54,3 +54,7 @@ WebKit390の既存quotesは2runで583秒/558秒、375は318秒/298秒。math-rep
 
 ## 本人承認後の3worker検証（2026-10-26 11:49 JST）
 同じ30分jobで3workerとする次善策を本人が了承した。先行run40255569307ではWebKit3901480.8秒/375930.2秒で完走した一方、後続Chromium touch2条件が未完となり、順序変更だけでは足りなかった。全条件/DPR/期待値/PNG/geometry/trace/単一job上限は維持し、資源並列数だけ3へ変更する。元index port/集約順と全6一度ずつの契約を保ち、CPU数/利用可能CPU/host memory/load/cgroup制約/Node usageを開始終了に記録する。Node usageはbrowser子processの使用量を含まず、host観測からCPU不足を断定しない。3workerでの完走も従来遅延の根本原因解消を意味しない。前runの失敗はPR本文とLOGに保持する。
+
+## PR #93 GUI阻害の追加修復
+
+既存出典確認の文字200%横超過とWebKitの多重Modal遅延を別に再現・計測し、同一全文のtext node統合と多重時の装飾filter省略へ局所化した。出力builder・比較結果・保存/失効意味論は変更しない。単独Modalの装飾を保持する第一希望を採用し、常時filter削除・無効な子層だけの変更・worker増加・検査削減は不採用。低層WebKit/環境の全原因を解明したとは扱わず、正式6条件の完走と調査で示した寄与を区別する。[設計比較・RED/GREEN・全失敗履歴と最終検証](../maintenance/pr93-gui-repair-20261026/README.md)。
