@@ -75,6 +75,18 @@ export function outsideAuditComparisonRecordBlocks(body: string, blocks: Markdow
   return blocks.filter(block => !ranges.some(range => block.start < range.end && block.end > range.start));
 }
 
+/** Validate textarea-normalized UTF-16 positions without repairing the source. */
+export function assertAuditComparisonInsertionPosition(body: string, start: number, end: number): void {
+  const normalized = body.replace(/\r\n?/g, '\n');
+  const splitsPair = (position: number) => position > 0 && position < normalized.length
+    && normalized.charCodeAt(position - 1) >= 0xd800 && normalized.charCodeAt(position - 1) <= 0xdbff
+    && normalized.charCodeAt(position) >= 0xdc00 && normalized.charCodeAt(position) <= 0xdfff;
+  if (!wellFormed(body) || ![start, end].every(position => Number.isInteger(position) && position >= 0 && position <= normalized.length)
+    || start > end || splitsPair(start) || splitsPair(end)) {
+    throw new Error('本文または挿入位置に不正な文字境界があります。補完・切り捨てをせず挿入を停止しました。本文は保持しています。');
+  }
+}
+
 /** Preserve the exact existing output bytes; no comparator, storage, or clock. */
 export function createAuditComparisonRecordMarkdown(markdown: string, info: AuditComparisonRecordMetadata): string {
   const payload = { version: 1, ...info };

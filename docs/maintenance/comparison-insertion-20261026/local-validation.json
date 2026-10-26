@@ -87,5 +87,12 @@
     "lib/formula-report-audit-comparison-record.ts": "1ebb6574979883f79e2ab44b1462f917739f4db055c79fbd886a05d7edd21a4c",
     "e2e/audit-comparison-insertion.mjs": "172bb94243888920f5686072ae8a1e16acf817d78bda371f57fdf640ef9464fd"
   },
-  "formal_ci": "pending"
+  "formal_ci": "pending",
+  "record_correction": {
+    "confirmed_at": "2026-10-26T12:17:00Z",
+    "field": "checks[name=contracts].failure",
+    "old_claim": "0.4s bounded acquisition fixture",
+    "corrected_fact": "timeout 0.1s, kill-after 0.2s, outer spawnSync timeout 5000ms; no timeout change",
+    "evidence": "e2e/ci-contract.node-test.mjs bounded acquisition test; old failure count remains 40/41"
+  }
 }

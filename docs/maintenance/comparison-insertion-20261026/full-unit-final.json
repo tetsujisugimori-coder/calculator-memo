@@ -1,0 +1,100 @@
+{
+  "status": "passed",
+  "command": "npm test -- --maxWorkers=2",
+  "environment": "cloud local workspace; not formal GitHub CI",
+  "started_at": "2026-10-26T12:13:27.904474+00:00",
+  "finished_at": "2026-10-26T12:19:36.135471+00:00",
+  "elapsed_monotonic_seconds": 368.231,
+  "exit_code": 0,
+  "base_head": "7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af",
+  "working_tree_before": " M LOG.md\n M README.md\n M components/FormulaReportModal.tsx\n M docs/agent/formula-report-audit-comparison-insertion-independent-review.md\n M docs/agent/formula-report-audit-comparison-insertion.md\n M e2e/README.md\n M e2e/audit-comparison-insertion.mjs\n M e2e/ci-contract.mjs\n M e2e/ci-contract.node-test.mjs\n M lib/formula-report-audit-comparison-record.ts\n M tests/formula-comparison-insertion-independent.test.ts\n M tests/formula-report-audit-comparison-insertion-ui.test.ts\n?? docs/maintenance/comparison-insertion-20261026/formal-ci-40314584238.json\n?? docs/maintenance/comparison-insertion-20261026/full-unit-final.json\n?? docs/maintenance/comparison-insertion-20261026/insertion-aggregate-capacity.json\n?? docs/maintenance/comparison-insertion-20261026/native-r2-r3/\n?? docs/maintenance/comparison-insertion-20261026/unsafe-undo-red-green.json\n",
+  "tested_file_sha256": {
+    "components/FormulaReportModal.tsx": "96ca2340bf88a22142300686b9a6d5a56df88d61cb4355f55f2950d13a314789",
+    "tests/formula-report-audit-comparison-insertion-ui.test.ts": "b82a895dcf9b349228fd3a8c8822da28fbf8efd4e0f1bd7f490df393cf2a641a"
+  },
+  "scope": "Full configured Vitest suite, maxWorkers2, unchanged5000ms default, no retry or skip added; valid selection endpoint fixture corrected7to8, assertions retained",
+  "expected_count": 2110,
+  "summary_lines": [
+    "Test Files  90 passed (90)",
+    "Tests  2110 passed (2110)",
+    "Start at  21:13:33",
+    "Duration  358.58s (transform 12.09s, setup 0ms, collect 380.69s, tests 145.45s, environment 65.69s, prepare 38.06s)"
+  ],
+  "raw_transient_log": "/tmp/comparison-insertion-all-2110-valid-position.log",
+  "focused_before_full": {
+    "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts --maxWorkers=1 --minWorkers=1",
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 30.72,
+    "test_seconds": 17.56,
+    "raw_transient_log": "/tmp/comparison-insertion-ui-valid-position.log"
+  },
+  "previous_runs": [
+    {
+      "status": "failed",
+      "command": "npm test -- --maxWorkers=2",
+      "environment": "cloud local workspace; not formal GitHub CI",
+      "started_at": "2026-10-26T12:06:57.373110+00:00",
+      "finished_at": "2026-10-26T12:11:35.163915+00:00",
+      "elapsed_monotonic_seconds": 277.792,
+      "exit_code": 1,
+      "base_head": "7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af",
+      "working_tree_before": " M LOG.md\n M README.md\n M components/FormulaReportModal.tsx\n M docs/agent/formula-report-audit-comparison-insertion-independent-review.md\n M docs/agent/formula-report-audit-comparison-insertion.md\n M e2e/README.md\n M e2e/audit-comparison-insertion.mjs\n M e2e/ci-contract.mjs\n M e2e/ci-contract.node-test.mjs\n M lib/formula-report-audit-comparison-record.ts\n M tests/formula-comparison-insertion-independent.test.ts\n M tests/formula-report-audit-comparison-insertion-ui.test.ts\n?? docs/maintenance/comparison-insertion-20261026/formal-ci-40314584238.json\n?? docs/maintenance/comparison-insertion-20261026/full-unit-final.json\n?? docs/maintenance/comparison-insertion-20261026/insertion-aggregate-capacity.json\n?? docs/maintenance/comparison-insertion-20261026/native-r2-r3/\n?? docs/maintenance/comparison-insertion-20261026/unsafe-undo-red-green.json\n",
+      "tested_file_sha256": {
+        "components/FormulaReportModal.tsx": "96ca2340bf88a22142300686b9a6d5a56df88d61cb4355f55f2950d13a314789",
+        "tests/formula-report-audit-comparison-insertion-ui.test.ts": "e7ed860296ab46183961c3067417f570bd9246ee4ff5c20ea1dc67cc84822257"
+      },
+      "scope": "Full configured Vitest suite, maxWorkers2, unchanged5000ms default, no retry or skip added; R2 and R3 acceptance fixes frozen",
+      "expected_count": 2110,
+      "summary_lines": [
+        "Test Files  1 failed | 89 passed (90)",
+        "Tests  1 failed | 2109 passed (2110)",
+        "Start at  21:07:07",
+        "Duration  267.00s (transform 14.89s, setup 0ms, collect 255.18s, tests 114.21s, environment 69.35s, prepare 28.06s)"
+      ],
+      "raw_transient_log": "/tmp/comparison-insertion-all-2110.log",
+      "previous_runs": [
+        {
+          "status": "interrupted_incomplete",
+          "command": "npm test -- --maxWorkers=2",
+          "intended_test_count": 2107,
+          "started_at": "2026-10-26T11:55:57Z",
+          "stopped_at": "2026-10-26T11:58:00Z",
+          "exit_code": 130,
+          "reason": "Parent requested stop for independent P2 R3: programmatic UTF16 selection can split surrogate pair; freeze acceptance fixes before another full suite.",
+          "completed_file_pass_lines": 13,
+          "full_result": "NOT ESTABLISHED; no full2107PASS claim",
+          "timeout_ms": 5000,
+          "raw_transient_log": "/tmp/comparison-insertion-all-2107.log",
+          "prior_r2_targeted": "45 integration tests GREEN retained in unsafe-undo-red-green.json; not fullsuite evidence",
+          "previous_runs": [
+            {
+              "status": "interrupted_incomplete",
+              "command": "npm test -- --maxWorkers=2",
+              "base_head": "7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af",
+              "working_tree": "plus aggregate capacity regression (2106 intended tests)",
+              "stopped_at": "2026-10-26T11:50:21Z",
+              "exit_code": 130,
+              "reason": "Parent requested stop for independently confirmed new P2: unsafe dedicated undo remains visible/enabled after known invalidation. Product fix and RED tests required before full rerun.",
+              "completed_file_pass_lines": 56,
+              "full_result": "NOT ESTABLISHED: no full-suite PASS claim",
+              "timeout_ms": 5000,
+              "raw_transient_log": "/tmp/comparison-insertion-all-2106.log",
+              "prior2105pass": "retained separately; not reused as2106finalresult"
+            }
+          ]
+        }
+      ],
+      "verification_boundary": "Not exact-final-HEAD remote CI. Prior2105pass, focused43timeout and interrupted2106/2107 remain retained.",
+      "failure_analysis": {
+        "test": "selection movement away and back invalidates preview, while unrelated focus movement does not",
+        "actual": "New R3 guard correctly refuses preparation because test selectionEnd7 splits emoji surrogate pair at UTF16 indices6/7.",
+        "fixture_correction": "Change initial and restored selection end from7to8, after entireemoji; keep all focus and stale-preview/body-preservation assertions. Independent malformed-surrogate rejection tests unchanged.",
+        "classification": "testfixture compatibility correction for newly enforced valid-position contract, not product regression",
+        "product_changes": "none"
+      }
+    }
+  ],
+  "verification_boundary": "Not exact-final-HEAD remote CI. Prior2105pass, focused43timeout, interrupted2106/2107 and failed2110run retained."
+}

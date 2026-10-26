@@ -67,3 +67,28 @@ it('independent negative: failed collection acquisition refuses fixed insertion,
     expect(writes).not.toHaveBeenCalled();
   } finally { await act(async () => root.unmount()); host.remove(); get.mockRestore(); writes.mockRestore(); vi.unstubAllGlobals(); }
 });
+
+it.each(['split-start', 'split-end', 'unpaired-body'] as const)('independent negative: %s cannot create malformed Unicode or use an invalid position', async mode => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+  const get = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+  const writes = vi.spyOn(Storage.prototype, 'setItem');
+  const body = `${mode === 'unpaired-body' ? '\ud800' : '😀'}tail\n\n${point}\n\n${point.replaceAll('"recordId":"A"', '"recordId":"B"')}`;
+  const host = document.createElement('div'); document.body.append(host); const root = createRoot(host);
+  const button = (label: string) => [...host.querySelectorAll('button')].find(x => x.textContent === label)!;
+  const click = async (label: string) => act(async () => { expect(button(label), label).toBeTruthy(); button(label).click(); });
+  try {
+    await act(async () => root.render(createElement(FormulaReportModal, { formulaId: 'f', formula: { id: 'f', title: 'Formula', expression: '1', createdAt: info.preparedAt, updatedAt: info.preparedAt }, report: { id: 'r', formulaId: 'f', title: 'Report', body, createdAt: info.preparedAt, updatedAt: info.preparedAt, confirmedExpression: null }, writable: true, onClose: vi.fn(), onSave: vi.fn() })));
+    await click('Markdownを編集');
+    const editor = host.querySelector<HTMLTextAreaElement>('#formula-report-body')!;
+    const start = mode === 'split-start' ? 1 : 0, end = mode === 'unpaired-body' ? 0 : 1;
+    await act(async () => { editor.setSelectionRange(start, end); editor.dispatchEvent(new Event('select', { bubbles: true })); });
+    expect(editor.selectionStart).toBe(start); expect(editor.selectionEnd).toBe(end);
+    await click('根拠点検');
+    const selects = host.querySelectorAll<HTMLSelectElement>('[aria-label="固定点検記録の2時点比較"] select');
+    for (const [index, id] of ['A', 'B'].entries()) await act(async () => { const option = [...selects[index].options].find(x => x.textContent?.includes(`：${id}（`))!; selects[index].value = option.value; selects[index].dispatchEvent(new Event('change', { bubbles: true })); });
+    await click('選択した2記録を比較'); await click('比較結果をレポートに挿入');
+    expect(host.querySelector('[aria-label="比較資料の固定挿入プレビュー"]')).toBeNull();
+    expect(editor.value).toBe(body); expect(writes).not.toHaveBeenCalled();
+  } finally { await act(async () => root.unmount()); host.remove(); get.mockRestore(); writes.mockRestore(); vi.unstubAllGlobals(); }
+});

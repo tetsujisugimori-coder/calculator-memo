@@ -1,0 +1,47 @@
+{
+  "startedAt": "2026-10-26T12:03:32.708Z",
+  "method": "Native Playwright on local synthetic Pages build; not physical Safari",
+  "results": [
+    {
+      "id": "chromium-mobile-390px",
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "deviceScaleFactor": 3,
+      "startedAt": "2026-10-26T12:03:34.270Z",
+      "checks": [
+        "chromium-mobile-390px: comparison material full preview reuses export bytes direction long Unicode identities and output time with cancel focus both themes CSS 200 percent and no persistence",
+        "chromium-mobile-390px: explicit comparison material insertion keeps selected prose and exact dedicated undo restores original body without modifying snapshots saved records or confirmations",
+        "chromium-mobile-390px: inserted comparison material never becomes an audit item or A B candidate and duplicate text plus later editing cannot trick dedicated undo into deleting another occurrence",
+        "chromium-mobile-390px: native second-page report changed invalidates comparison insertion while real CalculatorApp retains its old draft and source refresh cannot certify saved-body equality",
+        "chromium-mobile-390px: native second-page report deleted invalidates comparison insertion while real CalculatorApp retains its old draft and source refresh cannot certify saved-body equality",
+        "chromium-mobile-390px: explicit acquisition and A B swap discard old insertion targets and regenerated reverse direction does not silently reuse an earlier preview",
+        "chromium-mobile-390px: incomparable empty successful records are insertable with their exact reason and only explicit save persists material which remains excluded from evidence after real reload",
+        "chromium-mobile-390px: insertion inside an existing fixed comparison material is rejected in the real editor without splitting its protected body or altering saved content"
+      ],
+      "errors": [],
+      "touch": 69,
+      "status": "passed",
+      "browser": "141.0.7390.37",
+      "finishedAt": "2026-10-26T12:04:33.936Z"
+    }
+  ],
+  "finishedAt": "2026-10-26T12:04:34.008Z",
+  "scope": "Final R2/R3 working-tree isolated helper, not final commit CI. 8 new groups only; existing full six-condition regression remains separate.",
+  "launchAttempt1": {
+    "status": "failed-before-browser-launch",
+    "reason": "Removed e2e/node_modules setup symlink caused ERR_MODULE_NOT_FOUND while importing Playwright. No GUI scenario ran.",
+    "correction": "Temporary adapter directly references existing calculator-comparison-export/e2e/node_modules/@playwright/test/index.mjs (1.56.1); no install or product change."
+  },
+  "helperSha256": "c2b97e96c620398a9f5a0870d088675027bfc3a5c7d17620bd3fb92eeafd439b",
+  "sourceManifestSha256": "799b69186e3101a9558a589b048f702ff212565a99c1049b5d4111a474ebddc1",
+  "buildManifestSha256": "f4e4e05810f749f69cd45f7cfbab9aea30532f5d20b61e4a1ebff89a02ccf375",
+  "limitations": [
+    "Working tree R2/R3 Pages build, not final commit/run/attempt identity.",
+    "One Chromium touch390 condition only; WebKit final and other five formal conditions await real CI.",
+    "Physical iPhone Safari, VoiceOver and OS text enlargement/backgrounding not tested.",
+    "Screenshot local adapter has no formal CI overlay; formal suite adds identity overlay."
+  ]
+}

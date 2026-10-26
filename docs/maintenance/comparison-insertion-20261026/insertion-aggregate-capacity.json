@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-10-26T11:42:56Z",
+  "environment": "cloud workspace; Vitest jsdom CalculatorApp integration, not native browser",
+  "test_file": "tests/formula-report-audit-comparison-insertion-ui.test.ts",
+  "test_name": "held aggregate report capacity rejects the full material without trimming another body or confirmation history",
+  "fixture": {
+    "initial_collection_utf8_json_bytes": 999500,
+    "aggregate_limit_bytes": 1000000,
+    "each_report_body_utf16_limit": 100000,
+    "before_validation": "readFormulaReports accepts complete collection; exact999500bytes asserted",
+    "planned_markdown": "UTF8 bytes greater than500 asserted; full material addition necessarily exceeds aggregate limit"
+  },
+  "expected_and_observed": {
+    "preparation": "rejected specifically with 1,000,000バイト message; no insertion preview",
+    "held_editor": "unchanged",
+    "stored_collection": "entire serialized rawdata unchanged; parsed entire formulaReports equal fixture",
+    "confirmation_history": "unchanged",
+    "storage_getItem_calls_during_action": 0,
+    "storage_setItem_calls_during_action": 0,
+    "export_preview": "full original Markdown retained"
+  },
+  "targeted_run": {
+    "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts -t 'held aggregate report capacity' --maxWorkers=1 --minWorkers=1",
+    "passed": 1,
+    "failed": 0,
+    "skipped_by_name_filter": 43,
+    "test_seconds": 1.694,
+    "duration_seconds": 14.81,
+    "classification": "targeted proof, not full44suite success",
+    "raw_transient_log": "/tmp/comparison-insertion-aggregate.log"
+  },
+  "full44_run": {
+    "status": "passed",
+    "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts --maxWorkers=1 --minWorkers=1",
+    "timeout_ms": 5000,
+    "retry_added": false,
+    "raw_transient_log": "/tmp/comparison-insertion-ui-44.log",
+    "passed": 44,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 35.71,
+    "transform_seconds": 4.61,
+    "collection_seconds": 10.75,
+    "tests_seconds": 14.69,
+    "environment_seconds": 5.65,
+    "prepare_seconds": 1.32,
+    "strictmode_save_reload_seconds": 1.301,
+    "aggregate_case_seconds": 0.497
+  },
+  "coverage_gap_closed": "Old formula-report-diff-ui aggregate test exercises separate original-reacquiring preflight; new test directly exercises A/B comparison material heldcollection preflight.",
+  "prior_failure": "insertion-ui-local-timeout.json remains historical evidence; new success would not erase prior43run timeout."
+}

@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-10-26T11:55:19Z",
+  "classification": "P2: known unsafe dedicated undo remains offered; accessibility focus after withdrawal must remain meaningful",
+  "environment": "local Vitest jsdom, not native browser",
+  "before_product_sha256": "daf17e11a1daefd19b48a0a43d4c8e429d771ac7dda1974ff06730b96bbc247f",
+  "test_file": "tests/formula-report-audit-comparison-insertion-ui.test.ts",
+  "expected": "Undo is absent after known edit/storage/save invalidation, reason is displayed, focused undo transfers focus to non-operation reason(tabIndex=-1), stale captured action/same-turn event does not alter body.",
+  "red_operations": {
+    "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts -t 'body rejects dedicated undo|after insertion rejects undo|StrictMode app|live undo' --maxWorkers=1 --minWorkers=1",
+    "passed": 0,
+    "failed": 7,
+    "filtered_out": 38,
+    "duration_seconds": 59.08,
+    "failure": "Expected undefined, got button (enabled for edit/storage/same-turn; disabled after save).",
+    "raw_transient_log": "/tmp/comparison-insertion-undo-red.log"
+  },
+  "red_focus": {
+    "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts -t 'after insertion rejects undo' --maxWorkers=1 --minWorkers=1",
+    "passed": 0,
+    "failed": 3,
+    "filtered_out": 42,
+    "duration_seconds": 13.94,
+    "failure": "Expected activeElement tabindex '-1', received null; old button retained focus.",
+    "raw_transient_log": "/tmp/comparison-insertion-undo-focus-red.log"
+  },
+  "timeout_ms": 5000,
+  "green": {
+    "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts --maxWorkers=1 --minWorkers=1",
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 44.6,
+    "tests_seconds": 26.87,
+    "test_expectations": "same RED expectations including focus3, stale action nonmutation and same-turn guard; full45run no namefilter",
+    "after_product_sha256": "07ac4e04a8c26cb58bc53732373607ea95eb07728bbff622d2f4bc9303d81ec6",
+    "test_file_sha256": "e7ed860296ab46183961c3067417f570bd9246ee4ff5c20ea1dc67cc84822257",
+    "raw_transient_log": "/tmp/comparison-insertion-undo-green.log"
+  },
+  "previous_full_suite": "Interrupted exit130 on explicit parent request, recorded separately full-unit-final.json; no full2106pass claimed.",
+  "before_product_source": "git show 7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af:components/FormulaReportModal.tsx"
+}

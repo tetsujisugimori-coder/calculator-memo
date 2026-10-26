@@ -1,0 +1,98 @@
+{
+  "scope": "Final R1/R2/R3 source; local cloud Node24; formal final-HEAD CI separate",
+  "results": [
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "started_at": "2026-10-26T12:19:52.274812+00:00",
+      "ended_at": "2026-10-26T12:21:04.286046+00:00",
+      "elapsed_seconds": 72.011,
+      "exit_code": 0,
+      "raw_log": "/tmp/comparison-insertion-final-lint.log",
+      "log_sha256": "1119e525a10bf78bc87e2d1974fe562822b62479d3f3e6916d39ccfe9a3a0b9e"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit"
+      ],
+      "started_at": "2026-10-26T12:21:04.290589+00:00",
+      "ended_at": "2026-10-26T12:21:24.720070+00:00",
+      "elapsed_seconds": 20.431,
+      "exit_code": 0,
+      "raw_log": "/tmp/comparison-insertion-final-typecheck.log",
+      "log_sha256": "a2e544258384609a6069ca6cbd92396027f72d25d2d74f28a50035836d61a9b9"
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "started_at": "2026-10-26T12:21:24.753469+00:00",
+      "ended_at": "2026-10-26T12:22:19.873950+00:00",
+      "elapsed_seconds": 55.121,
+      "exit_code": 0,
+      "raw_log": "/tmp/comparison-insertion-final-build.log",
+      "log_sha256": "f536bd138ace475b12a3b1887bd25051bd9411ce38a0c753884e6ef2ef3decae"
+    },
+    {
+      "name": "pages_build",
+      "command": [
+        "node",
+        "node_modules/vite/bin/vite.js",
+        "build",
+        "--config",
+        "vite.pages.config.ts"
+      ],
+      "started_at": "2026-10-26T12:23:54.177770+00:00",
+      "ended_at": "2026-10-26T12:24:03.189557+00:00",
+      "elapsed_seconds": 9.012,
+      "exit_code": 0,
+      "raw_log": "/tmp/comparison-insertion-final-pages_build-completed.log",
+      "log_sha256": "f90fadd1f9ec482e00aa4fd69252d6d5a45d0b523b0d443779f4623d37fd4f4d"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "node",
+        "--test",
+        "e2e/ci-contract.node-test.mjs"
+      ],
+      "started_at": "2026-10-26T12:24:03.191069+00:00",
+      "ended_at": "2026-10-26T12:24:08.132673+00:00",
+      "elapsed_seconds": 4.942,
+      "exit_code": 1,
+      "raw_log": "/tmp/comparison-insertion-final-contracts-completed.log",
+      "log_sha256": "9d701b01cbab53732b867f5ac5744204bd456d24b14cb2dfc87fc9e955c5d119",
+      "tests": 41,
+      "passed": 40,
+      "failed": 1,
+      "skipped": 0,
+      "failure": "Existing timeout 0.1s child did not print synthetic stdout before TERM; unchanged expectation/timeout, root cause UNKNOWN. Formal Node22.13 CI separate."
+    }
+  ],
+  "interruption": {
+    "at": "2026-10-26T12:22:26Z",
+    "reason": "Read-only session poll denied over npx install possibility after typecheck already completed. Existing local compiler verified. One evidence-backed poll then returned Unknown process id; no live parent/build processes. Pages incomplete log retained; not PASS. Contracts had not started.",
+    "pages_partial_log_sha256": "4daf773433d0dbb9fa80339f19c6854fff7f1efbc774bf562db01194e2ad6a66"
+  },
+  "recorded_at": "2026-10-26T12:24:22Z",
+  "unit": {
+    "passed": 2110,
+    "failed": 0,
+    "skipped": 0,
+    "files": 90,
+    "vitest_seconds": 358.58,
+    "wall_seconds": 368.231,
+    "details": "full-unit-final.json"
+  },
+  "formal_final_head_ci": "pending; final result will be recorded in PR95/Issue94/Checks without changing source HEAD solely for the result"
+}

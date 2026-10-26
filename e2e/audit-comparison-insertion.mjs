@@ -85,8 +85,9 @@ export async function exerciseAuditComparisonInsertion({ page, context, base, ex
     await expect(comparison().getByRole('combobox', { name: '比較元A', exact: true }).locator('option')).toHaveCount(3);
     await click('根拠点検を閉じる');
     const edited = secondMaterial + '\n\n' + bodyFor(false) + '\nUSER EDIT ' + secondMaterial;
-    await editor().fill(edited); await click('直前の比較資料挿入を取り消す');
-    await expect(editor()).toHaveValue(edited); await expect(page.getByRole('alert').filter({ hasText: '安全な取消を確認できません' })).toBeVisible();
+    await editor().fill(edited);
+    await expect(button('直前の比較資料挿入を取り消す')).toHaveCount(0);
+    await expect(editor()).toHaveValue(edited); await expect(page.getByRole('status').filter({ hasText: '安全な取消を確認できません' })).toBeVisible();
     assert.equal(await raw(), saved);
     await passed(prefix + ': inserted comparison material never becomes an audit item or A B candidate and duplicate text plus later editing cannot trick dedicated undo into deleting another occurrence');
 
@@ -122,7 +123,7 @@ export async function exerciseAuditComparisonInsertion({ page, context, base, ex
     await expect.poll(async () => JSON.parse(await raw()).formulaReports.entries[0].body).toBe(persistedBody);
     const afterSave = JSON.parse(await raw());
     assert.deepEqual(afterSave.formulaReports.entries[0].evidence.confirmations, []); assert.deepEqual(afterSave.notes, []); assert.deepEqual(afterSave.history, []);
-    await expect(button('直前の比較資料挿入を取り消す')).toBeDisabled();
+    await expect(button('直前の比較資料挿入を取り消す')).toHaveCount(0);
     await page.reload(); await click('登録式ライブラリ'); await click('関連レポートを閲覧・編集'); await click('根拠点検');
     await expect(audit()).toContainText('認識できた出現 0件');
     await expect(comparison().getByRole('combobox', { name: '比較元A', exact: true }).locator('option')).toHaveCount(3);
@@ -137,7 +138,7 @@ export async function exerciseAuditComparisonInsertion({ page, context, base, ex
     await click('根拠点検を閉じる'); await expect(editor()).toHaveValue(persistedBody);
     assert.equal(JSON.parse(await raw()).formulaReports.entries[0].body, persistedBody);
     await passed(prefix + ': insertion inside an existing fixed comparison material is rejected in the real editor without splitting its protected body or altering saved content');
-    assert.equal(activations, 70, 'New helper real button activations are deterministic and cannot silently drop operations');
+    assert.equal(activations, 69, 'New helper real button activations are deterministic and cannot silently drop operations');
   } finally {
     await second.close();
     await page.evaluate(({ key, original }) => { if (original === null) localStorage.removeItem(key); else localStorage.setItem(key, original); document.documentElement.style.fontSize = ''; }, { key, original });

@@ -19,7 +19,7 @@ import { FormulaDifferenceSources } from "./FormulaDifferenceSources";
 import type { DifferenceInsertion } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
 import type { ComparisonMaterialInsertion } from "./FormulaAuditRecordComparison";
-import { scanAuditComparisonRecordEnvelopes } from "../lib/formula-report-audit-comparison-record";
+import { assertAuditComparisonInsertionPosition, scanAuditComparisonRecordEnvelopes } from "../lib/formula-report-audit-comparison-record";
 import { FormulaReportAudit } from "./FormulaReportAudit";
 
 type Props = {
@@ -69,7 +69,20 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
   const headingPrefix = useId();
   const [quotePicker, setQuotePicker] = useState(false);
   const [auditUndo, setAuditUndo] = useState<{ before: string; after: string; epoch: number } | null>(null);
-  const [materialUndo, setMaterialUndo] = useState<{ before: string; after: string; epoch: number; sourceEpoch: number; guard: string; materialId: string; start: number; end: number; markdown: string } | null>(null);
+  const [materialUndo, setMaterialUndo] = useState<{ before: string; after: string; epoch: number; sourceEpoch: number; guard: string; materialId: string; start: number; end: number; markdown: string; invalidated?: boolean } | null>(null);
+  const materialUndoButton = useRef<HTMLButtonElement | null>(null);
+  const materialUndoReason = useRef<HTMLParagraphElement | null>(null);
+  const restoreMaterialUndoFocus = useRef(false);
+  const rememberMaterialUndoButton = useCallback((node: HTMLButtonElement | null) => {
+    if (!node && materialUndoButton.current === document.activeElement) restoreMaterialUndoFocus.current = true;
+    materialUndoButton.current = node;
+  }, []);
+  useLayoutEffect(() => {
+    if (restoreMaterialUndoFocus.current) {
+      restoreMaterialUndoFocus.current = false;
+      (materialUndoReason.current ?? editorRef.current)?.focus();
+    }
+  });
   const [positionGeneration, setPositionGeneration] = useState(0);
   const positionEpoch = useRef(0);
   const lastPosition = useRef({ start: 0, end: 0 });
@@ -153,6 +166,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
     const observe = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY && event.key !== null) return;
       auditNavigationEpoch.current += 1; auditInsertEpoch.current += 1;
+      setMaterialUndo(current => current ? { ...current, invalidated: true } : null);
       cancelDeferredCaret();
       if (event.newValue !== evidence.raw) { setEvidenceChanged(true); setHeldContextUncertain(true); }
     };
@@ -229,6 +243,8 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
     readFormulaReports({ ...held, entries: exists ? held.entries.map(entry => entry.id === id ? candidate : entry) : [...held.entries, candidate] });
   };
   const materialGuard = JSON.stringify([id, formulaId, title, formulaDefinitionSignature(formula), formulaReportSignature(report), links, originalGeneration, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, savedContextUncertain, heldContextUncertain]);
+  const materialUndoEligible = !!materialUndo && !materialUndo.invalidated && body === materialUndo.after && materialGuard === materialUndo.guard;
+  if (materialUndo && !materialUndo.invalidated && !materialUndoEligible) setMaterialUndo({ ...materialUndo, invalidated: true });
   const materialGuardRef = useRef(materialGuard);
   useLayoutEffect(() => { materialGuardRef.current = materialGuard; }, [materialGuard]);
   const comparisonInsertion: Omit<ComparisonMaterialInsertion, "onInserted"> = {
@@ -238,6 +254,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
       if (preview || savingRef.current || !writable || conflict) throw new Error("現在は比較資料を挿入できません。本文は保持しています。");
       if (evidence.error) throw new Error("保存原本を取得できず、保持したレポート集合の容量を確認できません。比較資料の出力は利用できますが、本文への挿入は停止しました。本文は保持しています。");
       const position = { ...auditPosition.current };
+      assertAuditComparisonInsertionPosition(body, position.start, position.end);
       const sourceEpoch = auditInsertEpoch.current, selectedEpoch = positionEpoch.current, editEpoch = auditEditEpoch.current;
       const editor = editorRef.current;
       if (!editor || editor.selectionStart !== position.start || editor.selectionEnd !== position.end) throw new Error("挿入位置が変わりました。本文で位置を選び、根拠点検を開き直してください。本文は保持しています。");
@@ -348,15 +365,17 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         cancelDeferredCaret(); setBody(auditUndo.before); setAuditUndo(null); setMaterialUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
         setNotice({ text: "直前の固定点検記録だけを取り消しました。保存・確認は行っていません。", failed: false });
       }}>直前の点検記録挿入を取り消す</button></div>
-      <div className="quote-tools"><button type="button" disabled={!materialUndo || saving} onClick={() => {
+      {materialUndoEligible && <div className="quote-tools"><button ref={rememberMaterialUndoButton} type="button" disabled={saving} onClick={() => {
         if (!materialUndo || savingRef.current) return;
         const range = scanAuditComparisonRecordEnvelopes(body).find(entry => entry.metadata?.materialId === materialUndo.materialId);
-        if (materialGuardRef.current !== materialUndo.guard || auditInsertEpoch.current !== materialUndo.sourceEpoch || auditEditEpoch.current !== materialUndo.epoch || body !== materialUndo.after || !range || range.status !== "complete" || range.start !== materialUndo.start || range.end !== materialUndo.end || body.slice(range.start, range.end) !== materialUndo.markdown) {
+        if (materialUndo.invalidated || materialGuardRef.current !== materialUndo.guard || auditInsertEpoch.current !== materialUndo.sourceEpoch || auditEditEpoch.current !== materialUndo.epoch || body !== materialUndo.after || !range || range.status !== "complete" || range.start !== materialUndo.start || range.end !== materialUndo.end || body.slice(range.start, range.end) !== materialUndo.markdown) {
+          setMaterialUndo({ ...materialUndo, invalidated: true });
           setNotice({ text: "挿入後の編集・対象・保存通知等により安全な取消を確認できません。比較資料も現在の本文も削除していません。", failed: true }); return;
         }
         cancelDeferredCaret(); setBody(materialUndo.before); setMaterialUndo(null); setAuditUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
         setNotice({ text: "直前の比較資料挿入だけを取り消しました。保存・再計算・確認履歴の変更は行っていません。", failed: false });
-      }}>直前の比較資料挿入を取り消す</button></div>
+      }}>直前の比較資料挿入を取り消す</button></div>}
+      {materialUndo && !materialUndoEligible && <p ref={materialUndoReason} tabIndex={-1} role="status">挿入後の編集・対象・保存通知等により安全な取消を確認できません。比較資料も現在の本文も削除していません。</p>}
       <FormulaReportAudit key={auditContext} comparisonInsertion={comparisonInsertion}
         insertion={{ disabled: saving || !writable || !!conflict,
           onOpen: () => { cancelDeferredCaret(); const editor = editorRef.current; const end = body.replace(/\r\n?/g, "\n").length; auditPosition.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end }; lastPosition.current = { ...auditPosition.current }; },
@@ -384,7 +403,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
         {body.length > 100_000 ? <p>上限超過のため章一覧を停止しています。本文は保持しています。</p> : headings.length ? <nav aria-label="レポートの章一覧"><ol>{headings.map(heading => <li key={heading.id} style={{ paddingInlineStart: `${(heading.level - 1) * .5}rem` }}><button type="button" disabled={saving} onClick={() => navigateHeading(heading)}>H{heading.level}：{heading.text}</button></li>)}</ol></nav> : <p>見出しがありません。行頭の #〜###### と空白で見出しを作成できます。</p>}
       </details>
-      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { auditEditEpoch.current += 1; setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); }} /></>}
+      {preview ? <section className="formula-report-preview" aria-label="関連レポートのプレビュー">{body.length > 100_000 ? <p role="alert">本文が100,000文字を超えているためプレビューを停止しました。本文は切り捨てていません。Markdown編集で確認してください。</p> : <MarkdownContent content={body} headingIdPrefix={headingPrefix} />}</section> : <><label htmlFor="formula-report-body">レポート本文（Markdown）</label><textarea ref={editorRef} id="formula-report-body" className="code-input" rows={16} value={body} disabled={saving} onChange={event => { auditEditEpoch.current += 1; setMaterialUndo(current => current ? { ...current, invalidated: true } : null); setBody(event.target.value); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); }} /></>}
       <p>タイトル {title.length}/120文字、本文 {body.length}/100,000文字。見出しは編集用テンプレートです。未記入の証明・史実・出典は補いません。</p>
       {invalid && <p role="alert">タイトルは1〜120文字、本文は100,000文字以内にしてください。超過分は切り捨てません。</p>}
       <p>コピー・ファイル出力は現在表示中の本文です。未保存の編集も含み、保存は行いません。</p>

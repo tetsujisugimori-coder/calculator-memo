@@ -1,0 +1,91 @@
+{
+  "head": "7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af",
+  "tree": "7384d08866d390426a8d810de704c2d0fce85133",
+  "run": 40314584238,
+  "attempt": 1,
+  "result": "success",
+  "job": {
+    "id": 121543866988,
+    "started_at": "2026-10-26T11:22:31Z",
+    "completed_at": "2026-10-26T11:51:26Z",
+    "seconds": 1735
+  },
+  "gui_seconds": 1515.95077329,
+  "coverage": {
+    "contexts": 6,
+    "checks": 966,
+    "horizontalCheckpoints": 568
+  },
+  "contexts": [
+    {
+      "context": "chromium-desktop-1365px",
+      "checks": 161,
+      "geometry": 96,
+      "png": 20,
+      "touch_activations": null,
+      "identity_verified": true
+    },
+    {
+      "context": "chromium-mobile-375px",
+      "checks": 161,
+      "geometry": 94,
+      "png": 20,
+      "touch_activations": 1171,
+      "identity_verified": true
+    },
+    {
+      "context": "chromium-mobile-390px",
+      "checks": 161,
+      "geometry": 94,
+      "png": 20,
+      "touch_activations": 1171,
+      "identity_verified": true
+    },
+    {
+      "context": "chromium-narrow-390px",
+      "checks": 160,
+      "geometry": 94,
+      "png": 20,
+      "touch_activations": null,
+      "identity_verified": true
+    },
+    {
+      "context": "webkit-mobile-375px",
+      "checks": 162,
+      "geometry": 96,
+      "png": 20,
+      "touch_activations": 1171,
+      "identity_verified": true
+    },
+    {
+      "context": "webkit-mobile-390px",
+      "checks": 161,
+      "geometry": 94,
+      "png": 20,
+      "touch_activations": 1171,
+      "identity_verified": true
+    }
+  ],
+  "png": 120,
+  "trace": 0,
+  "unit": 2105,
+  "contract": 41,
+  "artifact": {
+    "id": 12648270368,
+    "bytes": 38839092,
+    "sha256": "fb6d8e2c7d5bf985c7f8586492a781ca6bc660d51036efef6636fadb354f7ca8",
+    "api_digest_match": true
+  },
+  "served_identity": {
+    "sha": "7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af",
+    "branch": "feat/audit-comparison-fixed-insertion",
+    "run": "40314584238",
+    "attempt": "1"
+  },
+  "limitations": [
+    "This is pre-R2 undo availability/focus implementation. Later HEAD must be verified separately.",
+    "No full served asset bytes in artifact; identity and build logs verified, not independent asset-byte reconstruction.",
+    "Local contract failure and UI timeout history retained.",
+    "Physical iPhone Safari, VoiceOver, OS text enlargement not tested."
+  ]
+}

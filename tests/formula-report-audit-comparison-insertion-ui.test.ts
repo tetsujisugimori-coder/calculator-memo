@@ -10,6 +10,7 @@ import { captureAuditComparison } from '../lib/formula-report-audit-comparison';
 import { parseReportAudit, assessReportAudit } from '../lib/formula-report-audit';
 import { createQuoteMarkdown, type QuoteSnapshot } from '../lib/formula-report-quotes';
 import { defaultData, STORAGE_KEY } from '../lib/storage';
+import { readFormulaReports } from '../lib/formula-reports';
 import type { EvidenceRecord } from '../lib/calculation-evidence';
 import type { FormulaReport, StoredData } from '../lib/types';
 
@@ -97,9 +98,9 @@ it('CRLF source, Unicode, duplicate prose and untouched original records survive
   await click('直前の比較資料挿入を取り消す'); expect(editor().value).toBe(report.body); expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(next));
 });
 it.each([false, true])('changed%s body rejects dedicated undo even if old bytes are restored', async restored => {
-  await open(); await prepare(); await click('比較資料を本文へ固定挿入'); const inserted = editor().value;
+  await open(); await prepare(); await click('比較資料を本文へ固定挿入'); const inserted = editor().value, staleUndo = button('直前の比較資料挿入を取り消す');
   await change(inserted + '\n別編集'); if (restored) await change(inserted); const before = editor().value;
-  await click('直前の比較資料挿入を取り消す'); expect(editor().value).toBe(before); expect(host.textContent).toContain('安全な取消を確認できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(fixture));
+  expect(button('直前の比較資料挿入を取り消す')).toBeUndefined(); expect(host.textContent).toContain('安全な取消を確認できません'); await act(async () => staleUndo.click()); expect(editor().value).toBe(before); expect(host.textContent).toContain('安全な取消を確認できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(fixture));
 });
 it.each(['changed', 'deleted', 'unrelated'] as const)('real CalculatorApp storage %s invalidates prepared material and preserves held body/history', async kind => {
   await open(); await prepare(); const staleConfirm = button('比較資料を本文へ固定挿入'); const raw = await external(kind);
@@ -108,8 +109,8 @@ it.each(['changed', 'deleted', 'unrelated'] as const)('real CalculatorApp storag
   await click('保存記録と照合'); expect(material()).toBeNull(); await compare(); expect(button('比較結果をレポートに挿入').disabled).toBe(true); await click('比較結果Markdownをプレビュー'); expect(exportText()).toContain('未確認'); expect(editor().value).toBe(report.body); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });
 it.each(['changed', 'deleted', 'unrelated'] as const)('storage %s after insertion rejects undo rather than deleting by text search', async kind => {
-  await open(); await prepare(); await click('比較資料を本文へ固定挿入'); const inserted = editor().value; const raw = await external(kind);
-  await click('直前の比較資料挿入を取り消す'); expect(editor().value).toBe(inserted); expect(host.textContent).toContain('安全な取消を確認できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+  await open(); await prepare(); await click('比較資料を本文へ固定挿入'); const inserted = editor().value, staleUndo = button('直前の比較資料挿入を取り消す'); await act(async () => staleUndo.focus()); expect(document.activeElement).toBe(staleUndo); const raw = await external(kind);
+  expect(document.activeElement?.getAttribute('tabindex')).toBe('-1'); expect(document.activeElement?.textContent).toContain('安全な取消を確認できません'); expect(button('直前の比較資料挿入を取り消す')).toBeUndefined(); expect(host.textContent).toContain('安全な取消を確認できません'); await act(async () => staleUndo.click()); expect(editor().value).toBe(inserted); expect(host.textContent).toContain('安全な取消を確認できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });
 it.each(['select', 'swap', 'recompare', 'refresh', 'close'] as const)('%s invalidates insertion preview and detached confirm does nothing', async action => {
   await open(); await prepare(); const confirm = button('比較資料を本文へ固定挿入');
@@ -126,8 +127,9 @@ it('same-turn notification rejects an old live confirm before React redraw', asy
   expect(editor().value).toBe(report.body); expect(material()).toBeNull();
 });
 it('selection movement away and back invalidates preview, while unrelated focus movement does not', async () => {
-  await open(false, 3, 7); await prepare(); await act(async () => material()!.querySelector('textarea')!.focus()); expect(material()).not.toBeNull();
-  await position(1); await position(3, 7); expect(material()).toBeNull(); expect(editor().value).toBe(report.body);
+  // End 8 is after the complete emoji; end 7 splits its UTF-16 pair and is independently rejected by R3.
+  await open(false, 3, 8); await prepare(); await act(async () => material()!.querySelector('textarea')!.focus()); expect(material()).not.toBeNull();
+  await position(1); await position(3, 8); expect(material()).toBeNull(); expect(editor().value).toBe(report.body);
 });
 it('unreported position change is caught at confirm and preserves body', async () => {
   await open(); await prepare(); const confirm = button('比較資料を本文へ固定挿入');
@@ -158,7 +160,7 @@ it('StrictMode app remains usable and explicit save/reload retains material but 
   await open(true); await prepare(); await click('比較資料を本文へ固定挿入'); const inserted = editor().value;
   expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(fixture)); await click('レポートを保存');
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!) as StoredData; expect(saved.formulaReports!.entries[0].body).toBe(inserted); expect(saved.formulaReports!.entries[0].evidence).toEqual(report.evidence); expect(saved.notes).toEqual(fixture.notes); expect(saved.history).toEqual(fixture.history);
-  expect(button('直前の比較資料挿入を取り消す').disabled).toBe(true);
+  expect(button('直前の比較資料挿入を取り消す')).toBeUndefined();
   await act(async () => root.unmount()); root = createRoot(host); await open();
   expect(scanAuditComparisonRecordEnvelopes(editor().value)).toHaveLength(1); expect(scanAuditRecordEnvelopes(editor().value)).toHaveLength(2); expect(parseReportAudit(editor().value, 'f').items).toHaveLength(1);
 });
@@ -211,4 +213,25 @@ it.each(['unavailable', 'invalid', 'unrecorded', 'incomplete', 'stale'] as const
   await open(); await prepare(); const markdown = draft()!; expect(markdown).toContain('比較不能');
   const expected = { unavailable: '取得不能', invalid: '未知', unrecorded: '原本取得の成否が記録されていません', incomplete: '不完全', stale: '失効' }[kind]; expect(markdown).toContain(expected);
   await click('比較資料を本文へ固定挿入'); expect(editor().value).toContain(markdown); expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(next));
+});
+
+it('held aggregate report capacity rejects the full material without trimming another body or confirmation history', async () => {
+  const next = structuredClone(original);
+  for (let index = 0; index < 3; index++) next.formulaReports!.entries.push({ ...report, id: `other-${index}`, formulaId: `other-formula-${index}`, body: '文'.repeat(100_000), evidence: { version: 1, links: [], confirmations: [] } });
+  const padding: FormulaReport = { ...report, id: 'padding', formulaId: 'padding-formula', body: '', evidence: { version: 1, links: [], confirmations: [] } };
+  next.formulaReports!.entries.push(padding);
+  const bytes = () => new TextEncoder().encode(JSON.stringify(next.formulaReports)).byteLength;
+  padding.body = 'x'.repeat(999_500 - bytes());
+  expect(bytes()).toBe(999_500); expect(padding.body.length).toBeLessThanOrEqual(100_000); expect(() => readFormulaReports(next.formulaReports)).not.toThrow();
+  seed(next); await open(); await compare(); await click('比較結果Markdownをプレビュー'); const output = exportText(); expect(new TextEncoder().encode(output).byteLength).toBeGreaterThan(500);
+  const raw = localStorage.getItem(STORAGE_KEY), reads = vi.spyOn(Storage.prototype, 'getItem'), writes = vi.spyOn(Storage.prototype, 'setItem');
+  await click('比較結果をレポートに挿入'); expect(material()).toBeNull(); expect(area().textContent).toContain('1,000,000バイト'); expect(editor().value).toBe(report.body); expect(exportText()).toBe(output);
+  expect(reads).not.toHaveBeenCalled(); expect(writes).not.toHaveBeenCalled(); reads.mockRestore(); writes.mockRestore();
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(JSON.parse(raw!).formulaReports).toEqual(next.formulaReports); expect(JSON.parse(raw!).formulaReports.entries[0].evidence.confirmations).toEqual(report.evidence!.confirmations);
+});
+
+it('same-turn storage event refuses the live undo before redraw without removing material', async () => {
+  await open(); await prepare(); await click('比較資料を本文へ固定挿入'); const inserted = editor().value, undo = button('直前の比較資料挿入を取り消す');
+  await act(async () => { window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: 'changed' })); undo.click(); });
+  expect(editor().value).toBe(inserted); expect(button('直前の比較資料挿入を取り消す')).toBeUndefined(); expect(host.textContent).toContain('安全な取消を確認できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(fixture));
 });
