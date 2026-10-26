@@ -99,17 +99,17 @@ const { validateCoverage } = await import('./ci-contract.mjs');
 const { scenarios } = await import('./scenario-config.mjs');
 const sha = 'a'.repeat(40);
 function completedContexts() {
-  const counts = [153, 152, 153, 153, 153, 154], checkpointCounts = [95, 93, 93, 93, 93, 95];
+  const counts = [161, 160, 161, 161, 161, 162], checkpointCounts = [96, 94, 94, 94, 94, 96];
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1101 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1171 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
 }
-test('complete six-context contract preserves 912 original checks plus 6 modal regressions and 562 geometry checkpoints', () => {
-  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 918, horizontalCheckpoints: 562 });
+test('complete six-context contract preserves 918 original checks plus 48 fixed-insertion regressions and 568 geometry checkpoints', () => {
+  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 966, horizontalCheckpoints: 568 });
 });
 const mutations = {
   'one scenario never ran': records => records.pop(),
@@ -120,6 +120,8 @@ const mutations = {
   'expected SHA mismatch': records => { records[0].expectedSha = 'b'.repeat(40); },
   'served SHA mismatch': records => { records[0].servedIdentity.sha = 'b'.repeat(40); },
   'incorrect mobile environment': records => { records[2].scenarios[0].hasTouch = false; },
+  'entire new fixed-insertion coverage absent': records => { for (const record of records) record.checks.splice(-8); },
+  'legacy touch count without fixed-insertion operations': records => { records[2].scenarios[0].touchActivations = 1101; },
   'acceptance check missing': records => { records[0].checks.pop(); },
   'duplicate acceptance check': records => { records[0].checks[1] = records[0].checks[0]; },
   'check from another context': records => { records[0].checks[0] = records[1].checks[0]; },

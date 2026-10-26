@@ -18,6 +18,8 @@ import { compareQuoteToRecord } from "../lib/formula-quote-comparison";
 import { FormulaDifferenceSources } from "./FormulaDifferenceSources";
 import type { DifferenceInsertion } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
+import type { ComparisonMaterialInsertion } from "./FormulaAuditRecordComparison";
+import { scanAuditComparisonRecordEnvelopes } from "../lib/formula-report-audit-comparison-record";
 import { FormulaReportAudit } from "./FormulaReportAudit";
 
 type Props = {
@@ -67,6 +69,10 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
   const headingPrefix = useId();
   const [quotePicker, setQuotePicker] = useState(false);
   const [auditUndo, setAuditUndo] = useState<{ before: string; after: string; epoch: number } | null>(null);
+  const [materialUndo, setMaterialUndo] = useState<{ before: string; after: string; epoch: number; sourceEpoch: number; guard: string; materialId: string; start: number; end: number; markdown: string } | null>(null);
+  const [positionGeneration, setPositionGeneration] = useState(0);
+  const positionEpoch = useRef(0);
+  const lastPosition = useRef({ start: 0, end: 0 });
   const auditEditEpoch = useRef(0);
   const auditPosition = useRef({ start: 0, end: 0 });
   const auditInsertEpoch = useRef(0);
@@ -118,8 +124,15 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
   useEffect(() => {
     // Native select also covers programmatic selection made by another UI intent.
     const editor = editorRef.current;
-    editor?.addEventListener("select", cancelDeferredCaret);
-    return () => editor?.removeEventListener("select", cancelDeferredCaret);
+    const selected = () => {
+      cancelDeferredCaret();
+      if (editor && (lastPosition.current.start !== editor.selectionStart || lastPosition.current.end !== editor.selectionEnd)) {
+        lastPosition.current = { start: editor.selectionStart, end: editor.selectionEnd };
+        positionEpoch.current += 1; setPositionGeneration(positionEpoch.current);
+      }
+    };
+    editor?.addEventListener("select", selected);
+    return () => editor?.removeEventListener("select", selected);
   }, [preview, cancelDeferredCaret]);
   const [remarks, setRemarks] = useState("");
   const remarksInvalid = remarks.length > 500;
@@ -155,7 +168,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
     try {
       const result = await onSave({ id, formulaId, title, body, expectedReport: formulaReportSignature(baseline.report), expectedExpression: baseline.expression, expectedDefinition: baseline.definition, links, expectedEvidence: reportEvidenceSignature(evidence.notes, links), confirm, ...(confirm ? { confirmationRemarks: remarks } : {}) });
       if (typeof result === "string") { setNotice({ text: result, failed: true }); return; }
-      setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setAuditUndo(null);
+      setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setAuditUndo(null); setMaterialUndo(null);
       setEvidence(acquireEvidence(formulaId));
       setBaseline({ report: structuredClone(result), expression: baseline.expression, definition: baseline.definition });
       if (confirm) setRemarks("");
@@ -199,9 +212,48 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
       return { markdown, start, end, insert: () => {
         if (insertionKeyRef.current !== insertionKey || savingRef.current || !writable || conflict || evidenceChanged || evidence.error) throw new Error("本文・レポート・取得世代が変わりました。古いプレビューは挿入しません。生成し直してください。");
         preflight(checkInsertionSource());
-        setAuditUndo(null); setDifferenceUndo({ before: body, after: next.body }); setQuoteUndo(null); setTemplateUndo(null);
+        setAuditUndo(null); setMaterialUndo(null); setDifferenceUndo({ before: body, after: next.body }); setQuoteUndo(null); setTemplateUndo(null);
         setBody(next.body); setPreview(false);
         setNotice({ text: "比較差分を本文へ追加しました。既存引用はそのままです。未保存・未確認です。", failed: false });
+        scheduleInsertedCaret(next.body, next.caret);
+      } };
+    },
+  };
+  // Capacity validation uses the already held collection; no implicit storage read.
+  const preflightHeldInsertion = (nextBody: string) => {
+    const held = evidence.reports ?? { version: 1 as const, entries: [] };
+    const candidate: FormulaReport = { ...(baseline.report ?? { id, formulaId, title, body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), confirmedExpression: null }), title, body: nextBody };
+    if (candidate.evidence) candidate.evidence = { ...candidate.evidence, links };
+    else if (links.length) candidate.evidence = { version: 1, links, confirmations: [] };
+    const exists = held.entries.some(entry => entry.id === id);
+    readFormulaReports({ ...held, entries: exists ? held.entries.map(entry => entry.id === id ? candidate : entry) : [...held.entries, candidate] });
+  };
+  const materialGuard = JSON.stringify([id, formulaId, title, formulaDefinitionSignature(formula), formulaReportSignature(report), links, originalGeneration, generation, evidence.fetchedAt, evidenceChanged, evidence.error, conflict, writable, savedContextUncertain, heldContextUncertain]);
+  const materialGuardRef = useRef(materialGuard);
+  useLayoutEffect(() => { materialGuardRef.current = materialGuard; }, [materialGuard]);
+  const comparisonInsertion: Omit<ComparisonMaterialInsertion, "onInserted"> = {
+    key: JSON.stringify([insertionKey, positionGeneration, preview]), title,
+    disabled: preview || saving || !writable || !!conflict,
+    prepare: (markdown, materialId) => {
+      if (preview || savingRef.current || !writable || conflict) throw new Error("現在は比較資料を挿入できません。本文は保持しています。");
+      if (evidence.error) throw new Error("保存原本を取得できず、保持したレポート集合の容量を確認できません。比較資料の出力は利用できますが、本文への挿入は停止しました。本文は保持しています。");
+      const position = { ...auditPosition.current };
+      const sourceEpoch = auditInsertEpoch.current, selectedEpoch = positionEpoch.current, editEpoch = auditEditEpoch.current;
+      const editor = editorRef.current;
+      if (!editor || editor.selectionStart !== position.start || editor.selectionEnd !== position.end) throw new Error("挿入位置が変わりました。本文で位置を選び、根拠点検を開き直してください。本文は保持しています。");
+      const next = insertDifferenceAtCursor(body, markdown, formulaId, position.start, position.end);
+      preflightHeldInsertion(next.body);
+      const range = scanAuditComparisonRecordEnvelopes(next.body).find(entry => entry.metadata?.materialId === materialId);
+      if (!range || range.status !== "complete" || next.body.slice(range.start, range.end) !== markdown) throw new Error("比較資料の挿入範囲を安全に確認できません。本文は保持しています。");
+      const isCurrent = () => insertionKeyRef.current === insertionKey && auditInsertEpoch.current === sourceEpoch && positionEpoch.current === selectedEpoch && auditEditEpoch.current === editEpoch && !savingRef.current && materialGuardRef.current === materialGuard && !!editorRef.current && editorRef.current.value === body.replace(/\r\n?/g, "\n") && editorRef.current.selectionStart === position.start && editorRef.current.selectionEnd === position.end;
+      return { ...position, isCurrent, insert: () => {
+        if (!isCurrent()) throw new Error("本文・対象・取得世代・位置・保護状態が変わりプレビューは失効しました。本文は保持しています。");
+        preflightHeldInsertion(next.body);
+        cancelDeferredCaret();
+        setMaterialUndo({ before: body, after: next.body, epoch: auditEditEpoch.current, sourceEpoch, guard: materialGuard, materialId, start: range.start, end: range.end, markdown });
+        setAuditUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
+        setBody(next.body); setPreview(false);
+        setNotice({ text: "A/B比較資料を本文へ固定挿入しました。カーソルは資料の直後へ移動します。未保存・未確認です。資料は自動更新されません。", failed: false });
         scheduleInsertedCaret(next.body, next.caret);
       } };
     },
@@ -245,12 +297,12 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         <p id="report-template-help">6章のMarkdownを本文の末尾に追加します。既存本文は保持します。章は自由に編集・削除でき、追加だけでは保存・確認されません。直後は専用の取消ができますが、その後の編集・保存で取消は終了します。</p>
         <button type="button" disabled={saving || !writable || conflict || evidenceChanged} aria-describedby="report-template-help" onClick={() => {
           if (savingRef.current) return;
-          try { const next = appendFormulaReportTemplate(body); setAuditUndo(null); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setDifferenceUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
+          try { const next = appendFormulaReportTemplate(body); setAuditUndo(null); setMaterialUndo(null); setTemplateUndo({ before: body, after: next }); setQuoteUndo(null); setDifferenceUndo(null); setBody(next); setNotice({ text: "本文の末尾にテンプレートを追加しました。未保存です。", failed: false }); }
           catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "追加できませんでした。本文は保持しています。", failed: true }); }
         }}>テンプレートを挿入（末尾に追加）</button>
         <button type="button" disabled={saving || !templateUndo || body !== templateUndo.after} onClick={() => {
           if (savingRef.current || !templateUndo || body !== templateUndo.after) return;
-          setAuditUndo(null); setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
+          setAuditUndo(null); setMaterialUndo(null); setBody(templateUndo.before); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setNotice({ text: "直前のテンプレート追加を取り消しました。保存は行っていません。", failed: false });
         }}>直前のテンプレート追加を取り消す</button>
       </div>}
       {!preview && <div className="quote-tools">
@@ -262,13 +314,13 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         }}>計算根拠を引用</button>
         <button type="button" disabled={saving || !quoteUndo || body !== quoteUndo.after} onClick={() => {
           if (savingRef.current || !quoteUndo || body !== quoteUndo.after) return;
-          setAuditUndo(null); setBody(quoteUndo.before); setQuoteUndo(null); setTemplateUndo(null);
+          setAuditUndo(null); setMaterialUndo(null); setBody(quoteUndo.before); setQuoteUndo(null); setTemplateUndo(null);
           setNotice({ text: "直前の引用を取り消しました。保存は行っていません。", failed: false });
         }}>直前の引用を取り消す</button>
       </div>}
       <div className="quote-tools"><button type="button" disabled={saving || !!conflict || !differenceUndo || body !== differenceUndo.after} onClick={() => {
         if (savingRef.current || conflict || !differenceUndo || body !== differenceUndo.after) return;
-        setAuditUndo(null); setBody(differenceUndo.before); setDifferenceUndo(null); setQuoteUndo(null); setTemplateUndo(null);
+        setAuditUndo(null); setMaterialUndo(null); setBody(differenceUndo.before); setDifferenceUndo(null); setQuoteUndo(null); setTemplateUndo(null);
         setNotice({ text: "直前の差分挿入を取り消しました。保存は行っていません。", failed: false });
       }}>直前の差分挿入を取り消す</button></div>
       <FormulaQuoteStatus insertion={differenceInsertion} onCompareOpen={() => {
@@ -285,7 +337,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         }
         try {
           const next = insertQuoteAtCursor(body, markdown, quoteSelection.current.start, quoteSelection.current.end);
-          setAuditUndo(null); setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setDifferenceUndo(null); setBody(next.body); setQuotePicker(false);
+          setAuditUndo(null); setMaterialUndo(null); setQuoteUndo({ before: body, after: next.body }); setTemplateUndo(null); setDifferenceUndo(null); setBody(next.body); setQuotePicker(false);
           setNotice({ text: "計算根拠を引用しました。未保存です。", failed: false });
           scheduleInsertedCaret(next.body, next.caret);
         } catch (cause) { setQuotePicker(false); setNotice({ text: cause instanceof Error ? cause.message : "引用を挿入できませんでした。本文は保持しています。", failed: true }); }
@@ -293,28 +345,31 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
       <div className="quote-tools"><button type="button" disabled={!auditUndo || saving} onClick={() => {
         if (!auditUndo || savingRef.current) return;
         if (conflict || body !== auditUndo.after || auditEditEpoch.current !== auditUndo.epoch) { setNotice({ text: "挿入後に本文または対象が変わったため安全に取消できません。現在の本文は保持しています。", failed: true }); return; }
-        cancelDeferredCaret(); setBody(auditUndo.before); setAuditUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
+        cancelDeferredCaret(); setBody(auditUndo.before); setAuditUndo(null); setMaterialUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
         setNotice({ text: "直前の固定点検記録だけを取り消しました。保存・確認は行っていません。", failed: false });
       }}>直前の点検記録挿入を取り消す</button></div>
-      <FormulaReportAudit key={auditContext}
+      <div className="quote-tools"><button type="button" disabled={!materialUndo || saving} onClick={() => {
+        if (!materialUndo || savingRef.current) return;
+        const range = scanAuditComparisonRecordEnvelopes(body).find(entry => entry.metadata?.materialId === materialUndo.materialId);
+        if (materialGuardRef.current !== materialUndo.guard || auditInsertEpoch.current !== materialUndo.sourceEpoch || auditEditEpoch.current !== materialUndo.epoch || body !== materialUndo.after || !range || range.status !== "complete" || range.start !== materialUndo.start || range.end !== materialUndo.end || body.slice(range.start, range.end) !== materialUndo.markdown) {
+          setNotice({ text: "挿入後の編集・対象・保存通知等により安全な取消を確認できません。比較資料も現在の本文も削除していません。", failed: true }); return;
+        }
+        cancelDeferredCaret(); setBody(materialUndo.before); setMaterialUndo(null); setAuditUndo(null); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null);
+        setNotice({ text: "直前の比較資料挿入だけを取り消しました。保存・再計算・確認履歴の変更は行っていません。", failed: false });
+      }}>直前の比較資料挿入を取り消す</button></div>
+      <FormulaReportAudit key={auditContext} comparisonInsertion={comparisonInsertion}
         insertion={{ disabled: saving || !writable || !!conflict,
-          onOpen: () => { cancelDeferredCaret(); const editor = editorRef.current; const end = body.replace(/\r\n?/g, "\n").length; auditPosition.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end }; },
+          onOpen: () => { cancelDeferredCaret(); const editor = editorRef.current; const end = body.replace(/\r\n?/g, "\n").length; auditPosition.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end }; lastPosition.current = { ...auditPosition.current }; },
           prepare: markdown => {
             if (savingRef.current || !writable || conflict) throw new Error("現在は挿入できません。本文は保持しています。");
             const position = { ...auditPosition.current }; const epoch = auditInsertEpoch.current;
             const next = insertDifferenceAtCursor(body, markdown, formulaId, position.start, position.end);
-            // Validate the held collection without an implicit storage acquisition.
-            const held = evidence.reports ?? { version: 1 as const, entries: [] };
-            const candidate: FormulaReport = { ...(baseline.report ?? { id, formulaId, title, body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), confirmedExpression: null }), title, body: next.body };
-            if (candidate.evidence) candidate.evidence = { ...candidate.evidence, links };
-            else if (links.length) candidate.evidence = { version: 1, links, confirmations: [] };
-            const exists = held.entries.some(entry => entry.id === id);
-            readFormulaReports({ ...held, entries: exists ? held.entries.map(entry => entry.id === id ? candidate : entry) : [...held.entries, candidate] });
+            preflightHeldInsertion(next.body);
             return { ...position, insert: () => {
               if (insertionKeyRef.current !== insertionKey || auditInsertEpoch.current !== epoch || savingRef.current || !writable || conflict) throw new Error("本文・対象・取得世代が変わりプレビューは失効しました。生成し直してください。本文は保持しています。");
               const editor = editorRef.current;
               if (editor && (editor.selectionStart !== position.start || editor.selectionEnd !== position.end)) throw new Error("挿入位置が変わったため挿入を停止しました。本文で位置を選び、根拠点検を開き直してください。");
-              setAuditUndo({ before: body, after: next.body, epoch: auditEditEpoch.current }); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setBody(next.body); setPreview(false);
+              setMaterialUndo(null); setAuditUndo({ before: body, after: next.body, epoch: auditEditEpoch.current }); setTemplateUndo(null); setQuoteUndo(null); setDifferenceUndo(null); setBody(next.body); setPreview(false);
               setNotice({ text: "点検結果を固定記録として挿入しました。未保存・未確認です。記録は自動更新されません。", failed: false }); scheduleInsertedCaret(next.body, next.caret);
             } };
           }

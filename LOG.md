@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: 固定A/B比較資料の本文挿入と専用取消（Issue #94）
+
+- 着手: PR #93のmergeと最新main `969d173c16aba208d727f088641712e5b4a0856d` をAPI/fetchで確認。既存worktreeを保持し、クラウドの独立worktree/専用branchで作業。Windowsのローカルmainは操作していない。単一点検の#88、独立出力の#92との対象差を確認し、[Issue #94](https://github.com/tetsujisugimori-coder/calculator-memo/issues/94) を実装前に作成。
+- 第一希望: 同じ比較result/metadata/世代で作った既存Markdownの全文を再利用し、最小の専用境界で固定。再比較/暗黙取得/自動保存/再計算/利用者確認/履歴追加を行わない。既存点検記録形式の流用はA/B候補への自己参照を生むため不採用。出力日時とプレビュー準備日時を区別する。
+- 保護: 外側の正規根拠は維持し、固定資料内部は引用/差分/点検記録候補から除外する。未知/破損/入れ子/偽終端を推測修復しない。選択文章を保持して先頭へ挿入し、本文・位置・対象・取得/通知世代を実行直前にも照合。取消は同一本文・対象・編集世代・ID/正確な範囲だけで照合し、検索削除しない。
+- 保存通知: 実CalculatorAppのstorageConflictによる既存writable=falseを維持し、再比較/明示取得で挿入保護や保持本文と保存本文の一致未確認を解除しない。初期テストの「通知後再挿入可能」という仮定は既存契約と不一致のため訂正し、製品保護は緩和しない。
+- 検証: 新core42/42、既存含むaudit/quote/diff597/597、既存UI32/32成功。全単体2105/2105・90files成功（既存2011＋42core＋43UI＋9独立、worker2、320.96秒）。局所UI43中1timeoutも同一条件で全量中成功したが失敗履歴は保持。正式CIは確認待ち。既存ローカル契約0.4秒fixtureのstdout前timeoutを記録、期待値や上限を変更しない。
+- 新UIは追加modalなしのinline全文プレビュー。正式GUIは既存918検査・562geometry・114PNGを削減せず、新48検査とプレビュー証拠各条件1枚を追加予定。3worker・30分・成功trace0を維持。
+- 独立P2: 原本取得失敗時に集合不明を空集合で容量判定する境界を負例で再現。新挿入に取得失敗拒否を追加し、同一期待値8成功/1失敗→9/9成功。歴史比較/exportは保持。追加未解消P0〜P2なし（静的/独立jsdom範囲）。
+- 最終ローカル: 通常build71.093秒、Pages21.316秒、型12.606秒、lint77.636秒成功。契約41中40成功/既存0.4秒fixture1失敗、4.451秒。正式CIの環境と混同しない。[機械記録](docs/maintenance/comparison-insertion-20261026/local-validation.json)。局所native390両browser各8/8群/70tap/pageerror0だが最終guard・後追加Tabは正式CI待ち。
+- [設計](docs/agent/formula-report-audit-comparison-insertion.md)。PRは未作成。既存WebKit時間変動、ローカル契約fixture環境差、PR #85位置ずれ全原因未確定、実機Safari/VoiceOver/OS文字拡大未検証は維持する。マージ/公開は人間判断。
+
 ## 2026-10-26 JST: PR #93 正式GUI阻害の局所修復と時間診断（Issue #92）
 
 - 基準: 最新main `2a91599fa8454e097d2eca3a5d552f115da68819`、PR #93 / branch `feat/audit-comparison-markdown-export` のHEAD `5cbaf6f74ae15d7afccb73f50c64c0ce0380756c` とclean treeをAPI/fetchで照合し、既存worktreeを保全。旧run40261949353 attempt1のcancelled、770/912検査・487/562geometry・PNG99/114・失敗trace1を維持。ZIP/API digestとHEAD/run/attempt/served identityを再確認。
