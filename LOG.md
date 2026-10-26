@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: 固定点検記録の2時点比較結果Markdown出力（Issue #92）
+
+- 着手: PR #91 merged、最新main `2a91599fa8454e097d2eca3a5d552f115da68819` を確認。既存clean worktreeを保持し、別worktree / `feat/audit-comparison-markdown-export`。open/関連closedの重複確認後 [Issue #92](https://github.com/tetsujisugimori-coder/calculator-memo/issues/92) を実作成。
+- 第一希望: 同じmetadata/result/世代を使う純粋Markdown builderと既存出力helperを再利用。出力時の再比較/暗黙取得という次善策は世代混同と非明示操作を招くため不採用。表示状態と情報不足をそのまま保持し、0件を一致へ格上げしない。
+- 保存保護: 本文/固定記録/snapshot/原本/確認履歴/schema/容量/engineを不変更。選択/入替/本文/対象/取得世代/storage/再比較で失効し、非同期コピーの古い完了を拒否する。将来の本文挿入は対象外。
+- 設計: [出力設計](docs/agent/formula-report-audit-comparison-export.md)。builder33/UI16/独立9の計58件成功、独立担当の確認範囲で新規P0〜P3なし。初回hooks lint3件と既存h4順序試験1件は製品側修正、期待値を維持して成功。初回全単体1984/1986成功の既存2timeoutと、local CI契約100ms起動fixtureの失敗を保持し、静穏再実行/最終CIで別照合する。最終CIは未確定。
+- 全単体: 既定並列初回1984/1986、独立9件追加後1994/1995（既存別件5秒timeout）。worker2で同じ全1995件/85files成功・失敗/skip0、初回184.84秒、最終UI版223.42秒。期待値/5秒上限/CI既定並列は不変更。lint/型/通常・Pages build成功、既存chunk警告は保持。正式CIは別に確認する。
+- 実GUI: 最終Pages buildの局所実GUIはChromium141のdesktop1365/non-touch390/touch390/touch375、WebKit26.0のtouch390/touch375の既存6条件で各11群、計66成功、各mobile65実tap、pageerror0、全process exit0。プレビュー/copy/native .md bytes同一、両theme/CSS200/focus/44px操作/別page storage/非破壊性を確認。clipboard成功・失敗は注入sinkでありOS許諾未検証。正式全GUIは24群追加の912検査、geometry562、PNG114、成功trace0、30分上限を維持し最終HEADで別照合する。
+- 残余: 実機Safari/VoiceOver/OS文字拡大未検証。PR #85 初回選択位置ずれ原因未特定を維持。数学的証明/真正性/変更理由/原子的外部一致を保証しない。
+
 ## 2026-10-26 JST: PR #91 正常取得0件の誤一致を修正（Issue #90）
 
 - 着手: 最新PR HEAD `eae5cc1882bb1f97647d63cf6f5b11eb28993d5c`、main `9c42e3750d2ebf8fd0f01c1d459d4269f2c4827f`、Draft/未マージを確認。専用clean cloneで同じ `feat/audit-record-comparison` を継続し既存作業を保護。

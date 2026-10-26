@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
 /** Two historical records, never a reconstruction from present-day storage.
  * Synthetic fixture only; native storage events are delivered from a second page. */
@@ -76,6 +77,59 @@ export async function exerciseAuditRecordComparison({ page, context, base, expec
     assert.equal(await raw(), saved);
     await passed(prefix + ': explicit A B comparison detects changed expression and actual input despite equal target results without modifying saved history or snapshots');
 
+    // Export uses the already displayed result; clipboard is a synthetic sink,
+    // while the download event and UTF-8 file bytes come from the real browser.
+    const preview = () => comparison().getByRole('textbox', { name: '比較結果Markdown全文（プレビュー）', exact: true });
+    const manual = () => comparison().getByRole('textbox', { name: '比較結果Markdown全文（手動コピー用）', exact: true });
+    await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { window.__auditExport = text; } } }));
+    await click('比較結果Markdownをプレビュー');
+    const markdown = await preview().inputValue();
+    for (const name of ['比較結果Markdownをプレビュー', '比較結果Markdownをコピー', '比較結果を.md出力']) {
+      const rect = await button(name).boundingBox();
+      assert.ok(rect && rect.height >= 44, 'Export controls retain existing 44px target height: ' + name);
+    }
+    assert.ok(markdown.includes('record-A') && markdown.includes('record-B') && markdown.includes(longExpression));
+    assert.ok(markdown.includes('変更あり') && markdown.includes('理由不明'));
+    await click('比較結果Markdownをコピー');
+    assert.equal(await page.evaluate(() => window.__auditExport), markdown);
+    const downloadEvent = page.waitForEvent('download');
+    await click('比較結果を.md出力');
+    const download = await downloadEvent;
+    assert.match(download.suggestedFilename(), /^[a-zA-Z0-9_.-]+\.md$/);
+    assert.deepEqual(await readFile(await download.path()), Buffer.from(markdown, 'utf8'));
+    for (const theme of ['dark', 'light']) {
+      await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = '200%'; }, theme);
+      await assertHorizontalFit(); await preview().focus(); await expect(preview()).toBeFocused();
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    assert.equal(await raw(), saved);
+    await passed(prefix + ': comparison export preview copy and native download preserve identical full Markdown and original data with both themes CSS 200 percent and focus');
+
+    await page.evaluate(() => {
+      navigator.clipboard.writeText = async () => { throw new Error('Synthetic clipboard refusal'); };
+      window.__auditCreateURL = URL.createObjectURL;
+      URL.createObjectURL = () => { throw new Error('Synthetic download refusal'); };
+    });
+    await click('比較結果Markdownをコピー'); await expect(manual()).toHaveValue(markdown);
+    await click('比較結果を.md出力');
+    await expect(comparison().getByRole('region', { name: '2時点比較結果のMarkdown出力' })).toContainText('失敗');
+    assert.equal(await raw(), saved);
+    await page.evaluate(() => { URL.createObjectURL = window.__auditCreateURL; });
+    await passed(prefix + ': comparison clipboard and file-generation refusals retain full manual recovery and never report success or modify saved records');
+
+    await page.evaluate(() => { navigator.clipboard.writeText = text => new Promise(resolve => { window.__auditExport = text; window.__auditResolve = resolve; }); });
+    await click('比較結果Markdownをコピー');
+    const notified = structuredClone(fixture);
+    notified.notes.push({ id: 'unrelated-export', type: 'plain-calculation', title: 'Unrelated', content: 'Synthetic', createdAt: at, updatedAt: at });
+    await second.evaluate(({ key, data }) => localStorage.setItem(key, data), { key, data: JSON.stringify(notified) });
+    await expect(result()).toHaveCount(0); await expect(preview()).toHaveCount(0);
+    await page.evaluate(() => window.__auditResolve());
+    await expect(manual()).toHaveCount(0);
+    await expect(comparison()).not.toContainText('比較結果をコピーしました');
+    assert.equal(await raw(), JSON.stringify(notified));
+    await passed(prefix + ': pending export copy cannot resurrect old preview success or manual recovery after native unrelated storage notification');
+    await open(); await select(); await click('選択した2記録を比較');
+
     await click('比較元Aと比較先Bを入れ替える'); await expect(result()).toHaveCount(0); await click('選択した2記録を比較'); await expect(result()).toContainText('変更あり');
     await choose('比較元A', 'record-A');
     await choose('比較先B', 'record-A');
@@ -137,20 +191,29 @@ export async function exerciseAuditRecordComparison({ page, context, base, expec
     await button('選択した2記録を比較').focus();
     await expect(button('選択した2記録を比較')).toBeFocused();
     await page.keyboard.press('Enter');
-    await expect(result().getByRole('heading', { level: 4 })).toHaveText('総合状態：比較不能');
+    await expect(result().getByRole('heading', { level: 4, name: '総合状態：比較不能', exact: true })).toHaveText('総合状態：比較不能');
     await expect(result()).toContainText('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。');
     await expect(result()).toContainText('0件は点検完了や数学的な一致を意味しません');
     await expect(result().locator('ol > li')).toHaveCount(0);
     for (const theme of ['dark', 'light']) {
       await page.evaluate(theme => { document.documentElement.dataset.theme = theme; document.documentElement.style.fontSize = '200%'; }, theme);
       await assertHorizontalFit();
-      await result().getByRole('heading', { level: 4 }).scrollIntoViewIfNeeded();
-      await expect(result().getByRole('heading', { level: 4 })).toBeVisible();
+      await result().getByRole('heading', { level: 4, name: '総合状態：比較不能', exact: true }).scrollIntoViewIfNeeded();
+      await expect(result().getByRole('heading', { level: 4, name: '総合状態：比較不能', exact: true })).toBeVisible();
       await button('比較元Aと比較先Bを入れ替える').focus();
       await expect(button('比較元Aと比較先Bを入れ替える')).toBeFocused();
     }
     assert.equal(await raw(), emptySaved);
     assert.equal(emptySaved, JSON.stringify(emptyFixture));
+    await click('比較結果Markdownをプレビュー');
+    const emptyMarkdown = await preview().inputValue();
+    assert.ok(emptyMarkdown.includes('両記録に比較可能な根拠項目がありません。取得成功は根拠の一致を意味しません。'));
+    assert.ok(emptyMarkdown.includes('比較不能'));
+    await click('比較元Aと比較先Bを入れ替える');
+    await expect(preview()).toHaveCount(0);
+    await expect(button('比較結果Markdownをコピー')).toHaveCount(0);
+    assert.equal(await raw(), emptySaved);
+    await passed(prefix + ': empty successful acquisitions export their incomparable reason and swapping immediately removes the old export target');
     await page.keyboard.press('Escape'); await expect(audit()).toHaveCount(0); await expect(button('根拠点検')).toBeFocused();
     assert.equal(await raw(), emptySaved);
     await passed(prefix + ': successfully acquired empty records remain incomparable with explicit reason zero rows and unchanged storage in both themes CSS 200 percent and keyboard focus');

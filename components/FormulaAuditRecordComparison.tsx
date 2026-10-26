@@ -1,20 +1,21 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { scanAuditRecordEnvelopes, type AuditRecordEnvelope } from "../lib/formula-report-audit-record";
-import { compareAuditRecords, validateAuditComparisonSnapshot, type AuditComparisonItem, type AuditComparisonState, type AuditRecordComparison } from "../lib/formula-report-audit-comparison";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { scanAuditRecordEnvelopes, type AuditRecordEnvelope, type AuditRecordMetadata } from "../lib/formula-report-audit-record";
+import { compareAuditRecords, validateAuditComparisonSnapshot, type AuditComparisonItem, type AuditRecordComparison } from "../lib/formula-report-audit-comparison";
 import { EVIDENCE_CHANGE_LABELS, type EvidenceComparison } from "../lib/evidence-comparison";
 import { bodyLabels, sourceLabels } from "../lib/formula-report-audit-export";
 import { STORAGE_KEY } from "../lib/storage";
 import { RecordInfo, BlockInfo } from "./EvidenceRecordDetails";
 
-const labels: Record<AuditComparisonState, string> = { matched: "一致（比較可能な項目）", changed: "変更あり", added: "追加", removed: "削除", missing: "根拠欠落", unavailable: "取得不能", incomparable: "比較不能", unknown: "記録形式不明" };
-const states = (values: AuditComparisonState[]) => values.map(value => labels[value]).join("／");
+import { buildAuditComparisonMarkdown, formatAuditComparisonStates as states } from "../lib/formula-report-audit-comparison-export";
+import { downloadMarkdownReport, type MarkdownReport } from "../lib/markdown-report";
+
 const sideName = (value: string) => value === "quote" ? "引用元" : value === "before" ? "比較差分の比較元" : "比較差分の比較先";
 const checkedLabel = (value?: string) => value === "checked" ? "当時は照合操作を実行（取得成否は別）" : value === "stale" ? "当時の照合結果失効" : value === "unverified" ? "当時は未照合" : "記録なし";
 const entryKey = (entry: AuditRecordEnvelope) => `${entry.start}:${entry.end}`;
 type Props = { body: string; formulaId: string; reportId?: string; savedContextChanged?: boolean; generation?: string | number; onNavigate: (start: number, end: number) => void };
-type Selection = { context: string; epoch: number; a: string; b: string; result: AuditRecordComparison | null; error: string };
+type Selection = { token: number; context: string; epoch: number; a: string; b: string; result: AuditRecordComparison | null; error: string };
 
 /** Read-only historical comparison. No persistence/retrieval, and no prose parser. */
 export function FormulaAuditRecordComparison({ body, formulaId, reportId, savedContextChanged, generation, onNavigate }: Props) {
@@ -22,16 +23,19 @@ export function FormulaAuditRecordComparison({ body, formulaId, reportId, savedC
   const entries = useMemo(() => scanAuditRecordEnvelopes(body), [body]);
   const context = JSON.stringify([body, formulaId, reportId, savedContextChanged, generation]);
   const epoch = useRef(0);
+  const actionEpoch = useRef(0);
   const [revision, setRevision] = useState(0);
   const [external, setExternal] = useState(false);
   const [invalidated, setInvalidated] = useState(false);
   const [selection, setSelection] = useState<Selection | null>(null);
+  const current = useRef({ context, selection, epoch: revision });
+  useLayoutEffect(() => { current.current = { context, selection, epoch: revision }; }, [context, selection, revision]);
   const active = selection?.context === context && selection.epoch === revision ? selection : null;
   if (selection && !active) { setSelection(null); setInvalidated(true); }
   useEffect(() => {
     const observe = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY && event.key !== null) return;
-      epoch.current += 1; setRevision(epoch.current); setSelection(null); setExternal(true); setInvalidated(true);
+      actionEpoch.current += 1; epoch.current += 1; setRevision(epoch.current); setSelection(null); setExternal(true); setInvalidated(true);
     };
     window.addEventListener("storage", observe);
     // Comparison is synchronous; cleanup has no pending completion to invalidate.
@@ -46,15 +50,16 @@ export function FormulaAuditRecordComparison({ body, formulaId, reportId, savedC
     return "比較対象として選択できます。形式の検証は真正性や数学的正しさの保証ではありません。";
   };
   const eligible = (entry: AuditRecordEnvelope) => entry.status === "complete" && entry.closed && !!entry.metadata && entry.metadata.formulaId === formulaId && entry.metadata.reportId === reportId && !!entry.metadata.comparison && validateAuditComparisonSnapshot(entry.metadata.comparison);
-  const select = (key: "a" | "b", value: string) => { setInvalidated(false); setSelection({ context, epoch: epoch.current, a: active?.a ?? "", b: active?.b ?? "", result: null, error: "", [key]: value }); };
+  const select = (key: "a" | "b", value: string) => { actionEpoch.current += 1; setInvalidated(false); setSelection({ token: actionEpoch.current, context, epoch: epoch.current, a: active?.a ?? "", b: active?.b ?? "", result: null, error: "", [key]: value }); };
   const compare = () => {
+    actionEpoch.current += 1;
     if (!active || active.epoch !== epoch.current) { setInvalidated(true); return; }
     const a = entries.find(entry => entryKey(entry) === active.a), b = entries.find(entry => entryKey(entry) === active.b);
-    if (!a || !b || !eligible(a) || !eligible(b)) { setSelection({ ...active, result: null, error: "選択した記録を検証できません。対象を選び直してください。" }); return; }
+    if (!a || !b || !eligible(a) || !eligible(b)) { setSelection({ ...active, token: actionEpoch.current, result: null, error: "選択した記録を検証できません。対象を選び直してください。" }); return; }
     try {
       const input = (entry: AuditRecordEnvelope) => ({ ...entry.metadata!, snapshot: entry.metadata!.comparison });
-      setSelection({ ...active, result: compareAuditRecords(input(a), input(b)), error: "" });
-    } catch { setSelection({ ...active, result: null, error: "比較処理を完了できません。元の記録・本文は保持しています。" }); }
+      setSelection({ ...active, token: actionEpoch.current, result: compareAuditRecords(input(a), input(b)), error: "" });
+    } catch { setSelection({ ...active, token: actionEpoch.current, result: null, error: "比較処理を完了できません。元の記録・本文は保持しています。" }); }
   };
   return <section className="quote-tools saved-evidence" aria-label="固定点検記録の2時点比較">
     <h3>固定点検記録の2時点比較</h3>
@@ -80,12 +85,13 @@ export function FormulaAuditRecordComparison({ body, formulaId, reportId, savedC
     </li>)}</ol>
     <label htmlFor={`${id}-a`}>比較元A</label><select id={`${id}-a`} value={active?.a ?? ""} onChange={event => select("a", event.target.value)}><option value="">明示的に選択してください</option>{entries.map((entry, index) => <option key={entryKey(entry)} value={entryKey(entry)} disabled={!eligible(entry)}>本文中{index + 1}：{entry.metadata?.recordId ?? "識別不能"}（{entry.metadata?.generatedAt ?? "日時不明"}）{eligible(entry) ? "" : "・比較対象外"}</option>)}</select>
     <label htmlFor={`${id}-b`}>比較先B</label><select id={`${id}-b`} value={active?.b ?? ""} onChange={event => select("b", event.target.value)}><option value="">明示的に選択してください</option>{entries.map((entry, index) => <option key={entryKey(entry)} value={entryKey(entry)} disabled={!eligible(entry)}>本文中{index + 1}：{entry.metadata?.recordId ?? "識別不能"}（{entry.metadata?.generatedAt ?? "日時不明"}）{eligible(entry) ? "" : "・比較対象外"}</option>)}</select>
-    <div className="modal-actions"><button type="button" disabled={!active?.a && !active?.b} onClick={() => { if (active && active.epoch === epoch.current) setSelection({ ...active, a: active.b, b: active.a, result: null, error: "" }); }}>比較元Aと比較先Bを入れ替える</button><button type="button" disabled={!active?.a || !active?.b} onClick={compare}>選択した2記録を比較</button></div>
+    <div className="modal-actions"><button type="button" disabled={!active?.a && !active?.b} onClick={() => { actionEpoch.current += 1; if (active && active.epoch === epoch.current) setSelection({ ...active, token: actionEpoch.current, a: active.b, b: active.a, result: null, error: "" }); }}>比較元Aと比較先Bを入れ替える</button><button type="button" disabled={!active?.a || !active?.b} onClick={compare}>選択した2記録を比較</button></div>
     {invalidated && <p role="status">対象・本文・取得世代・保存通知の変化により以前の比較結果を失効しました。保持本文の記録を選び直してください。</p>}
     {active?.error && <p role="alert">{active.error}</p>}
     {!active?.result && <p>比較はまだ実行されていません。AとBを選び、比較ボタンを押してください。</p>}
     {active?.result && <section aria-label="2時点比較結果">
       <h4>総合状態：{states(active.result.states)}</h4>
+      {active.a !== active.b && <ComparisonExport key={active.token} before={entries.find(entry => entryKey(entry) === active.a)!.metadata!} after={entries.find(entry => entryKey(entry) === active.b)!.metadata!} result={active.result} savedContextChanged={!!savedContextChanged || external} isCurrent={() => actionEpoch.current === active.token && current.current.context === context && current.current.selection === active && epoch.current === active.epoch} />}
       <p>比較元A：{entries.find(entry => entryKey(entry) === active.a)?.metadata?.recordId} → 比較先B：{entries.find(entry => entryKey(entry) === active.b)?.metadata?.recordId}</p>
       {active.result.changes.map((change, index) => <p key={index}>記録間の変化：{change}</p>)}
       <ul>{active.result.limitations.map((limitation, index) => <li key={index}>{limitation}</li>)}</ul>
@@ -111,4 +117,55 @@ function ItemDetails({ label, item }: { label: string; item?: AuditComparisonIte
 }
 function CalculationChanges({ label, comparison }: { label: string; comparison: EvidenceComparison }) {
   return <section><h5>{label}</h5><p>変更 {comparison.counts.changed}／追加 {comparison.counts.added}／削除 {comparison.counts.removed}／一致 {comparison.counts.unchanged}。内部結果と表示結果は別に比較しています。</p>{comparison.warnings.map((warning, index) => <p key={index}>{warning}</p>)}<ul>{comparison.rows.map(row => <li key={row.blockId}>ブロックID：{row.blockId}／{row.kind === "unchanged" ? "一致" : row.kind === "changed" ? "変更あり" : row.kind === "added" ? "追加" : "削除"}{row.changes.length ? `：${row.changes.map(change => EVIDENCE_CHANGE_LABELS[change]).join("・")}` : ""}</li>)}</ul></section>;
+}
+
+/** Presentation/export only. A preview is tied to the exact existing result object. */
+function ComparisonExport({ before, after, result, savedContextChanged, isCurrent }: { before: AuditRecordMetadata; after: AuditRecordMetadata; result: AuditRecordComparison; savedContextChanged: boolean; isCurrent: () => boolean }) {
+  const id = useId();
+  const version = useRef(0);
+  const live = useRef(false);
+  const busy = useRef(false);
+  const [preview, setPreview] = useState<{ result: AuditRecordComparison; output: MarkdownReport } | null>(null);
+  const [notice, setNotice] = useState<{ text: string; failed: boolean } | null>(null);
+  const [copying, setCopying] = useState(false);
+  const [manual, setManual] = useState(false);
+  useLayoutEffect(() => {
+    live.current = true; version.current += 1; busy.current = false;
+    return () => { live.current = false; version.current += 1; busy.current = false; };
+  }, []);
+  const valid = () => live.current && isCurrent();
+  const prepare = () => {
+    if (!valid()) return;
+    version.current += 1; busy.current = false; setCopying(false); setNotice(null); setManual(false);
+    try { setPreview({ result, output: buildAuditComparisonMarkdown({ before, after, result, exportedAt: new Date().toISOString(), savedContextChanged }) }); }
+    catch (cause) { setPreview(null); setNotice({ text: cause instanceof Error ? cause.message : "比較結果のプレビューを生成できません。元の記録は変更していません。", failed: true }); }
+  };
+  const output = async (download: boolean) => {
+    if (busy.current || !valid() || !preview || preview.result !== result) return;
+    const token = ++version.current;
+    busy.current = true; setCopying(true); setNotice(null); setManual(false);
+    const stillValid = () => valid() && version.current === token;
+    try {
+      // Use the exact preview bytes; no comparison, source acquisition or save.
+      if (!stillValid()) return;
+      if (download) downloadMarkdownReport(preview.output);
+      else await navigator.clipboard.writeText(preview.output.markdown);
+      if (!stillValid()) return;
+      setNotice({ text: download ? "比較結果のダウンロードを要求しました。保存完了はブラウザで確認してください。" : "比較結果をコピーしました。プレビュー生成時点の記録です。", failed: false });
+    } catch (cause) {
+      if (!stillValid()) return;
+      setNotice({ text: `${download ? "比較結果のファイル出力に失敗しました。" : "比較結果のコピーに失敗しました。"}${cause instanceof Error ? cause.message : "処理を完了できません。"}全文欄から手動でコピーするか、再試行してください。`, failed: true });
+      setManual(true);
+    } finally { if (stillValid()) { busy.current = false; setCopying(false); } }
+  };
+  const shown = preview?.result === result ? preview.output : null;
+  return <section aria-label="2時点比較結果のMarkdown出力">
+    <h4>比較結果のMarkdown出力</h4>
+    <p>有効な比較結果をそのまま独立資料として出力します。比較不能・情報不足も理由付きで残します。現在の保存原本の照合や数学的証明ではありません。</p>
+    <div className="modal-actions"><button type="button" className="button-secondary" onClick={prepare}>比較結果Markdownをプレビュー</button></div>
+    {shown && <><div><label htmlFor={`${id}-preview`}>比較結果Markdown全文{manual ? "（手動コピー用）" : "（プレビュー）"}</label><textarea id={`${id}-preview`} className="code-input" readOnly rows={10} value={shown.markdown} onFocus={event => event.target.select()} /></div>
+      <div className="modal-actions"><button type="button" className="button-secondary" disabled={copying} onClick={() => void output(false)}>比較結果Markdownをコピー</button><button type="button" className="button-secondary" disabled={copying} onClick={() => void output(true)}>比較結果を.md出力</button></div></>}
+    {copying && <p role="status">比較結果を出力しています。対象変更後の古い完了通知は表示しません。</p>}
+    {notice && <p role={notice.failed ? "alert" : "status"}>{notice.text}</p>}
+  </section>;
 }

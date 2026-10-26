@@ -626,3 +626,6 @@ Initial exact-label lookup failed because the label wrapped the select and inclu
 ## PR #91 empty successful-acquisition regression
 
 The existing six contexts each add one explicit A/B comparison of distinct, checked, successfully acquired, complete records with no evidence items. The real app must show `比較不能`, the no-comparable-items reason, and zero rows, never an overall match. Keyboard activation/focus restoration, both themes at CSS 200%, horizontal fit, and byte-identical stored report/history/snapshots are checked. This adds six checks (882 → 888) and three mobile activations per context (1086 → 1089). Existing 562 recorded geometry checkpoints, 114 representative PNGs, success-trace omission, and the 30-minute workflow limit remain unchanged. Direct additional horizontal-fit assertions do not create screenshot checkpoints.
+
+## Issue #92 比較結果Markdown出力
+既存6条件の固定点検記録比較に、同一プレビュー/clipboard引数/native download bytes、コピー/生成失敗、非同期コピー中の実別ページstorage通知、0件比較不能の出力と入替失効を追加する。合成clipboard sinkはOSクリップボードの権限試験ではない。downloadは実ブラウザのファイルbytesを照合するがOSでの保存完了を保証しない。両テーマCSS200%、focus、保存原本非変更を含む。既存検査を削除せず、geometry562/PNG114/成功trace0/30分上限を維持する。実測件数と最終HEAD結果はLOG/PRで確認する。
