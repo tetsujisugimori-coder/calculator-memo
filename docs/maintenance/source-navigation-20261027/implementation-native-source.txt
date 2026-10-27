@@ -1,0 +1,70 @@
+// Local implementation-side focused probe only. NOT the formal six-context suite.
+import assert from 'node:assert/strict';
+import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
+const repo = process.env.REPO || '/workspace/scratch/e622c1e9421e/calculator-source-navigation';
+const require = createRequire(repo + '/e2e/package.json');
+const { chromium, webkit, expect: baseExpect } = require('@playwright/test');
+const expect = baseExpect.configure({ timeout: 5000 });
+const { exerciseAuditComparisonNavigation } = await import(pathToFileURL(repo + '/e2e/audit-comparison-navigation.mjs'));
+const base = process.env.BASE || 'http://127.0.0.1:4288/calculator-memo/';
+const origin = new URL(base).origin;
+const output = process.env.OUTPUT || '/tmp/source-navigation-native-evidence';
+await mkdir(output, { recursive: true });
+const git = args => execFileSync('git', args, { cwd: repo, encoding: 'utf8' }).trim();
+const run = { kind: 'implementation-side local focused probe; not formal full six-context acceptance', startedAt: new Date().toISOString(), startedAtJST: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' }) + '+09:00', head: git(['rev-parse','HEAD']), tree: git(['rev-parse','HEAD^{tree}']), dirty: git(['status','--short']), base, node: process.version, playwright: require('@playwright/test/package.json').version, conditions: [], status: 'running' };
+run.sourceSha256 = {};
+for (const path of ['e2e/audit-comparison-navigation.mjs', 'e2e/scenario.mjs', 'components/FormulaAuditComparisonSources.tsx', 'lib/formula-report-audit-comparison-navigation.ts', 'dist-pages/index.html']) { try { run.sourceSha256[path] = createHash('sha256').update(await readFile(repo + '/' + path)).digest('hex'); } catch { run.sourceSha256[path] = 'unavailable'; } }
+await writeFile(output + '/result.json', JSON.stringify(run, null, 2));
+// Reuse the formal predicate verbatim, rather than relaxing layout tolerance.
+const scenarioSource = await readFile(repo + '/e2e/scenario.mjs', 'utf8');
+const fitSource = scenarioSource.slice(scenarioSource.indexOf('async function assertHorizontalFit('), scenarioSource.indexOf('\nasync function assertModalBackdropContract('));
+for (const engine of (process.env.ENGINES || 'chromium,webkit').split(',')) {
+  const condition = { id: engine + '-mobile-390px-focused', engine, width: 390, height: 844, dpr: 3, hasTouch: true, startedAt: new Date().toISOString(), checks: [], geometry: [], activations: [], errors: [], status: 'running' };
+  run.conditions.push(condition);
+  let browser, context, page;
+  try {
+    browser = await ({ chromium, webkit }[engine]).launch({ headless: true, executablePath: engine === 'webkit' ? '/tmp/loading-q1-20261027-browsers156/webkit-2215/pw_run.sh' : '/tmp/loading-q1-20261027-browsers156/chromium_headless_shell-1194/chrome-linux/headless_shell' }); condition.version = browser.version();
+    context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 });
+    await context.tracing.start({ screenshots: false, snapshots: true, sources: true });
+    await context.route('**/*', async route => {
+      const url = route.request().url();
+      if (!url.startsWith(origin + '/') && !url.startsWith('data:') && !url.startsWith('blob:')) { condition.errors.push({ type: 'unexpected-request', url }); await route.abort(); }
+      else await route.fallback();
+    });
+    context.on('page', observed => {
+      observed.on('pageerror', error => condition.errors.push({ type: 'pageerror', error: error.message }));
+      observed.on('requestfailed', request => condition.errors.push({ type: 'requestfailed', url: request.url(), error: request.failure()?.errorText }));
+    });
+    await context.addInitScript(() => { window.__guiTouchStarts = 0; document.addEventListener('touchstart', () => { window.__guiTouchStarts++; }, { capture: true, passive: true }); });
+    page = await context.newPage(); page.setDefaultTimeout(5000); await page.goto(base);
+    const assertHorizontalFit = new Function('page', 'assert', 'currentScenario', 'return (' + fitSource + ');')(page, assert, { width: 390 });
+    const activate = async locator => {
+      const before = await page.evaluate(() => window.__guiTouchStarts); const started = performance.now(); await locator.tap();
+      await expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before);
+      condition.activations.push({ durationMs: performance.now() - started, type: 'tap' });
+    };
+    const passed = async name => { condition.checks.push(name); console.log('PASS', name); await writeFile(output + '/result.json', JSON.stringify(run, null, 2)); };
+    const screenshot = async (name, expectedWidth = 390, fullPage = false) => {
+      await assertHorizontalFit(expectedWidth); const retained = name.endsWith('-comparison-source-detail'); condition.geometry.push({ name, horizontalFit: 'passed', retained });
+      if (retained) await page.screenshot({ path: output + '/' + name + '.png', fullPage });
+    };
+    await exerciseAuditComparisonNavigation({ page, context, base, expect, passed, prefix: condition.id, assertHorizontalFit, activate, screenshot });
+    assert.equal(condition.checks.length, 7); assert.equal(condition.geometry.length, 2); assert.equal(condition.geometry.filter(x => x.retained).length, 1); assert.equal(condition.activations.length, 44); assert.deepEqual(condition.errors, []);
+    await context.tracing.stop(); condition.status = 'passed';
+  } catch (error) {
+    condition.status = 'failed'; condition.failure = { message: error.message, stack: error.stack };
+    if (page) await page.screenshot({ path: output + '/' + condition.id + '-failure.png' }).catch(() => {});
+    if (context) await context.tracing.stop({ path: output + '/' + condition.id + '-failure.zip' }).catch(() => {});
+    console.error(error);
+  } finally { condition.endedAt = new Date().toISOString(); await browser?.close(); await writeFile(output + '/result.json', JSON.stringify(run, null, 2)); }
+}
+run.status = run.conditions.every(c => c.status === 'passed') ? 'passed' : 'failed'; run.endedAt = new Date().toISOString();
+await writeFile(output + '/result.json', JSON.stringify(run, null, 2));
+const hashes = {};
+for (const name of await readdir(output)) { if (name === 'SHA256SUMS.json') continue; const bytes = await readFile(output + '/' + name); hashes[name] = createHash('sha256').update(bytes).digest('hex'); }
+await writeFile(output + '/SHA256SUMS.json', JSON.stringify(hashes, null, 2));
+process.exitCode = run.status === 'passed' ? 0 : 1;

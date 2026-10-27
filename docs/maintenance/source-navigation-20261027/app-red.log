@@ -1,0 +1,48 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-source-navigation
+
+ ❯ tests/formula-report-source-navigation-app.test.ts (10 tests | 1 failed) 998ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\n") 267ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r\n") 140ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r") 144ms
+   ✓ preview navigation opens editor and focuses selected source without changing the saved report 64ms
+   ✓ real CalculatorApp changed storage preserves held draft/history and rejects queued navigation 69ms
+   ✓ real CalculatorApp deleted storage preserves held draft/history and rejects queued navigation 71ms
+   × body editing invalidates queued source position, including edit then exact restore 75ms
+     → expected [ 9, 337 ] to deeply equal [ 996, 996 ]
+   ✓ selection intent invalidates queued navigation without deleting the selected text 50ms
+   ✓ newer navigation wins even when old callback runs last 67ms
+   ✓ closing the report cancels old navigation without touching another focused control 49ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/formula-report-source-navigation-app.test.ts > body editing invalidates queued source position, including edit then exact restore
+AssertionError: expected [ 9, 337 ] to deeply equal [ 996, 996 ]
+
+- Expected
++ Received
+
+  [
+-   996,
+-   996,
++   9,
++   337,
+  ]
+
+ ❯ tests/formula-report-source-navigation-app.test.ts:78:60
+     76|   await change(`追加\n${body}`); await change(body); const selection = […
+     77|   await act(async () => pending.forEach(callback => callback(1)));
+     78|   expect([editor().selectionStart, editor().selectionEnd]).toEqual(sel…
+       |                                                            ^
+     79| });
+     80| it('selection intent invalidates queued navigation without deleting th…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  13:50:24
+   Duration  2.90s (transform 676ms, setup 0ms, collect 1.42s, tests 998ms, environment 267ms, prepare 55ms)
+

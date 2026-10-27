@@ -1,0 +1,7 @@
+page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4288/calculator-memo/
+Call log:
+[2m  - navigating to "http://127.0.0.1:4288/calculator-memo/", waiting until "load"[22m
+
+    at /tmp/source-navigation-native.mjs:43:78 {
+  name: 'Error'
+}

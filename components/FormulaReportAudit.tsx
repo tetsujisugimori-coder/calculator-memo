@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { parseReportAudit, assessReportAudit, type AuditItem, type AuditAcquisition } from "../lib/formula-report-audit";
 import { buildAuditMarkdown, bodyLabels, sourceLabels } from "../lib/formula-report-audit-export";
 import { captureAuditComparison } from "../lib/formula-report-audit-comparison";
+import { FormulaAuditComparisonSources } from "./FormulaAuditComparisonSources";
 import { FormulaAuditRecordComparison, type ComparisonMaterialInsertion } from "./FormulaAuditRecordComparison";
 import { createAuditRecordMarkdown } from "../lib/formula-report-audit-record";
 import { downloadMarkdownReport } from "../lib/markdown-report";
@@ -140,6 +141,7 @@ export function FormulaReportAudit({ comparisonInsertion, insertion, body, formu
         {bodyContextUncertain && <p role="alert">出力対象は画面に保持した本文です。現在の保存本文との一致は未確認です。保存領域の更新等を検知していますが、対象レポートの変更・削除は断定しません。出典の再照合とは別の制約です。</p>}
         {unsavedChanges && !editing && !bodyContextUncertain && <p>本文は保存済みの内容ですが、タイトル・関連付けなどに未保存変更があります。</p>}
         <p>出典一致・本文対応・利用者の明示確認・数学的正しさは別です。保存記録の変更だけで過去の引用が誤りとは判定しません。閲覧・照合・移動では保存も再計算も行いません。</p>
+        <FormulaAuditComparisonSources body={body} formulaId={formulaId} reportId={reportId} savedContextChanged={bodyContextUncertain} generation={comparisonGeneration} onNavigate={(start, end) => { closeAudit(); onNavigate(start, end); }} />
         <FormulaAuditRecordComparison insertion={comparisonInsertion ? { ...comparisonInsertion, onInserted: closeAudit } : undefined} body={body} formulaId={formulaId} reportId={reportId} savedContextChanged={bodyContextUncertain} generation={comparisonGeneration} onNavigate={(start, end) => { closeAudit(); onNavigate(start, end); }} />
         <button type="button" onClick={refresh}>保存記録と照合</button>
         {!acquisition || stale ? <p role="status">未照合です。{stale ? "保存原本の更新を検知したため以前の結果と詳細を失効しました。" : "照合は明示操作で開始します。"}</p> : <p>原本の観測取得日時：{acquisition.fetchedAt}。保存日時・計算日時・利用者確認日時ではありません。</p>}

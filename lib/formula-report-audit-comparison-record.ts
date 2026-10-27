@@ -119,3 +119,18 @@ export function createAuditComparisonRecordMarkdown(markdown: string, info: Audi
   if (ranges.length !== 1 || ranges[0].status !== 'complete' || ranges[0].start !== 0 || ranges[0].end !== result.length) throw new Error('固定比較資料の領域を安全に構成できません。本文は変更していません。');
   return result;
 }
+
+/** Read-only marker observations for diagnostics; claimedId never authorizes navigation. */
+export function inspectAuditComparisonMarker(body: string, block: MarkdownBlock) {
+  if (block.kind !== 'code' || !block.language.startsWith(PREFIX)) return undefined;
+  let value: unknown;
+  try { value = JSON.parse(block.text); } catch { /* Observation only. */ }
+  const known = [AUDIT_COMPARISON_RECORD_START, AUDIT_COMPARISON_RECORD_END].includes(block.language)
+    && !(object(value) && typeof value.version === 'number' && value.version !== 1);
+  const closed = closedCode(body, block);
+  const startMetadata = closed && block.language === AUDIT_COMPARISON_RECORD_START ? metadata(value) : undefined;
+  const endId = closed && block.language === AUDIT_COMPARISON_RECORD_END && object(value)
+    && keys(value, ['version', 'materialId']) && value.version === 1 && typeof value.materialId === 'string' ? value.materialId : undefined;
+  return { start: block.start, end: block.end, known, closed, startMetadata, endId,
+    claimedId: object(value) && typeof value.materialId === 'string' ? value.materialId : undefined };
+}

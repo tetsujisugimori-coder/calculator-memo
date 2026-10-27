@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { runtimeResources } from "./runtime-resources.mjs";
 import { assertHistoricalSourceText, expectedHistoricalBlocks } from "./source-evidence-contract.mjs";
+import { exerciseAuditComparisonNavigation } from "./audit-comparison-navigation.mjs";
 import { exerciseAuditComparisonInsertion } from "./audit-comparison-insertion.mjs";
 import { exerciseAuditRecordComparison } from "./audit-record-comparison.mjs";
 import { exerciseAuditFixedRecord } from "./audit-fixed-record.mjs";
@@ -1465,7 +1466,7 @@ async function screenshot(name, expectedWidth = currentScenario.width, fullPage 
   await assertHorizontalFit(expectedWidth);
   const geometryMs = performance.now() - checkpointStarted;
   const suffix = name.slice(currentScenario.id.length);
-  const retained = /^(?:-header|-guide|-formula-library-controls|-basic-math-domain-error|-variables-dark-result-stress|-reference-dark-enlarged-picker|-default-id-unrelated-rollback|-diagnostics-independent-causes|-diagnostics-dark-enlarged|-graph-selected-card|-graph-error-detail|-graph-dark-enlarged-selection|-graph-limit-fallback|-graph-trial-comparison|-trial-success|-trial-failure|-trial-dark-enlarged-delta|-protected-dark-large-text|-normal-memos-after-repair|-comparison-material-preview)$/.test(suffix);
+  const retained = /^(?:-header|-guide|-formula-library-controls|-basic-math-domain-error|-variables-dark-result-stress|-reference-dark-enlarged-picker|-default-id-unrelated-rollback|-diagnostics-independent-causes|-diagnostics-dark-enlarged|-graph-selected-card|-graph-error-detail|-graph-dark-enlarged-selection|-graph-limit-fallback|-graph-trial-comparison|-trial-success|-trial-failure|-trial-dark-enlarged-delta|-protected-dark-large-text|-normal-memos-after-repair|-comparison-material-preview|-comparison-source-detail)$/.test(suffix);
   metadata.screenshotCheckpoints.push({ name, horizontalFit: "passed", retained });
   if (!retained) { metadata.timings.screenshots.push({ name, captured: false, geometryMs, captureMs: 0, durationMs: performance.now() - checkpointStarted }); return; }
   // Test-only visual label, removed immediately after capture; not an app feature.
@@ -4225,6 +4226,8 @@ async function exercise(scenario) {
   await exerciseAuditRecordComparison({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate });
   await stage(prefix + ": formula-audit-comparison-insertion");
   await exerciseAuditComparisonInsertion({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate, screenshot });
+  await stage(prefix + ": formula-audit-comparison-navigation");
+  await exerciseAuditComparisonNavigation({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate, screenshot });
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
   await exerciseFormulaTimeline(prefix);

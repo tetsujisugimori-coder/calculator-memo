@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-27 JST: 固定A/B比較資料の読取専用出典追跡（Issue #96）
+
+- PR #95のmergeと最新main `6e3fa736b9ee335ab5c61b96cc5b52c0b8073868` をGitHub APIとfetchで実確認し、他worktreeを保持して専用branch/worktreeを作成。[Issue #96](https://github.com/tetsujisugimori-coder/calculator-memo/issues/96)を実装前に作成。Windows・main・公開先は変更しない。
+- 第一希望の既存scanner再利用を採用。境界scannerの既存挙動と固定Markdown生成を変えず、診断専用識別情報を分離して一覧・詳細・一意な出典位置を導出する。別parser、文章から比較状態を再構成する方式、新永続形式は不採用。保存済metadataにない比較状態・理由は不足を明示して固定全文を表示する。
+- 根拠点検の同一画面内へ一覧・詳細を追加。資料と出典のID／登録式／レポート同一性・完全性・一意性を確認できた範囲だけ移動。閲覧・選択・移動は原本取得、storage書込、再比較・再計算、確認履歴追加を行わない。保存通知後は保持本文との区別を維持し再選択を求める。
+- 実Appの旧移動RAFで本文編集→元bytes復元、selectイベント前の選択変更をそれぞれ同一期待値でRED再現。本文編集世代と実選択範囲の直前照合を追加し、既存の対象・保存通知・要求世代ガードを維持。検証結果は[今回記録](docs/maintenance/source-navigation-20261027/README.md)へ集約する。
+- 正式GUIは旧972群／568geometry／120PNGを保持し新機能の7群・2geometry・1PNGを各6条件へ追加。提出前最終製品コードは2205単体・41契約・lint・型・両build成功、局所native両engineと独立再操作成功。正式最終HEAD CIはPRで確定する。3worker・30分上限・成功trace0は不変。実行・正式CI・成果物照合前を成功扱いしない。
+- WebKit時間変動、ローカル100ms契約fixture環境差、過去の選択位置ずれの全原因、実機iPhone Safari・VoiceOver・OS文字拡大は今回の成功だけで解消扱いしない。
+
 ## 2026-10-26 JST: PR #95 P2 同一ID早期終端の内部漏出防止
 
 - 基準・最新PR HEAD `d7d6031b8a7e4bb5a296ba199febf04d5b073592`、Draft/open/未マージをAPI照合。既存Issue #94/PR #95を継続し、cleanなクラウドworktreeから作業。他worktree・Windows・mainは変更しない。旧最終CIの成功は今回の未検査境界の証明に流用しない。

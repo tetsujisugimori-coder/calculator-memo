@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import { chromium, webkit } from '/workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/node_modules/playwright/index.mjs';
+import { writeFile } from 'node:fs/promises';
+const base=process.env.REVIEW_BASE, output='/workspace/scratch/e622c1e9421e/calculator-source-navigation/docs/maintenance/source-navigation-20261027';
+assert.ok(base);
+const marker=(name,value)=>'```calculator-memo-'+name+'\n'+JSON.stringify(value)+'\n```';
+const at='2026-10-27T13:56:00+09:00', key='calculation-memo:data';
+const rec=id=>marker('audit-record-start-v1',{version:1,recordId:id,formulaId:'f',reportId:'r',generatedAt:at,bodySha256:'b'.repeat(64),bodyLength:0})+'\n\n検査資料'+id+'😀\n\n'+marker('audit-record-end-v1',{version:1,recordId:id});
+const a=rec('A'), b=rec('B');
+const m=marker('audit-comparison-record-start-v1',{version:1,materialId:'M',formulaId:'f',reportId:'r',beforeRecordId:'A',afterRecordId:'B',preparedAt:at})+'\n\n元の比較結果は本文のまま😀\n\n'+marker('audit-comparison-record-end-v1',{version:1,materialId:'M'});
+const body=['先頭😀',a,m,b].join('\n\n');
+const data={version:1,history:[],notes:[],settings:{theme:'light',activePanel:'history'},formulaLibrary:{version:1,selectedId:'f',entries:[{id:'f',title:'独立レビュー',expression:'1',createdAt:at,updatedAt:at}]},formulaReports:{version:1,entries:[{id:'r',formulaId:'f',title:'出典',body,createdAt:at,updatedAt:at,confirmedExpression:null,evidence:{version:1,links:[],confirmations:[]}}]}};
+const results=[];
+for(const [name,type] of [['chromium',chromium],['webkit',webkit]]) {
+ const browser=await type.launch({headless:true,executablePath:name==='chromium'?'/tmp/loading-q1-20261027-browsers156/chromium_headless_shell-1194/chrome-linux/headless_shell':'/tmp/loading-q1-20261027-browsers156/webkit-2215/pw_run.sh'}); const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true}); const page=await context.newPage(), errors=[];page.on('pageerror',e=>errors.push(String(e)));
+ const button=n=>page.getByRole('button',{name:n,exact:true}); const tap=async n=>button(n).tap();
+ try {
+  await page.goto(base); await page.evaluate(({key,data})=>localStorage.setItem(key,JSON.stringify(data)),{key,data});await page.reload();
+  await tap('登録式ライブラリ');await tap('関連レポートを閲覧・編集');await tap('Markdownを編集');await tap('根拠点検');await tap('比較資料1の詳細');
+  const text=page.getByRole('textbox',{name:'固定比較資料の本文全文',exact:true}); assert.equal(await text.inputValue(),m);assert.equal(await text.getAttribute('readonly'),'');
+  await page.evaluate(()=>{document.documentElement.style.fontSize='200%';document.documentElement.dataset.theme='dark';});
+  await text.focus();await page.keyboard.press('Tab');assert.equal(await button('この比較資料の本文へ移動').evaluate(n=>n===document.activeElement),true);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+  await page.screenshot({path:output+'/independent-'+name+'-390.png'});await page.evaluate(()=>document.documentElement.style.fontSize='');
+  await tap('比較先Bの出典本文へ移動');await page.waitForFunction(()=>document.activeElement?.id==='formula-report-body');
+  const actual=await page.locator('#formula-report-body').evaluate(n=>({text:n.value.slice(n.selectionStart,n.selectionEnd),body:n.value}));assert.deepEqual(actual,{text:b,body});
+  assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),JSON.stringify(data));assert.deepEqual(errors,[]);
+  results.push({engine:name,width:390,theme:'dark',fontMethod:'root CSS 200%',fullText:true,readOnly:true,keyboardFocus:true,horizontalFit:true,sourceBNavigation:true,heldBodyUnchanged:true,savedBytesUnchanged:true,pageerrors:errors,status:'passed'});
+ } catch(e) {results.push({engine:name,status:'failed',error:String(e),pageerrors:errors});process.exitCode=1;}
+ finally{await browser.close();}
+}
+await writeFile(output+'/independent-native.json',JSON.stringify({checkedAt:new Date().toISOString(),base,results},null,2)+'\n');console.log(JSON.stringify(results));

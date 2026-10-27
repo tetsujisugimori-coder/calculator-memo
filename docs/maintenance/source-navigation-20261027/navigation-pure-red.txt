@@ -1,0 +1,99 @@
+2026-10-27T13:52:47+09:00
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run tests/formula-report-audit-comparison-navigation.test.ts -t refuses record start inside|refuses same-ID strict starts
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-source-navigation
+
+ ❯ tests/formula-report-audit-comparison-navigation.test.ts (45 tests | 2 failed | 43 skipped) 27ms
+   ↓ read-only comparison material inventory and source resolver > keeps exact bytes and raw source ranges "\n"
+   ↓ read-only comparison material inventory and source resolver > keeps exact bytes and raw source ranges "\r\n"
+   ↓ read-only comparison material inventory and source resolver > keeps exact bytes and raw source ranges "\r"
+   ↓ read-only comparison material inventory and source resolver > does not count internal B, while allowing real B after normal material
+   ↓ read-only comparison material inventory and source resolver > missing sources do not prevent fixed material reading
+   ↓ read-only comparison material inventory and source resolver > requires current report identity other
+   ↓ read-only comparison material inventory and source resolver > requires current report identity undefined
+   ↓ read-only comparison material inventory and source resolver > does not navigate foreign formula or source report identity
+   ↓ read-only comparison material inventory and source resolver > reports duplicate source envelopes as ambiguous without range authority
+   ↓ read-only comparison material inventory and source resolver > reports duplicate material IDs without restoring erased metadata
+   ↓ read-only comparison material inventory and source resolver > never releases internal B after repeated same-ID ends "\n"
+   ↓ read-only comparison material inventory and source resolver > never releases internal B after repeated same-ID ends "\r\n"
+   ↓ read-only comparison material inventory and source resolver > never releases internal B after repeated same-ID ends "\r"
+   ↓ read-only comparison material inventory and source resolver > classifies unknown using marker facts only
+   ↓ read-only comparison material inventory and source resolver > classifies unknown using marker facts only
+   ↓ read-only comparison material inventory and source resolver > classifies malformed using marker facts only
+   ↓ read-only comparison material inventory and source resolver > classifies incomplete using marker facts only
+   ↓ read-only comparison material inventory and source resolver > classifies incomplete using marker facts only
+   ↓ read-only comparison material inventory and source resolver > does not promote a nested material in an older audit record
+   × read-only comparison material inventory and source resolver > refuses record start inside M with end outside M 20ms
+     → expected 'complete' to be 'ambiguous' // Object.is equality
+   ↓ read-only comparison material inventory and source resolver > excludes M when a record begins before M and ends inside M
+   × read-only comparison material inventory and source resolver > refuses same-ID strict starts swallowed by a later poisoned record range 5ms
+     → expected 'available' to be 'ambiguous' // Object.is equality
+   ↓ read-only comparison material inventory and source resolver > keeps incomplete record-looking content inside an otherwise normal material inert
+   ↓ read-only comparison material inventory and source resolver > does not promote markers inside an ordinary code fence
+   ↓ read-only comparison material inventory and source resolver > diagnoses unusable source as unknown, not missing or available
+   ↓ read-only comparison material inventory and source resolver > diagnoses unusable source as invalid, not missing or available
+   ↓ read-only comparison material inventory and source resolver > diagnoses unusable source as unknown, not missing or available
+   ↓ read-only comparison material inventory and source resolver > preserves unrelated earlier independent material when later nested material is excluded
+   ↓ read-only comparison material inventory and source resolver > does not mutate input metadata or output bytes across repeated inspections
+   ↓ original UTF-16 range validation > accepts boundaries 0
+   ↓ original UTF-16 range validation > accepts boundaries 1
+   ↓ original UTF-16 range validation > accepts boundaries 5
+   ↓ original UTF-16 range validation > accepts boundaries 7
+   ↓ original UTF-16 range validation > rejects broken boundaries 2
+   ↓ original UTF-16 range validation > rejects broken boundaries 0
+   ↓ original UTF-16 range validation > rejects broken boundaries 4
+   ↓ original UTF-16 range validation > rejects broken boundaries 0
+   ↓ original UTF-16 range validation > rejects broken boundaries -1
+   ↓ original UTF-16 range validation > rejects broken boundaries 2
+   ↓ original UTF-16 range validation > rejects broken boundaries 0
+   ↓ original UTF-16 range validation > rejects broken boundaries 0.5
+   ↓ original UTF-16 range validation > rejects broken boundaries null
+   ↓ original UTF-16 range validation > rejects broken boundaries 0
+   ↓ original UTF-16 range validation > rejects malformed UTF-16 body "\ud800x"
+   ↓ original UTF-16 range validation > rejects malformed UTF-16 body "x\udc00"
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/formula-report-audit-comparison-navigation.test.ts > read-only comparison material inventory and source resolver > refuses record start inside M with end outside M
+AssertionError: expected 'complete' to be 'ambiguous' // Object.is equality
+
+Expected: "ambiguous"
+Received: "complete"
+
+ ❯ tests/formula-report-audit-comparison-navigation.test.ts:98:38
+     96|     const result = inspect(body);
+     97|     expect(result.complete).toBe(false);
+     98|     expect(result.entries[0].status).toBe('ambiguous');
+       |                                      ^
+     99|     expect(result.entries[0].metadata).toBeUndefined();
+    100|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/formula-report-audit-comparison-navigation.test.ts > read-only comparison material inventory and source resolver > refuses same-ID strict starts swallowed by a later poisoned record range
+AssertionError: expected 'available' to be 'ambiguous' // Object.is equality
+
+Expected: "ambiguous"
+Received: "available"
+
+ ❯ tests/formula-report-audit-comparison-navigation.test.ts:107:52
+    105|   it('refuses same-ID strict starts swallowed by a later poisoned reco…
+    106|     const body = [audit(), material(), reportCode('{broken', AUDIT_REC…
+    107|     expect(inspect(body).entries[0].before.status).toBe('ambiguous');
+       |                                                    ^
+    108|   });
+    109|   it('keeps incomplete record-looking content inside an otherwise norm…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 43 skipped (45)
+   Start at  13:52:47
+   Duration  1.09s (transform 219ms, setup 0ms, collect 774ms, tests 27ms, environment 0ms, prepare 86ms)
+
+exit_code=1

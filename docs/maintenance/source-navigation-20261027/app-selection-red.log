@@ -1,0 +1,49 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-source-navigation
+
+ ❯ tests/formula-report-source-navigation-app.test.ts (11 tests | 1 failed | 10 skipped) 196ms
+   ↓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\n")
+   ↓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r\n")
+   ↓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r")
+   ↓ preview navigation opens editor and focuses selected source without changing the saved report
+   ↓ real CalculatorApp changed storage preserves held draft/history and rejects queued navigation
+   ↓ real CalculatorApp deleted storage preserves held draft/history and rejects queued navigation
+   ↓ body editing invalidates queued source position, including edit then exact restore
+   ↓ selection intent invalidates queued navigation without deleting the selected text
+   ↓ newer navigation wins even when old callback runs last
+   ↓ closing the report cancels old navigation without touching another focused control
+   × a changed native selection is respected before its select event has been delivered 195ms
+     → expected [ 9, 337 ] to deeply equal [ 4, 7 ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/formula-report-source-navigation-app.test.ts > a changed native selection is respected before its select event has been delivered
+AssertionError: expected [ 9, 337 ] to deeply equal [ 4, 7 ]
+
+- Expected
++ Received
+
+  [
+-   4,
+-   7,
++   9,
++   337,
+  ]
+
+ ❯ tests/formula-report-source-navigation-app.test.ts:100:60
+     98|   await open(); await click('比較元Aの出典本文へ移動'); const pending = frames.sp…
+     99|   await act(async () => { editor().setSelectionRange(4, 7); pending.fo…
+    100|   expect([editor().selectionStart, editor().selectionEnd]).toEqual([4,…
+       |                                                            ^
+    101| });
+    102| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 skipped (11)
+   Start at  13:51:18
+   Duration  1.93s (transform 606ms, setup 0ms, collect 1.30s, tests 196ms, environment 253ms, prepare 51ms)
+

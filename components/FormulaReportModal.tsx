@@ -20,6 +20,7 @@ import type { DifferenceInsertion } from "./FormulaQuoteComparison";
 import { Modal } from "./Modal";
 import type { ComparisonMaterialInsertion } from "./FormulaAuditRecordComparison";
 import { assertAuditComparisonInsertionPosition, scanAuditComparisonRecordEnvelopes } from "../lib/formula-report-audit-comparison-record";
+import { validSourceRange } from "../lib/formula-report-audit-comparison-navigation";
 import { FormulaReportAudit } from "./FormulaReportAudit";
 
 type Props = {
@@ -395,9 +396,17 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         }}
         body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict || savedContextUncertain || heldContextUncertain} disabled={saving}
         onNavigate={(start, end) => {
-          const epoch = auditNavigationEpoch.current;
+          if (!validSourceRange(body, start, end)) { setNotice({ text: "本文位置の文字境界を確認できないため移動しません。本文は保持しています。", failed: true }); return; }
+          const epoch = ++auditNavigationEpoch.current;
+          const position = positionEpoch.current, edit = auditEditEpoch.current;
+          const selection = editorRef.current ? { start: editorRef.current.selectionStart, end: editorRef.current.selectionEnd } : null;
           setPreview(false);
-          requestAnimationFrame(() => { if (auditContextRef.current === auditContext && auditNavigationEpoch.current === epoch) selectBodyRange(start, end); });
+          requestAnimationFrame(() => {
+            if (auditContextRef.current !== auditContext || auditNavigationEpoch.current !== epoch || positionEpoch.current !== position || auditEditEpoch.current !== edit
+              || editorRef.current?.value !== body.replace(/\r\n?/g, "\n")
+              || (selection && (editorRef.current.selectionStart !== selection.start || editorRef.current.selectionEnd !== selection.end))) return;
+            selectBodyRange(start, end);
+          });
         }} />
       <details className="report-heading-navigation"><summary>章一覧（{headings.length}件）</summary>
         <p>現在表示中のMarkdownの見出しです。編集時は該当行を選択、プレビュー時は見出しへ移動します。保存は行いません。</p>
