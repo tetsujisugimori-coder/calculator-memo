@@ -1,0 +1,21 @@
+{
+  "base_head": "035436c3c0dc3a971d1a3c4bb77fb8d1c3a11066",
+  "observed_at": "2026-10-27T23:11:00+09:00",
+  "scope": "未commit作業版。最終commitと正式CIはPRで照合。",
+  "files": {
+    "app/globals.css": "df94d3252953eb4b8ae15ee011e2dc8c866438daac116b6d5473a73b1ce9d883",
+    "components/FormulaAuditComparisonSources.tsx": "9d3299cbba9a160f0a0c28ddeae871dd428b46576ff60f43fe22d311b487a2e5",
+    "components/FormulaReportAudit.tsx": "dfc22be05dd40c157b4758b69c6523edd3b247bf2bb0839391ee2b256df0bc37",
+    "components/FormulaReportModal.tsx": "c295c04ba3d2aff96fc6fc2ae5d5afa563b36e053064907aee44a0f00333f886",
+    "components/Modal.tsx": "386e76dbb1a04101735e21521f00834e460a7c8ca1cda892e5eac63d5b2eb1d5",
+    "e2e/README.md": "8bfd93ddc0c1ff50edf04af231aa2abb7dcd84b4230f2aaf0c863a87aeb4c4a7",
+    "e2e/audit-roundtrip-navigation.mjs": "b4c1d635fff6db72a944559ec2c598dda9fa1db0949ad43e973bdee6b29dab3d",
+    "e2e/ci-contract.mjs": "05ee19bbc9cc9bc842d09f548548c54d8c1eb5ac75fd379ff0e5792a97536e8d",
+    "e2e/ci-contract.node-test.mjs": "c4ee07f144833ae036b1e61010665a3be97baadc012e77a888c43a6d64d7c5e8",
+    "e2e/scenario.mjs": "f16e17f2b46b4c90e041944d3ec39ed5eb426b63099301fdae5ea1304527e90d",
+    "lib/formula-report-audit-roundtrip.ts": "e4fa1b7019050546b5af147863bc433391292c3a9ec4dc2fd37061c3c39940bb",
+    "tests/audit-roundtrip.integration.test.ts": "407cf934f4fab06ef1dcea79df17b176ff0c628d7a20f1a2de011d08fd601a05",
+    "tests/formula-report-audit-roundtrip.test.ts": "c8fbf2191fffd86593c475fb0f58fce605cc08cb5a69e5bfd0c0bc029a1b07b7",
+    "tests/independent-roundtrip-review.test.ts": "deea60198cabb7e27754d342b16bf158c03752b47a80492f6073f1cab5a043d0"
+  }
+}

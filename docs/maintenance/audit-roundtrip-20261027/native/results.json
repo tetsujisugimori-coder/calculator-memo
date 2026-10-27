@@ -1,0 +1,23 @@
+[
+  {
+    "engine": "chromium",
+    "status": "passed",
+    "checks": [
+      "chromium: fixed material and sources A B make repeated roundtrips restoring detail and keyboard focus with a nonpersisted target and both themes CSS 200 percent layout",
+      "chromium: two distinct quote occurrences preserve filtered list scroll and originating focus across repeated roundtrips without changing snapshots or saved bytes",
+      "chromium: prefix and suffix edits reparse the unique unchanged occurrence before renavigation without reusing old offsets or fetching saved originals",
+      "chromium: deleted and duplicate material identities refuse renavigation preserving native selection and edited body and do not revive historical detail on return",
+      "chromium: native cross page storage changed expires return authority without overwriting retained body saved original or confirmation history",
+      "chromium: native cross page storage deleted expires return authority without overwriting retained body saved original or confirmation history",
+      "chromium: explicit roundtrip end and subsequent audit session close remove return and highlight state without forcing further navigation or editing"
+    ],
+    "geometry": [
+      "chromium-audit-roundtrip-dark-200",
+      "chromium-audit-roundtrip-target"
+    ],
+    "taps": 54,
+    "errors": [],
+    "durationMs": 6777.412107,
+    "version": "141.0.7390.37"
+  }
+]
