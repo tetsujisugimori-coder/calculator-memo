@@ -9,16 +9,18 @@ import { STORAGE_KEY } from "../lib/storage";
 import { RecordInfo, BlockInfo } from "./EvidenceRecordDetails";
 
 import { buildAuditComparisonMarkdown, formatAuditComparisonStates as states } from "../lib/formula-report-audit-comparison-export";
+import { createAuditComparisonRecordMarkdown } from "../lib/formula-report-audit-comparison-record";
 import { downloadMarkdownReport, type MarkdownReport } from "../lib/markdown-report";
 
 const sideName = (value: string) => value === "quote" ? "引用元" : value === "before" ? "比較差分の比較元" : "比較差分の比較先";
 const checkedLabel = (value?: string) => value === "checked" ? "当時は照合操作を実行（取得成否は別）" : value === "stale" ? "当時の照合結果失効" : value === "unverified" ? "当時は未照合" : "記録なし";
 const entryKey = (entry: AuditRecordEnvelope) => `${entry.start}:${entry.end}`;
-type Props = { body: string; formulaId: string; reportId?: string; savedContextChanged?: boolean; generation?: string | number; onNavigate: (start: number, end: number) => void };
+export type ComparisonMaterialInsertion = { key: string; disabled: boolean; title: string; prepare: (markdown: string, materialId: string) => { start: number; end: number; isCurrent: () => boolean; insert: () => void }; onInserted: () => void };
+type Props = { insertion?: ComparisonMaterialInsertion; body: string; formulaId: string; reportId?: string; savedContextChanged?: boolean; generation?: string | number; onNavigate: (start: number, end: number) => void };
 type Selection = { token: number; context: string; epoch: number; a: string; b: string; result: AuditRecordComparison | null; error: string };
 
 /** Read-only historical comparison. No persistence/retrieval, and no prose parser. */
-export function FormulaAuditRecordComparison({ body, formulaId, reportId, savedContextChanged, generation, onNavigate }: Props) {
+export function FormulaAuditRecordComparison({ insertion, body, formulaId, reportId, savedContextChanged, generation, onNavigate }: Props) {
   const id = useId();
   const entries = useMemo(() => scanAuditRecordEnvelopes(body), [body]);
   const context = JSON.stringify([body, formulaId, reportId, savedContextChanged, generation]);
@@ -91,7 +93,7 @@ export function FormulaAuditRecordComparison({ body, formulaId, reportId, savedC
     {!active?.result && <p>比較はまだ実行されていません。AとBを選び、比較ボタンを押してください。</p>}
     {active?.result && <section aria-label="2時点比較結果">
       <h4>総合状態：{states(active.result.states)}</h4>
-      {active.a !== active.b && <ComparisonExport key={active.token} before={entries.find(entry => entryKey(entry) === active.a)!.metadata!} after={entries.find(entry => entryKey(entry) === active.b)!.metadata!} result={active.result} savedContextChanged={!!savedContextChanged || external} isCurrent={() => actionEpoch.current === active.token && current.current.context === context && current.current.selection === active && epoch.current === active.epoch} />}
+      {active.a !== active.b && <ComparisonExport insertion={insertion} key={active.token} before={entries.find(entry => entryKey(entry) === active.a)!.metadata!} after={entries.find(entry => entryKey(entry) === active.b)!.metadata!} result={active.result} savedContextChanged={!!savedContextChanged || external} isCurrent={() => actionEpoch.current === active.token && current.current.context === context && current.current.selection === active && epoch.current === active.epoch} />}
       <p>比較元A：{entries.find(entry => entryKey(entry) === active.a)?.metadata?.recordId} → 比較先B：{entries.find(entry => entryKey(entry) === active.b)?.metadata?.recordId}</p>
       {active.result.changes.map((change, index) => <p key={index}>記録間の変化：{change}</p>)}
       <ul>{active.result.limitations.map((limitation, index) => <li key={index}>{limitation}</li>)}</ul>
@@ -120,8 +122,10 @@ function CalculationChanges({ label, comparison }: { label: string; comparison: 
 }
 
 /** Presentation/export only. A preview is tied to the exact existing result object. */
-function ComparisonExport({ before, after, result, savedContextChanged, isCurrent }: { before: AuditRecordMetadata; after: AuditRecordMetadata; result: AuditRecordComparison; savedContextChanged: boolean; isCurrent: () => boolean }) {
+function ComparisonExport({ insertion, before, after, result, savedContextChanged, isCurrent }: { insertion?: ComparisonMaterialInsertion; before: AuditRecordMetadata; after: AuditRecordMetadata; result: AuditRecordComparison; savedContextChanged: boolean; isCurrent: () => boolean }) {
   const id = useId();
+  const insertButton = useRef<HTMLButtonElement>(null);
+  const [material, setMaterial] = useState<{ key: string; markdown: string; start: number; end: number; isCurrent: () => boolean; insert: () => void } | null>(null);
   const version = useRef(0);
   const live = useRef(false);
   const busy = useRef(false);
@@ -129,6 +133,7 @@ function ComparisonExport({ before, after, result, savedContextChanged, isCurren
   const [notice, setNotice] = useState<{ text: string; failed: boolean } | null>(null);
   const [copying, setCopying] = useState(false);
   const [manual, setManual] = useState(false);
+  if (material && (material.key !== insertion?.key || insertion?.disabled)) { setMaterial(null); setNotice({ text: "本文・対象・編集位置・保護状態が変わり、挿入プレビューは失効しました。本文は保持しています。", failed: true }); }
   useLayoutEffect(() => {
     live.current = true; version.current += 1; busy.current = false;
     return () => { live.current = false; version.current += 1; busy.current = false; };
@@ -136,7 +141,7 @@ function ComparisonExport({ before, after, result, savedContextChanged, isCurren
   const valid = () => live.current && isCurrent();
   const prepare = () => {
     if (!valid()) return;
-    version.current += 1; busy.current = false; setCopying(false); setNotice(null); setManual(false);
+    version.current += 1; busy.current = false; setCopying(false); setNotice(null); setManual(false); setMaterial(null);
     try { setPreview({ result, output: buildAuditComparisonMarkdown({ before, after, result, exportedAt: new Date().toISOString(), savedContextChanged }) }); }
     catch (cause) { setPreview(null); setNotice({ text: cause instanceof Error ? cause.message : "比較結果のプレビューを生成できません。元の記録は変更していません。", failed: true }); }
   };
@@ -159,12 +164,40 @@ function ComparisonExport({ before, after, result, savedContextChanged, isCurren
     } finally { if (stillValid()) { busy.current = false; setCopying(false); } }
   };
   const shown = preview?.result === result ? preview.output : null;
+  const prepareInsertion = () => {
+    if (!valid() || !insertion || insertion.disabled || busy.current) return;
+    setNotice(null); setMaterial(null);
+    try {
+      // Reuse the already-visible export, including its generation timestamp.
+      const output = shown ?? buildAuditComparisonMarkdown({ before, after, result, exportedAt: new Date().toISOString(), savedContextChanged });
+      if (!shown) setPreview({ result, output });
+      const materialId = crypto.randomUUID();
+      const markdown = createAuditComparisonRecordMarkdown(output.markdown, { materialId, formulaId: before.formulaId, reportId: before.reportId, beforeRecordId: before.recordId, afterRecordId: after.recordId, preparedAt: new Date().toISOString() });
+      setMaterial({ ...insertion.prepare(markdown, materialId), key: insertion.key, markdown });
+    } catch (cause) { setNotice({ text: cause instanceof Error ? cause.message : "比較資料を準備できません。本文は保持しています。", failed: true }); }
+  };
   return <section aria-label="2時点比較結果のMarkdown出力">
     <h4>比較結果のMarkdown出力</h4>
     <p>有効な比較結果をそのまま独立資料として出力します。比較不能・情報不足も理由付きで残します。現在の保存原本の照合や数学的証明ではありません。</p>
     <div className="modal-actions"><button type="button" className="button-secondary" onClick={prepare}>比較結果Markdownをプレビュー</button></div>
     {shown && <><div><label htmlFor={`${id}-preview`}>比較結果Markdown全文{manual ? "（手動コピー用）" : "（プレビュー）"}</label><textarea id={`${id}-preview`} className="code-input" readOnly rows={10} value={shown.markdown} onFocus={event => event.target.select()} /></div>
       <div className="modal-actions"><button type="button" className="button-secondary" disabled={copying} onClick={() => void output(false)}>比較結果Markdownをコピー</button><button type="button" className="button-secondary" disabled={copying} onClick={() => void output(true)}>比較結果を.md出力</button></div></>}
+    {insertion && <button ref={insertButton} type="button" className="button-secondary" disabled={copying || insertion.disabled} onClick={prepareInsertion}>比較結果をレポートに挿入</button>}
+    {insertion?.disabled && <p>編集位置または保存保護の制約により、現在は比較資料を挿入できません。本文を編集表示にし、制約を確認してください。</p>}
+    {material && insertion && <section aria-label="比較資料の固定挿入プレビュー">
+      <h4>過去の点検結果同士を比較した固定資料</h4>
+      <p>{`対象レポート：${insertion.title}（${before.reportId}）／登録式ID：${before.formulaId}`}</p>
+      <p>{`比較方向：A ${before.recordId} → B ${after.recordId}`}</p>
+      <p>挿入位置：{material.start}（0始まりUTF-16、textareaの改行正規化後）。選択範囲 {material.start}〜{material.end} の先頭へ追加し、選択した文章は保持します。</p>
+      <p>以下は挿入前の本文内A/Bの比較資料です。挿入後の本文を点検した結果ではありません。生成日時は元の出力日時、preparedAtは挿入プレビューの準備日時であり、挿入完了時刻ではありません。資料は自動更新されず、保存・確認は別操作です。数学的正しさ・真正性・変更理由は証明しません。</p>
+      <label htmlFor={`${id}-material`}>挿入する比較資料Markdown全文</label><textarea id={`${id}-material`} className="code-input" rows={12} readOnly value={material.markdown} />
+      <div className="modal-actions"><button type="button" className="button-secondary" onClick={() => {
+        try {
+          if (!valid() || insertion.disabled || material.key !== insertion.key || !material.isCurrent()) throw new Error("対象・本文・比較結果・取得世代・位置・保護状態が変わり、プレビューは失効しました。本文は保持しています。");
+          material.insert(); insertion.onInserted();
+        } catch (cause) { setMaterial(null); setNotice({ text: cause instanceof Error ? cause.message : "挿入できません。本文は保持しています。", failed: true }); insertButton.current?.focus(); }
+      }}>比較資料を本文へ固定挿入</button><button type="button" className="button-secondary" onClick={() => { setMaterial(null); insertButton.current?.focus(); }}>比較資料の挿入をやめる</button></div>
+    </section>}
     {copying && <p role="status">比較結果を出力しています。対象変更後の古い完了通知は表示しません。</p>}
     {notice && <p role={notice.failed ? "alert" : "status"}>{notice.text}</p>}
   </section>;

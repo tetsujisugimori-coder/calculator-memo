@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-pr95-recovered
+
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 39ms
+ ✓ tests/formula-report-audit-comparison-record.test.ts (45 tests) 171ms
+ ✓ tests/formula-comparison-boundary-ui.test.ts (3 tests) 56ms
+
+ Test Files  3 passed (3)
+      Tests  69 passed (69)
+   Start at  04:39:20
+   Duration  2.83s (transform 588ms, setup 0ms, collect 3.03s, tests 266ms, environment 327ms, prepare 184ms)
+

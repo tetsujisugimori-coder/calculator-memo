@@ -1,5 +1,44 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-26 JST: PR #95 P2 同一ID早期終端の内部漏出防止
+
+- 基準・最新PR HEAD `d7d6031b8a7e4bb5a296ba199febf04d5b073592`、Draft/open/未マージをAPI照合。既存Issue #94/PR #95を継続し、cleanなクラウドworktreeから作業。他worktree・Windows・mainは変更しない。旧最終CIの成功は今回の未検査境界の証明に流用しない。
+- 再現: 外側A→資料M開始→同ID正規終端の早期複製→内部B→本来終端。LF/CRLF/CR全てで最初の終端がcompleteとして確定し、後続終端からのみinvalid保護を張るため、中間Bが正常候補へ漏れた。内部引用による外側引用の重複扱い、内部差分の二重計上、隙間段落への挿入も再現。集計不完全表示だけでは防げなかった。
+- 第一希望の局所scanner修正: 既存の厳密なMarkdown blockとJSONから、同IDの厳密valid startごとに正規終端の一意性を先に調べる。複数終端がある開始は完全とせず、既存の開始〜EOF不完全保護へ落とす。未知形式の推測修復・範囲短縮・新形式なし。正常に閉じた重複ID資料間の独立根拠は従来どおり保持する。後戻り修復や単純全域終端数は不採用。
+- 同期待値RED: 実装担当48件中6失敗/42成功、独立担当18件中12失敗/6成功。新規24件のうち18件が欠陥を検出。製品修正後の担当48件は48/48成功。全量・独立GREEN・正式CIは後続実測で確定し、未実行をPASSにしない。
+- 独立GREENも18/18成功、局所計66件は18失敗→0。全量ローカル2134件は2126成功/8件5000ms timeout、worker1診断10条件は7成功/3既存timeout。原因UNKNOWN・期待値/timeout不変更で失敗履歴を保存。契約はログ先env継承の手順不備32/41を訂正し40/41（既知100ms fixture残）。lint/型/両build成功。局所native Chromium390は2/9群後に既存fill待機timeout、新群未到達。提出時PARTIAL/マージNO、最終HEAD正式CIと成果物はPR/Issueへ別途確定する。
+- commit前の追加P2: 後方同ID資料のpoisonでmetadataが消えると、range由来のID計数が先行資料をcompleteへ格上げすることを独立3改行でRED（21件中3失敗）再現し同期待値21/21 GREEN。ID重複の事実を出力metadataの有無から分離し、厳密valid start全件から計数する最小補正。新27件・最終予定2137件。先行全量/build/nativeはこの補正前であり最終CIへ流用しない。
+- 正式GUIは既存966群を削らず同じ6条件に各1群を追加、972群。geometry568・PNG120・成功trace0・3worker・30分は維持。実編集欄・実操作で外側A保持、内部B除外、不完全表示、非保存を検査する。詳細と残余は[今回検証](docs/maintenance/pr95-boundary-20261026/README.md)。
+
+### 2026-10-27 04:36 JST: 承認後の環境回収
+旧worktree消失を確認し、同じクラウドworkspaceへ同一baselineを再取得。製品・テスト・GUI契約・文書を既知Git blob SHA一致で回収。旧rawログ27ファイルは未回収、歴史的結果を削除せず、新実測を別名で保持する。設計文書7行は本人の明示承認後に保存成功。詳細は上記検証索引とrecovery-provenanceを参照。旧全量失敗を取り消した扱いにはしない。 新環境の最終コードは全単体2137/2137・92 files、同一期待値69局所はbaseline21失敗から69成功、lint/型/両build成功。契約は40/41（既知100ms残）。旧失敗を根治扱いせず最終HEAD実CI/成果物待ち。
+
+## 2026-10-26 JST: 固定A/B比較資料の本文挿入と専用取消（Issue #94）
+
+- 着手: PR #93のmergeと最新main `969d173c16aba208d727f088641712e5b4a0856d` をAPI/fetchで確認。既存worktreeを保持し、クラウドの独立worktree/専用branchで作業。Windowsのローカルmainは操作していない。単一点検の#88、独立出力の#92との対象差を確認し、[Issue #94](https://github.com/tetsujisugimori-coder/calculator-memo/issues/94) を実装前に作成。
+- 第一希望: 同じ比較result/metadata/世代で作った既存Markdownの全文を再利用し、最小の専用境界で固定。再比較/暗黙取得/自動保存/再計算/利用者確認/履歴追加を行わない。既存点検記録形式の流用はA/B候補への自己参照を生むため不採用。出力日時とプレビュー準備日時を区別する。
+- 保護: 外側の正規根拠は維持し、固定資料内部は引用/差分/点検記録候補から除外する。未知/破損/入れ子/偽終端を推測修復しない。選択文章を保持して先頭へ挿入し、本文・位置・対象・取得/通知世代を実行直前にも照合。取消は同一本文・対象・編集世代・ID/正確な範囲だけで照合し、検索削除しない。
+- 保存通知: 実CalculatorAppのstorageConflictによる既存writable=falseを維持し、再比較/明示取得で挿入保護や保持本文と保存本文の一致未確認を解除しない。初期テストの「通知後再挿入可能」という仮定は既存契約と不一致のため訂正し、製品保護は緩和しない。
+- 検証: 新core42/42、既存含むaudit/quote/diff597/597、既存UI32/32成功。全単体2105/2105・90files成功（既存2011＋42core＋43UI＋9独立、worker2、320.96秒）。局所UI43中1timeoutも同一条件で全量中成功したが失敗履歴は保持。正式CIは確認待ち。既存ローカル契約0.1秒fixtureのstdout前timeoutを記録、期待値や上限を変更しない。
+- 新UIは追加modalなしのinline全文プレビュー。正式GUIは既存918検査・562geometry・114PNGを削減せず、新48検査とプレビュー証拠各条件1枚を追加予定。3worker・30分・成功trace0を維持。
+- 独立P2: 原本取得失敗時に集合不明を空集合で容量判定する境界を負例で再現。新挿入に取得失敗拒否を追加し、同一期待値8成功/1失敗→9/9成功。歴史比較/exportは保持。追加未解消P0〜P2なし（静的/独立jsdom範囲）。
+- 最終ローカル: 通常build71.093秒、Pages21.316秒、型12.606秒、lint77.636秒成功。契約41中40成功/既存0.1秒fixture1失敗、4.451秒。正式CIの環境と混同しない。[機械記録](docs/maintenance/comparison-insertion-20261026/local-validation.json)。局所native390両browser各8/8群/70tap/pageerror0だが最終guard・後追加Tabは正式CI待ち。
+- [設計](docs/agent/formula-report-audit-comparison-insertion.md)。[Draft PR #95](https://github.com/tetsujisugimori-coder/calculator-memo/pull/95) を作成。実装HEAD `7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af` / tree `7384d08866d390426a8d810de704c2d0fce85133` をGitDataで作成し、28blobとローカルindexのSHA・treeを照合。local/remote一致とclean確認後、正式CI run40314584238 attempt1を開始（結果は以下の確定記録とChecksを参照）。既存WebKit時間変動、ローカル契約fixture環境差、PR #85位置ずれ全原因未確定、実機Safari/VoiceOver/OS文字拡大未検証は維持する。マージ/公開は人間判断。
+
+### 実装初版の正式CIと受入再精査（2026-10-26 20:56 JST）
+
+- 初版HEAD `7a2ff47670153b6d7bfafb9fd55111a6b1ecf3af` / [run40314584238 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40314584238) は成功。単体2105/90files、契約41/41、型/lint/両build成功。GUI966/966・geometry568/568・PNG120/120・trace0、6条件・3worker。job28分55秒、GUI25分15.951秒。全条件HEAD/run/attempt/served identity一致、artifact12648270368実ZIP38,839,092bytesのSHA-256 `fb6d8e2c7d5bf985c7f8586492a781ca6bc660d51036efef6636fadb354f7ca8` はAPI digest一致。[機械記録](docs/maintenance/comparison-insertion-20261026/formal-ci-40314584238.json)。
+- ただしCI成功を全受入完了と混同しない。最終文言精査で、既知失効後も取消操作が有効表示されるP2 R2を追加確認。データ破壊はないが「利用可能な場合だけ提示」に未達。利用可能時のみ操作を表示し、失効は非操作理由へ変更。編集/通知で永久失効、古いcallbackは引き続き実行直前guardで拒否。focused操作消失時は理由へfocusを移す。RED7件＋focus RED3件から同期待値の45件全成功を確認した。旧CIはこの修正前の証拠として保持し、最終HEADの成功へ流用しない。
+- 全受入再精査でP2 R3: APIによるUTF16 surrogate対の中間選択で本文を分断できることを独立再現。新比較資料prepare限定の純粋な本文/正規化位置検証で拒否し、同一期待値9成功/3失敗→12/12成功。正常Unicodeは保持し、既存他挿入は変更しない。R2/R3再レビューで未解消P0〜P2なし（記録した範囲）。
+- 集合1MB境界の直接試験とR2同時通知試験を追加したため、最終単体数は初版と区別する。途中の全量実行中断は履歴として保存し、成功扱いしない。
+
+### 最終修正のローカル確定（2026-10-26 21:24 JST）
+
+- 全単体2110/2110・90files・失敗skip0、358.58秒（実経過368.231秒）。既存2011＋core42＋統合45＋独立12。途中2109/1の失敗は選択fixture end7が絵文字中央だったためで、期待値を維持し有効境界end8へ訂正。R3拒否負例は維持。失敗と中断2回は消さず[最終単体記録](docs/maintenance/comparison-insertion-20261026/full-unit-final.json)へ保存。
+- lint72.011秒・型20.431秒・通常build55.121秒・Pages9.012秒成功。Pagesの先行途中処理はread-only poll拒否後にプロセス消失を確認し成功扱いせず、既存local vite実体で未完了分のみ完了。インストールなし。契約40/41・4.942秒、既存100ms child起動fixtureのstdout前TERM失敗を維持。[最終ローカル検証](docs/maintenance/comparison-insertion-20261026/final-local-validation.json)。
+- 最終局所Chromium touch390は8/8群・69実tap・pageerror0、59.666秒、Tab・取消不可表示も確認。WebKit等の最終6条件は最終HEAD CIで確認する。正式契約966/568geometry/120PNG/trace0/3worker/30分、mobile1170tapを維持。
+- 本記録コミット時は最終HEADの正式CI待ち。確定後のHEAD/run/attempt/served identity/実ZIP SHA256・API digestはPR #95とIssue #94、Checksへ記録する。文書結果だけの追記でHEADを変え、先行HEAD成功を最終へ流用することはしない。現時点の最終受入は未判定。
+
 ## 2026-10-26 JST: PR #93 正式GUI阻害の局所修復と時間診断（Issue #92）
 
 - 基準: 最新main `2a91599fa8454e097d2eca3a5d552f115da68819`、PR #93 / branch `feat/audit-comparison-markdown-export` のHEAD `5cbaf6f74ae15d7afccb73f50c64c0ce0380756c` とclean treeをAPI/fetchで照合し、既存worktreeを保全。旧run40261949353 attempt1のcancelled、770/912検査・487/562geometry・PNG99/114・失敗trace1を維持。ZIP/API digestとHEAD/run/attempt/served identityを再確認。

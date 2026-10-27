@@ -1,3 +1,4 @@
+import { scanAuditComparisonRecordEnvelopes } from './formula-report-audit-comparison-record';
 import { parseMarkdownBlocks, type MarkdownBlock } from './markdown-blocks';
 import { closedCode, scanDifferenceEnvelopes } from './formula-report-diff-envelope';
 import { reportCode } from './markdown-report';
@@ -30,6 +31,8 @@ function metadata(value: unknown): AuditRecordMetadata | undefined {
  * no later plausible end repairs it. Payloads are identification, not signatures
  * or proof that the visible historical record has never been edited. */
 export function scanAuditRecordEnvelopes(body: string, blocks: MarkdownBlock[] = parseMarkdownBlocks(body)): AuditRecordEnvelope[] {
+  const comparisonRecords = scanAuditComparisonRecordEnvelopes(body, blocks);
+  blocks = blocks.filter(block => !comparisonRecords.some(range => block.start < range.end && block.end > range.start));
   const results: AuditRecordEnvelope[] = [];
   let pending: { start: number; version?: 1 | 2; metadata?: AuditRecordMetadata; poisoned: boolean } | undefined;
   for (const block of blocks) {
@@ -54,6 +57,11 @@ export function scanAuditRecordEnvelopes(body: string, blocks: MarkdownBlock[] =
       range.status = 'invalid'; range.reason = '比較差分と固定点検記録が入れ子・交差しています。集計は不完全です。';
     }
   }
+  for (const range of results) {
+    if (comparisonRecords.some(record => range.start < record.end && range.end > record.start)) {
+      range.status = 'invalid'; range.reason = '固定点検記録と固定比較資料が入れ子・交差しています。集計は不完全です。'; delete range.metadata;
+    }
+  }
   const counts = new Map<string, number>();
   for (const range of results) if (range.metadata) counts.set(range.metadata.recordId, (counts.get(range.metadata.recordId) ?? 0) + 1);
   for (const range of results) if (range.metadata && counts.get(range.metadata.recordId)! > 1) { range.status = 'invalid'; range.reason = invalid; delete range.metadata; }
@@ -61,7 +69,7 @@ export function scanAuditRecordEnvelopes(body: string, blocks: MarkdownBlock[] =
 }
 
 export function outsideAuditRecordBlocks(body: string, blocks: MarkdownBlock[] = parseMarkdownBlocks(body)): MarkdownBlock[] {
-  const ranges = scanAuditRecordEnvelopes(body);
+  const ranges = [...scanAuditRecordEnvelopes(body), ...scanAuditComparisonRecordEnvelopes(body)];
   return blocks.filter(block => !ranges.some(range => block.start < range.end && block.end > range.start));
 }
 

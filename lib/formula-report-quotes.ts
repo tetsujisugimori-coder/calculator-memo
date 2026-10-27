@@ -1,3 +1,4 @@
+import { scanAuditComparisonRecordEnvelopes } from './formula-report-audit-comparison-record';
 import { outsideAuditRecordBlocks, scanAuditRecordEnvelopes } from './formula-report-audit-record';
 import { validateQuoteSnapshot, type QuoteSnapshot } from './formula-report-snapshots';
 import { scanDifferenceEnvelopes } from './formula-report-diff-envelope';
@@ -45,7 +46,7 @@ export function createQuoteMarkdown(snapshot: QuoteSnapshot): string {
 export function readQuoteAssessments(body: string, formulaId: string, notes: Memo[], availability: { error?: string; stale?: boolean } = {}, parsedBlocks?: MarkdownBlock[]): QuoteAssessment[] {
   if (body.length > 100_000) return [{ status: 'unavailable', reason: '本文上限超過のため引用照合を停止しています。本文は保持しています。', start: 0, end: body.length }];
   const blocks = outsideAuditRecordBlocks(body, parsedBlocks ?? parseMarkdownBlocks(body));
-  const auditRanges = scanAuditRecordEnvelopes(body);
+  const auditRanges = [...scanAuditRecordEnvelopes(body), ...scanAuditComparisonRecordEnvelopes(body)];
   const results: QuoteAssessment[] = [];
   for (let index = 0; index < blocks.length; index++) {
     const metadata = blocks[index];
@@ -116,9 +117,9 @@ export function insertQuoteAtCursor(body: string, quote: string, selectionStart:
   }
   // Difference tracking has a structured envelope. Do not split its body from
   // its metadata, including future or damaged envelopes, when inserting quotes.
-  for (const range of [...scanDifferenceEnvelopes(body, outsideAuditRecordBlocks(body)), ...scanAuditRecordEnvelopes(body)]) {
+  for (const range of [...scanDifferenceEnvelopes(body, outsideAuditRecordBlocks(body)), ...scanAuditRecordEnvelopes(body), ...scanAuditComparisonRecordEnvelopes(body)]) {
     if (start > range.start && (start < range.end || (!range.closed && start === range.end))) {
-      throw new Error('比較差分・固定点検記録の本文・追跡情報の内部、または終了を確認できない範囲へは挿入できません。本文を保持し、差分全体の前へカーソルを移してください。');
+      throw new Error('比較差分・固定点検記録・固定比較資料の本文・追跡情報の内部、または終了を確認できない範囲へは挿入できません。本文を保持し、差分全体の前へカーソルを移してください。');
     }
   }
   // Insert before the selected range; never delete the selected or surrounding prose.

@@ -1,0 +1,116 @@
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-comparison-insertion
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts (21 tests | 3 failed) 136ms
+   ✓ independent same-ID boundary review "\n" > does not reset ambiguity at other-valid-material 16ms
+   ✓ independent same-ID boundary review "\n" > does not reset ambiguity at unknown-start 6ms
+   ✓ independent same-ID boundary review "\n" > does not reset ambiguity at broken-start 6ms
+   ✓ independent same-ID boundary review "\n" > does not use equal global start/end totals as proof of unique pairing 2ms
+   × independent same-ID boundary review "\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned 49ms
+     → expected [ { start: +0, end: 307, …(4) }, …(1) ] to deeply equal [ { start: +0, end: 307, …(3) }, …(1) ]
+   ✓ independent same-ID boundary review "\n" > retains independent old v1/v2 records between and after individually closed duplicate-ID materials 3ms
+   ✓ independent same-ID boundary review "\n" > ignores exact marker text inside an ordinary fenced value and preserves following evidence candidates 4ms
+   ✓ independent same-ID boundary review "\r\n" > does not reset ambiguity at other-valid-material 3ms
+   ✓ independent same-ID boundary review "\r\n" > does not reset ambiguity at unknown-start 4ms
+   ✓ independent same-ID boundary review "\r\n" > does not reset ambiguity at broken-start 4ms
+   ✓ independent same-ID boundary review "\r\n" > does not use equal global start/end totals as proof of unique pairing 1ms
+   × independent same-ID boundary review "\r\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned 5ms
+     → expected [ { start: +0, end: 315, …(4) }, …(1) ] to deeply equal [ { start: +0, end: 315, …(3) }, …(1) ]
+   ✓ independent same-ID boundary review "\r\n" > retains independent old v1/v2 records between and after individually closed duplicate-ID materials 3ms
+   ✓ independent same-ID boundary review "\r\n" > ignores exact marker text inside an ordinary fenced value and preserves following evidence candidates 2ms
+   ✓ independent same-ID boundary review "\r" > does not reset ambiguity at other-valid-material 3ms
+   ✓ independent same-ID boundary review "\r" > does not reset ambiguity at unknown-start 2ms
+   ✓ independent same-ID boundary review "\r" > does not reset ambiguity at broken-start 4ms
+   ✓ independent same-ID boundary review "\r" > does not use equal global start/end totals as proof of unique pairing 0ms
+   × independent same-ID boundary review "\r" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned 5ms
+     → expected [ { start: +0, end: 307, …(4) }, …(1) ] to deeply equal [ { start: +0, end: 307, …(3) }, …(1) ]
+   ✓ independent same-ID boundary review "\r" > retains independent old v1/v2 records between and after individually closed duplicate-ID materials 3ms
+   ✓ independent same-ID boundary review "\r" > ignores exact marker text inside an ordinary fenced value and preserves following evidence candidates 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+AssertionError: expected [ { start: +0, end: 307, …(4) }, …(1) ] to deeply equal [ { start: +0, end: 307, …(3) }, …(1) ]
+
+- Expected
++ Received
+
+@@ -1,12 +1,20 @@
+  [
+    {
+      "closed": true,
+      "end": 307,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
+      "reason": Any<String>,
+      "start": 0,
+-     "status": "invalid",
++     "status": "complete",
+    },
+    {
+      "closed": false,
+      "end": 1651,
+      "reason": Any<String>,
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:50:25
+     48|     const body = prefix + lines([start, end, internal, end].join('\n\n…
+     49|     const ranges = scan(body);
+     50|     expect.soft(ranges).toEqual([
+       |                         ^
+     51|       { start: 0, end: first.length, closed: true, status: 'invalid', …
+     52|       { start: prefix.length, end: body.length, closed: false, status:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/formula-comparison-boundary-independent.test.ts > independent same-ID boundary review "\r\n" > does not upgrade an earlier duplicate-ID material when the later occurrence becomes poisoned
+AssertionError: expected [ { start: +0, end: 315, …(4) }, …(1) ] to deeply equal [ { start: +0, end: 315, …(3) }, …(1) ]
+
+- Expected
++ Received
+
+@@ -1,12 +1,20 @@
+  [
+    {
+      "closed": true,
+      "end": 315,
++     "metadata": {
++       "afterRecordId": "B",
++       "beforeRecordId": "A",
++       "formulaId": "f",
++       "materialId": "M",
++       "preparedAt": "2026-10-26T00:00:00.000Z",
++       "reportId": "r",
++     },
+      "reason": Any<String>,
+      "start": 0,
+-     "status": "invalid",
++     "status": "complete",
+    },
+    {
+      "closed": false,
+      "end": 1691,
+      "reason": Any<String>,
+
+ ❯ tests/formula-comparison-boundary-independent.test.ts:50:25
+     48|     const body = prefix + lines([start, end, internal, end].join('\n\n…
+     49|     const ranges = scan(body);
+     50|     expect.soft(ranges).toEqual([
+       |                         ^
+     51|       { start: 0, end: first.length, closed: true, status: 'invalid', …
+     52|       { start: prefix.length, end: body.length, closed: false, status:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 18 passed (21)
+   Start at  23:13:46
+   Duration  30.47s (transform 10.08s, setup 0ms, collect 19.04s, tests 136ms, environment 0ms, prepare 8.02s)
+

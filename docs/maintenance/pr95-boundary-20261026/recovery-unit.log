@@ -1,0 +1,169 @@
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-pr95-recovered
+
+ ✓ tests/saved-evidence-ui.test.ts (33 tests) 1412ms
+   ✓ lazily mounts per-block details for a capacity-valid large history  476ms
+ ✓ tests/formula-report-diff-tracking-ui.test.ts (34 tests) 1215ms
+ ✓ tests/formula-report-audit-comparison-insertion-ui.test.ts (45 tests) 5459ms
+   ✓ StrictMode app remains usable and explicit save/reload retains material but not new roots/history  311ms
+ ✓ tests/formula-report-diff-ui.test.ts (34 tests) 2262ms
+ ✓ tests/formula-report-ui.test.ts (28 tests) 845ms
+ ✓ tests/formula-report-quotes-ui.test.ts (24 tests) 950ms
+stderr | tests/formula-audit-record-comparison-app.test.ts > failed explicit source acquisition clears old comparison without rewriting fixed records
+ローカル保存領域へアクセスできませんでした Error: synthetic unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/tests/formula-audit-record-comparison-app.test.ts:108:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/lib/storage.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/FormulaReportAudit.tsx:78:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-audit-record-comparison-app.test.ts (16 tests) 1478ms
+ ✓ tests/formula-status-list.test.ts (25 tests) 854ms
+ ✓ tests/formula-detail-ui.test.ts (24 tests) 312ms
+ ✓ tests/report-template-navigation.test.ts (20 tests) 584ms
+ ✓ tests/formula-report-audit-export-ui.test.ts (16 tests) 623ms
+stderr | tests/formula-report-audit-comparison-export-ui.test.ts > failed explicit retrieval and unsaved editor edits both invalidate output without changing fixed bytes
+ローカル保存領域へアクセスできませんでした Error: synthetic acquisition failure
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/tests/formula-report-audit-comparison-export-ui.test.ts:134:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/lib/storage.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/FormulaReportAudit.tsx:78:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-comparison-export-ui.test.ts (16 tests) 1860ms
+stderr | tests/formula-report-audit-ui.test.ts > unverified links are not presented as absent in difference detail (failure)
+ローカル保存領域へアクセスできませんでした Error: blocked
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/tests/formula-report-audit-ui.test.ts:104:101)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/lib/storage.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/FormulaReportAudit.tsx:78:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-ui.test.ts (19 tests) 740ms
+ ✓ tests/formula-detail-refresh.test.ts (20 tests) 722ms
+ ✓ tests/formula-report-app-save.test.ts (12 tests) 491ms
+ ✓ tests/evidence-app-save.test.ts (12 tests) 797ms
+ ✓ tests/markdown-headings.test.ts (31 tests) 85ms
+ ✓ tests/formula-quote-comparison-ui.test.ts (17 tests) 348ms
+ ✓ tests/formula-report-audit-storage-app.test.ts (8 tests) 987ms
+ ✓ tests/dependency-mermaid.test.ts (11 tests) 60ms
+ ✓ tests/trial-independent-review.test.ts (16 tests) 121ms
+ ✓ tests/formula-report-audit-record-ui.test.ts (16 tests) 820ms
+stderr | tests/formula-comparison-insertion-independent.test.ts > independent negative: failed collection acquisition refuses fixed insertion, but historical comparison remains exportable
+ローカル保存領域へアクセスできませんでした Error: storage unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/tests/formula-comparison-insertion-independent.test.ts:51:87)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/lib/storage.ts:94:18)
+    at acquireEvidence (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/FormulaReportModal.tsx:34:18)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/FormulaReportModal.tsx:131:50
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react/cjs/react.development.js:1263:34)
+
+ ✓ tests/formula-comparison-insertion-independent.test.ts (12 tests) 233ms
+ ✓ tests/calculation-trial-component.test.ts (16 tests) 482ms
+ ✓ tests/formula-snapshot-ordering.test.ts (10 tests) 296ms
+ ✓ tests/deleted-calculation-graph.test.ts (5 tests) 362ms
+ ✓ tests/dependency-svg.test.ts (13 tests) 352ms
+stderr | tests/markdown-report-component.test.ts > refuses unreadable or absent persisted source {broken without fallback
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/lib/storage.ts:99:21)
+    at readReport (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/MarkdownReportModal.tsx:14:20)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/MarkdownReportModal.tsx:25:56
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react/cjs/react.development.js:1263:34)
+    at MarkdownReportModal (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/components/MarkdownReportModal.tsx:25:41)
+    at Object.react_stack_bottom_frame (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+
+ ✓ tests/markdown-report-component.test.ts (12 tests) 123ms
+ ✓ tests/calculation-evidence-verification-ui.test.ts (7 tests) 135ms
+ ✓ tests/dependency-graph-component.test.ts (5 tests) 184ms
+ ✓ tests/formula-report-audit-record-review-ui.test.ts (4 tests) 232ms
+ ✓ tests/evidence-pending-component.test.ts (7 tests) 602ms
+   ✓ pending count overflow refuses recalculation and trial application without dropping the 100 queued records  348ms
+ ✓ tests/formula-audit-comparison-independent.test.ts (5 tests) 72ms
+ ✓ tests/formula-difference-source-layout.test.ts (3 tests) 67ms
+ ✓ tests/formula-comparison-boundary-ui.test.ts (3 tests) 68ms
+ ✓ tests/markdown-report-download.test.ts (3 tests) 24ms
+ ✓ tests/formula-report-audit-comparison.test.ts (64 tests) 43ms
+ ✓ tests/identification-ui.test.ts (1 test) 57ms
+ ✓ tests/formula-report-audit-export.test.ts (33 tests) 65ms
+ ✓ tests/formula-report-evidence.test.ts (50 tests) 66ms
+ ✓ tests/evidence-comparison.test.ts (41 tests) 53ms
+ ✓ tests/evidence-impact.test.ts (39 tests) 62ms
+ ✓ tests/storage.test.ts (42 tests) 19ms
+ ✓ tests/dependency-analysis.test.ts (28 tests) 51ms
+ ✓ tests/formula-report-diff-tracking.test.ts (38 tests) 71ms
+ ✓ tests/formula-report-audit-comparison-record.test.ts (45 tests) 168ms
+ ✓ tests/formula-report-audit-comparison-export.test.ts (33 tests) 39ms
+ ✓ tests/markdown-report.test.ts (46 tests) 72ms
+ ✓ tests/formula-report-diff.test.ts (32 tests) 50ms
+ ✓ tests/evidence-impact-graph.test.ts (20 tests) 57ms
+ ✓ tests/block-references.test.ts (38 tests) 84ms
+ ✓ tests/formula-reports.test.ts (30 tests) 40ms
+ ✓ tests/percent-integration.test.ts (10 tests) 70ms
+ ✓ tests/calculation-status.test.ts (36 tests) 88ms
+ ✓ tests/formula-report-audit.test.ts (30 tests) 66ms
+ ✓ tests/formula-report-quotes.test.ts (64 tests) 36ms
+ ✓ tests/calculation-evidence-report.test.ts (15 tests) 26ms
+ ✓ tests/markdown-report-provenance.test.ts (22 tests) 132ms
+ ✓ tests/formula-report-audit-record.test.ts (27 tests) 88ms
+ ✓ tests/formula-execution.test.ts (39 tests) 315ms
+ ✓ tests/reference-phase-boundary.test.ts (9 tests) 38ms
+ ✓ tests/execution-plan.test.ts (34 tests) 74ms
+ ✓ tests/calculation-evidence.test.ts (20 tests) 29ms
+ ✓ tests/calculation-trial.test.ts (24 tests) 49ms
+ ✓ tests/dependency-comparison.test.ts (13 tests) 66ms
+ ✓ tests/formula-report-difference-boundaries.test.ts (74 tests) 284ms
+ ✓ tests/formula-quote-comparison.test.ts (16 tests) 25ms
+ ✓ tests/math-functions.test.ts (96 tests) 54ms
+ ✓ tests/memo-block-preservation.test.ts (20 tests) 23ms
+ ✓ tests/calculator-input.test.ts (50 tests) 46ms
+ ✓ tests/evidence-independent-review.test.ts (25 tests) 229ms
+ ✓ tests/variables.test.ts (39 tests) 45ms
+ ✓ tests/source-evidence-gui-contract.test.ts (13 tests) 21ms
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 37ms
+ ✓ tests/formula-audit-comparison-export-independent.test.ts (9 tests) 16ms
+ ✓ tests/calculator.test.ts (54 tests) 41ms
+ ✓ tests/formula-report-timeline.test.ts (12 tests) 17ms
+ ✓ tests/ast-evaluation.test.ts (18 tests) 38ms
+ ✓ tests/formula-library.test.ts (31 tests) 24ms
+ ✓ tests/percent-parser.test.ts (64 tests) 44ms
+ ✓ tests/evidence-storage.test.ts (7 tests) 12ms
+ ✓ tests/evidence-impact-markdown.test.ts (6 tests) 13ms
+ ✓ tests/formula-report-audit-comparison-envelope.test.ts (11 tests) 13ms
+ ✓ tests/memo-blocks.test.ts (6 tests) 27ms
+ ✓ tests/formula-audit-empty-independent.test.ts (17 tests) 14ms
+ ✓ tests/identification.test.ts (20 tests) 10ms
+ ✓ tests/url-expression.test.ts (6 tests) 6ms
+ ✓ tests/format-copy.test.ts (6 tests) 17ms
+ ✓ tests/formula-report-audit-record-review.test.ts (2 tests) 8ms
+ ✓ tests/confirmation-remarks-component.test.ts (2 tests) 9ms
+ ✓ tests/storage-export.test.ts (5 tests) 5ms
+ ✓ tests/memo-labels.test.ts (2 tests) 2ms
+
+ Test Files  92 passed (92)
+      Tests  2137 passed (2137)
+   Start at  04:36:33
+   Duration  59.30s (transform 2.45s, setup 0ms, collect 58.05s, tests 29.41s, environment 12.39s, prepare 5.59s)
+

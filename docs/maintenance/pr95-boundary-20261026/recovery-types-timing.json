@@ -1,0 +1,15 @@
+{
+  "stage": "recovery-types",
+  "command": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "startedAt": "2026-10-26T19:38:08.282Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 7706.030788,
+  "finishedAt": "2026-10-26T19:38:15.988Z",
+  "status": "passed"
+}

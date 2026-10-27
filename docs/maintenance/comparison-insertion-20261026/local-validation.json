@@ -1,0 +1,98 @@
+{
+  "recorded_at": "2026-10-26T11:13:19Z",
+  "base_sha": "969d173c16aba208d727f088641712e5b4a0856d",
+  "scope": "Uncommitted cloud worktree; not formal CI or user Windows",
+  "unit": {
+    "command": "npm test -- --maxWorkers=2",
+    "tests": 2105,
+    "passed": 2105,
+    "failed": 0,
+    "skipped": 0,
+    "files": 90,
+    "seconds": 320.96,
+    "old_tests": 2011,
+    "added": {
+      "core": 42,
+      "integration": 43,
+      "independent": 9
+    }
+  },
+  "checks": [
+    {
+      "name": "normal-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 71.093,
+      "log_sha256": "0b9c77a6bdf32cb45317df9cb6f2406dd8dca50c636d4d225fcb13e9fc297c90"
+    },
+    {
+      "name": "pages-build",
+      "command": [
+        "npm",
+        "run",
+        "build:pages"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 21.316,
+      "log_sha256": "434bf0e308de1748d943d441f2bf6cca257e530cace8f5f0901acc1e6420b723"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "node",
+        "--test",
+        "e2e/ci-contract.node-test.mjs"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 4.451,
+      "log_sha256": "b3f20ad1387e239203e6e0666bede7ca5f4063d595f7aae8811954d1018d0f3c",
+      "tests": 41,
+      "passed": 40,
+      "failed": 1,
+      "skipped": 0,
+      "failure": "Existing 0.4s bounded acquisition fixture: child synthetic stdout not observed before TERM; UNKNOWN environment root cause; expected values/timeout unchanged."
+    },
+    {
+      "name": "types",
+      "command": [
+        "npx",
+        "--no-install",
+        "tsc",
+        "--noEmit"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.606,
+      "log_sha256": "a2e544258384609a6069ca6cbd92396027f72d25d2d74f28a50035836d61a9b9"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 77.636,
+      "log_sha256": "1119e525a10bf78bc87e2d1974fe562822b62479d3f3e6916d39ccfe9a3a0b9e"
+    }
+  ],
+  "source_sha256": {
+    "components/FormulaAuditRecordComparison.tsx": "e8a1b77254268af1f3855946a6f7372e30465fcc0723651280b42d88aeba7683",
+    "components/FormulaReportAudit.tsx": "2a056518a7a3ae9864eb7de985aa2e3c6a7f6f6285dd2346b64cd3a8cdb58c01",
+    "components/FormulaReportModal.tsx": "daf17e11a1daefd19b48a0a43d4c8e429d771ac7dda1974ff06730b96bbc247f",
+    "lib/formula-report-audit-comparison-record.ts": "1ebb6574979883f79e2ab44b1462f917739f4db055c79fbd886a05d7edd21a4c",
+    "e2e/audit-comparison-insertion.mjs": "172bb94243888920f5686072ae8a1e16acf817d78bda371f57fdf640ef9464fd"
+  },
+  "formal_ci": "pending",
+  "record_correction": {
+    "confirmed_at": "2026-10-26T12:17:00Z",
+    "field": "checks[name=contracts].failure",
+    "old_claim": "0.4s bounded acquisition fixture",
+    "corrected_fact": "timeout 0.1s, kill-after 0.2s, outer spawnSync timeout 5000ms; no timeout change",
+    "evidence": "e2e/ci-contract.node-test.mjs bounded acquisition test; old failure count remains 40/41"
+  }
+}

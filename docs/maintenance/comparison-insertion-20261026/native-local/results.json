@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "scope": "Isolated newly added fixed-comparison insertion helper only; not full formal six-condition GUI or CI. Synthetic data; native Playwright Chromium/WebKit, not physical Safari.",
+  "baseHead": "969d173c16aba208d727f088641712e5b4a0856d",
+  "worktree": "calculator-comparison-insertion",
+  "build": "Initial uncommitted Pages build completed 2026-10-26 around 11:00 UTC; see served-build-files.sha256. Not final commit identity.",
+  "loadedHelperSha256": "e0416debf524d837da16edd4688c46c65650c60dfa5e4e648ab8bc54fd5b6dd6",
+  "subsequentHelperSha256": "172bb94243888920f5686072ae8a1e16acf817d78bda371f57fdf640ef9464fd",
+  "buildManifestSha256": "7ab93beafd4d2bebb74cea509af93ad3cd80f4b61335935bfb93af96a4e9e7f1",
+  "limitations": [
+    "Two keyboard Tab traversal assertions were added after these processes loaded their helper. They were not executed in these runs.",
+    "The subsequent evidence.error storage-capacity guard change was not in this served build. Final rebuilt artifact and exact final HEAD require separate formal CI verification.",
+    "These are two isolated 390px conditions, not the full 966-check / 568-geometry / 120-PNG formal six-condition suite.",
+    "Local adapter uses explicit native browser executable paths; no browser mocks or DOM body replacement. New preview PNGs here have no formal CI identity overlay; formal retained captures add the standard overlay.",
+    "Physical iPhone Safari, VoiceOver and OS text enlargement/backgrounding were not tested. CSS 200% and emulated mobile contexts are not substitutes."
+  ],
+  "results": [
+    {
+      "startedAt": "2026-10-26T11:01:37.840Z",
+      "method": "Native Playwright on local synthetic Pages build; not physical Safari",
+      "results": [
+        {
+          "id": "chromium-mobile-390px",
+          "engine": "chromium",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3,
+          "startedAt": "2026-10-26T11:01:41.045Z",
+          "checks": [
+            "chromium-mobile-390px: comparison material full preview reuses export bytes direction long Unicode identities and output time with cancel focus both themes CSS 200 percent and no persistence",
+            "chromium-mobile-390px: explicit comparison material insertion keeps selected prose and exact dedicated undo restores original body without modifying snapshots saved records or confirmations",
+            "chromium-mobile-390px: inserted comparison material never becomes an audit item or A B candidate and duplicate text plus later editing cannot trick dedicated undo into deleting another occurrence",
+            "chromium-mobile-390px: native second-page report changed invalidates comparison insertion while real CalculatorApp retains its old draft and source refresh cannot certify saved-body equality",
+            "chromium-mobile-390px: native second-page report deleted invalidates comparison insertion while real CalculatorApp retains its old draft and source refresh cannot certify saved-body equality",
+            "chromium-mobile-390px: explicit acquisition and A B swap discard old insertion targets and regenerated reverse direction does not silently reuse an earlier preview",
+            "chromium-mobile-390px: incomparable empty successful records are insertable with their exact reason and only explicit save persists material which remains excluded from evidence after real reload",
+            "chromium-mobile-390px: insertion inside an existing fixed comparison material is rejected in the real editor without splitting its protected body or altering saved content"
+          ],
+          "errors": [],
+          "touch": 70,
+          "status": "passed",
+          "browser": "141.0.7390.37",
+          "finishedAt": "2026-10-26T11:03:33.898Z"
+        }
+      ],
+      "finishedAt": "2026-10-26T11:03:34.165Z"
+    },
+    {
+      "startedAt": "2026-10-26T11:03:42.572Z",
+      "method": "Native Playwright on local synthetic Pages build; not physical Safari",
+      "results": [
+        {
+          "id": "webkit-mobile-390px",
+          "engine": "webkit",
+          "width": 390,
+          "height": 844,
+          "isMobile": true,
+          "hasTouch": true,
+          "deviceScaleFactor": 3,
+          "startedAt": "2026-10-26T11:03:48.094Z",
+          "checks": [
+            "webkit-mobile-390px: comparison material full preview reuses export bytes direction long Unicode identities and output time with cancel focus both themes CSS 200 percent and no persistence",
+            "webkit-mobile-390px: explicit comparison material insertion keeps selected prose and exact dedicated undo restores original body without modifying snapshots saved records or confirmations",
+            "webkit-mobile-390px: inserted comparison material never becomes an audit item or A B candidate and duplicate text plus later editing cannot trick dedicated undo into deleting another occurrence",
+            "webkit-mobile-390px: native second-page report changed invalidates comparison insertion while real CalculatorApp retains its old draft and source refresh cannot certify saved-body equality",
+            "webkit-mobile-390px: native second-page report deleted invalidates comparison insertion while real CalculatorApp retains its old draft and source refresh cannot certify saved-body equality",
+            "webkit-mobile-390px: explicit acquisition and A B swap discard old insertion targets and regenerated reverse direction does not silently reuse an earlier preview",
+            "webkit-mobile-390px: incomparable empty successful records are insertable with their exact reason and only explicit save persists material which remains excluded from evidence after real reload",
+            "webkit-mobile-390px: insertion inside an existing fixed comparison material is rejected in the real editor without splitting its protected body or altering saved content"
+          ],
+          "errors": [],
+          "touch": 70,
+          "status": "passed",
+          "browser": "26.0",
+          "finishedAt": "2026-10-26T11:08:10.725Z"
+        }
+      ],
+      "finishedAt": "2026-10-26T11:08:11.350Z"
+    }
+  ]
+}

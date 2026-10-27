@@ -1,0 +1,15 @@
+{
+  "stage": "recovery-lint",
+  "command": "npm",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "startedAt": "2026-10-26T19:37:57.028Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 11193.211796,
+  "finishedAt": "2026-10-26T19:38:08.221Z",
+  "status": "passed"
+}

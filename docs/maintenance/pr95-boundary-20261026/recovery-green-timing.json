@@ -1,0 +1,19 @@
+{
+  "stage": "recovery-green",
+  "command": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/formula-report-audit-comparison-record.test.ts",
+    "tests/formula-comparison-boundary-independent.test.ts",
+    "tests/formula-comparison-boundary-ui.test.ts",
+    "--maxWorkers=2"
+  ],
+  "startedAt": "2026-10-26T19:39:20.018Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 3273.704222,
+  "finishedAt": "2026-10-26T19:39:23.292Z",
+  "status": "passed"
+}

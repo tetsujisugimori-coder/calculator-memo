@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-26T11:05:44Z",
+  "environment": "cloud workspace /workspace/scratch/e622c1e9421e/calculator-comparison-insertion; Vitest jsdom, not native browser",
+  "command": "npx --no-install vitest run tests/formula-report-audit-comparison-insertion-ui.test.ts --maxWorkers=1 --minWorkers=1",
+  "test_file": "tests/formula-report-audit-comparison-insertion-ui.test.ts",
+  "timeout_ms": 5000,
+  "run": {
+    "tests": 43,
+    "passed": 42,
+    "failed": 1,
+    "skipped": 0,
+    "duration_seconds": 96.84,
+    "transform_seconds": 19.65,
+    "collection_seconds": 51.04,
+    "tests_seconds": 32.69,
+    "environment_seconds": 10.27,
+    "prepare_seconds": 0.606
+  },
+  "failure": {
+    "name": "StrictMode app remains usable and explicit save/reload retains material but not new roots/history",
+    "type": "timeout",
+    "excerpt": "Error: Test timed out in 5000ms.",
+    "assertion_failure_reported": false
+  },
+  "prior_run": {
+    "tests": 38,
+    "passed": 38,
+    "failed": 0,
+    "duration_seconds": 50.51,
+    "collection_seconds": 15.0,
+    "same_strictmode_test_seconds": 1.867,
+    "difference": "Five additional acquisition/status limitation cases were added afterwards; StrictMode expectation and timeout unchanged."
+  },
+  "classification": "UNKNOWN: concurrent build/test load is a hypothesis, not established root cause. A later success must not erase this failure.",
+  "changes_to_timeout_or_expectations": "none",
+  "source_log": "/tmp/comparison-insertion-ui-final.log (transient raw log; concise failure and timing data preserved here)",
+  "verification_boundary": "40 real CalculatorApp cases plus 3 direct FormulaReportModal prop cases. Storage events use jsdom StorageEvent after localStorage updates, not a real second browser page. requestAnimationFrame is stubbed; native caret/focus and real-page storage are separate GUI checks."
+}
