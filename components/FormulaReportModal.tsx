@@ -377,7 +377,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
         setNotice({ text: "直前の比較資料挿入だけを取り消しました。保存・再計算・確認履歴の変更は行っていません。", failed: false });
       }}>直前の比較資料挿入を取り消す</button></div>}
       {materialUndo && !materialUndoEligible && <p ref={materialUndoReason} tabIndex={-1} role="status">挿入後の編集・対象・保存通知等により安全な取消を確認できません。比較資料も現在の本文も削除していません。</p>}
-      <FormulaReportAudit key={auditContext} comparisonInsertion={comparisonInsertion}
+      <FormulaReportAudit key={JSON.stringify([id, formulaId])} context={auditContext} onCancelNavigation={() => { auditNavigationEpoch.current += 1; }} comparisonInsertion={comparisonInsertion}
         insertion={{ disabled: saving || !writable || !!conflict,
           onOpen: () => { cancelDeferredCaret(); const editor = editorRef.current; const end = body.replace(/\r\n?/g, "\n").length; auditPosition.current = { start: editor?.selectionStart ?? end, end: editor?.selectionEnd ?? end }; lastPosition.current = { ...auditPosition.current }; },
           prepare: markdown => {
@@ -395,7 +395,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
           }
         }}
         body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict || savedContextUncertain || heldContextUncertain} disabled={saving}
-        onNavigate={(start, end) => {
+        onNavigate={(start, end, onArrived) => {
           if (!validSourceRange(body, start, end)) { setNotice({ text: "本文位置の文字境界を確認できないため移動しません。本文は保持しています。", failed: true }); return; }
           const epoch = ++auditNavigationEpoch.current;
           const position = positionEpoch.current, edit = auditEditEpoch.current;
@@ -405,7 +405,7 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
             if (auditContextRef.current !== auditContext || auditNavigationEpoch.current !== epoch || positionEpoch.current !== position || auditEditEpoch.current !== edit
               || editorRef.current?.value !== body.replace(/\r\n?/g, "\n")
               || (selection && (editorRef.current.selectionStart !== selection.start || editorRef.current.selectionEnd !== selection.end))) return;
-            selectBodyRange(start, end);
+            selectBodyRange(start, end); onArrived?.();
           });
         }} />
       <details className="report-heading-navigation"><summary>章一覧（{headings.length}件）</summary>

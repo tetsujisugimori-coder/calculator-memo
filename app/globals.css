@@ -546,3 +546,9 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 
 .formula-report-preview pre:has(> code[data-language^="calculator-memo-difference"]),
 .formula-report-preview code[data-language^="calculator-memo-difference"] { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+
+/* Transient audit destination; never inserted into the report Markdown. */
+.audit-roundtrip { border: 2px solid var(--ink); padding: 12px; margin-block: 12px; min-width: 0; }
+.audit-roundtrip button { margin: 4px; max-width: 100%; white-space: normal; }
+.audit-target-excerpt { max-height: 12rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; border-inline-start: 4px solid var(--ink); padding: 8px; }
+.audit-target-excerpt mark { color: inherit; background: transparent; text-decoration: underline; text-decoration-style: dotted; }

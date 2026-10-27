@@ -6,9 +6,9 @@ import { STORAGE_KEY } from "../lib/storage";
 
 const integrityLabels = { complete: "正常・完全", incomplete: "不完全", unknown: "未知形式", malformed: "破損・不正", duplicate: "資料ID重複", ambiguous: "境界が曖昧" } as const;
 
-type Props = { body: string; formulaId: string; reportId?: string; savedContextChanged?: boolean; generation?: string | number; onNavigate: (start: number, end: number) => void };
+type Props = { body: string; formulaId: string; reportId?: string; savedContextChanged?: boolean; generation?: string | number; resume?: { key: string; nonce: number }; onNavigateWithOrigin?: (start: number, end: number, origin: { start: number; end: number }) => void; onNavigate: (start: number, end: number) => void };
 /** Reads only the held body. Historical prose is never parsed back into a result. */
-export function FormulaAuditComparisonSources({ body, formulaId, reportId, savedContextChanged, generation, onNavigate }: Props) {
+export function FormulaAuditComparisonSources({ body, formulaId, reportId, savedContextChanged, generation, resume, onNavigateWithOrigin, onNavigate }: Props) {
   const id = useId();
   const inventory = useMemo(() => inspectComparisonMaterials(body, formulaId, reportId), [body, formulaId, reportId]);
   const context = JSON.stringify([body, formulaId, reportId, savedContextChanged, generation]);
@@ -31,6 +31,13 @@ export function FormulaAuditComparisonSources({ body, formulaId, reportId, saved
   }, []);
   const active = selection?.context === context && selection.epoch === observedEpoch;
   const selected = active ? inventory.entries.find(entry => entry.key === selection.key) : undefined;
+  const [observedResume, setObservedResume] = useState(resume);
+  if (observedResume !== resume) {
+    setObservedResume(resume);
+    if (resume && inventory.entries.some(entry => entry.key === resume.key && entry.status === "complete")) {
+      setSelection({ key: resume.key, context, epoch: observedEpoch });
+    }
+  }
   const navigate = (target: "material" | "before" | "after") => {
     if (!mounted.current || !selection || !active || selection.context !== currentContext.current || selection.epoch !== epoch.current) {
       setNotice("本文・対象・取得世代・保存通知の変化で追跡位置は失効しました。選び直してください。"); return;
@@ -42,7 +49,8 @@ export function FormulaAuditComparisonSources({ body, formulaId, reportId, saved
     if (!eligible || !range || (target !== "material" && fresh?.[target].status !== "available") || range.start === undefined || range.end === undefined || !validSourceRange(body, range.start, range.end)) {
       setNotice("資料と出典の一意な位置を確認できません。本文を変更せず移動を停止しました。"); return;
     }
-    onNavigate(range.start, range.end);
+    if (onNavigateWithOrigin) onNavigateWithOrigin(range.start, range.end, { start: fresh.start, end: fresh.end });
+    else onNavigate(range.start, range.end);
   };
   return <section className="quote-tools saved-evidence" aria-label="固定A/B比較資料">
     <h3>固定A/B比較資料</h3>

@@ -1,0 +1,107 @@
+2026-10-27T15:56:23.8032968Z webkit-mobile-390px passed 1559990ms
+2026-10-27T15:56:23.8317589Z ##[group]Run mkdir -p gui-evidence
+2026-10-27T15:56:23.8317967Z [36;1mmkdir -p gui-evidence[0m
+2026-10-27T15:56:23.8318218Z [36;1mnode <<'NODE'[0m
+2026-10-27T15:56:23.8318455Z [36;1mconst fs = require('node:fs');[0m
+2026-10-27T15:56:23.8318802Z [36;1mconst steps = JSON.parse(process.env.STEP_OUTCOMES);[0m
+2026-10-27T15:56:23.8319387Z [36;1mconst outcomes = Object.fromEntries(Object.entries(steps).map(([key, value]) => [key, value.outcome]));[0m
+2026-10-27T15:56:23.8320124Z [36;1mconst failed = Object.entries(outcomes).filter(([, value]) => value === 'failure').map(([key]) => key);[0m
+2026-10-27T15:56:23.8320629Z [36;1mconst diagnostic = {[0m
+2026-10-27T15:56:23.8321019Z [36;1m  expectedSha: process.env.EXPECTED_SHA, branch: process.env.PR_BRANCH,[0m
+2026-10-27T15:56:23.8321554Z [36;1m  run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT,[0m
+2026-10-27T15:56:23.8322050Z [36;1m  recordedAt: new Date().toISOString(), node: process.version,[0m
+2026-10-27T15:56:23.8322599Z [36;1m  runnerImage: process.env.ImageOS, runnerVersion: process.env.ImageVersion,[0m
+2026-10-27T15:56:23.8323039Z [36;1m  outcomes, failedStages: failed,[0m
+2026-10-27T15:56:23.8323591Z [36;1m  interpretation: 'Stage is observed; application/test/environment root cause requires logs and trace diagnosis.'[0m
+2026-10-27T15:56:23.8324121Z [36;1m};[0m
+2026-10-27T15:56:23.8324787Z [36;1mfs.writeFileSync('gui-evidence/ci-outcomes.json', JSON.stringify(diagnostic, null, 2) + '\n');[0m
+2026-10-27T15:56:23.8325401Z [36;1mconst safe = value => String(value).replace(/[\x00-\x1f<>\x60]/g, '_');[0m
+2026-10-27T15:56:23.8325861Z [36;1mfs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,[0m
+2026-10-27T15:56:23.8326332Z [36;1m  '## PR GUI regression\n\nExact PR head: ' + safe(diagnostic.expectedSha) +[0m
+2026-10-27T15:56:23.8326760Z [36;1m  '\n\nBranch: ' + safe(diagnostic.branch) +[0m
+2026-10-27T15:56:23.8327076Z [36;1m  '\n\nObserved stage outcomes:\n' +[0m
+2026-10-27T15:56:23.8327710Z [36;1m  Object.entries(outcomes).map(([key, value]) => '- ' + key + ': ' + value).join('\n') +[0m
+2026-10-27T15:56:23.8328993Z [36;1m  '\n\nArtifacts contain representative synthetic screenshots, complete geometry checkpoint records, pre-failure DOM/action traces for failed contexts, provenance, timings and stage logs. Assertion failures require diagnosis; they are not automatically application defects.\n');[0m
+2026-10-27T15:56:23.8330102Z [36;1mNODE[0m
+2026-10-27T15:56:23.8391929Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T15:56:23.8392271Z env:
+2026-10-27T15:56:23.8392519Z   EXPECTED_SHA: 55e48936934f1d7a2b9d0d24534bf6ab1d60b17a
+2026-10-27T15:56:23.8392869Z   PR_BRANCH: feat/audit-roundtrip-navigation
+2026-10-27T15:56:23.8393166Z   PR_NUMBER: 99
+2026-10-27T15:56:23.8393362Z   CI: true
+2026-10-27T15:56:23.8397662Z   STEP_OUTCOMES: {
+2026-10-27T15:56:23.8401830Z ##[endgroup]
+2026-10-27T15:56:23.8789929Z ##[group]Run node e2e/evidence-inventory.mjs
+2026-10-27T15:56:23.8790297Z [36;1mnode e2e/evidence-inventory.mjs[0m
+2026-10-27T15:56:23.8852984Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T15:56:23.8853336Z env:
+2026-10-27T15:56:23.8853581Z   EXPECTED_SHA: 55e48936934f1d7a2b9d0d24534bf6ab1d60b17a
+2026-10-27T15:56:23.8853923Z   PR_BRANCH: feat/audit-roundtrip-navigation
+2026-10-27T15:56:23.8854204Z   PR_NUMBER: 99
+2026-10-27T15:56:23.8854392Z   CI: true
+2026-10-27T15:56:23.8854831Z ##[endgroup]
+2026-10-27T15:56:23.9416574Z {"png":{"count":132,"bytes":36498378},"json":{"count":20,"bytes":4858026},"log":{"count":25,"bytes":301007}}
+2026-10-27T15:56:23.9536037Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-27T15:56:23.9536474Z with:
+2026-10-27T15:56:23.9536742Z   name: pr-gui-55e48936934f1d7a2b9d0d24534bf6ab1d60b17a-2
+2026-10-27T15:56:23.9537065Z   path: gui-evidence/
+2026-10-27T15:56:23.9537280Z   retention-days: 7
+2026-10-27T15:56:23.9537488Z   compression-level: 0
+2026-10-27T15:56:23.9537707Z   if-no-files-found: error
+2026-10-27T15:56:23.9537929Z   overwrite: false
+2026-10-27T15:56:23.9538146Z   include-hidden-files: false
+2026-10-27T15:56:23.9538372Z env:
+2026-10-27T15:56:23.9538603Z   EXPECTED_SHA: 55e48936934f1d7a2b9d0d24534bf6ab1d60b17a
+2026-10-27T15:56:23.9538939Z   PR_BRANCH: feat/audit-roundtrip-navigation
+2026-10-27T15:56:23.9539220Z   PR_NUMBER: 99
+2026-10-27T15:56:23.9539407Z   CI: true
+2026-10-27T15:56:23.9539585Z ##[endgroup]
+2026-10-27T15:56:24.1206974Z (node:10550) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-27T15:56:24.1208221Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-27T15:56:24.1691658Z With the provided path, there will be 178 files uploaded
+2026-10-27T15:56:24.1692697Z Artifact name is valid!
+2026-10-27T15:56:24.1693227Z Root directory input is valid!
+2026-10-27T15:56:24.6310289Z Beginning upload of artifact content to blob storage
+2026-10-27T15:56:24.7242498Z (node:10550) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-27T15:56:25.6658577Z Uploaded bytes 8388608
+2026-10-27T15:56:25.7410204Z Uploaded bytes 16777216
+2026-10-27T15:56:25.7693107Z Uploaded bytes 25165824
+2026-10-27T15:56:25.8484529Z Uploaded bytes 33554432
+2026-10-27T15:56:26.0873272Z Uploaded bytes 41717737
+2026-10-27T15:56:26.1671686Z Finished uploading artifact content to blob storage!
+2026-10-27T15:56:26.1673130Z SHA256 digest of uploaded artifact zip is a32fb5d7fc74a8fd72494ec757bebcc95c13e47d39f41c1392d0fd1d59aa150f
+2026-10-27T15:56:26.1674951Z Finalizing artifact upload
+2026-10-27T15:56:26.6639902Z Artifact pr-gui-55e48936934f1d7a2b9d0d24534bf6ab1d60b17a-2.zip successfully finalized. Artifact ID 12748332377
+2026-10-27T15:56:26.6642344Z Artifact pr-gui-55e48936934f1d7a2b9d0d24534bf6ab1d60b17a-2 has been successfully uploaded! Final size is 41717737 bytes. Artifact ID is 12748332377
+2026-10-27T15:56:26.6647757Z Artifact download URL: https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40525537905/artifacts/12748332377
+2026-10-27T15:56:26.6839175Z ##[group]Run printf '\n[Download GUI screenshots, traces and diagnostics](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+2026-10-27T15:56:26.6840019Z [36;1mprintf '\n[Download GUI screenshots, traces and diagnostics](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"[0m
+2026-10-27T15:56:26.6902648Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T15:56:26.6903023Z env:
+2026-10-27T15:56:26.6903276Z   EXPECTED_SHA: 55e48936934f1d7a2b9d0d24534bf6ab1d60b17a
+2026-10-27T15:56:26.6903764Z   PR_BRANCH: feat/audit-roundtrip-navigation
+2026-10-27T15:56:26.6904054Z   PR_NUMBER: 99
+2026-10-27T15:56:26.6904251Z   CI: true
+2026-10-27T15:56:26.6904973Z   ARTIFACT_URL: https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40525537905/artifacts/12748332377
+2026-10-27T15:56:26.6905569Z ##[endgroup]
+2026-10-27T15:56:26.7072397Z Post job cleanup.
+2026-10-27T15:56:26.8479551Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/calculator-memo/calculator-memo --files-from manifest.txt --use-compress-program zstdmt
+2026-10-27T15:56:28.7648303Z Sent 0 of 328232778 (0.0%), 0.0 MBs/sec
+2026-10-27T15:56:29.4645629Z ##[error]The operation was canceled.
+2026-10-27T15:56:29.4731448Z Post job cleanup.
+2026-10-27T15:56:29.5707850Z [command]/usr/bin/git version
+2026-10-27T15:56:29.5731241Z git version 2.55.0
+2026-10-27T15:56:29.5779469Z Temporarily overriding HOME='/home/runner/work/_temp/f620b4ae-c48b-4ab7-af13-92d4ad1f3ca0' before making global git config changes
+2026-10-27T15:56:29.5781053Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T15:56:29.5786138Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/calculator-memo/calculator-memo
+2026-10-27T15:56:29.5825801Z Removing SSH command configuration
+2026-10-27T15:56:29.5826796Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T15:56:29.5862550Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T15:56:29.6102467Z Removing HTTP extra header
+2026-10-27T15:56:29.6109624Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T15:56:29.6145956Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T15:56:29.6466100Z Removing includeIf entries pointing to credentials config files
+2026-10-27T15:56:29.6467401Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T15:56:29.6534268Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T15:56:29.6955344Z Cleaning up orphan processes
+2026-10-27T15:56:29.7318145Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

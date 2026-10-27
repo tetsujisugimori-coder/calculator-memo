@@ -1,0 +1,30 @@
+{
+  "independent-roundtrip-cache-contract42.log": {
+    "sha256": "1340d04bc83415145fc804bd4aeb97ff7ac5f5190d6b4a1e1fbbe37bc26a8fc5",
+    "bytes": 3536
+  },
+  "roundtrip-cache-unit.log": {
+    "sha256": "9b025ab0e6ef42f4bb6dfe0c267cbe9644db4185e3aad8ef94e20068dca8c1bc",
+    "bytes": 17466
+  },
+  "roundtrip-cache-contract.log": {
+    "sha256": "0d89995f2eb489ffbabd04c527962490b160a71b2073e7ba4c55be2daf215da0",
+    "bytes": 3533
+  },
+  "roundtrip-cache-lint.log": {
+    "sha256": "1119e525a10bf78bc87e2d1974fe562822b62479d3f3e6916d39ccfe9a3a0b9e",
+    "bytes": 423
+  },
+  "roundtrip-cache-type.log": {
+    "sha256": "7125f194612fcff2f454c05d848e7cb71facc1967b4d5017e25b34fdee3ba74f",
+    "bytes": 99
+  },
+  "roundtrip-cache-normal.log": {
+    "sha256": "458d3a75286dfff9e7862ae8092ea0cbc6ed6e793900ee54c65e56c544b58389",
+    "bytes": 1905
+  },
+  "roundtrip-cache-pages.log": {
+    "sha256": "c5af29c6b7d80d835b3195429003e02b11282fbb99099c2c1f8d50d121d2ff34",
+    "bytes": 12229
+  }
+}

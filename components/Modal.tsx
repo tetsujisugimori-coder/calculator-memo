@@ -8,7 +8,7 @@ function isTopModal(token: symbol): boolean {
   return modalStack.at(-1) === token;
 }
 
-export function Modal({ title, onClose, children, wide = false, closeDisabled = false }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean; closeDisabled?: boolean }) {
+export function Modal({ title, onClose, children, wide = false, closeDisabled = false, active = true }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean; closeDisabled?: boolean; active?: boolean }) {
   const titleId = `${useId()}-modal-title`;
   const dialogRef = useRef<HTMLDivElement>(null);
   const restoreFocus = useRef<HTMLElement | null>(null);
@@ -20,9 +20,11 @@ export function Modal({ title, onClose, children, wide = false, closeDisabled = 
   }, [onClose, closeDisabled]);
 
   useEffect(() => {
+    if (!active) return;
     const token = modalToken.current;
     modalStack.push(token);
-    restoreFocus.current = document.activeElement as HTMLElement;
+    // Suspension is not a new modal session: preserve the original opener.
+    if (!restoreFocus.current?.isConnected) restoreFocus.current = document.activeElement as HTMLElement;
     const dialog = dialogRef.current;
     dialog?.querySelector<HTMLElement>("button, input, textarea, select")?.focus();
     const keydown = (event: KeyboardEvent) => {
@@ -49,10 +51,10 @@ export function Modal({ title, onClose, children, wide = false, closeDisabled = 
       if (index >= 0) modalStack.splice(index, 1);
       restoreFocus.current?.focus();
     };
-  }, []);
+  }, [active]);
 
   return (
-    <div className="modal-backdrop" onMouseDown={(e) => !closeDisabled && e.target === e.currentTarget && onClose()}>
+    <div className="modal-backdrop" style={active ? undefined : { display: "none" }} aria-hidden={!active || undefined} inert={!active || undefined} onMouseDown={(e) => !closeDisabled && e.target === e.currentTarget && onClose()}>
       <div className={`modal ${wide ? "modal-wide" : ""}`} role="dialog" aria-modal="true" aria-labelledby={titleId} ref={dialogRef}>
         <header className="modal-header">
           <div><span className="eyebrow">CALCULATION MEMO</span><h2 id={titleId}>{title}</h2></div>

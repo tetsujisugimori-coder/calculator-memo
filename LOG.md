@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-27 JST: 根拠点検と本文の往復ナビゲーション（Issue #98）
+
+- 最新main `035436c3c0dc3a971d1a3c4bb77fb8d1c3a11066` とPR #97 mergeをGitHub・fetchで確認。既存worktreeを保全して専用branchを作成。同目的の[Issue #98](https://github.com/tetsujisugimori-coder/calculator-memo/issues/98)が存在したため重複作成しない。
+- 従来は本文移動で点検を閉鎖して子詳細状態を失っていた。今回、第一希望の既存scanner／Modal／移動を再利用し、点検を一時休止して一覧・絞り込み・詳細・focusを保持する。本文への一時選択と非色依存の移動先表示を追加。新永続形式・独立parserは不採用。
+- 編集後はstable identityと完全bytesが一意の正規出現だけ再解決。類似文章・古い位置で推測復旧しない。元bytesへ戻るABAでも取得・比較世代は失効を維持。全storage通知、終了・再開・report切替・遅延処理を区別する。
+- 実装試験でABA後詳細消失、独立担当自身の実App試験で最終closeのfocus復帰／同値storage通知の追跡失効漏れをRED検出し、同期待値GREENを確認。旧callbackの2引数契約を破った初回3失敗も、期待値変更ではなく互換callback分離で修正。
+- 保存・取得・再比較・再計算・確認履歴の追加なし。schema、engine、Markdown出力、固定領域scanner、PR95専用取消は変更対象外。詳細は[設計](docs/design/audit-roundtrip-navigation.md)と[検証記録](docs/maintenance/audit-roundtrip-20261027/README.md)。正式CIは最後の文書commitを含むPR HEADのChecksで確定し、未確認結果を先取りしない。
+- WebKit時間変動、ローカル100msfixture環境差、過去の選択位置問題の全原因、実機Safari／VoiceOver／実OS文字拡大は今回だけで解消としない。Draft・未マージ・auto-mergeなしで人間判断へ引き渡す。
+
 ## 2026-10-27 JST: 固定A/B比較資料の読取専用出典追跡（Issue #96）
 
 - PR #95のmergeと最新main `6e3fa736b9ee335ab5c61b96cc5b52c0b8073868` をGitHub APIとfetchで実確認し、他worktreeを保持して専用branch/worktreeを作成。[Issue #96](https://github.com/tetsujisugimori-coder/calculator-memo/issues/96)を実装前に作成。Windows・main・公開先は変更しない。
@@ -1297,3 +1306,15 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - 失敗 trace の実際の表示は「コード・数式ブロック内へは引用を挿入できません」で、安全側の拒否。期待した差分内の文章位置とは異なる位置の捕捉が疑われる。trace の本文を抽出し、指定 UTF-16 4432..4434 を純粋挿入処理へ渡す独立再現では「比較差分…」拒否になる。現時点で製品 parser の退行とは断定しない。
 - GUI に本文反映確認、選択設定直後と引用ダイアログ開始直後の選択読戻しを追加し、位置不一致をその場で診断する。拒否文言の OR 化、検査削減、時間上限延長、成功扱いはしない。再実行結果は最終 HEAD の PR / CI 記録へ追記する。
 - 失敗 artifact ZIP SHA-256 `d1c22394f956e6b6faca8de5768f8f2d6c94d6293042b7054695e53a6c4765ed` を取得ファイルで照合済み。PNG 101・失敗 trace 1。成功時 trace 抑制は維持。
+
+### Issue #98 / Draft PR #99 初回正式CIの初回未照合状態を修正
+- run40520394267の全6条件で、初回点検前の変更を旧結果失効と表示する後退を確認。closed context変更とopen/休止中の失効を分離し、既存GUI期待を維持。
+- 実App3件同期待RED→GREEN、活動中失効維持1件追加。全2251単体・41契約・lint・型・両build成功、独立再検証29件成功。正式CI再成功はPR Checks/結果コメントで確認する。
+- 失敗ZIP取得SHA256/API一致と最小診断をmaintenance記録に保全。Draft・未マージを維持。
+記録：2026-10-27 23:38 JST。
+
+### Issue #98 / PR #99：任意npm cache後処理によるCI取消への対処
+- HEAD55e4893のattempt2は全6GUI1056／592geometry／132PNG／trace0を完走したが、成果物保存後のsetup-node npm cache保存で30分上限cancel。検査成功とjob成功を分離して記録。
+- PR workflowの任意cacheを無効化（package-manager-cache:false）。lockfile npm ci・Nodepin・全検査・artifact・worker3・上限30分は維持、公開workflow不変更。cache予算契約を1件追加、42件へ。
+- 旧失敗・cancel・UNKNOWNを残し、変更後HEADの実CIを待つ。
+記録：2026-10-28 00:59 JST。

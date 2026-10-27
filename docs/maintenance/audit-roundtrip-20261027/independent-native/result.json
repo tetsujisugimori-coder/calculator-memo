@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "browser": "141.0.7390.37",
+  "viewport": "375x812 touch DPR2",
+  "cssText": "root200%",
+  "geometry": {
+    "left": 19,
+    "right": 356,
+    "width": 375,
+    "scroll": 333,
+    "client": 333,
+    "text": "32px",
+    "mark": "```calculator-memo-audit-record-start-v1\n{\"version\":1,\"recordId\":\"b\",\"formulaId\":\"f\",\"reportId\":\"r\",\"generatedAt\":\"2026-10-27T14:05:00.000Z\",\"bodySha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"bodyLength\":0}\n```\n\n日本語独立記録 b 😀\n\n```calculator-memo-audit-record-end-v1\n{\"version\":1,\"recordId\":\"b\"}\n```"
+  },
+  "tests": [
+    "keyboard Enter B navigation",
+    "exact source selection",
+    "dark200 narrow geometry",
+    "Space return restores detail and focused origin",
+    "close restores opener",
+    "touch repeated navigation and finish",
+    "body and full storage bytes unchanged"
+  ],
+  "pageerrors": [],
+  "finishedJST": "2026-10-27 23:06:49 JST"
+}
