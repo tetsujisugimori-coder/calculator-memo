@@ -33,3 +33,17 @@ WebKit本体の公式downloadは取得済みだが、ローカルには7共有li
 ログには合成試験と必要最小限の実行結果だけを収録。秘密情報・token・実ユーザーデータ・host process一覧は収録しない。SHA-256一覧は `SHA256SUMS.json`。新規PRは提出時作成予定、Draft・未マージ・auto-mergeなしを維持する。
 
 生ログは末尾空白・ANSI・初回失敗を削らず gzip（mtime=0）で保存し、`logs/raw-log-manifest.json` に展開後SHA-256とbytesを記録する。
+
+## 初回正式CIで発見した後退と修正（2026-10-27 23:38 JST）
+
+初回提出 `abc468c48cf90a81c2cd17b83f9ae361b1dd972f` のrun `40520394267` attempt1は、単体2247・契約41・lint・型・両build成功、GUI全6条件が既存scenario.mjs:895で失敗した。点検をまだ開いていない期間のタイトル／本文／storage変更を、stable key化後に「結果失効・未照合」と持ち越した製品ライフサイクル後退である。traceのコピー本文は全6で同じ状態、2出現／2見直し／3出典未照合を示し、一致への誤昇格や保存書込みではない。新GUI試験以前の失敗であり、当該runは成功扱いしない。
+
+修正はclosed時のcontext変更のみ旧key再mount相当の未取得状態へ初期化する。open／本文移動による一時休止中は取得失効と世代保護を維持する。親のsavedContextChanged警告は維持し、保存原本を再取得しない。既存GUI期待は変更せず、実Appで初回title／body／storage後titleの3件RED→同期待GREEN、取得後一時休止・本文編集の失効維持1件を追加した。単体は2251件へ増加、削除・skipなし。全量2251／契約41／lint／型／通常・Pages buildを再実行し全exit0。
+
+独立担当は修正差分を確認し、実App／storage／独立probeの29件を自身で再実行成功。実装担当の19件と既存export16件（35件）成功は別実行である。正式CIの再成功はPR提出コメントで確定する。
+
+初回失敗のZIPは28,565,855 bytes、SHA-256 `7c4c9c928eac4c703dea6b7d25f900ae0478326c157d2dbbb5ac2d03658e7e29` を取得bytesから再計算しAPI digestと一致。artifact12741858174、trace6は失敗証拠であり成功trace0と混同しない。必要な6workerログ／trace抽出／provenance／outcomesを `ci-first-failure/` に保存した。完全ZIPはGitHub run成果物（7日保持）で、恒久Gitには必要最小限の診断だけを収録する。
+
+局所正式scenarioの先行実行では、最初は専用e2e依存未installで停止し、lockに従う `npm ci --prefix e2e --ignore-scripts` 後に再実行した。次の実行は176操作群を完走しpageerror0だったが、呼出側のEXPECTED_SHA未指定で最終coverage guardが失敗した。製品成功とは数えず、正しい環境変数で同一scenarioを再実行する。局所では未commit修正を含むためHEAD表記だけで正式対象版一致とは扱わない。正式CIは常に必須SHA指定である。
+
+2026-10-27 23:47 JST：正しい環境変数を指定した再実行はChromium desktop1365px正式scenario全176群・100 geometry・22 PNG、pageerror0・成功trace0・exit0。修正作業treeの局所証拠であり、最終HEADの全6条件正式CIは別途必須。

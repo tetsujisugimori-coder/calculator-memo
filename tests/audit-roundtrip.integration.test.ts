@@ -146,3 +146,33 @@ it('separate quote occurrences sharing one source restore their own focus and fi
   expect(items).toHaveLength(2); expect(editor().value).toBe(text); expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled(); read.mockRestore(); write.mockRestore();
   expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
 });
+it.each(['title', 'body', 'storage-and-title'] as const)('first audit export remains unverified after %s editing before audit was ever opened', async mode => {
+  await act(async () => root.render(createElement(StrictMode, null, createElement(CalculatorApp))));
+  await act(async () => { await new Promise(resolve => setTimeout(resolve, 10)); });
+  await click('登録式ライブラリ'); await click('関連レポートを閲覧・編集'); await click('Markdownを編集');
+  if (mode === 'body') await change(`前方の追加\n\n${body}`);
+  else {
+    if (mode === 'storage-and-title') await external('changed');
+    await act(async () => { const input = host.querySelector<HTMLInputElement>('#formula-report-title')!; expect(input).toBeTruthy(); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(input, '点検前のタイトル変更'); input.dispatchEvent(new Event('input', { bubbles: true })); });
+  }
+  const raw = localStorage.getItem(STORAGE_KEY), copy = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: copy } });
+  const read = vi.spyOn(Storage.prototype, 'getItem'), write = vi.spyOn(Storage.prototype, 'setItem');
+  await click('根拠点検'); await click('点検結果をコピー');
+  expect(copy).toHaveBeenCalledTimes(1); const markdown = copy.mock.calls[0][0] as string;
+  expect(markdown).toContain('点検状態：未照合。');
+  expect(markdown).not.toContain('保存記録と一致');
+  if (mode === 'storage-and-title') expect(host.textContent).toContain('保存本文との一致は未確認');
+  expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled(); read.mockRestore(); write.mockRestore();
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+it('an already acquired active session stays invalid after body edit while returning without implicit refresh', async () => {
+  await open(); await click('保存記録と照合'); await click('比較資料1の詳細'); await click(jump); await flush();
+  await change(`新しい前文\n\n${body}`); await click('点検へ戻る'); await flush();
+  const copy = vi.fn().mockResolvedValue(undefined); Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: copy } });
+  const read = vi.spyOn(Storage.prototype, 'getItem'), write = vi.spyOn(Storage.prototype, 'setItem');
+  await click('点検結果をコピー');
+  expect(copy.mock.calls[0][0]).toContain('点検状態：結果失効・未照合。');
+  expect(copy.mock.calls[0][0]).toContain('原本の観測取得日時：有効な取得情報なし');
+  expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled();
+});

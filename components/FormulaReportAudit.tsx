@@ -73,12 +73,22 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
   const [contextRevision, setContextRevision] = useState(0);
   const [observedContext, setObservedContext] = useState(currentContext);
   if (observedContext !== currentContext) {
-    setContextRevision(value => value + 1); setObservedContext(currentContext); setAcquisition(undefined); setStale(true); setSelected(null);
+    setContextRevision(value => value + 1); setObservedContext(currentContext); setAcquisition(undefined); setStale(open); setSelected(null);
     setComparisonGeneration(value => value + 1); setRecordPreview(null); setPreparing(false);
     setExporting(false); setExportNotice(null); setManualCopy(null); setHighlight(null);
     setNavigationNotice("本文・対象・取得世代が変わりました。旧詳細と照合結果は失効しています。戻る際は現在本文の対象を再確認します。");
   }
-  useLayoutEffect(() => { exportEpoch.current += 1; exportBusy.current = false; }, [currentContext]);
+  const committedContext = useRef(currentContext);
+  useLayoutEffect(() => {
+    exportEpoch.current += 1; exportBusy.current = false;
+    if (committedContext.current !== currentContext && !open) {
+      // A closed context change starts a fresh, never-acquired audit, as the
+      // former context-keyed mount did. A suspended roundtrip remains open.
+      staleRef.current = false; heldContextRef.current = false;
+      setHeldContextUncertain(false);
+    }
+    committedContext.current = currentContext;
+  }, [currentContext, open]);
   const inventory = useMemo(() => parseReportAudit(body, formulaId), [body, formulaId]);
   const items = useMemo(() => assessReportAudit(inventory, stale ? undefined : acquisition), [inventory, acquisition, stale]);
   useEffect(() => {

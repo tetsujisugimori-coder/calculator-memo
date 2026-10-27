@@ -32,3 +32,7 @@
 結果 `PASS` はこの局所実操作範囲に限定。実装側の正式helperや6条件を自ら実行したとの意味ではない。WebKitはこの独立実操作では未実施。初回scriptは依存の所在を誤りimport失敗（製品実行前）、確認した既存Playwright位置に修正して再実行した。実機・OS文字拡大ではない。
 
 再現script／PNG／結果／SHA manifest：`/tmp/roundtrip-independent-native/`。実装側の保存索引へ必要な範囲を移して保全する。
+
+## 初回CI失敗後の独立再確認（2026-10-27 23:37 JST）
+
+レビュー担当は初回CIの既存scenario895と製品差分を独立読取し、未開始の点検stateを失効として保持した原因を確認。closed context変更だけを初期化しopen/休止を保護する境界を妥当と評価した。担当自身の再実行29/29（integration＋independent probe＋storage-App）成功、同raw通知移動拒否・取得後休止編集・閉鎖前通知→新context初回未照合を確認。追加の未解消P0〜P2なし。正式CI再実行成否はこのローカル結果とは別に確認する。

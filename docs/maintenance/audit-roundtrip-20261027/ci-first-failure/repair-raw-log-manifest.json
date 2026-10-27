@@ -1,0 +1,58 @@
+{
+  "calculator-roundtrip-ci-unverified-red.log": {
+    "sha256": "63328c2bd2c55a916622940aa656e362a912d1d86c192629e9d791fa6fadc061",
+    "bytes": 7558
+  },
+  "calculator-roundtrip-child-integration19-green.log": {
+    "sha256": "9032903655b56df65eaf24df16873a276e90c32fd27c7e1f4c1da8d5ddd9bdc4",
+    "bytes": 565
+  },
+  "calculator-roundtrip-child-ci-unverified35-green.log": {
+    "sha256": "f2b7c644b646c5a95fa489d35ba37a5fd262fe1907389078d9ad3f07b11dc5da",
+    "bytes": 935
+  },
+  "independent-roundtrip-ci-fix-rerun.log": {
+    "sha256": "450c963e3c910e077525bff2315b1b73c04357deeb051db291f64c7f8aef4ea2",
+    "bytes": 1701
+  },
+  "roundtrip-repair-unit.log": {
+    "sha256": "4948fac1404b78b9009b41463e5dde2ea3b1fa531c207c1e2c00d1cb19a77cd5",
+    "bytes": 17702
+  },
+  "roundtrip-repair-contract.log": {
+    "sha256": "4ce9294378e328a5c86e8646c6b689415558296fec6cbd68fc0c4cc48e1b3d93",
+    "bytes": 3420
+  },
+  "roundtrip-repair-lint.log": {
+    "sha256": "1119e525a10bf78bc87e2d1974fe562822b62479d3f3e6916d39ccfe9a3a0b9e",
+    "bytes": 423
+  },
+  "roundtrip-repair-type.log": {
+    "sha256": "7125f194612fcff2f454c05d848e7cb71facc1967b4d5017e25b34fdee3ba74f",
+    "bytes": 99
+  },
+  "roundtrip-repair-normal.log": {
+    "sha256": "c1d20d4164d745f2a5339fe4edfe0b023f378f960a04aed12dd02c61c0955d27",
+    "bytes": 1905
+  },
+  "roundtrip-repair-pages.log": {
+    "sha256": "4fb9f2c6606334f68fa2db7bb41254f2bd51cf228b5117ef7ac418d79f1576c9",
+    "bytes": 12229
+  },
+  "roundtrip-repair-full-chromium.log": {
+    "sha256": "0c40e76c5936241824489197250235dfd9f8ae47c48213904c4446b0dbe05e93",
+    "bytes": 883
+  },
+  "roundtrip-repair-full-chromium2.log": {
+    "sha256": "0b9725d73ed01867907420548a0112fba66b8984bc3a97f56857534e1153e6da",
+    "bytes": 27671
+  },
+  "roundtrip-repair-e2e-install.log": {
+    "sha256": "693c4ecaf81d969332c058e71b5701378bf07c90e8cfc7783d3ac7453864d457",
+    "bytes": 373
+  },
+  "roundtrip-repair-full-chromium3.log": {
+    "sha256": "af1475c3617344c9454088eaf8fb6fb3a354e50fc6ad0f8ef20f5e72ccf5cf9a",
+    "bytes": 27108
+  }
+}
