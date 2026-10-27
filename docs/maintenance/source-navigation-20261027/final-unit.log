@@ -1,0 +1,203 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-source-navigation
+
+ ✓ tests/formula-report-audit-storage-app.test.ts (8 tests) 1715ms
+   ✓ real storage changed retains body without describing it as current saved, even after source recheck and reopen  361ms
+   ✓ same-turn storage notification and export cannot mix old saved-body wording with an invalidated source generation  331ms
+ ✓ tests/saved-evidence-ui.test.ts (33 tests) 2525ms
+   ✓ lazily mounts per-block details for a capacity-valid large history  847ms
+   ✓ uses compact unique append-order options while preserving complete IDs and metadata  516ms
+ ✓ tests/formula-report-diff-tracking-ui.test.ts (34 tests) 2668ms
+   ✓ same-formula report identity change closes the previous report source and comparison dialogs  396ms
+stderr | tests/formula-audit-record-comparison-app.test.ts > failed explicit source acquisition clears old comparison without rewriting fixed records
+ローカル保存領域へアクセスできませんでした Error: synthetic unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-source-navigation/tests/formula-audit-record-comparison-app.test.ts:108:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/storage.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-source-navigation/components/FormulaReportAudit.tsx:79:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-source-navigation-app.test.ts (11 tests) 3126ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\n")  509ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r\n")  343ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r")  1067ms
+ ✓ tests/formula-report-diff-ui.test.ts (34 tests) 3484ms
+stderr | tests/formula-report-audit-comparison-export-ui.test.ts > failed explicit retrieval and unsaved editor edits both invalidate output without changing fixed bytes
+ローカル保存領域へアクセスできませんでした Error: synthetic acquisition failure
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-source-navigation/tests/formula-report-audit-comparison-export-ui.test.ts:134:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/storage.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-source-navigation/components/FormulaReportAudit.tsx:79:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-audit-record-comparison-app.test.ts (16 tests) 3507ms
+   ✓ real app requires explicit A/B and compares changed expression even with equal results without persistence  321ms
+   ✓ real retained-data storage changed invalidates and preserves uncertainty through refresh and reopen  813ms
+   ✓ real retained-data storage deleted invalidates and preserves uncertainty through refresh and reopen  602ms
+   ✓ real retained-data storage unrelated invalidates and preserves uncertainty through refresh and reopen  319ms
+ ✓ tests/formula-report-audit-comparison-export-ui.test.ts (16 tests) 3627ms
+   ✓ real app previews, copies and downloads identical bytes without reading or modifying original data/history  430ms
+   ✓ real app storage changed invalidates output and late clipboard completion, keeps held-body constraint after recompare  472ms
+   ✓ real app storage deleted invalidates output and late clipboard completion, keeps held-body constraint after recompare  726ms
+ ✓ tests/formula-status-list.test.ts (25 tests) 917ms
+ ✓ tests/formula-report-quotes-ui.test.ts (24 tests) 1180ms
+ ✓ tests/formula-report-audit-record-ui.test.ts (16 tests) 1198ms
+stderr | tests/formula-report-audit-ui.test.ts > unverified links are not presented as absent in difference detail (failure)
+ローカル保存領域へアクセスできませんでした Error: blocked
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-source-navigation/tests/formula-report-audit-ui.test.ts:104:101)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/storage.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-source-navigation/components/FormulaReportAudit.tsx:79:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/evidence-app-save.test.ts (12 tests) 1207ms
+ ✓ tests/formula-report-audit-ui.test.ts (19 tests) 928ms
+ ✓ tests/evidence-pending-component.test.ts (7 tests) 817ms
+   ✓ pending count overflow refuses recalculation and trial application without dropping the 100 queued records  499ms
+ ✓ tests/formula-report-ui.test.ts (28 tests) 942ms
+ ✓ tests/report-template-navigation.test.ts (20 tests) 624ms
+ ✓ tests/formula-detail-refresh.test.ts (20 tests) 1011ms
+ ✓ tests/formula-report-app-save.test.ts (12 tests) 837ms
+ ✓ tests/calculation-trial-component.test.ts (16 tests) 677ms
+ ✓ tests/formula-quote-comparison-ui.test.ts (17 tests) 524ms
+ ✓ tests/formula-report-audit-export-ui.test.ts (16 tests) 691ms
+ ✓ tests/deleted-calculation-graph.test.ts (5 tests) 465ms
+ ✓ tests/formula-report-audit-comparison-insertion-ui.test.ts (45 tests) 8902ms
+   ✓ real app previews the exact existing export bytes and cancels without reading/writing data  500ms
+   ✓ real app selection insertion keeps selected/full old body and exact dedicated undo  839ms
+   ✓ real app end insertion keeps selected/full old body and exact dedicated undo  302ms
+   ✓ changedtrue body rejects dedicated undo even if old bytes are restored  356ms
+   ✓ real CalculatorApp storage changed invalidates prepared material and preserves held body/history  459ms
+   ✓ real CalculatorApp storage deleted invalidates prepared material and preserves held body/history  324ms
+   ✓ StrictMode app remains usable and explicit save/reload retains material but not new roots/history  445ms
+ ✓ tests/dependency-svg.test.ts (13 tests) 407ms
+   ✓ parses the display projection of actual exported node/edge syntax  364ms
+ ✓ tests/formula-snapshot-ordering.test.ts (10 tests) 338ms
+ ✓ tests/formula-detail-ui.test.ts (24 tests) 586ms
+stderr | tests/formula-comparison-insertion-independent.test.ts > independent negative: failed collection acquisition refuses fixed insertion, but historical comparison remains exportable
+ローカル保存領域へアクセスできませんでした Error: storage unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-source-navigation/tests/formula-comparison-insertion-independent.test.ts:51:87)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/storage.ts:94:18)
+    at acquireEvidence (/workspace/scratch/e622c1e9421e/calculator-source-navigation/components/FormulaReportModal.tsx:35:18)
+    at /workspace/scratch/e622c1e9421e/calculator-source-navigation/components/FormulaReportModal.tsx:132:50
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react/cjs/react.development.js:1263:34)
+
+ ✓ tests/trial-independent-review.test.ts (16 tests) 188ms
+ ✓ tests/formula-comparison-insertion-independent.test.ts (12 tests) 383ms
+ ✓ tests/formula-audit-comparison-sources-ui.test.ts (12 tests) 296ms
+ ✓ tests/formula-report-audit-record-review-ui.test.ts (4 tests) 300ms
+ ✓ tests/dependency-graph-component.test.ts (5 tests) 240ms
+stderr | tests/markdown-report-component.test.ts > refuses unreadable or absent persisted source {broken without fallback
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/storage.ts:99:21)
+    at readReport (/workspace/scratch/e622c1e9421e/calculator-source-navigation/components/MarkdownReportModal.tsx:14:20)
+    at /workspace/scratch/e622c1e9421e/calculator-source-navigation/components/MarkdownReportModal.tsx:25:56
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react/cjs/react.development.js:1263:34)
+    at MarkdownReportModal (/workspace/scratch/e622c1e9421e/calculator-source-navigation/components/MarkdownReportModal.tsx:25:41)
+    at Object.react_stack_bottom_frame (/workspace/scratch/e622c1e9421e/calculator-pr95-recovered/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+
+ ✓ tests/dependency-mermaid.test.ts (11 tests) 85ms
+ ✓ tests/markdown-report-component.test.ts (12 tests) 165ms
+ ✓ tests/markdown-headings.test.ts (31 tests) 146ms
+ ✓ tests/calculation-evidence-verification-ui.test.ts (7 tests) 193ms
+ ✓ tests/formula-comparison-boundary-ui.test.ts (3 tests) 95ms
+ ✓ tests/formula-audit-comparison-independent.test.ts (5 tests) 97ms
+ ✓ tests/formula-difference-source-layout.test.ts (3 tests) 100ms
+ ✓ tests/identification-ui.test.ts (1 test) 50ms
+ ✓ tests/markdown-report-download.test.ts (3 tests) 18ms
+ ✓ tests/evidence-independent-review.test.ts (25 tests) 162ms
+ ✓ tests/formula-execution.test.ts (39 tests) 308ms
+ ✓ tests/formula-report-difference-boundaries.test.ts (74 tests) 413ms
+ ✓ tests/math-functions.test.ts (96 tests) 56ms
+ ✓ tests/markdown-report-provenance.test.ts (22 tests) 251ms
+ ✓ tests/formula-report-audit-comparison-record.test.ts (45 tests) 301ms
+ ✓ tests/calculation-status.test.ts (36 tests) 83ms
+ ✓ tests/evidence-impact-graph.test.ts (20 tests) 77ms
+ ✓ tests/percent-integration.test.ts (10 tests) 109ms
+ ✓ tests/evidence-impact.test.ts (39 tests) 109ms
+ ✓ tests/formula-report-audit-record.test.ts (27 tests) 143ms
+ ✓ tests/execution-plan.test.ts (34 tests) 82ms
+ ✓ tests/dependency-analysis.test.ts (28 tests) 64ms
+ ✓ tests/block-references.test.ts (38 tests) 78ms
+ ✓ tests/formula-reports.test.ts (30 tests) 46ms
+ ✓ tests/formula-report-diff.test.ts (32 tests) 58ms
+ ✓ tests/variables.test.ts (39 tests) 56ms
+ ✓ tests/formula-report-audit-comparison.test.ts (64 tests) 48ms
+ ✓ tests/formula-report-audit.test.ts (30 tests) 110ms
+ ✓ tests/markdown-report.test.ts (46 tests) 79ms
+ ✓ tests/evidence-comparison.test.ts (41 tests) 85ms
+ ✓ tests/calculation-evidence-report.test.ts (15 tests) 29ms
+ ✓ tests/formula-report-diff-tracking.test.ts (38 tests) 59ms
+ ✓ tests/formula-report-audit-export.test.ts (33 tests) 81ms
+ ✓ tests/formula-report-audit-comparison-export.test.ts (33 tests) 72ms
+ ✓ tests/percent-parser.test.ts (64 tests) 59ms
+ ✓ tests/reference-phase-boundary.test.ts (9 tests) 86ms
+ ✓ tests/calculation-trial.test.ts (24 tests) 62ms
+ ✓ tests/formula-report-evidence.test.ts (50 tests) 70ms
+ ✓ tests/source-evidence-gui-contract.test.ts (13 tests) 28ms
+ ✓ tests/dependency-comparison.test.ts (13 tests) 64ms
+ ✓ tests/calculator.test.ts (54 tests) 32ms
+ ✓ tests/calculation-evidence.test.ts (20 tests) 30ms
+ ✓ tests/memo-blocks.test.ts (6 tests) 24ms
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 27ms
+ ✓ tests/storage.test.ts (42 tests) 40ms
+ ✓ tests/formula-quote-comparison.test.ts (16 tests) 40ms
+ ✓ tests/format-copy.test.ts (6 tests) 47ms
+ ✓ tests/formula-report-timeline.test.ts (12 tests) 22ms
+ ✓ tests/memo-block-preservation.test.ts (20 tests) 36ms
+ ✓ tests/ast-evaluation.test.ts (18 tests) 81ms
+ ✓ tests/calculator-input.test.ts (50 tests) 78ms
+ ✓ tests/formula-report-quotes.test.ts (64 tests) 38ms
+ ✓ tests/storage-export.test.ts (5 tests) 5ms
+ ✓ tests/formula-report-audit-comparison-navigation.test.ts (45 tests) 50ms
+ ✓ tests/evidence-impact-markdown.test.ts (6 tests) 12ms
+ ✓ tests/formula-audit-comparison-export-independent.test.ts (9 tests) 26ms
+ ✓ tests/formula-audit-empty-independent.test.ts (17 tests) 33ms
+ ✓ tests/confirmation-remarks-component.test.ts (2 tests) 24ms
+ ✓ tests/evidence-storage.test.ts (7 tests) 23ms
+ ✓ tests/formula-library.test.ts (31 tests) 28ms
+ ✓ tests/formula-report-audit-comparison-envelope.test.ts (11 tests) 20ms
+ ✓ tests/url-expression.test.ts (6 tests) 6ms
+ ✓ tests/memo-labels.test.ts (2 tests) 3ms
+ ✓ tests/identification.test.ts (20 tests) 9ms
+ ✓ tests/formula-report-audit-record-review.test.ts (2 tests) 9ms
+
+ Test Files  95 passed (95)
+      Tests  2205 passed (2205)
+   Start at  13:59:57
+   Duration  24.18s (transform 4.46s, setup 0ms, collect 87.93s, tests 49.33s, environment 18.38s, prepare 9.83s)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

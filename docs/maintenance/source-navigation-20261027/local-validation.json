@@ -1,0 +1,233 @@
+{
+  "timezone": "Asia/Tokyo",
+  "baseHead": "6e3fa736b9ee335ab5c61b96cc5b52c0b8073868",
+  "scope": "uncommitted implementation tree; final HEAD CI is separate",
+  "runs": [
+    {
+      "stage": "apt-config",
+      "command": "sudo",
+      "args": [
+        "--preserve-env=GITHUB_ACTIONS",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "e2e/configure-ci-apt.mjs"
+      ],
+      "startedAt": "2026-10-27T13:55:44.356000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 23,
+      "signal": null,
+      "durationMs": 6.975830999999992,
+      "finishedAt": "2026-10-27T13:55:44.363000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "browser-install",
+      "command": "/definitely-absent-calculator-test-command",
+      "args": [],
+      "startedAt": "2026-10-27T13:55:44.670000+09:00",
+      "node": "v24.22.1",
+      "exitCode": null,
+      "error": "Error: spawn /definitely-absent-calculator-test-command ENOENT",
+      "durationMs": 4.458817000000003,
+      "finishedAt": "2026-10-27T13:55:44.674000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "contracts",
+      "command": "bash",
+      "args": [
+        "-c",
+        "node --test e2e/ci-contract.node-test.mjs"
+      ],
+      "startedAt": "2026-10-27T13:55:43.920000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 1039.189707,
+      "finishedAt": "2026-10-27T13:55:44.959000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "final-contracts",
+      "command": "bash",
+      "args": [
+        "-c",
+        "env -u GUI_STAGE_EVIDENCE_DIR node --test e2e/ci-contract.node-test.mjs"
+      ],
+      "startedAt": "2026-10-27T14:00:48.215000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 999.0378999999999,
+      "finishedAt": "2026-10-27T14:00:49.215000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "final-lint",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npm run lint"
+      ],
+      "startedAt": "2026-10-27T14:00:22.161000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 9852.506478,
+      "finishedAt": "2026-10-27T14:00:32.014000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "final-normal-build",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npm run build"
+      ],
+      "startedAt": "2026-10-27T14:00:36.650000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 9825.625607,
+      "finishedAt": "2026-10-27T14:00:46.476000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "final-pages-build",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npm run build:pages"
+      ],
+      "startedAt": "2026-10-27T14:00:46.600000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1552.535096,
+      "finishedAt": "2026-10-27T14:00:48.153000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "final-types",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npx --no-install tsc --noEmit"
+      ],
+      "startedAt": "2026-10-27T14:00:32.076000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 4507.013115,
+      "finishedAt": "2026-10-27T14:00:36.583000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "final-unit",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npm test"
+      ],
+      "startedAt": "2026-10-27T13:59:57.271000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 24823.980817,
+      "finishedAt": "2026-10-27T14:00:22.095000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "lint",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npm run lint"
+      ],
+      "startedAt": "2026-10-27T13:54:50.181000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 9519.968394,
+      "finishedAt": "2026-10-27T13:54:59.701000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "normal-build",
+      "command": "npm",
+      "args": [
+        "run",
+        "build"
+      ],
+      "startedAt": "2026-10-27T13:55:44.197000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 23,
+      "signal": null,
+      "durationMs": 6.863381999999994,
+      "finishedAt": "2026-10-27T13:55:44.204000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "os-install",
+      "command": "timeout",
+      "args": [
+        "--verbose",
+        "--kill-after=0.2s",
+        "0.1s",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "-e",
+        "console.log(\"synthetic stalled acquisition\"); require(\"node:child_process\").spawn(process.execPath, [\"-e\", \"setInterval(() => {}, 1000)\"], { stdio: \"inherit\" }); setInterval(() => {}, 1000)"
+      ],
+      "startedAt": "2026-10-27T13:55:44.816000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 124,
+      "signal": null,
+      "durationMs": 107.96927,
+      "finishedAt": "2026-10-27T13:55:44.924000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "pages-build",
+      "command": "npm",
+      "args": [
+        "run",
+        "build:pages"
+      ],
+      "startedAt": "2026-10-27T13:55:44.278000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 23,
+      "signal": null,
+      "durationMs": 7.0035939999999925,
+      "finishedAt": "2026-10-27T13:55:44.285000+09:00",
+      "status": "failed"
+    },
+    {
+      "stage": "types",
+      "command": "bash",
+      "args": [
+        "-c",
+        "npx --no-install tsc --noEmit"
+      ],
+      "startedAt": "2026-10-27T13:54:59.759000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 7089.544105,
+      "finishedAt": "2026-10-27T13:55:06.848000+09:00",
+      "status": "passed"
+    },
+    {
+      "stage": "unit",
+      "command": "npm",
+      "args": [
+        "test"
+      ],
+      "startedAt": "2026-10-27T13:55:44.584000+09:00",
+      "node": "v24.22.1",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 5.700701000000002,
+      "finishedAt": "2026-10-27T13:55:44.589000+09:00",
+      "status": "passed"
+    }
+  ]
+}

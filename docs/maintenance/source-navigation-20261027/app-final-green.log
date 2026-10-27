@@ -1,0 +1,11 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-source-navigation
+
+ ✓ tests/formula-report-source-navigation-app.test.ts (11 tests) 1097ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  13:51:57
+   Duration  2.96s (transform 660ms, setup 0ms, collect 1.41s, tests 1.10s, environment 249ms, prepare 57ms)
+

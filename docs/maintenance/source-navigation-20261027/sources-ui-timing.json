@@ -1,0 +1,19 @@
+{
+  "stage": "sources-ui",
+  "command": "npx",
+  "args": [
+    "--no-install",
+    "vitest",
+    "run",
+    "tests/formula-audit-comparison-sources-ui.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "startedAt": "2026-10-27T04:53:10.566Z",
+  "node": "v24.22.1",
+  "exitCode": 0,
+  "signal": null,
+  "durationMs": 2269.8696179999997,
+  "finishedAt": "2026-10-27T04:53:12.835Z",
+  "status": "passed"
+}

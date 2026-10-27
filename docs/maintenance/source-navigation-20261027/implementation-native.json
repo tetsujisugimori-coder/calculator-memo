@@ -1,0 +1,446 @@
+{
+  "kind": "implementation-side local focused probe; not formal full six-context acceptance",
+  "startedAt": "2026-10-27T04:58:00.461Z",
+  "startedAtJST": "2026-10-27 13:58:00+09:00",
+  "head": "6e3fa736b9ee335ab5c61b96cc5b52c0b8073868",
+  "tree": "2505d2f6a81a44d60484be03fc6725683dc8a91c",
+  "dirty": "M LOG.md\n M README.md\n M components/FormulaReportAudit.tsx\n M components/FormulaReportModal.tsx\n M e2e/ci-contract.mjs\n M e2e/ci-contract.node-test.mjs\n M e2e/scenario.mjs\n M lib/formula-report-audit-comparison-record.ts\n M lib/formula-report-audit-record.ts\n?? components/FormulaAuditComparisonSources.tsx\n?? docs/design/\n?? docs/maintenance/source-navigation-20261027/\n?? e2e/audit-comparison-navigation.mjs\n?? lib/formula-report-audit-comparison-navigation.ts\n?? tests/formula-audit-comparison-sources-ui.test.ts\n?? tests/formula-report-audit-comparison-navigation.test.ts\n?? tests/formula-report-source-navigation-app.test.ts",
+  "base": "http://127.0.0.1:4288/calculator-memo/",
+  "node": "v24.22.1",
+  "playwright": "1.56.1",
+  "conditions": [
+    {
+      "id": "chromium-mobile-390px-focused",
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "dpr": 3,
+      "hasTouch": true,
+      "startedAt": "2026-10-27T04:58:00.489Z",
+      "checks": [
+        "chromium-mobile-390px-focused: fixed comparison source detail preserves exact historical Unicode text and explicit absent structured state without reading new originals with keyboard focus and both themes CSS 200 percent",
+        "chromium-mobile-390px-focused: unique version one sources A B and comparison material navigate exact original ranges without body original history or calculation changes",
+        "chromium-mobile-390px-focused: missing and duplicate source identities stay non-navigable while fixed comparison text remains readable and saved data unchanged",
+        "chromium-mobile-390px-focused: ambiguous same ID early end never promotes internal source B or enables material navigation and incomplete inventory remains explicit",
+        "chromium-mobile-390px-focused: editing and reopening resolves only the new held body source positions without reusing stale offsets or persisting draft",
+        "chromium-mobile-390px-focused: real separate page storage changed invalidates old detail while CalculatorApp retains draft and explicitly reselected source navigates held body only without overwrite",
+        "chromium-mobile-390px-focused: real separate page storage deleted invalidates old detail while CalculatorApp retains draft and explicitly reselected source navigates held body only without overwrite"
+      ],
+      "geometry": [
+        {
+          "name": "chromium-mobile-390px-focused-comparison-source-dark-200",
+          "horizontalFit": "passed",
+          "retained": false
+        },
+        {
+          "name": "chromium-mobile-390px-focused-comparison-source-detail",
+          "horizontalFit": "passed",
+          "retained": true
+        }
+      ],
+      "activations": [
+        {
+          "durationMs": 136.3410060000001,
+          "type": "tap"
+        },
+        {
+          "durationMs": 101.197361,
+          "type": "tap"
+        },
+        {
+          "durationMs": 48.498065,
+          "type": "tap"
+        },
+        {
+          "durationMs": 94.08481499999994,
+          "type": "tap"
+        },
+        {
+          "durationMs": 80.962984,
+          "type": "tap"
+        },
+        {
+          "durationMs": 44.04685100000006,
+          "type": "tap"
+        },
+        {
+          "durationMs": 76.0975470000003,
+          "type": "tap"
+        },
+        {
+          "durationMs": 50.72870399999965,
+          "type": "tap"
+        },
+        {
+          "durationMs": 85.84045300000025,
+          "type": "tap"
+        },
+        {
+          "durationMs": 65.60205200000019,
+          "type": "tap"
+        },
+        {
+          "durationMs": 74.66337799999974,
+          "type": "tap"
+        },
+        {
+          "durationMs": 56.090584000000035,
+          "type": "tap"
+        },
+        {
+          "durationMs": 65.874863,
+          "type": "tap"
+        },
+        {
+          "durationMs": 48.752156000000014,
+          "type": "tap"
+        },
+        {
+          "durationMs": 63.12191799999982,
+          "type": "tap"
+        },
+        {
+          "durationMs": 47.120260000000144,
+          "type": "tap"
+        },
+        {
+          "durationMs": 52.611709999999675,
+          "type": "tap"
+        },
+        {
+          "durationMs": 68.52768800000013,
+          "type": "tap"
+        },
+        {
+          "durationMs": 62.98757000000023,
+          "type": "tap"
+        },
+        {
+          "durationMs": 49.141944000000876,
+          "type": "tap"
+        },
+        {
+          "durationMs": 36.66223100000025,
+          "type": "tap"
+        },
+        {
+          "durationMs": 62.715360000000146,
+          "type": "tap"
+        },
+        {
+          "durationMs": 52.4216779999997,
+          "type": "tap"
+        },
+        {
+          "durationMs": 53.76184199999989,
+          "type": "tap"
+        },
+        {
+          "durationMs": 63.26335499999914,
+          "type": "tap"
+        },
+        {
+          "durationMs": 57.021200000000135,
+          "type": "tap"
+        },
+        {
+          "durationMs": 62.83909600000061,
+          "type": "tap"
+        },
+        {
+          "durationMs": 49.31960600000002,
+          "type": "tap"
+        },
+        {
+          "durationMs": 53.83295399999952,
+          "type": "tap"
+        },
+        {
+          "durationMs": 62.41387599999962,
+          "type": "tap"
+        },
+        {
+          "durationMs": 92.10484300000007,
+          "type": "tap"
+        },
+        {
+          "durationMs": 62.5085939999999,
+          "type": "tap"
+        },
+        {
+          "durationMs": 47.80949700000019,
+          "type": "tap"
+        },
+        {
+          "durationMs": 62.51909499999965,
+          "type": "tap"
+        },
+        {
+          "durationMs": 51.16320799999994,
+          "type": "tap"
+        },
+        {
+          "durationMs": 72.24385900000016,
+          "type": "tap"
+        },
+        {
+          "durationMs": 41.39440700000068,
+          "type": "tap"
+        },
+        {
+          "durationMs": 80.78139099999953,
+          "type": "tap"
+        },
+        {
+          "durationMs": 63.211146000000554,
+          "type": "tap"
+        },
+        {
+          "durationMs": 49.6368650000004,
+          "type": "tap"
+        },
+        {
+          "durationMs": 68.91903700000057,
+          "type": "tap"
+        },
+        {
+          "durationMs": 51.77193399999942,
+          "type": "tap"
+        },
+        {
+          "durationMs": 56.493054000000484,
+          "type": "tap"
+        },
+        {
+          "durationMs": 53.485609999999724,
+          "type": "tap"
+        }
+      ],
+      "errors": [],
+      "status": "passed",
+      "version": "141.0.7390.37",
+      "endedAt": "2026-10-27T04:58:07.275Z"
+    },
+    {
+      "id": "webkit-mobile-390px-focused",
+      "engine": "webkit",
+      "width": 390,
+      "height": 844,
+      "dpr": 3,
+      "hasTouch": true,
+      "startedAt": "2026-10-27T04:58:07.305Z",
+      "checks": [
+        "webkit-mobile-390px-focused: fixed comparison source detail preserves exact historical Unicode text and explicit absent structured state without reading new originals with keyboard focus and both themes CSS 200 percent",
+        "webkit-mobile-390px-focused: unique version one sources A B and comparison material navigate exact original ranges without body original history or calculation changes",
+        "webkit-mobile-390px-focused: missing and duplicate source identities stay non-navigable while fixed comparison text remains readable and saved data unchanged",
+        "webkit-mobile-390px-focused: ambiguous same ID early end never promotes internal source B or enables material navigation and incomplete inventory remains explicit",
+        "webkit-mobile-390px-focused: editing and reopening resolves only the new held body source positions without reusing stale offsets or persisting draft",
+        "webkit-mobile-390px-focused: real separate page storage changed invalidates old detail while CalculatorApp retains draft and explicitly reselected source navigates held body only without overwrite",
+        "webkit-mobile-390px-focused: real separate page storage deleted invalidates old detail while CalculatorApp retains draft and explicitly reselected source navigates held body only without overwrite"
+      ],
+      "geometry": [
+        {
+          "name": "webkit-mobile-390px-focused-comparison-source-dark-200",
+          "horizontalFit": "passed",
+          "retained": false
+        },
+        {
+          "name": "webkit-mobile-390px-focused-comparison-source-detail",
+          "horizontalFit": "passed",
+          "retained": true
+        }
+      ],
+      "activations": [
+        {
+          "durationMs": 598.3065080000015,
+          "type": "tap"
+        },
+        {
+          "durationMs": 588.4711200000002,
+          "type": "tap"
+        },
+        {
+          "durationMs": 330.46081799999956,
+          "type": "tap"
+        },
+        {
+          "durationMs": 126.42234400000052,
+          "type": "tap"
+        },
+        {
+          "durationMs": 177.48310800000036,
+          "type": "tap"
+        },
+        {
+          "durationMs": 680.6726049999997,
+          "type": "tap"
+        },
+        {
+          "durationMs": 123.98584499999924,
+          "type": "tap"
+        },
+        {
+          "durationMs": 137.68435500000123,
+          "type": "tap"
+        },
+        {
+          "durationMs": 108.59726000000046,
+          "type": "tap"
+        },
+        {
+          "durationMs": 205.44856299999992,
+          "type": "tap"
+        },
+        {
+          "durationMs": 132.3437759999997,
+          "type": "tap"
+        },
+        {
+          "durationMs": 103.29010799999924,
+          "type": "tap"
+        },
+        {
+          "durationMs": 206.1585410000007,
+          "type": "tap"
+        },
+        {
+          "durationMs": 150.70750599999883,
+          "type": "tap"
+        },
+        {
+          "durationMs": 106.40811399999984,
+          "type": "tap"
+        },
+        {
+          "durationMs": 390.7423770000005,
+          "type": "tap"
+        },
+        {
+          "durationMs": 176.28748799999812,
+          "type": "tap"
+        },
+        {
+          "durationMs": 95.63096000000223,
+          "type": "tap"
+        },
+        {
+          "durationMs": 376.9660029999977,
+          "type": "tap"
+        },
+        {
+          "durationMs": 144.64368000000104,
+          "type": "tap"
+        },
+        {
+          "durationMs": 93.44733599999745,
+          "type": "tap"
+        },
+        {
+          "durationMs": 371.10205700000006,
+          "type": "tap"
+        },
+        {
+          "durationMs": 144.66623400000026,
+          "type": "tap"
+        },
+        {
+          "durationMs": 87.18446399999812,
+          "type": "tap"
+        },
+        {
+          "durationMs": 399.38546100000167,
+          "type": "tap"
+        },
+        {
+          "durationMs": 146.12131399999998,
+          "type": "tap"
+        },
+        {
+          "durationMs": 95.84501200000159,
+          "type": "tap"
+        },
+        {
+          "durationMs": 375.566737000001,
+          "type": "tap"
+        },
+        {
+          "durationMs": 133.65986300000077,
+          "type": "tap"
+        },
+        {
+          "durationMs": 99.23545699999886,
+          "type": "tap"
+        },
+        {
+          "durationMs": 357.6369400000003,
+          "type": "tap"
+        },
+        {
+          "durationMs": 284.0715540000019,
+          "type": "tap"
+        },
+        {
+          "durationMs": 316.34273400000166,
+          "type": "tap"
+        },
+        {
+          "durationMs": 141.4821179999999,
+          "type": "tap"
+        },
+        {
+          "durationMs": 162.5880529999995,
+          "type": "tap"
+        },
+        {
+          "durationMs": 676.2987649999995,
+          "type": "tap"
+        },
+        {
+          "durationMs": 121.94225799999913,
+          "type": "tap"
+        },
+        {
+          "durationMs": 374.26466999999684,
+          "type": "tap"
+        },
+        {
+          "durationMs": 275.2038199999988,
+          "type": "tap"
+        },
+        {
+          "durationMs": 267.9531759999991,
+          "type": "tap"
+        },
+        {
+          "durationMs": 107.2668769999982,
+          "type": "tap"
+        },
+        {
+          "durationMs": 169.206044999999,
+          "type": "tap"
+        },
+        {
+          "durationMs": 379.4506739999997,
+          "type": "tap"
+        },
+        {
+          "durationMs": 100.37079799999992,
+          "type": "tap"
+        }
+      ],
+      "errors": [],
+      "status": "passed",
+      "version": "26.0",
+      "endedAt": "2026-10-27T04:58:26.056Z"
+    }
+  ],
+  "status": "passed",
+  "sourceSha256": {
+    "e2e/audit-comparison-navigation.mjs": "073852f680ac30e5aad3554e62e776e03040f2b8d83dc4e7c9de30ea6852ccd5",
+    "e2e/scenario.mjs": "8395eca197c193b2da499799d94f277d1d12ba5dbc61b81935fafac272f197a8",
+    "components/FormulaAuditComparisonSources.tsx": "ad6fb22db5e1ba0409b97328604813d8f38862f8c949929505fd5ffacff55c4a",
+    "lib/formula-report-audit-comparison-navigation.ts": "355943486b960fec201682a48dc358b470a6da1e73bd6009bcecd59d50815cd2",
+    "dist-pages/index.html": "8c28767c3899e476191cec2ff78f82e3ed9c909830a32d13c0baf5cda45a1071"
+  },
+  "endedAt": "2026-10-27T04:58:26.289Z"
+}

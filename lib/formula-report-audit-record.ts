@@ -86,3 +86,17 @@ export function createAuditRecordMarkdown(markdown: string, info: AuditRecordMet
   if (result.length > 100_000) throw new Error('固定点検記録が本文上限100,000文字を超えます。切り捨てず挿入を停止しました。');
   return result;
 }
+
+/** Read-only diagnostics; an observed ID is not validated record metadata. */
+export function inspectAuditRecordMarker(body: string, block: MarkdownBlock) {
+  if (block.kind !== 'code' || !block.language.startsWith(PREFIX)) return undefined;
+  let value: unknown;
+  try { value = JSON.parse(block.text); } catch { /* Observation only. */ }
+  const known = [AUDIT_RECORD_START, AUDIT_RECORD_START_V2, AUDIT_RECORD_END, AUDIT_RECORD_END_V2].includes(block.language)
+    && !(object(value) && typeof value.version === 'number' && ![1, 2].includes(value.version));
+  const closed = closedCode(body, block);
+  const version = block.language === AUDIT_RECORD_START ? 1 : block.language === AUDIT_RECORD_START_V2 ? 2 : undefined;
+  const startMetadata = closed && version && object(value) && value.version === version ? metadata(value) : undefined;
+  return { start: block.start, end: block.end, known, closed, startMetadata, isStart: block.language.startsWith(`${PREFIX}-start-`),
+    claimedId: object(value) && typeof value.recordId === 'string' ? value.recordId : undefined };
+}

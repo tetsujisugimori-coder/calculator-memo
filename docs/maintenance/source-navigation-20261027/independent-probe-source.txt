@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import { inspectComparisonMaterials } from '/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/formula-report-audit-comparison-navigation.ts';
+import { createAuditRecordMarkdown } from '/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/formula-report-audit-record.ts';
+import { createAuditComparisonRecordMarkdown } from '/workspace/scratch/e622c1e9421e/calculator-source-navigation/lib/formula-report-audit-comparison-record.ts';
+const at='2026-10-27T13:53:00+09:00';
+const info={materialId:'M',formulaId:'f',reportId:'r',beforeRecordId:'A',afterRecordId:'B',preparedAt:at};
+const ai={recordId:'A',formulaId:'f',reportId:'r',generatedAt:at,bodySha256:'a'.repeat(64),bodyLength:0};
+const a=createAuditRecordMarkdown('A',ai), b=createAuditRecordMarkdown('B',{...ai,recordId:'B'});
+const inspect=(body:string)=>inspectComparisonMaterials(body,'f','r');
+let checks=0;
+for(const nl of ['\n','\r\n','\r']) {
+ const mat=createAuditComparisonRecordMarkdown(b,info);
+ const body=[a,mat,b].join('\n\n').replace(/\n/g,nl);
+ const r=inspect(body); assert.equal(r.entries.length,1); assert.equal(r.entries[0].after.status,'available'); assert.equal(r.entries[0].after.start,body.lastIndexOf(b.replace(/\n/g,nl)));checks++;
+ const fake=createAuditComparisonRecordMarkdown('unchanged', {...info,reportId:'foreign'});
+ assert.equal(inspect(a+'\n\n'+fake).entries[0].before.status,'unidentified');checks++;
+ const truncated=a.slice(0,a.indexOf('\n\n'));
+ const inert=createAuditComparisonRecordMarkdown(truncated,info);
+ assert.equal(inspect(inert+'\n\n'+b).entries[0].status,'complete');checks++;
+ const unknown='```calculator-memo-audit-record-start-v99\n{"version":99,"recordId":"A"}\n```';
+ assert.equal(inspect(mat+'\n\n'+unknown).entries[0].before.status,'unknown');checks++;
+}
+console.log(JSON.stringify({independentChecks:checks,passed:true}));

@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-27T04:59:12.546Z",
+  "base": "http://127.0.0.1:4288/calculator-memo/",
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "theme": "dark",
+      "fontMethod": "root CSS 200%",
+      "fullText": true,
+      "readOnly": true,
+      "keyboardFocus": true,
+      "horizontalFit": true,
+      "sourceBNavigation": true,
+      "heldBodyUnchanged": true,
+      "savedBytesUnchanged": true,
+      "pageerrors": [],
+      "status": "passed"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "theme": "dark",
+      "fontMethod": "root CSS 200%",
+      "fullText": true,
+      "readOnly": true,
+      "keyboardFocus": true,
+      "horizontalFit": true,
+      "sourceBNavigation": true,
+      "heldBodyUnchanged": true,
+      "savedBytesUnchanged": true,
+      "pageerrors": [],
+      "status": "passed"
+    }
+  ]
+}

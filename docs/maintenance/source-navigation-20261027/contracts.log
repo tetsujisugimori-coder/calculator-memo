@@ -1,0 +1,177 @@
+✖ unit: command failure propagates and leaves the diagnostic log (76.218396ms)
+✖ normal_build: command failure propagates and leaves the diagnostic log (84.44459ms)
+✖ pages_build: command failure propagates and leaves the diagnostic log (80.627267ms)
+✖ apt_config: command failure propagates and leaves the diagnostic log (79.007013ms)
+✖ os_install: command failure propagates and leaves the diagnostic log (69.707783ms)
+✖ browser_install: command failure propagates and leaves the diagnostic log (88.64117ms)
+✔ workflow retains strict failure, exact HEAD, timeout and artifact contracts (0.738001ms)
+✖ log storage failure cannot be concealed by a successful command (65.555717ms)
+✔ complete six-context contract preserves 972 prior checks plus 42 source-navigation checks and 580 geometry checkpoints (2.395787ms)
+✔ coverage rejects one scenario never ran (0.839754ms)
+✔ coverage rejects duplicate context replaces omitted context (0.859294ms)
+✔ coverage rejects child failed (0.402105ms)
+✔ coverage rejects scenario still running (0.433934ms)
+✔ coverage rejects checkout SHA mismatch (0.30552ms)
+✔ coverage rejects expected SHA mismatch (0.349276ms)
+✔ coverage rejects served SHA mismatch (0.293382ms)
+✔ coverage rejects incorrect mobile environment (0.568146ms)
+✔ coverage rejects entire new fixed-insertion coverage absent (0.307413ms)
+✔ coverage rejects legacy touch count without fixed-insertion operations (0.66417ms)
+✔ coverage rejects acceptance check missing (0.465641ms)
+✔ coverage rejects duplicate acceptance check (0.347624ms)
+✔ coverage rejects check from another context (4.035454ms)
+✔ coverage rejects duplicate geometry checkpoint (0.798252ms)
+✔ coverage rejects geometry checkpoint missing (0.274423ms)
+✔ coverage rejects geometry checkpoint failed (0.439792ms)
+✔ coverage rejects touch activation omitted (0.442546ms)
+✔ coverage rejects runtime or network error (0.568526ms)
+✖ stage process launch failure remains failed with timing evidence (70.737533ms)
+✔ missing-context validation is nonzero at the process boundary (65.80646ms)
+✔ isolated preview ports are distinct and allowed by Fetch before any transport (5.233568ms)
+✔ successful memo save waits for persistence without delaying read-only storage observations (2.477469ms)
+✔ modal overflow diagnostics are failure-only bounded and retain the strict geometry assertion (2.674767ms)
+✔ deb822 source rewrite preserves signing, suites, components and unrelated sources (0.882358ms)
+✔ legacy sources preserve options and other hosts; Azure security gets official security endpoint (0.4387ms)
+✔ unknown URI, suite and wrapped or ambiguous fields fail closed (0.840796ms)
+✔ APT configuration is restricted to root GitHub Ubuntu 24.04 and transport settings (0.509897ms)
+✔ OS and browser acquisition have separate bounded budgets without dependency omissions (0.480693ms)
+✖ bounded acquisition timeout fails and preserves its stage log and timing (169.438856ms)
+✔ official hosted-runner mirror+file indirection preserves signed source semantics (0.665652ms)
+✔ resource evidence separates Node usage from visible browser descendants (2.614525ms)
+✔ activation timing preserves real input and touch observation while splitting dispatch costs (1.426047ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 32
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 963.786468
+
+✖ failing tests:
+
+test at e2e/ci-contract.node-test.mjs:43:3
+✖ unit: command failure propagates and leaves the diagnostic log (76.218396ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-fault-YnSUC1/gui-evidence/unit.log'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:58:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-fault-YnSUC1/gui-evidence/unit.log'
+  }
+
+test at e2e/ci-contract.node-test.mjs:43:3
+✖ normal_build: command failure propagates and leaves the diagnostic log (84.44459ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-fault-wecT5O/gui-evidence/normal-build.log'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:58:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-fault-wecT5O/gui-evidence/normal-build.log'
+  }
+
+test at e2e/ci-contract.node-test.mjs:43:3
+✖ pages_build: command failure propagates and leaves the diagnostic log (80.627267ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-fault-Efp53X/gui-evidence/pages-build.log'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:58:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-fault-Efp53X/gui-evidence/pages-build.log'
+  }
+
+test at e2e/ci-contract.node-test.mjs:43:3
+✖ apt_config: command failure propagates and leaves the diagnostic log (79.007013ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-fault-teJi10/gui-evidence/apt-config.log'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:58:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-fault-teJi10/gui-evidence/apt-config.log'
+  }
+
+test at e2e/ci-contract.node-test.mjs:43:3
+✖ os_install: command failure propagates and leaves the diagnostic log (69.707783ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-fault-OCIuII/gui-evidence/os-install.log'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:58:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-fault-OCIuII/gui-evidence/os-install.log'
+  }
+
+test at e2e/ci-contract.node-test.mjs:43:3
+✖ browser_install: command failure propagates and leaves the diagnostic log (88.64117ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-fault-4tm8cP/gui-evidence/browser-install.log'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:58:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-fault-4tm8cP/gui-evidence/browser-install.log'
+  }
+
+test at e2e/ci-contract.node-test.mjs:79:1
+✖ log storage failure cannot be concealed by a successful command (65.555717ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to: 0
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:90:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at e2e/ci-contract.node-test.mjs:141:1
+✖ stage process launch failure remains failed with timing evidence (70.737533ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-spawn-fault-IqHS8x/gui-evidence/browser-install-timing.json'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:147:31)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-spawn-fault-IqHS8x/gui-evidence/browser-install-timing.json'
+  }
+
+test at e2e/ci-contract.node-test.mjs:239:1
+✖ bounded acquisition timeout fails and preserves its stage log and timing (169.438856ms)
+  Error: ENOENT: no such file or directory, open '/tmp/calculator-ci-timeout-DJY5YY/gui-evidence/os-install-timing.json'
+      at async open (node:internal/fs/promises:1345:25)
+      at async readFile (node:internal/fs/promises:2003:14)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-source-navigation/e2e/ci-contract.node-test.mjs:245:31)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/calculator-ci-timeout-DJY5YY/gui-evidence/os-install-timing.json'
+  }
