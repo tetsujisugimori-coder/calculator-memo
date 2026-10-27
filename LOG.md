@@ -1312,3 +1312,9 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - 実App3件同期待RED→GREEN、活動中失効維持1件追加。全2251単体・41契約・lint・型・両build成功、独立再検証29件成功。正式CI再成功はPR Checks/結果コメントで確認する。
 - 失敗ZIP取得SHA256/API一致と最小診断をmaintenance記録に保全。Draft・未マージを維持。
 記録：2026-10-27 23:38 JST。
+
+### Issue #98 / PR #99：任意npm cache後処理によるCI取消への対処
+- HEAD55e4893のattempt2は全6GUI1056／592geometry／132PNG／trace0を完走したが、成果物保存後のsetup-node npm cache保存で30分上限cancel。検査成功とjob成功を分離して記録。
+- PR workflowの任意cacheを無効化（package-manager-cache:false）。lockfile npm ci・Nodepin・全検査・artifact・worker3・上限30分は維持、公開workflow不変更。cache予算契約を1件追加、42件へ。
+- 旧失敗・cancel・UNKNOWNを残し、変更後HEADの実CIを待つ。
+記録：2026-10-28 00:59 JST。

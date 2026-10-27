@@ -1,0 +1,298 @@
+[
+  {
+    "head": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+    "run": 40525537905,
+    "attempt": 1,
+    "job_conclusion": "cancelled",
+    "zip_sha256": "3ae06f9416b1d41da9b82224ed6e88ff1567a65e42179354f08571e5f1fee220",
+    "api_digest_matches": true,
+    "records": [
+      {
+        "scenario": "chromium-desktop-1365px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 100,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "1",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "1"
+        },
+        "errors": [],
+        "provenance_sha256": "e423ab915574066cab9450cd100383d8cca2c6b24ffac4ce59d7fbcc9ffb63e4"
+      },
+      {
+        "scenario": "chromium-mobile-375px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "1",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "1"
+        },
+        "errors": [],
+        "provenance_sha256": "821977d507a35f9d7b47243dbc21461b448e6d41357a718c9a4f678dc59f7d5d"
+      },
+      {
+        "scenario": "chromium-mobile-390px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "1",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "1"
+        },
+        "errors": [],
+        "provenance_sha256": "439029d683237b7070e62ff3491d28fe0b2a420d6ed61d120ddc88a2b2233d58"
+      },
+      {
+        "scenario": "chromium-narrow-390px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 175,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "1",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "1"
+        },
+        "errors": [],
+        "provenance_sha256": "668ea9e7ff096fdd3f302793a52dacd21f03bd316ab558c7f9d686f149f26f64"
+      },
+      {
+        "scenario": "webkit-mobile-375px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 177,
+        "geometry": 100,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "1",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "1"
+        },
+        "errors": [],
+        "provenance_sha256": "7a456d5a651ff5ecdb5e36eb9ffb4296cb02d8b36f5476ce368e88e6ff4d2aa6"
+      },
+      {
+        "scenario": "webkit-mobile-390px",
+        "status": "running",
+        "stage": "webkit-mobile-390px: saved-record-comparison",
+        "checks": 163,
+        "geometry": 91,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "1",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "1"
+        },
+        "errors": [],
+        "provenance_sha256": "78038619686f85ad72e03ca031a7c8ba946bc59596ff4f84e2395d84511b63e7"
+      }
+    ],
+    "png": 130,
+    "trace": 0,
+    "outcomes": {
+      "expectedSha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+      "branch": "feat/audit-roundtrip-navigation",
+      "run": "40525537905",
+      "attempt": "1",
+      "recordedAt": "2026-10-27T15:23:57.005Z",
+      "node": "v22.13.0",
+      "runnerImage": "ubuntu24",
+      "runnerVersion": "20261023.334.3",
+      "outcomes": {
+        "checkout": "success",
+        "node": "success",
+        "app_install": "success",
+        "ci_contract": "success",
+        "unit": "success",
+        "lint": "success",
+        "types": "success",
+        "normal_build": "success",
+        "pages_build": "success",
+        "gui_install": "success",
+        "apt_config": "success",
+        "os_install": "success",
+        "browser_install": "success",
+        "gui": "cancelled"
+      },
+      "failedStages": [],
+      "interpretation": "Stage is observed; application/test/environment root cause requires logs and trace diagnosis."
+    }
+  },
+  {
+    "head": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+    "run": 40525537905,
+    "attempt": 2,
+    "job_conclusion": "cancelled",
+    "zip_sha256": "a32fb5d7fc74a8fd72494ec757bebcc95c13e47d39f41c1392d0fd1d59aa150f",
+    "api_digest_matches": true,
+    "records": [
+      {
+        "scenario": "chromium-desktop-1365px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 100,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "2",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "2"
+        },
+        "errors": [],
+        "provenance_sha256": "0db2699dc0cbda9be85bd6f34f8bae7caa38c7c63f13c6691aa4093284bd8daf"
+      },
+      {
+        "scenario": "chromium-mobile-375px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "2",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "2"
+        },
+        "errors": [],
+        "provenance_sha256": "4f83eae4bf3edeb2c9b4da8a267a12591c9b3dee36360398cd3be2c4b668cd6e"
+      },
+      {
+        "scenario": "chromium-mobile-390px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "2",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "2"
+        },
+        "errors": [],
+        "provenance_sha256": "f2ef75fde3cb2b318d83405a5a534b969d053e61ec10f009e57cae63cba1a0ab"
+      },
+      {
+        "scenario": "chromium-narrow-390px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 175,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "2",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "2"
+        },
+        "errors": [],
+        "provenance_sha256": "4239e4c05761541c05cc5343fe262b463f31909f84924337c1a786577c469752"
+      },
+      {
+        "scenario": "webkit-mobile-375px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 177,
+        "geometry": 100,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "2",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "2"
+        },
+        "errors": [],
+        "provenance_sha256": "32f3b13d2be042f97ec8ba145c53b7864b451ac755af6969af7fa3ae6902b2f2"
+      },
+      {
+        "scenario": "webkit-mobile-390px",
+        "status": "passed",
+        "stage": "complete",
+        "checks": 176,
+        "geometry": 98,
+        "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+        "run": "40525537905",
+        "attempt": "2",
+        "served": {
+          "sha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+          "branch": "feat/audit-roundtrip-navigation",
+          "run": "40525537905",
+          "attempt": "2"
+        },
+        "errors": [],
+        "provenance_sha256": "60f026e427266910f4d1f7327dbf608f8242e17fd0a351f5d302fbc482144bc1"
+      }
+    ],
+    "png": 132,
+    "trace": 0,
+    "outcomes": {
+      "expectedSha": "55e48936934f1d7a2b9d0d24534bf6ab1d60b17a",
+      "branch": "feat/audit-roundtrip-navigation",
+      "run": "40525537905",
+      "attempt": "2",
+      "recordedAt": "2026-10-27T15:56:23.871Z",
+      "node": "v22.13.0",
+      "runnerImage": "ubuntu24",
+      "runnerVersion": "20261023.334.3",
+      "outcomes": {
+        "checkout": "success",
+        "node": "success",
+        "app_install": "success",
+        "ci_contract": "success",
+        "unit": "success",
+        "lint": "success",
+        "types": "success",
+        "normal_build": "success",
+        "pages_build": "success",
+        "gui_install": "success",
+        "apt_config": "success",
+        "os_install": "success",
+        "browser_install": "success",
+        "gui": "success"
+      },
+      "failedStages": [],
+      "interpretation": "Stage is observed; application/test/environment root cause requires logs and trace diagnosis."
+    }
+  }
+]

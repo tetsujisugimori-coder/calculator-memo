@@ -1,5 +1,8 @@
 {
-  "README.md": "d4af18278a73c3e254b86aab2b601add434dcbbfc9aaf38e48d94a1e2f63dd94",
+  "README.md": "08d1e23ec016424b92de850a94f44004f8ef162773ff54a1cb64f15d0d4cc9a6",
+  "cache-repair-raw-manifest.json": "fed5c78806abdafc4d024a126110a136a91188ba1c18fa030bdc9e8dad1b4550",
+  "ci-cache-budget-diagnosis.json": "a377ca74ff74cc4b7b22163e1dcd06a60078fa7a71e2e7022b338c58a1504778",
+  "ci-cache-budget-excerpt.log": "5ed2524c31ef0c271e310fe2ef253daee280d6904bae2dbe870022ebea0a7a01",
   "ci-first-failure/artifact.json": "7e184b837c173453e2581ba5fbdeb8b6daaf30356a68b7e90b707c4332b7de3d",
   "ci-first-failure/calculator-roundtrip-child-ci-unverified35-green.log.gz": "a593c05430d49c79849fea837d44b40090349a16f2864bab27c1b32d9ce8661b",
   "ci-first-failure/calculator-roundtrip-child-integration19-green.log.gz": "8e7352148c847b75a0365006c233b7ed016b4829782f84648750331533f746c0",
@@ -31,7 +34,8 @@
   "independent-native/check.mjs.txt": "1b30023f26fb9e924db29e0b250c435b408d032dd3a375d1461519e4ad1833a9",
   "independent-native/chromium375-dark200.png": "79da20376baa10078791dd4480eab4bba747ad717f2bb1a0e7271e03d22bd497",
   "independent-native/result.json": "333448427b29ede2446abfa3c3ff3e78705b8a104a3524a37513f6a6bd4da353",
-  "independent-review.md": "6a6c2baa784f707a0189e5a6afc0769282ddac1e91d0b6a667f87651a7e8f0d0",
+  "independent-review.md": "253f8aaee57e8716c273955a3f7977e5453a7e06cf147af649af02fdeb410695",
+  "independent-roundtrip-cache-contract42.log.gz": "b9574bd2e4695eddb51691f3bf78ae82b18bd8c8b2cdf1bd9129d7ed6906f9bd",
   "logs/calculator-roundtrip-integration-aba-green.log.gz": "47478a26ac86871b0343a97623a036d62641ad8a2053c6e604d7dc44ba86e393",
   "logs/calculator-roundtrip-integration-aba-red.log.gz": "ee32512d5d8ff2a4d3a2a78d01061469f5e8e6079cb0fab38c57cfc6c413508f",
   "logs/final-native.log.gz": "39bfbaf7ed8d8018789431bc33c9cdd80a165de6febd11fb2ddc3216c93f3bac",
@@ -61,5 +65,13 @@
   "native/chromium-audit-roundtrip-dark-200.png": "f981cee51a95a165c2d46feac3424f099cdd92275839de693fa33cc99fed4f9a",
   "native/chromium-audit-roundtrip-target.png": "edf4e9823a656dd0e48d2a6241de0e378dd53d898697a63b810e89a043dd2c16",
   "native/results.json": "a299738fec177fd0bc9c996526930bee1d22b3b9800f5377f5fc8eeb5d1ff736",
-  "source-and-test-sha256.json": "3b31989785928685f3d3acdaa3ab5a039ef1594a99ba98e2806dfba9bbc35be9"
+  "roundtrip-cache-contract-green.log.gz": "10ace6caa06e98e53c11857fde767a00690d4a7b58506f1827923326517a7510",
+  "roundtrip-cache-contract-red.log.gz": "1091199244fcc80d507ed86aea74fed73cb45afb83bb8b5d075a412c1c63e3bc",
+  "roundtrip-cache-contract.log.gz": "2b6b73fd1ca7e66e2e8be7fe8e94400ced0423cb108ce148510cc5603c7d1646",
+  "roundtrip-cache-lint.log.gz": "5429d86c69b983610a051cc3e7cfa9a14b48a529c7454801fe70eee61c41e8cc",
+  "roundtrip-cache-normal.log.gz": "d3fc70a0faf63b3eb4241143dc0c4a209d027d95a0cafe48fcb399e4b191dc41",
+  "roundtrip-cache-pages.log.gz": "ae629b04d75efd321402c4d6cf9c7845a04f5b036a9f2a81b58feace0a0c6ed8",
+  "roundtrip-cache-type.log.gz": "934a9d56e1b77b540f21becd97102d1b7088e8e2eba852118cfc29df5c6f4bb7",
+  "roundtrip-cache-unit.log.gz": "a3da2bfef6dae3f273e8c6509bbf51ab5bd4db6ef63a99853a5cf76911927d36",
+  "source-and-test-sha256.json": "38a07e86fb84ba3a54a473cea5fd2d1f2c96af8e6277ce0cdfc3f8e2900c746e"
 }

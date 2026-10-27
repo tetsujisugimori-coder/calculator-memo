@@ -47,3 +47,13 @@ WebKit本体の公式downloadは取得済みだが、ローカルには7共有li
 局所正式scenarioの先行実行では、最初は専用e2e依存未installで停止し、lockに従う `npm ci --prefix e2e --ignore-scripts` 後に再実行した。次の実行は176操作群を完走しpageerror0だったが、呼出側のEXPECTED_SHA未指定で最終coverage guardが失敗した。製品成功とは数えず、正しい環境変数で同一scenarioを再実行する。局所では未commit修正を含むためHEAD表記だけで正式対象版一致とは扱わない。正式CIは常に必須SHA指定である。
 
 2026-10-27 23:47 JST：正しい環境変数を指定した再実行はChromium desktop1365px正式scenario全176群・100 geometry・22 PNG、pageerror0・成功trace0・exit0。修正作業treeの局所証拠であり、最終HEADの全6条件正式CIは別途必須。
+
+## CI後処理cache予算の局所修正（2026-10-28 00:59 JST）
+
+修正HEAD55e4893のrun40525537905 attempt1は30分上限でWebKit390が未完走（5条件完走）、attempt2は全6条件1056群／592geometry／132PNG／trace0、単体2251／契約41／lint／型／両buildが成功した。しかしattempt2もGitHub job全体はcancelled。GUI完了00:56:23、artifact保存00:56:26後、setup-nodeの任意npm cache保存（328,232,778 bytes）が00:56:28に開始し、00:56:29に30分上限で取消された。全検証段階成功とjob成功は同義ではなく、この時点の総合はPARTIAL。
+
+同一HEADの環境対照は一度のみ実行し、初回未完了と時間変動UNKNOWNを保持。完全ZIP再計算SHA/API一致と全6identityは `ci-cache-budget-diagnosis.json`、後処理の実ログ抜粋は `ci-cache-budget-excerpt.log` に保存。attempt2取得ZIP SHAは `a32fb5d7fc74a8fd72494ec757bebcc95c13e47d39f41c1392d0fd1d59aa150f`、artifact12748332377。
+
+原因が記録された任意cache後処理だけを外すため、PR workflowのsetup-nodeからcache指定／key用lockpathを除き `package-manager-cache: false` を明示する。[使用中pinの公式入力仕様](https://github.com/actions/setup-node/blob/249970729cb0ef3589644e2896645e5dc5ba9c38/action.yml)を確認した。app/e2eは引き続きlockfileのnpm ci --ignore-scriptsで導入し、依存版・Nodepin・全検査・artifact収集・30分上限・3worker・成功trace0は変更しない。Pages公開workflowは不変更。cacheは導入加速用で受入検査ではない。新契約1件を同期待RED→GREENで追加して42件、既存41件保持。これだけでWebKit時間変動が解決したとは主張せず、新HEADの実CI終端を確認する。
+
+2026-10-28 01:01 JST：cache-only修正後も全量2251単体／42契約／lint／型／通常・Pages buildを実行し全exit0。独立担当自身42契約成功、試験削除・skipなし。

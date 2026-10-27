@@ -36,3 +36,7 @@
 ## 初回CI失敗後の独立再確認（2026-10-27 23:37 JST）
 
 レビュー担当は初回CIの既存scenario895と製品差分を独立読取し、未開始の点検stateを失効として保持した原因を確認。closed context変更だけを初期化しopen/休止を保護する境界を妥当と評価した。担当自身の再実行29/29（integration＋independent probe＋storage-App）成功、同raw通知移動拒否・取得後休止編集・閉鎖前通知→新context初回未照合を確認。追加の未解消P0〜P2なし。正式CI再実行成否はこのローカル結果とは別に確認する。
+
+## 任意cache後処理の独立再確認（2026-10-28 01:00 JST）
+
+担当自身がattempt2 ZIPを再計算しAPI digest一致、全6のHEAD/run/attempt/served同一、1056群・592geometry・PNG132・trace0・全検証stage成功を確認した。ただしpostcache含むjob cancelledを総合PASSにしない判断を支持。cache-only workflow差分を独立確認し、Nodepin／locked両npmci／全stage／3worker／30分／trace0不変更を確認。自身で契約42/42（skip0、exit0）を再実行成功。製品・lock・Pages公開workflow不変更。新HEADの全job成功はまだ未確認であり、cache停止だけでWebKit時間変動の原因解明とはしない。

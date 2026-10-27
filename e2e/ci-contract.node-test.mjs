@@ -278,3 +278,13 @@ test('activation timing preserves real input and touch observation while splitti
   assert.ok(!activate.includes('force: true'));
   assert.ok(!activate.includes('waitForTimeout'));
 });
+
+test('optional npm cache cannot consume post-verification budget; locked installs remain mandatory', () => {
+  const node = stepWithId('node');
+  assert.match(node, /node-version: 22\.13\.0/);
+  assert.match(node, /package-manager-cache: false/);
+  assert.doesNotMatch(node, /^\s+cache:\s*\S/m);
+  assert.doesNotMatch(node, /cache-dependency-path:/);
+  assert.match(runFor('app_install'), /npm ci --ignore-scripts/);
+  assert.match(runFor('gui_install'), /npm ci --prefix e2e --ignore-scripts/);
+});
