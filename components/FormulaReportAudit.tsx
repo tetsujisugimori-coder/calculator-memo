@@ -216,7 +216,9 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     invalidateExport(); setHighlight(null); setNavigationNotice("本文移動を確認しています。保存・再取得・再比較は行いません。"); setSuspended(true);
     const arrived = () => {
       if (navigationEpoch.current !== epoch || contextRef.current !== currentContext) return;
-      if (auditItemKey) { setSelected(auditItemKey); setRoundtrip(previous => previous && ({ ...previous, auditItemKey, selectedTarget: target })); }
+      // Initial list jumps preserve the pre-existing selection (including none).
+      // Only a successful body step changes the return detail to a new item.
+      if (auditItemKey) setRoundtrip(previous => previous && ({ ...previous, auditItemKey }));
       setHighlight({ body, start, end }); setNavigationNotice("点検対象の範囲を一時選択しました。本文は変更していません。戻らず編集を続けることもできます。");
     };
     if (auditItemKey) onNavigate(start, end, arrived, () => {

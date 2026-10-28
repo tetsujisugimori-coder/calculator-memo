@@ -1354,3 +1354,16 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - WebKit時間変動は既存別残件で今回解決していない。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。CLI push dry-runは認証情報なしで未送信のため、認証済GitData connectorによる同一tree送信と取得照合を使用する。権限変更・マージ・Draft解除・auto-merge・公開は行わない。
 
 記録：2026-10-28 18:52 JST。
+
+## Issue #102 / Draft PR #103：初回正式CIで検出した一覧往復回帰
+
+- HEAD `b81b8a375105b7604188c6e6bbd0e3e078697f7e` / [run40668482705 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40668482705) はunit/契約/lint/型/両build成功、GUI全6条件で既存 `audit-roundtrip-navigation.mjs:71` が失敗。30分取消や既存WebKit時間変動とは区別する。
+- 原因：一覧から初回本文移動しただけでもonArrivedで選択を確定したため、元は未選択だった一覧へ戻る際に詳細modalを暗黙表示し、次の一覧操作を遮った。
+- 修正：初回成功では本文側の現在keyだけ確定し、元のselected/selectedTarget（未選択も）を維持。本文側前後操作が成功したときだけ新しい項目詳細を復帰先にする。安全照合・失効・保存保護を緩めない。
+- 独立回帰試験で修正前REDを取得。既存GUI helper無変更のChromium375 touchでも同じtap遮断/30秒timeoutを再現。新機能未実装REDではなく今回の製品回帰である。失敗を盲目的再試行や時間延長で消さない。
+- 失敗artifact12807947356（PNG54、失敗trace6）を取得し、ZIP SHA256 `305da7438cfb86e0aa8012e3fba9103a86f085bd36aee7a01551c594eb1a3a14` とAPI値が一致。診断・既存assertは保持し、修正後新HEADの全6条件を再確認する。
+
+記録：2026-10-28 19:15 JST。
+- 修正後：同一独立回帰試験GREEN、関連45件を独立再実行して成功。既存roundtrip helper無変更の同一Chromium375 touchで7群GREEN、新body helper6群GREEN、両pageerror0。全単体2299件/105ファイル・lint・型・通常/Pages build成功。正式全6条件の成功は新HEADのCIと成果物を確認するまで保留。
+
+追記：2026-10-28 19:16 JST。
