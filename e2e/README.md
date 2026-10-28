@@ -1,5 +1,17 @@
 # PR GUI regression
 
+## 点検項目の前後移動・追加受入条件（2026-10-28 JST）
+
+今回の追加契約は **1092検査群（従来1056＋前後移動36）、geometry592箇所、代表PNG132枚、成功時trace出力0**。既存の6条件・3 worker・30分上限は不変。touch条件は **1306回のnative activation（従来1270＋今回36）**。これは要求件数であり、最終HEADの正式CI成功を先取りするものではない。
+
+`audit-item-navigation.mjs` は各条件に6群を追加する。①正常引用と追跡情報なし差分を本文順に飛ばさずたどり、端で循環せずfocusを保持。②選択後の連続本文往復とlight/dark CSS200%操作。③絞り込み時の出現保持・件数位置更新・対象外選択の明示解除。④native textareaでABA編集後の失効と明示再取得後の未選択。⑤1件時の両端無効と閉鎖・再表示。⑥0件時に位置や前後操作を捏造しない。異なる引用IDは同じ記録・式情報を参照する。Enter/Spaceのkeyboard検証は36回のdriver click/tap/selectとは別計数。
+
+通常移動で原本取得が増えないことを確認するため、`Storage.prototype.getItem` を透過ラップして対象keyの読取数を数え、保存bytesは元getterで比較する。アプリの取得・解析・状態判定を代替しない。ラップと合成保存内容は `finally` で復元する。レイアウトは既存の厳密な横はみ出し検査を使い、過去のgeometry/画像を削減せず、新しい撮影地点は追加しない。
+
+期待値・待機上限・workflow時間・ブラウザ条件・保存保護は緩和しない。実機iPhone Safari・VoiceOver・OS文字拡大は未検証で、CSS200%・Linux Playwright WebKitを代替証明にしない。最終実行の証拠と、新機能試験のRED/GREENは、既存不具合の再現・修正と区別して記録する。
+
+2026-10-28 16:40 JST
+
 ## Current Issue #98 roundtrip acceptance (2026-10-27 JST)
 
 The required contract is now **1056 groups (1014 prior groups retained + 42 roundtrip groups), 592 geometry checkpoints (580 retained + 12), 132 representative PNGs (126 retained + 6), and zero successful traces**. The same six Chromium/WebKit contexts, three workers and 30-minute job remain unchanged. Each touch context now requires 1270 native activations (1216 retained + 54). These are required acceptance counts, not a claim that the final-HEAD formal CI has already passed; exact-run results belong in the PR verification record.

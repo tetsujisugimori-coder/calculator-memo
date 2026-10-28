@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { parseReportAudit, assessReportAudit, type AuditItem, type AuditAcquisition } from "../lib/formula-report-audit";
 import { buildAuditMarkdown, bodyLabels, sourceLabels } from "../lib/formula-report-audit-export";
 import { captureAuditComparison } from "../lib/formula-report-audit-comparison";
@@ -44,6 +44,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
   const [stale, setStale] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState("all");
+  const [selectionNotice, setSelectionNotice] = useState("");
   const [exportNotice, setExportNotice] = useState<{ text: string; failed: boolean } | null>(null);
   const [manualCopy, setManualCopy] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
@@ -69,7 +70,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     // (for example, a failed write confirmation). Never revive old copy UI.
     exportEpoch.current += 1; exportBusy.current = false;
   }, [savedContextChanged]);
-  const closeAudit = () => { onCancelNavigation?.(); navigationEpoch.current += 1; invalidateExport(); setOpen(false); setSuspended(false); setSelected(null); setRoundtrip(null); setHighlight(null); setNavigationNotice(""); };
+  const closeAudit = () => { onCancelNavigation?.(); navigationEpoch.current += 1; invalidateExport(); setOpen(false); setSuspended(false); setSelected(null); setSelectionNotice(""); setRoundtrip(null); setHighlight(null); setNavigationNotice(""); };
   const [contextRevision, setContextRevision] = useState(0);
   const [observedContext, setObservedContext] = useState(currentContext);
   if (observedContext !== currentContext) {
@@ -96,7 +97,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
       if (event.key !== STORAGE_KEY && event.key !== null) return;
       navigationEpoch.current += 1; setHighlight(null);
       setNavigationNotice("保存領域の通知で往復の追跡位置は失効しました。保持本文を保存原本と同一とは扱いません。現在一覧へ戻り、対象を選び直してください。");
-      if (!acquisition || event.newValue !== acquisition.raw) {
+      if (open || !acquisition || event.newValue !== acquisition.raw) {
         exportEpoch.current += 1; exportBusy.current = false;
         setExporting(false); setExportNotice(null); setManualCopy(null); setRecordPreview(null); setPreparing(false);
         setComparisonGeneration(value => value + 1);
@@ -106,8 +107,10 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     };
     window.addEventListener("storage", observe);
     return () => window.removeEventListener("storage", observe);
-  }, [acquisition]);
+  }, [acquisition, open]);
   const refresh = () => {
+    if (disabled) return;
+    setSelectionNotice("");
     setComparisonGeneration(value => value + 1);
     invalidateExport();
     setSelected(null);
@@ -163,12 +166,38 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
       if (exportEpoch.current === epoch) { exportBusy.current = false; setExporting(false); }
     }
   };
-  const selectedItem = items.find(item => item.key === selected);
+  const selectedItem = !stale ? items.find(item => item.key === selected) : undefined;
   const source: QuoteSource = acquisition && !stale ? acquisition : { notes: [], fetchedAt: "未取得（未照合）", stale: true };
   const links = acquisition && !stale ? acquisition.links : [];
   const reviewCount = items.filter(item => item.needsReview).length;
   const visible = items.filter(item => filter === "all" || (filter === "review" ? item.needsReview : item.sources.some(source => source.status === "unverified")));
+  const selectedIndex = selectedItem ? visible.findIndex(item => item.key === selectedItem.key) : -1;
+  const changeFilter = (next: string) => {
+    if (disabled) return;
+    setFilter(next);
+    if (selectedItem && !(next === "all" || (next === "review" ? selectedItem.needsReview : selectedItem.sources.some(source => source.status === "unverified")))) {
+      setSelected(null); setSelectionNotice("選択した項目は新しい絞り込みの対象外になりました。一覧から選び直してください。");
+    }
+  };
+  useEffect(() => {
+    if (selectionNotice && !selected && open && !suspended) rootRef.current?.querySelector<HTMLSelectElement>('select[aria-label="表示する状態"]')?.focus({ preventScroll: true });
+  }, [selectionNotice, selected, open, suspended]);
+  const step = (direction: -1 | 1) => {
+    if (disabled || stale || staleRef.current || selectedIndex < 0) return;
+    const item = visible[selectedIndex + direction];
+    if (!item) return;
+    setSelected(item.key); setSelectionNotice(""); setNavigationNotice("");
+    // Move only the list's own scroll container, never the focused detail button.
+    const row = [...(rootRef.current?.querySelectorAll<HTMLElement>("[data-audit-item-key]") ?? [])].find(node => node.dataset.auditItemKey === item.key);
+    const content = row?.closest<HTMLElement>(".modal-content");
+    if (row && content) {
+      const bounds = content.getBoundingClientRect(), target = row.getBoundingClientRect();
+      if (target.top < bounds.top) content.scrollTop += target.top - bounds.top;
+      else if (target.bottom > bounds.bottom) content.scrollTop += Math.min(target.top - bounds.top, target.bottom - bounds.bottom);
+    }
+  };
   const suspendNavigation = (start: number, end: number, origin?: { start: number; end: number }) => {
+    if (disabled || stale || staleRef.current) { setNavigationNotice("点検結果が失効中または保存中のため本文へ移動しません。明示照合後に選び直してください。"); return; }
     const target = captureAuditNavigationTarget(body, formulaId, reportId ?? "", start, end);
     if (!target) { setNavigationNotice("完全な一意範囲を確認できないため本文へ移動しません。"); return; }
     const originTarget = origin ? captureAuditNavigationTarget(body, formulaId, reportId ?? "", origin.start, origin.end) : null;
@@ -203,7 +232,8 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
       setNavigationNotice(!validEpoch ? "保存通知等で戻り先は失効しています。旧詳細を復元せず、現在の一覧へ戻りました。" : target.reason);
     } else {
       const selectedResult = roundtrip.selectedTarget && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.selectedTarget);
-      if (selectedResult?.status === "available") setSelected(selectedResult.key);
+      if (!stale && !staleRef.current && roundtrip.revision === contextRevision && selectedResult?.status === "available") setSelected(selectedResult.key);
+      else setSelected(null);
       const origin = roundtrip.origin && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.origin);
       if (origin?.status === "available") setSourceResume(previous => ({ key: origin.key, nonce: (previous?.nonce ?? 0) + 1 }));
       setNavigationNotice(roundtrip.revision === contextRevision ? "元の点検一覧へ戻りました。絞り込み・選択・取得済み結果を保持し、原本は再取得していません。" : "対象を現在本文で再確認して戻りました。旧照合・比較結果は失効したままで、保存原本は再取得していません。");
@@ -216,7 +246,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     const content = rootRef.current?.querySelector<HTMLElement>(".modal-content");
     if (!content) return;
     // The exact connected control is restored only within an unchanged context.
-    if (roundtrip.revision === contextRevision && roundtrip.focus?.isConnected && content.contains(roundtrip.focus)) roundtrip.focus.focus({ preventScroll: true });
+    if (roundtrip.revision === contextRevision && roundtrip.focus?.isConnected && rootRef.current?.contains(roundtrip.focus)) roundtrip.focus.focus({ preventScroll: true });
     else content.querySelector<HTMLElement>("[data-audit-return-status]")?.focus({ preventScroll: true });
     content.scrollTop = roundtrip.scroll;
   }, [open, suspended, roundtrip, currentContext, contextRevision]);
@@ -240,7 +270,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
         <p>出典一致・本文対応・利用者の明示確認・数学的正しさは別です。保存記録の変更だけで過去の引用が誤りとは判定しません。閲覧・照合・移動では保存も再計算も行いません。</p>
         <FormulaAuditComparisonSources body={body} formulaId={formulaId} reportId={reportId} savedContextChanged={bodyContextUncertain} generation={comparisonGeneration} resume={sourceResume} onNavigateWithOrigin={suspendNavigation} onNavigate={suspendNavigation} />
         <FormulaAuditRecordComparison insertion={comparisonInsertion ? { ...comparisonInsertion, onInserted: closeAudit } : undefined} body={body} formulaId={formulaId} reportId={reportId} savedContextChanged={bodyContextUncertain} generation={comparisonGeneration} onNavigate={suspendNavigation} />
-        <button type="button" onClick={refresh}>保存記録と照合</button>
+        <button type="button" disabled={disabled} onClick={refresh}>保存記録と照合</button>
         {!acquisition || stale ? <p role="status">未照合です。{stale ? "保存原本の更新を検知したため以前の結果と詳細を失効しました。" : "照合は明示操作で開始します。"}</p> : <p>原本の観測取得日時：{acquisition.fetchedAt}。保存日時・計算日時・利用者確認日時ではありません。</p>}
         {acquisition && !stale && acquisition.error && <p role="alert">{acquisition.invalidData ? "保存原本が未知・不正な形式です。" : "保存原本の取得に失敗しました。"}古い成功結果では代用しません。</p>}
         <p role="status">認識できた出現 {items.length}件／見直し対象 {reviewCount}件。分母は本文上の出現数です。複数の問題がある項目も見直し対象は1件として数えます。未照合も見直し対象です。</p>
@@ -262,45 +292,58 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
         {exporting && <p role="status">出力開始時点の点検結果をコピーしています。対象変更後の完了通知は表示しません。</p>}
         {exportNotice && <p role={exportNotice.failed ? "alert" : "status"}>{exportNotice.text}</p>}
         {manualCopy !== null && <div><label htmlFor="audit-export-manual-copy">点検結果Markdown全文（手動コピー用）</label><textarea id="audit-export-manual-copy" readOnly className="code-input" rows={10} value={manualCopy} onFocus={event => event.target.select()} /></div>}
-        <label>表示する状態<select aria-label="表示する状態" value={filter} onChange={event => setFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
+        <label>表示する状態<select aria-label="表示する状態" value={filter} disabled={disabled} onChange={event => changeFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
         <ol aria-label="本文順の根拠一覧">{visible.map(item => {
           const snapshot = item.quote?.snapshot ?? item.difference?.snapshot?.quote;
           const identifier = item.quote?.snapshot?.quoteId ?? item.difference?.snapshot?.differenceId;
-          return <li key={item.key} value={item.order}>
+          return <li key={item.key} value={item.order} data-audit-item-key={item.key} aria-current={selected === item.key ? "true" : undefined}>
             <h3>{item.order}. {item.kind === "quote" ? "固定引用" : "比較差分"}{identifier ? `：${short(identifier)}` : "：識別情報を検証できません"}</h3>
             <p>本文状態：{bodyLabels[item.bodyStatus]}</p><p>{item.reason}</p>
             {snapshot && <details><summary>識別情報の全文</summary><p>ID：{identifier}／メモID：{snapshot.memoId}／引用時記録ID：{snapshot.record.id}／ブロックID：{snapshot.blockId}</p>{item.difference?.snapshot && <p>比較先記録ID：{item.difference.snapshot.after.id}</p>}</details>}
             {!item.sources.length && <p>出典：追跡情報不足または未知・不正のため照合できません。</p>}
             {item.sources.map(state => <div key={state.side}><p>{state.side === "before" ? "比較元" : state.side === "after" ? "比較先" : "引用元"}：{sourceLabels[state.status]}</p><p>{state.reason}</p>{state.linked === false && <p>関連付け解除・保存済み根拠リンクなし（記録欠落とは別）。自動追加しません。</p>}</div>)}
-            <div className="modal-actions"><button type="button" onClick={() => setSelected(item.key)}>根拠{item.order}の詳細</button><button type="button" disabled={!item.canNavigate} onClick={() => suspendNavigation(item.start, item.end)}>根拠{item.order}の本文へ移動</button></div>
+            <div className="modal-actions"><button type="button" disabled={disabled || stale} onClick={() => { setSelected(item.key); setSelectionNotice(""); }}>根拠{item.order}の詳細</button><button type="button" disabled={disabled || stale || !item.canNavigate} onClick={() => suspendNavigation(item.start, item.end)}>根拠{item.order}の本文へ移動</button></div>
             {!item.canNavigate && <p>本文との対応位置を安全に確定できないため移動できません。</p>}
           </li>;
         })}</ol>
         {items.length > 0 && !visible.length && <p>この絞り込みに該当する項目はありません。点検完了の判定ではありません。</p>}
         <p>原本の常時最新性・任意の外部書込みとの原子的整合性は保証しません。変更を検知したときは明示照合が必要です。</p>
         <button type="button" onClick={closeAudit}>根拠点検を閉じる</button>
-        {selectedItem && <AuditDetails item={selectedItem} body={body} formulaId={formulaId} source={source} links={links} onRefresh={refresh} onClose={() => setSelected(null)} />}
+        {selectionNotice && <p role="status">{selectionNotice}</p>}
+        {stale ? <p role="status">前後移動は失効しています。「保存記録と照合」後に一覧から選び直してください。</p> : !selectedItem && <p role="status">{visible.length ? "一覧から項目を選択してください。" : "現在の絞り込みには対象項目がありません。"}</p>}
+        {selectedItem && selectedIndex >= 0 && <AuditDetails active={!suspended} navigation={<section aria-label="点検項目の前後移動">
+          <p role="status" aria-live="polite" aria-atomic="true">{`根拠${selectedItem.order}：${selectedItem.kind === "quote" ? "固定引用" : "比較差分"}。`}<span>{`対象${visible.length}件中${selectedIndex + 1}件目`}</span></p>
+          <div className="modal-actions"><button type="button" aria-disabled={disabled || selectedIndex === 0} onClick={event => { event.currentTarget.focus(); step(-1); }}>前の項目</button><button type="button" aria-disabled={disabled || selectedIndex === visible.length - 1} onClick={event => { event.currentTarget.focus(); step(1); }}>次の項目</button></div>
+          <label>表示する状態<select aria-label="詳細で表示する状態" value={filter} disabled={disabled} onChange={event => changeFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
+          <button type="button" disabled={disabled || !selectedItem.canNavigate} onClick={() => suspendNavigation(selectedItem.start, selectedItem.end)}>この項目の本文へ移動</button>
+          {!selectedItem.canNavigate && <p>本文との対応位置を安全に確定できないため移動できません。詳細の前後移動は利用できます。</p>}
+          {navigationNotice && <p role="status">{navigationNotice}</p>}
+        </section>} item={selectedItem} body={body} formulaId={formulaId} source={source} links={links} onRefresh={refresh} onClose={() => setSelected(null)} />}
       </section>
     </Modal>}
   </section>;
 }
 
-function AuditDetails({ item, body, formulaId, source, links, onRefresh, onClose }: { item: AuditItem; body: string; formulaId: string; source: QuoteSource; links: AuditAcquisition['links']; onRefresh: () => void; onClose: () => void }) {
+function AuditDetails({ active, navigation, item, ...props }: { active: boolean; navigation: ReactNode; item: AuditItem; body: string; formulaId: string; source: QuoteSource; links: AuditAcquisition['links']; onRefresh: () => void; onClose: () => void }) {
+  return <Modal title={item.difference ? "比較差分の出典確認" : "引用の根拠詳細"} onClose={props.onClose} active={active} wide>{navigation}<AuditDetailsContent key={item.key} item={item} {...props} /></Modal>;
+}
+
+function AuditDetailsContent({ item, body, formulaId, source, links, onRefresh, onClose }: { item: AuditItem; body: string; formulaId: string; source: QuoteSource; links: AuditAcquisition['links']; onRefresh: () => void; onClose: () => void }) {
   const [comparing, setComparing] = useState(false);
   if (item.difference) {
     const assessment = { ...item.difference, before: item.sources.find(value => value.side === "before"), after: item.sources.find(value => value.side === "after") };
     // Existing detail vocabulary uses stale for an explicitly unverified source.
     const adapt = (value: typeof assessment.before) => value ? { ...value, status: value.status === "unverified" ? "stale" as const : value.status } : undefined;
-    return <DifferenceSourceDialog assessment={{ ...assessment, before: adapt(assessment.before), after: adapt(assessment.after) }} source={source} links={links} onRefresh={onRefresh} onClose={onClose} />;
+    return <DifferenceSourceDialog embedded assessment={{ ...assessment, before: adapt(assessment.before), after: adapt(assessment.after) }} source={source} links={links} onRefresh={onRefresh} onClose={onClose} />;
   }
   const snapshot = item.quote?.snapshot;
   const current = item.sources[0]?.record;
-  return <Modal title="引用の根拠詳細" onClose={onClose} wide><section className="formula-report quote-tools saved-evidence">
+  return <section className="formula-report quote-tools saved-evidence">
     <p>本文状態：{bodyLabels[item.bodyStatus]}。{item.reason}</p>
     {snapshot ? <><h3>引用時点の固定記録</h3><p>引用ID：{snapshot.quoteId}／メモID：{snapshot.memoId}／ブロックID：{snapshot.blockId}／引用日時：{snapshot.citedAt}</p><p>本文編集後の文章そのものではなく、追跡情報に固定された記録です。</p><RecordInfo record={snapshot.record} />{snapshot.record.blocks.filter(block => block.blockId === snapshot.blockId).map(block => <BlockInfo key={block.blockId} block={block} record={snapshot.record} executionOrder={snapshot.record.blocks.indexOf(block) + 1} />)}
       <h3>現在取得した保存記録</h3><p>{item.sources[0]?.reason}</p>{current ? <><RecordInfo record={current} />{current.blocks.map((block, index) => <details key={block.blockId}><summary>ブロックID：{block.blockId}</summary><BlockInfo block={block} record={current} executionOrder={index + 1} /></details>)}</> : <p>現在記録は未取得または参照不能です。固定記録で代用しません。</p>}
       <button type="button" onClick={() => setComparing(true)}>引用時の記録と別の保存記録を比較</button></> : <p>追跡情報を検証できません。不正なsnapshotの詳細を推測して表示しません。</p>}
     <button type="button" onClick={onClose}>根拠一覧に戻る</button>
     {comparing && item.quote && <FormulaQuoteComparison quote={item.quote} formulaId={formulaId} body={body} links={links} source={source} onRefresh={onRefresh} onClose={() => setComparing(false)} />}
-  </section></Modal>;
+  </section>;
 }

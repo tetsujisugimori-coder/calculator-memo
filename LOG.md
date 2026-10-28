@@ -1,5 +1,18 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-28 JST: 根拠点検項目の前後ナビゲーション（Issue #100）
+
+- PR #99 merged と最新main `cd8d69039578965c963ffc0f1b1d31eb7174f61f` をAPI/専用cloneで実確認。既存作業を変更せず `feat/audit-item-navigation`、[Issue #100](https://github.com/tetsujisugimori-coder/calculator-memo/issues/100) で追跡。
+- 既存filtered AuditItem配列とoccurrence keyから位置を導出。詳細内の前後・件数/位置・絞り込み・本文移動を追加。不完全/未知/重複も列挙対象なら飛ばさず、本文移動の安全可否は分離。非循環端はaria-disabled＋guardでfocusを保持。選択対象外filterは理由付き解除と親filterfocus復帰。
+- 共通詳細Modalのみ維持し、項目固有比較状態はkeyで破棄。PR99の休止/本文移動/強調/復帰を再利用し、通常往復は直前選択/詳細/filter/scroll/focusを保持。本文/対象/世代/ABA/同値storageの失効後は旧位置を表示せず、明示再照合後に選び直す。
+- 新機能同一テストを基点で15失敗1成功、実装版16成功。これは新機能未実装のRED/GREENで既存不具合の再現とは別。独立4単体、独自8実GUI成功。全2271単体、44契約、lint、型、通常/Pages build成功（commit前作業版）。Chromium375touchの新6群/36操作成功。正式6条件・最終HEAD CIはPR Checksと結果コメントで確定し、旧版成功を流用しない。
+- 初回GUI新fixtureは再照合後unverified絞り込み0件で正しく空表示したため、誤った『一覧から』期待を修正。先に空表示を検証し明示all選択を加えた。既存期待値を緩和せず追加操作数も契約更新。
+- 前後操作で取得/保存/parse/assess/compare呼出し0、実App往復で本文/保存bytes/snapshot/履歴不変。保存schema/容量/engine/Markdown/専用取消は不変更。保存中は操作guard。
+- [設計](docs/design/audit-item-navigation.md)、[実行記録](docs/maintenance/audit-item-navigation-20261028/README.md)、[独立レビュー](docs/maintenance/audit-item-navigation-20261028/independent-review.md)。PR未作成（作成後Issue/PRで相互参照）。
+- 実機iPhone Safari/VoiceOver/OS文字拡大、既存WebKit時間変動根本原因は未検証/未解決。正式GUIは既存6条件/3workers/30分/成功trace0、1092検査/592geometry/132PNG/各mobile1306操作を要求。今回の成功を将来の時間安定性保証にしない。
+
+2026-10-28 16:41 JST
+
 ## 2026-10-27 JST: 根拠点検と本文の往復ナビゲーション（Issue #98）
 
 - 最新main `035436c3c0dc3a971d1a3c4bb77fb8d1c3a11066` とPR #97 mergeをGitHub・fetchで確認。既存worktreeを保全して専用branchを作成。同目的の[Issue #98](https://github.com/tetsujisugimori-coder/calculator-memo/issues/98)が存在したため重複作成しない。

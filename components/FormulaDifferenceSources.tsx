@@ -23,7 +23,7 @@ export function FormulaDifferenceSources({ body, formulaId, reportId, links, sou
   </section>;
 }
 
-export function DifferenceSourceDialog({ assessment, source, links, onRefresh, onClose }: { assessment: DifferenceAssessment; source: QuoteSource; links: FormulaReportEvidenceLink[]; onRefresh: () => void; onClose: () => void }) {
+export function DifferenceSourceDialog({ assessment, source, links, onRefresh, onClose, embedded = false }: { embedded?: boolean; assessment: DifferenceAssessment; source: QuoteSource; links: FormulaReportEvidenceLink[]; onRefresh: () => void; onClose: () => void }) {
   const [view, setView] = useState<{ kind: 'historical' | 'current' | 'before' | 'after'; notes: QuoteSource['notes']; fetchedAt: string; links: FormulaReportEvidenceLink[]; error?: string; stale?: boolean } | null>(null);
   const valid = view && view.notes === source.notes && view.fetchedAt === source.fetchedAt && view.links === links && view.error === source.error && view.stale === source.stale;
   if (view && !valid) setView(null);
@@ -38,7 +38,7 @@ export function DifferenceSourceDialog({ assessment, source, links, onRefresh, o
     catch { return null; }
   }, [valid, snapshot, view?.kind, current, before, after]);
   const detail = valid && view.kind === 'before' ? before : valid && view.kind === 'after' ? after : undefined;
-  return <Modal title="比較差分の出典確認" onClose={onClose} wide><section className="formula-report quote-tools saved-evidence">
+  const content = <section className="formula-report quote-tools saved-evidence">
     <p role="status">{assessment.reason}</p>
     <p>保存原本取得日時：{source.fetchedAt}。照合はこの取得時点だけです。数学的証明、真正性、利用者の明示確認ではありません。</p>
     {source.error && <p role="alert">{source.invalidData ? "保存データが未知・不正な形式のため照合できません。原本は保持しています。" : "原本取得失敗。欠落とは断定しません。引用時点の証拠は保持しています。"}</p>}
@@ -78,5 +78,6 @@ export function DifferenceSourceDialog({ assessment, source, links, onRefresh, o
       <button type="button" onClick={() => setView(null)}>出典の詳細を閉じる</button>
     </section></Modal>}
     <button type="button" onClick={onClose}>出典確認を閉じる</button>
-  </section></Modal>;
+  </section>;
+  return embedded ? content : <Modal title="比較差分の出典確認" onClose={onClose} wide>{content}</Modal>;
 }

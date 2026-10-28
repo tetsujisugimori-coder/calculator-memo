@@ -99,17 +99,17 @@ const { validateCoverage } = await import('./ci-contract.mjs');
 const { scenarios } = await import('./scenario-config.mjs');
 const sha = 'a'.repeat(40);
 function completedContexts() {
-  const counts = [176, 175, 176, 176, 176, 177], checkpointCounts = [100, 98, 98, 98, 98, 100];
+  const counts = [182, 181, 182, 182, 182, 183], checkpointCounts = [100, 98, 98, 98, 98, 100];
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1270 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1306 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
 }
-test('complete six-context contract preserves 1014 prior checks plus 42 roundtrip checks and 592 geometry checkpoints', () => {
-  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 1056, horizontalCheckpoints: 592 });
+test('complete six-context contract preserves 1056 prior checks plus 36 item-navigation checks and 592 geometry checkpoints', () => {
+  assert.deepEqual(validateCoverage(completedContexts(), sha), { contexts: 6, checks: 1092, horizontalCheckpoints: 592 });
 });
 const mutations = {
   'one scenario never ran': records => records.pop(),
@@ -122,6 +122,8 @@ const mutations = {
   'incorrect mobile environment': records => { records[2].scenarios[0].hasTouch = false; },
   'entire new fixed-insertion coverage absent': records => { for (const record of records) record.checks.splice(-8); },
   'legacy touch count without fixed-insertion operations': records => { records[2].scenarios[0].touchActivations = 1101; },
+  'new item-navigation group omitted': records => { for (const record of records) record.checks.splice(-6); },
+  'old touch count omits item-navigation operations': records => { records[2].scenarios[0].touchActivations = 1270; },
   'acceptance check missing': records => { records[0].checks.pop(); },
   'duplicate acceptance check': records => { records[0].checks[1] = records[0].checks[0]; },
   'check from another context': records => { records[0].checks[0] = records[1].checks[0]; },

@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 <project>
+
+ ✓ tests/audit-item-navigation.integration.test.ts (13 tests) 552ms
+ ✓ tests/audit-item-navigation-app.test.ts (3 tests) 693ms
+   ✓ real CalculatorApp steps to each occurrence and repeatedly returns to its detail, focus, filter and scroll without reads or writes  491ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  16:38:13
+   Duration  2.59s (transform 862ms, setup 0ms, collect 2.40s, tests 1.25s, environment 554ms, prepare 160ms)
+
