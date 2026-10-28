@@ -8,7 +8,7 @@
 - 新機能同一テストを基点で15失敗1成功、実装版16成功。これは新機能未実装のRED/GREENで既存不具合の再現とは別。独立4単体、独自8実GUI成功。全2271単体、44契約、lint、型、通常/Pages build成功（commit前作業版）。Chromium375touchの新6群/36操作成功。正式6条件・最終HEAD CIはPR Checksと結果コメントで確定し、旧版成功を流用しない。
 - 初回GUI新fixtureは再照合後unverified絞り込み0件で正しく空表示したため、誤った『一覧から』期待を修正。先に空表示を検証し明示all選択を加えた。既存期待値を緩和せず追加操作数も契約更新。
 - 前後操作で取得/保存/parse/assess/compare呼出し0、実App往復で本文/保存bytes/snapshot/履歴不変。保存schema/容量/engine/Markdown/専用取消は不変更。保存中は操作guard。
-- [設計](docs/design/audit-item-navigation.md)、[実行記録](docs/maintenance/audit-item-navigation-20261028/README.md)、[独立レビュー](docs/maintenance/audit-item-navigation-20261028/independent-review.md)。PR未作成（作成後Issue/PRで相互参照）。
+- [設計](docs/design/audit-item-navigation.md)、[実行記録](docs/maintenance/audit-item-navigation-20261028/README.md)、[独立レビュー](docs/maintenance/audit-item-navigation-20261028/independent-review.md)。[Draft PR #101](https://github.com/tetsujisugimori-coder/calculator-memo/pull/101) とIssueで相互参照。最終HEADの正式CIはPR Checks・結果コメントに記録する。
 - 実機iPhone Safari/VoiceOver/OS文字拡大、既存WebKit時間変動根本原因は未検証/未解決。正式GUIは既存6条件/3workers/30分/成功trace0、1092検査/592geometry/132PNG/各mobile1306操作を要求。今回の成功を将来の時間安定性保証にしない。
 
 2026-10-28 16:41 JST

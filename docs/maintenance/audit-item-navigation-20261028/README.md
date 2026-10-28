@@ -1,7 +1,7 @@
 # 根拠点検項目の前後ナビゲーション 検証記録
 
 ## 対象と条件
-Issue #100。base `cd8d69039578965c963ffc0f1b1d31eb7174f61f`、専用branch `feat/audit-item-navigation`。PR99 merged 実確認。既存作業は変更せず専用clone。AGENTS/README/設計/運用/検証方針/workflowを参照。repo .agents/skillsは存在しない。憲法v2・江戸弁ガイド・辞典v20の必要箇所も参照し、情報精度を演出より優先した。
+[Issue #100](https://github.com/tetsujisugimori-coder/calculator-memo/issues/100) / [Draft PR #101](https://github.com/tetsujisugimori-coder/calculator-memo/pull/101)。base `cd8d69039578965c963ffc0f1b1d31eb7174f61f`、専用branch `feat/audit-item-navigation`。PR99 merged 実確認。既存作業は変更せず専用clone。AGENTS/README/設計/運用/検証方針/workflowを参照。repo .agents/skillsは存在しない。憲法v2・江戸弁ガイド・辞典v20の必要箇所も参照し、情報精度を演出より優先した。
 
 ## ローカル実測（commit前作業版）
 - 全単体: 101files / 2271 tests成功、Vitest3.2.4。
@@ -21,4 +21,4 @@ Issue #100。base `cd8d69039578965c963ffc0f1b1d31eb7174f61f`、専用branch `fea
 ## 限界
 実機iPhone Safari、VoiceOver、OS文字拡大、全幅/全操作は未検証。Linux WebKitとCSS200%は代替保証ではない。既存WebKit時間変動の根本原因は解決していない。閲覧は確認/完了/数学的妥当性ではない。マージ/Draft解除/auto-merge/公開は実施しない。
 
-2026-10-28 16:41 JST
+2026-10-28 16:59 JST
