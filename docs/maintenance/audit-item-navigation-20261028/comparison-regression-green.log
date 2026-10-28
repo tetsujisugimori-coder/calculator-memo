@@ -1,0 +1,8 @@
+PASS focused-chromium375: fixed comparison source detail preserves exact historical Unicode text and explicit absent structured state without reading new originals with keyboard focus and both themes CSS 200 percent
+PASS focused-chromium375: unique version one sources A B and comparison material navigate exact original ranges without body original history or calculation changes
+PASS focused-chromium375: missing and duplicate source identities stay non-navigable while fixed comparison text remains readable and saved data unchanged
+PASS focused-chromium375: ambiguous same ID early end never promotes internal source B or enables material navigation and incomplete inventory remains explicit
+PASS focused-chromium375: editing and reopening resolves only the new held body source positions without reusing stale offsets or persisting draft
+PASS focused-chromium375: real separate page storage changed invalidates old detail while CalculatorApp retains draft and explicitly reselected source navigates held body only without overwrite
+PASS focused-chromium375: real separate page storage deleted invalidates old detail while CalculatorApp retains draft and explicitly reselected source navigates held body only without overwrite
+COMPLETE pageerror0

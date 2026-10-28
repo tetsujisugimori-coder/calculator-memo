@@ -1,0 +1,7 @@
+PASS focused-chromium375: filtered body order visits intact and untracked items without skipping, never wraps, and preserves keyboard focus at both endpoints without acquisition or persistence
+PASS focused-chromium375: stepping then repeated body roundtrips restores the precise selected occurrence and focus with both themes CSS 200 percent, unchanged body snapshots history and no source reacquisition
+PASS focused-chromium375: detail filter retains occurrence identity and recalculates count and neighbors, excluded selection clears with reason instead of silently choosing another item
+PASS focused-chromium375: native edited-body ABA cannot restore old selection or position on return and explicit reacquisition requires fresh selection without changing stored bytes
+PASS focused-chromium375: single-item navigation disables both directions without losing focus and closing then reopening starts without fabricated or restored selection
+PASS focused-chromium375: zero items has an explicit empty state and no position or previous-next controls, without saving the edited body or inventing completion
+COMPLETE pageerror0

@@ -1,0 +1,32 @@
+PASS focused-chromium375: fixed comparison source detail preserves exact historical Unicode text and explicit absent structured state without reading new originals with keyboard focus and both themes CSS 200 percent
+PASS focused-chromium375: unique version one sources A B and comparison material navigate exact original ranges without body original history or calculation changes
+PASS focused-chromium375: missing and duplicate source identities stay non-navigable while fixed comparison text remains readable and saved data unchanged
+PASS focused-chromium375: ambiguous same ID early end never promotes internal source B or enables material navigation and incomplete inventory remains explicit
+PASS focused-chromium375: editing and reopening resolves only the new held body source positions without reusing stale offsets or persisting draft
+Error: expect(received).toEqual(expected) // deep equality
+
+- Expected  - 11
++ Received  +  3
+
+  Object {
+-   "end": 395,
+-   "start": 13,
+-   "text": "```calculator-memo-audit-record-start-v1
+- {\"version\":1,\"recordId\":\"navigation-A\",\"formulaId\":\"navigation-f\",\"reportId\":\"navigation-r\",\"generatedAt\":\"2026-10-27T13:00:00+09:00\",\"bodySha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"bodyLength\":0}
+- ```
+-
+- 当時の固定点検記録 navigation-A
+-
+- ```calculator-memo-audit-record-end-v1
+- {\"version\":1,\"recordId\":\"navigation-A\"}
+- ```",
++   "end": 0,
++   "start": 0,
++   "text": "",
+  }
+
+Call Log:
+- Timeout 5000ms exceeded while waiting on the predicate
+    at pollMatcher (<repository>/e2e/node_modules/playwright/lib/matchers/expect.js:299:11)
+    at async exerciseAuditComparisonNavigation (file://<repository>/e2e/audit-comparison-navigation.mjs:88:36)
+    at async file://<focused-browser-runner>:8:66

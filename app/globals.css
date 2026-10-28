@@ -552,3 +552,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .audit-roundtrip button { margin: 4px; max-width: 100%; white-space: normal; }
 .audit-target-excerpt { max-height: 12rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; border-inline-start: 4px solid var(--ink); padding: 8px; }
 .audit-target-excerpt mark { color: inherit; background: transparent; text-decoration: underline; text-decoration-style: dotted; }
+
+/* Audit traversal is ephemeral selection, not a confirmation/completion state. */
+.report-audit [data-audit-item-key][aria-current="true"] { outline: 2px solid currentColor; outline-offset: 3px; }
+[aria-label="点検項目の前後移動"] button[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { runtimeResources } from "./runtime-resources.mjs";
 import { assertHistoricalSourceText, expectedHistoricalBlocks } from "./source-evidence-contract.mjs";
 import { exerciseAuditComparisonNavigation } from "./audit-comparison-navigation.mjs";
+import { exerciseAuditItemNavigation } from "./audit-item-navigation.mjs";
 import { exerciseAuditRoundtripNavigation } from "./audit-roundtrip-navigation.mjs";
 import { exerciseAuditComparisonInsertion } from "./audit-comparison-insertion.mjs";
 import { exerciseAuditRecordComparison } from "./audit-record-comparison.mjs";
@@ -4231,6 +4232,8 @@ async function exercise(scenario) {
   await exerciseAuditComparisonNavigation({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate, screenshot });
   await stage(prefix + ": formula-audit-roundtrip-navigation");
   await exerciseAuditRoundtripNavigation({ page, context, base, expect, passed, prefix, assertHorizontalFit, activate, screenshot });
+  await stage(prefix + ": formula-audit-item-navigation");
+  await exerciseAuditItemNavigation({ page, base, expect, passed, prefix, assertHorizontalFit, activate });
   await exerciseFormulaStatusFilters(prefix);
   await exerciseFormulaDetailRefresh(prefix);
   await exerciseFormulaTimeline(prefix);

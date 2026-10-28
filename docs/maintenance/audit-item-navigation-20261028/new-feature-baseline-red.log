@@ -1,0 +1,274 @@
+
+ RUN  v3.2.4 <baseline>
+
+ ❯ tests/audit-item-navigation.integration.test.ts (13 tests | 12 failed) 486ms
+   × zero items and unselected lists never fabricate a current position 90ms
+     → expected '根拠点検CALCULATION MEMOレポート全体の根拠点検×本文・対象…' to match /一覧から.*選/
+   × one item has accessible non-operating boundaries without native focus loss 26ms
+     → expected undefined to be '対象1件中1件目' // Object.is equality
+   × steps existing body order across quote/difference/edited items, retains the button at endpoints, and has no persistence/acquisition effects 40ms
+     → expected undefined to be '対象3件中1件目' // Object.is equality
+   × filter retention uses occurrence key not old index; exclusion clears details with a reason and never selects a neighbor 42ms
+     → expected undefined to be '対象3件中3件目' // Object.is equality
+   × does not skip duplicate occurrences just because body jump is unsafe 23ms
+     → expected undefined to be '対象2件中1件目' // Object.is equality
+   × does not skip unknown occurrences just because body jump is unsafe 17ms
+     → expected undefined to be '対象1件中1件目' // Object.is equality
+   × does not skip incomplete occurrences just because body jump is unsafe 15ms
+     → expected undefined to be '対象1件中1件目' // Object.is equality
+   × storage changed invalidation stops old stepping and refresh requires explicit selection 61ms
+     → expected undefined to be '対象3件中2件目' // Object.is equality
+   × storage same-value invalidation stops old stepping and refresh requires explicit selection 50ms
+     → expected undefined to be '対象3件中2件目' // Object.is equality
+   ✓ body ABA and report identity changes never revive old count/position/selection 56ms
+   × closing and reopening clears navigation and does not silently restore selected occurrence 20ms
+     → 次の項目: expected undefined to be truthy
+   × selected unsafe item rejects body navigation without dropping selection or breaking next/previous 18ms
+     → Cannot read properties of undefined (reading 'disabled')
+   × saving disables sequential operations and body jump without changing the current selection 24ms
+     → 次の項目: expected undefined to be truthy
+ ❯ tests/audit-item-navigation-app.test.ts (3 tests | 3 failed) 405ms
+   × real CalculatorApp steps to each occurrence and repeatedly returns to its detail, focus, filter and scroll without reads or writes 208ms
+     → Cannot set properties of null (setting 'value')
+   × body ABA while away leaves sequential navigation invalid after return; recheck requires choosing anew 94ms
+     → 次の項目: expected undefined to be truthy
+   × same-value storage while body navigation is pending discards old callback and detail navigation 101ms
+     → 次の項目: expected undefined to be truthy
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/audit-item-navigation-app.test.ts > real CalculatorApp steps to each occurrence and repeatedly returns to its detail, focus, filter and scroll without reads or writes
+TypeError: Cannot set properties of null (setting 'value')
+ ❯ tests/audit-item-navigation-app.test.ts:37:34
+     35|   await open(); const auditContent = host.querySelector('[aria-label="…
+     36|   const select = host.querySelector<HTMLSelectElement>('[aria-label="詳…
+     37|   await act(async () => { select.value = 'review'; select.dispatchEven…
+       |                                  ^
+     38|   auditContent.scrollTop = 181; const raw = localStorage.getItem(STORA…
+     39|   const entries = parseReportAudit(body, 'f').items;
+ ❯ process.env.NODE_ENV.exports.act <project>/node_modules/react/cjs/react.development.js:814:22
+ ❯ tests/audit-item-navigation-app.test.ts:37:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  tests/audit-item-navigation-app.test.ts > body ABA while away leaves sequential navigation invalid after return; recheck requires choosing anew
+AssertionError: 次の項目: expected undefined to be truthy
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation-app.test.ts:16:89
+     14| let host: HTMLDivElement, root: Root, frames: FrameRequestCallback[];
+     15| const button = (name: string) => [...host.querySelectorAll('button')].…
+     16| async function click(name: string) { await act(async () => { expect(bu…
+       |                                                                                         ^
+     17| const editor = () => host.querySelector<HTMLTextAreaElement>('#formula…
+     18| const flush = async () => act(async () => { frames.splice(0).forEach(c…
+ ❯ process.env.NODE_ENV.exports.act <project>/node_modules/react/cjs/react.development.js:814:22
+ ❯ click tests/audit-item-navigation-app.test.ts:16:44
+ ❯ tests/audit-item-navigation-app.test.ts:53:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  tests/audit-item-navigation-app.test.ts > same-value storage while body navigation is pending discards old callback and detail navigation
+AssertionError: 次の項目: expected undefined to be truthy
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation-app.test.ts:16:89
+     14| let host: HTMLDivElement, root: Root, frames: FrameRequestCallback[];
+     15| const button = (name: string) => [...host.querySelectorAll('button')].…
+     16| async function click(name: string) { await act(async () => { expect(bu…
+       |                                                                                         ^
+     17| const editor = () => host.querySelector<HTMLTextAreaElement>('#formula…
+     18| const flush = async () => act(async () => { frames.splice(0).forEach(c…
+ ❯ process.env.NODE_ENV.exports.act <project>/node_modules/react/cjs/react.development.js:814:22
+ ❯ click tests/audit-item-navigation-app.test.ts:16:44
+ ❯ tests/audit-item-navigation-app.test.ts:58:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > zero items and unselected lists never fabricate a current position
+AssertionError: expected '根拠点検CALCULATION MEMOレポート全体の根拠点検×本文・対象…' to match /一覧から.*選/
+
+- Expected: 
+/一覧から.*選/
+
++ Received: 
+"根拠点検CALCULATION MEMOレポート全体の根拠点検×本文・対象・取得世代が変わりました。旧詳細と照合結果は失効しています。戻る際は現在本文の対象を再確認します。編集中の本文が対象です。未保存の本文だけを一覧化し、保存本文とは混在させません。出典一致・本文対応・利用者の明示確認・数学的正しさは別です。保存記録の変更だけで過去の引用が誤りとは判定しません。閲覧・照合・移動では保存も再計算も行いません。固定A/B比較資料画面に保持した本文内の固定資料を読み返します。現在の根拠との一致・真正性・数学的正しさを保証しません。閲覧・移動では保存・原本取得・再比較・再計算・確認履歴追加を行いません。認識できた固定比較資料 0件。表示中本文で認識できる固定比較資料の一覧です。列挙できる固定比較資料はありません。由来不明の文章から資料を推測しません。固定点検記録の2時点比較現在画面に保持している本文内の過去記録を比較します。表示順は本文順で、日時順ではありません。A→Bは明示した順序です。保存原本の再取得・保存・再計算・確認履歴の追加は行いません。比較対象は記録内の構造化資料です。後から手編集された説明文の文意は判定しません。記録間の差異がないことは数学的正しさ・証明・真正性の保証ではありません。変更理由は記録されていなければ理由不明です。認識できる固定点検記録はありません。マーカーが除去された文章の由来は推測しません。比較元A明示的に選択してください比較先B明示的に選択してください比較元Aと比較先Bを入れ替える選択した2記録を比較比較はまだ実行されていません。AとBを選び、比較ボタンを押してください。保存記録と照合原本の観測取得日時：2026-10-28T07:38:27.804Z。保存日時・計算日時・利用者確認日時ではありません。認識できた出現 3件／見直し対象 1件。分母は本文上の出現数です。複数の問題がある項目も見直し対象は1件として数えます。未照合も見直し対象です。認識可能な根拠を本文順に列挙しています。マーカーが完全に削除された文章の由来は推定しません。コピー・.md出力は絞り込みや詳細選択に関係なく、認識できた全項目を本文順に出力します。本文・snapshot全文は含めず、元データの復元用ではありません。ファイル名のみ安全化・短縮し、出力内のタイトル・IDは省略しません。点検結果をコピー点検結果を.md出力表示する状態すべて見直し対象未照合の出典あり1. 固定引用：q1本文状態：本文対応あり引用本文と固定snapshotの形式が一致しています。出典状態とは別です。識別情報の全文ID：q1／メモID：m／引用時記録ID：r1／ブロックID：b引用元：保存記録と一致取得時点の同一ID保存記録全体と一致。数学的証明・明示確認ではありません。根拠1の詳細根拠1の本文へ移動2. 比較差分：d1本文状態：本文対応あり引用時の差分本文と追跡情報が一致しています。現在の出典状態とは別の確認です。識別情報の全文ID：d1／メモID：m／引用時記録ID：r1／ブロックID：b比較先記録ID：r2比較元：保存記録と一致取得時点の同一ID保存記録全体と一致。数学的証明・明示確認ではありません。比較先：保存記録と一致取得時点の同一ID保存記録全体と一致。数学的証明・明示確認ではありません。根拠2の詳細根拠2の本文へ移動3. 固定引用：q3本文状態：本文編集・対応未保証引用本文または形式が編集されています。引用時メタデータとの整合を確認できません。識別情報の全文ID：q3／メモID：m／引用時記録ID：r1／ブロックID：b引用元：保存記録と一致取得時点の同一ID保存記録全体と一致。数学的証明・明示確認ではありません。根拠3の詳細根拠3の本文へ移動原本の常時最新性・任意の外部書込みとの原子的整合性は保証しません。変更を検知したときは明示照合が必要です。根拠点検を閉じる"
+
+ ❯ tests/audit-item-navigation.integration.test.ts:41:109
+     39| it('zero items and unselected lists never fabricate a current position…
+     40|   await open('plain text'); expect(position()).toBeUndefined(); expect…
+     41|   await render(mixed); await click('保存記録と照合'); expect(position()).toBe…
+       |                                                                                                             ^
+     42| });
+     43| it('one item has accessible non-operating boundaries without native fo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > one item has accessible non-operating boundaries without native focus loss
+AssertionError: expected undefined to be '対象1件中1件目' // Object.is equality
+
+- Expected: 
+"対象1件中1件目"
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:44:72
+     42| });
+     43| it('one item has accessible non-operating boundaries without native fo…
+     44|   await open(quote('only')); await click('根拠1の詳細'); expect(position())…
+       |                                                                        ^
+     45|   for (const name of ['前の項目', '次の項目']) {
+     46|     const node = button(name)!; expect(node).toBeTruthy(); expect(node…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > steps existing body order across quote/difference/edited items, retains the button at endpoints, and has no persistence/acquisition effects
+AssertionError: expected undefined to be '対象3件中1件目' // Object.is equality
+
+- Expected: 
+"対象3件中1件目"
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:54:45
+     52|   const read = vi.spyOn(Storage.prototype, 'getItem'), write = vi.spyO…
+     53|   const assess = vi.spyOn(reportAudit, 'assessReportAudit'), parse = v…
+     54|   await click('根拠1の詳細'); expect(position()).toBe('対象3件中1件目');
+       |                                             ^
+     55|   await click('次の項目'); expect(position()).toBe('対象3件中2件目'); expect(hos…
+     56|   await click('次の項目'); const next = button('次の項目')!; expect(position()…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > filter retention uses occurrence key not old index; exclusion clears details with a reason and never selects a neighbor
+AssertionError: expected undefined to be '対象3件中3件目' // Object.is equality
+
+- Expected: 
+"対象3件中3件目"
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:63:83
+     61| });
+     62| it('filter retention uses occurrence key not old index; exclusion clea…
+     63|   await open(); await click('保存記録と照合'); await click('根拠3の詳細'); expect(…
+       |                                                                                   ^
+     64|   await filter('review'); expect(list().children).toHaveLength(1); exp…
+     65|   await filter('all'); expect(position()).toBe('対象3件中3件目'); await clic…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > does not skip duplicate occurrences just because body jump is unsafe
+AssertionError: expected undefined to be '対象2件中1件目' // Object.is equality
+
+- Expected: 
+"対象2件中1件目"
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:71:135
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > does not skip unknown occurrences just because body jump is unsafe
+ FAIL  tests/audit-item-navigation.integration.test.ts > does not skip incomplete occurrences just because body jump is unsafe
+AssertionError: expected undefined to be '対象1件中1件目' // Object.is equality
+
+- Expected: 
+"対象1件中1件目"
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:71:135
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > storage changed invalidation stops old stepping and refresh requires explicit selection
+ FAIL  tests/audit-item-navigation.integration.test.ts > storage same-value invalidation stops old stepping and refresh requires explicit selection
+AssertionError: expected undefined to be '対象3件中2件目' // Object.is equality
+
+- Expected: 
+"対象3件中2件目"
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:79:181
+     77|   await storage(mode === 'same-value' ? raw : 'changed-generation'); e…
+     78|   if (button('次の項目')) { await click('次の項目'); expect(position()).toBeUn…
+     79|   expect(read).not.toHaveBeenCalled(); await click('保存記録と照合'); expect(…
+       |                                                                                                                                                                                     ^
+     80| });
+     81| it('body ABA and report identity changes never revive old count/positi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > closing and reopening clears navigation and does not silently restore selected occurrence
+AssertionError: 次の項目: expected undefined to be truthy
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:25:108
+
+ ❯ process.env.NODE_ENV.exports.act <project>/node_modules/react/cjs/react.development.js:814:22
+ ❯ click tests/audit-item-navigation.integration.test.ts:25:44
+ ❯ tests/audit-item-navigation.integration.test.ts:86:46
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > selected unsafe item rejects body navigation without dropping selection or breaking next/previous
+TypeError: Cannot read properties of undefined (reading 'disabled')
+ ❯ tests/audit-item-navigation.integration.test.ts:90:29
+     88| it('selected unsafe item rejects body navigation without dropping sele…
+     89|   await open(`${quote('same')}\n\n${quote('same')}\n\n${quote('valid')…
+     90|   expect(button('この項目の本文へ移動')!.disabled).toBe(true); await click('この項目…
+       |                             ^
+     91|   await click('次の項目'); expect(position()).toBe('対象3件中2件目'); await clic…
+     92| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+
+ FAIL  tests/audit-item-navigation.integration.test.ts > saving disables sequential operations and body jump without changing the current selection
+AssertionError: 次の項目: expected undefined to be truthy
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/audit-item-navigation.integration.test.ts:25:108
+
+ ❯ process.env.NODE_ENV.exports.act <project>/node_modules/react/cjs/react.development.js:814:22
+ ❯ click tests/audit-item-navigation.integration.test.ts:25:44
+ ❯ tests/audit-item-navigation.integration.test.ts:95:36
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  15 failed | 1 passed (16)
+   Start at  16:38:26
+   Duration  2.45s (transform 991ms, setup 0ms, collect 2.52s, tests 892ms, environment 556ms, prepare 192ms)
+

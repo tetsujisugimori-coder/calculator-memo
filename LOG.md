@@ -1,5 +1,18 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-28 JST: 根拠点検項目の前後ナビゲーション（Issue #100）
+
+- PR #99 merged と最新main `cd8d69039578965c963ffc0f1b1d31eb7174f61f` をAPI/専用cloneで実確認。既存作業を変更せず `feat/audit-item-navigation`、[Issue #100](https://github.com/tetsujisugimori-coder/calculator-memo/issues/100) で追跡。
+- 既存filtered AuditItem配列とoccurrence keyから位置を導出。詳細内の前後・件数/位置・絞り込み・本文移動を追加。不完全/未知/重複も列挙対象なら飛ばさず、本文移動の安全可否は分離。非循環端はaria-disabled＋guardでfocusを保持。選択対象外filterは理由付き解除と親filterfocus復帰。
+- 共通詳細Modalのみ維持し、項目固有比較状態はkeyで破棄。PR99の休止/本文移動/強調/復帰を再利用し、通常往復は直前選択/詳細/filter/scroll/focusを保持。本文/対象/世代/ABA/同値storageの失効後は旧位置を表示せず、明示再照合後に選び直す。
+- 新機能同一テストを基点で15失敗1成功、実装版16成功。これは新機能未実装のRED/GREENで既存不具合の再現とは別。独立4単体、独自8実GUI成功。全2271単体、44契約、lint、型、通常/Pages build成功（commit前作業版）。Chromium375touchの新6群/36操作成功。正式6条件・最終HEAD CIはPR Checksと結果コメントで確定し、旧版成功を流用しない。
+- 初回GUI新fixtureは再照合後unverified絞り込み0件で正しく空表示したため、誤った『一覧から』期待を修正。先に空表示を検証し明示all選択を加えた。既存期待値を緩和せず追加操作数も契約更新。
+- 前後操作で取得/保存/parse/assess/compare呼出し0、実App往復で本文/保存bytes/snapshot/履歴不変。保存schema/容量/engine/Markdown/専用取消は不変更。保存中は操作guard。
+- [設計](docs/design/audit-item-navigation.md)、[実行記録](docs/maintenance/audit-item-navigation-20261028/README.md)、[独立レビュー](docs/maintenance/audit-item-navigation-20261028/independent-review.md)。[Draft PR #101](https://github.com/tetsujisugimori-coder/calculator-memo/pull/101) とIssueで相互参照。最終HEADの正式CIはPR Checks・結果コメントに記録する。
+- 実機iPhone Safari/VoiceOver/OS文字拡大、既存WebKit時間変動根本原因は未検証/未解決。正式GUIは既存6条件/3workers/30分/成功trace0、1092検査/592geometry/132PNG/各mobile1306操作を要求。今回の成功を将来の時間安定性保証にしない。
+
+2026-10-28 16:41 JST
+
 ## 2026-10-27 JST: 根拠点検と本文の往復ナビゲーション（Issue #98）
 
 - 最新main `035436c3c0dc3a971d1a3c4bb77fb8d1c3a11066` とPR #97 mergeをGitHub・fetchで確認。既存worktreeを保全して専用branchを作成。同目的の[Issue #98](https://github.com/tetsujisugimori-coder/calculator-memo/issues/98)が存在したため重複作成しない。
@@ -1318,3 +1331,12 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - PR workflowの任意cacheを無効化（package-manager-cache:false）。lockfile npm ci・Nodepin・全検査・artifact・worker3・上限30分は維持、公開workflow不変更。cache予算契約を1件追加、42件へ。
 - 旧失敗・cancel・UNKNOWNを残し、変更後HEADの実CIを待つ。
 記録：2026-10-28 00:59 JST。
+
+## 正式CIで検出した既存固定資料移動の回帰と修正
+
+- `e8e096b67bddf2469e85ec374715ec81ed35fefb` の [run 40653849236](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40653849236) は正式6条件すべて同じ既存 `audit-comparison-navigation.mjs:88` で失敗。unit/契約/lint/型/両build/ブラウザー準備は成功。成果物12800868795、ZIP SHA256 `93de08d6e059118d2282e0834818c5d2d861ce3b04803342c39ba521c1dd2184` をダウンロード照合した。失敗成果物を成功成果物と扱わない。
+- 製品回帰: 新しい点検取得結果の失効guardを共通本文移動入口へ追加したため、独立した固定A/B資料が保存通知後に明示再選択され、保持本文から厳密再照合できても拒否していた。独立レビューでも同じ原因を確認。
+- 修正: `navigateAuditItem` に点検項目専用のstale/ref guardを限定。共通入口の保存中制限と完全範囲capture、固定資料の独立generation/選択context/epoch/再解析による一意照合を維持。古い点検項目の順送りを復活させる変更ではない。
+- 同一の既存GUI helper/期待値を変更せずChromium375/touchで修正前selection0..0のRED→修正後7群/44native操作/pageerror0 GREEN。ログ `comparison-regression-red.log` / `comparison-regression-green.log`。新機能未実装REDと区別する。新項目前後の失効・ABA・同値通知停止は別テストで維持する。正式全6条件は新HEADの実CIで改めて照合し、局所成功で代用しない。
+
+2026-10-28 17:19 JST

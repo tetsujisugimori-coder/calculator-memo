@@ -1,0 +1,25 @@
+import { chromium } from '<project>/e2e/node_modules/playwright/index.mjs';
+import { readFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+const fixture=JSON.parse(readFileSync('<fixture.json>','utf8'));
+const browser=await chromium.launch({headless:true,executablePath:'<browser-cache>/chromium_headless_shell-1194/chrome-linux/headless_shell',args:['--no-sandbox']});
+const context=await browser.newContext({viewport:{width:375,height:667},isMobile:true,hasTouch:true,deviceScaleFactor:2});
+const page=await context.newPage(); const errors=[];page.on('pageerror',e=>errors.push(e.message));
+try {
+await page.goto('http://localhost:4392/calculator-memo/');await page.evaluate(f=>localStorage.setItem('calculation-memo:data',JSON.stringify(f)),fixture);await page.reload();
+const b=name=>page.getByRole('button',{name,exact:true});
+const tap=async name=>{await b(name).tap();};
+await tap('登録式ライブラリ');await tap('関連レポートを閲覧・編集');await tap('Markdownを編集');await tap('根拠点検');await tap('根拠1の詳細');
+await b('次の項目').evaluate(el=>window.__independentNext=el);
+await tap('次の項目');assert.equal(await page.getByText('対象3件中2件目',{exact:true}).count(),1);
+assert.equal(await b('次の項目').evaluate(el=>el===window.__independentNext),true);
+await b('次の項目').focus();await page.keyboard.press('Enter');assert.equal(await page.getByText('対象3件中3件目',{exact:true}).count(),1);
+assert.equal(await b('次の項目').evaluate(el=>el===document.activeElement),true);
+await page.keyboard.press('Enter');assert.equal(await page.getByText('対象3件中3件目',{exact:true}).count(),1);
+await b('この項目の本文へ移動').focus();await page.keyboard.press('Space');await page.waitForFunction(()=>document.querySelector('#formula-report-body')?.selectionEnd>document.querySelector('#formula-report-body')?.selectionStart);
+await tap('点検へ戻る');assert.equal(await page.getByText('対象3件中3件目',{exact:true}).count(),1);
+assert.equal(await b('この項目の本文へ移動').evaluate(el=>el===document.activeElement),true);
+for(const theme of ['dark','light']) {await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize='200%';},theme);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);await page.screenshot({path:`<evidence>/audit-independent-${theme}.png`});}
+assert.equal(await page.evaluate(()=>localStorage.getItem('calculation-memo:data')),JSON.stringify(fixture));assert.deepEqual(errors,[]);
+console.log(JSON.stringify({checks:8,browser:browser.version(),viewport:'375x667 DPR2 mobile/touch',pageErrors:errors,physicalSafari:false}));
+} finally {await context.close();await browser.close();}
