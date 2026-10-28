@@ -1,5 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 診断要約と復帰説明の訂正（文書のみ）
+
+- 2026-10-28のWebKit390未完走診断は局所actionabilityの寄与を観測したが、候補CSSの総時間改善が一貫せず不採用。製品/試験/workflowはコードHEAD `52f4f6914fcd3c72b0829018842f653f06abe5f2` から変更しない。
+- READMEを実装契約に合わせ、一覧からの初回往復は元選択（未選択含む）・一覧位置・発火元focusを保持、本文側step成功時だけ移動先詳細復帰と明記。
+- 環境再起動で未commitの診断原ファイルが現環境に見つからず、[診断要約](docs/maintenance/pr103-webkit-diagnosis-20261028/README.md)を会話引継ぎから再構成。実測/独立照合の過去報告と今回API確認を区別し、JSON・trace・scriptを推定復元しない。
+- 過去run40671009347 attempt1/2の取消は維持。5条件完走・WK390未完了でPARTIAL、マージ推奨NO。候補撤回後2299単体/46契約/lint/型/両build成功は再起動前のコード52f4相当作業版報告で、最終文書HEADのCI成功ではない。
+- 本人の03:18 JST承認に従い、この文書commitはCI skip指定で提出。正式GUIの無根拠再試行なし。最終SHA/skip確認はPR本文に記録。実機Safari/VoiceOver/OS文字拡大未検証、時間変動の根因未確定。
+- 関連：[Issue #102](https://github.com/tetsujisugimori-coder/calculator-memo/issues/102)、[Draft PR #103](https://github.com/tetsujisugimori-coder/calculator-memo/pull/103)。Draft・未merge・auto-mergeなしを維持。
+
+2026-10-29 03:22 JST
+
 ## 2026-10-28 JST: 根拠点検項目の前後ナビゲーション（Issue #100）
 
 - PR #99 merged と最新main `cd8d69039578965c963ffc0f1b1d31eb7174f61f` をAPI/専用cloneで実確認。既存作業を変更せず `feat/audit-item-navigation`、[Issue #100](https://github.com/tetsujisugimori-coder/calculator-memo/issues/100) で追跡。
