@@ -197,7 +197,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     }
   };
   const suspendNavigation = (start: number, end: number, origin?: { start: number; end: number }) => {
-    if (disabled || stale || staleRef.current) { setNavigationNotice("点検結果が失効中または保存中のため本文へ移動しません。明示照合後に選び直してください。"); return; }
+    if (disabled) { setNavigationNotice("保存中のため本文へ移動しません。"); return; }
     const target = captureAuditNavigationTarget(body, formulaId, reportId ?? "", start, end);
     if (!target) { setNavigationNotice("完全な一意範囲を確認できないため本文へ移動しません。"); return; }
     const originTarget = origin ? captureAuditNavigationTarget(body, formulaId, reportId ?? "", origin.start, origin.end) : null;
@@ -211,6 +211,11 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
       if (navigationEpoch.current !== epoch || contextRef.current !== currentContext) return;
       setHighlight({ body, start, end }); setNavigationNotice("点検対象の範囲を一時選択しました。本文は変更していません。戻らず編集を続けることもできます。");
     });
+  };
+  // Acquisition invalidation applies to audit items, not independently reselected fixed sources.
+  const navigateAuditItem = (start: number, end: number) => {
+    if (stale || staleRef.current) { setNavigationNotice("点検結果が失効中のため本文へ移動しません。明示照合後に選び直してください。"); return; }
+    suspendNavigation(start, end);
   };
   const revisit = () => {
     if (!roundtrip || roundtrip.epoch !== navigationEpoch.current) { setNavigationNotice("保存通知・新操作等により追跡位置が失効しています。現在の点検一覧から選び直してください。"); return; }
@@ -302,7 +307,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
             {snapshot && <details><summary>識別情報の全文</summary><p>ID：{identifier}／メモID：{snapshot.memoId}／引用時記録ID：{snapshot.record.id}／ブロックID：{snapshot.blockId}</p>{item.difference?.snapshot && <p>比較先記録ID：{item.difference.snapshot.after.id}</p>}</details>}
             {!item.sources.length && <p>出典：追跡情報不足または未知・不正のため照合できません。</p>}
             {item.sources.map(state => <div key={state.side}><p>{state.side === "before" ? "比較元" : state.side === "after" ? "比較先" : "引用元"}：{sourceLabels[state.status]}</p><p>{state.reason}</p>{state.linked === false && <p>関連付け解除・保存済み根拠リンクなし（記録欠落とは別）。自動追加しません。</p>}</div>)}
-            <div className="modal-actions"><button type="button" disabled={disabled || stale} onClick={() => { setSelected(item.key); setSelectionNotice(""); }}>根拠{item.order}の詳細</button><button type="button" disabled={disabled || stale || !item.canNavigate} onClick={() => suspendNavigation(item.start, item.end)}>根拠{item.order}の本文へ移動</button></div>
+            <div className="modal-actions"><button type="button" disabled={disabled || stale} onClick={() => { setSelected(item.key); setSelectionNotice(""); }}>根拠{item.order}の詳細</button><button type="button" disabled={disabled || stale || !item.canNavigate} onClick={() => navigateAuditItem(item.start, item.end)}>根拠{item.order}の本文へ移動</button></div>
             {!item.canNavigate && <p>本文との対応位置を安全に確定できないため移動できません。</p>}
           </li>;
         })}</ol>
@@ -315,7 +320,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
           <p role="status" aria-live="polite" aria-atomic="true">{`根拠${selectedItem.order}：${selectedItem.kind === "quote" ? "固定引用" : "比較差分"}。`}<span>{`対象${visible.length}件中${selectedIndex + 1}件目`}</span></p>
           <div className="modal-actions"><button type="button" aria-disabled={disabled || selectedIndex === 0} onClick={event => { event.currentTarget.focus(); step(-1); }}>前の項目</button><button type="button" aria-disabled={disabled || selectedIndex === visible.length - 1} onClick={event => { event.currentTarget.focus(); step(1); }}>次の項目</button></div>
           <label>表示する状態<select aria-label="詳細で表示する状態" value={filter} disabled={disabled} onChange={event => changeFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
-          <button type="button" disabled={disabled || !selectedItem.canNavigate} onClick={() => suspendNavigation(selectedItem.start, selectedItem.end)}>この項目の本文へ移動</button>
+          <button type="button" disabled={disabled || !selectedItem.canNavigate} onClick={() => navigateAuditItem(selectedItem.start, selectedItem.end)}>この項目の本文へ移動</button>
           {!selectedItem.canNavigate && <p>本文との対応位置を安全に確定できないため移動できません。詳細の前後移動は利用できます。</p>}
           {navigationNotice && <p role="status">{navigationNotice}</p>}
         </section>} item={selectedItem} body={body} formulaId={formulaId} source={source} links={links} onRefresh={refresh} onClose={() => setSelected(null)} />}

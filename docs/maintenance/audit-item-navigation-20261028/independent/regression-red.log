@@ -1,0 +1,43 @@
+
+ RUN  v3.2.4 <repository>
+
+ ❯ tests/audit-item-navigation-independent.test.ts (6 tests | 2 failed) 265ms
+   ✓ independent: quote → difference → quote retains the exact next button and refuses endpoint activation 93ms
+   ✓ independent: saving guard stops both directions without losing selected position 40ms
+   ✓ independent: a matching-value storage event clears old detail and cannot be undone by a normal rerender 41ms
+   ✓ independent: excluded detail selection gives focus to a connected control in the remaining audit 34ms
+   × independent regression: explicitly reselected fixed material after storage changed still navigates the held strict source 33ms
+     → expected "spy" to be called with arguments: [ 8, 341, Any<Function> ]
+
+Number of calls: 0
+
+   × independent regression: explicitly reselected fixed material after storage deleted still navigates the held strict source 23ms
+     → expected "spy" to be called with arguments: [ 8, 341, Any<Function> ]
+
+Number of calls: 0
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/audit-item-navigation-independent.test.ts > independent regression: explicitly reselected fixed material after storage changed still navigates the held strict source
+ FAIL  tests/audit-item-navigation-independent.test.ts > independent regression: explicitly reselected fixed material after storage deleted still navigates the held strict source
+AssertionError: expected "spy" to be called with arguments: [ 8, 341, Any<Function> ]
+
+Number of calls: 0
+
+ ❯ tests/audit-item-navigation-independent.test.ts:90:15
+     88|   const reads = vi.spyOn(Storage.prototype, 'getItem'), writes = vi.sp…
+     89|   await click('比較元Aの出典本文へ移動');
+     90|   expect(nav).toHaveBeenCalledWith(held.indexOf(a), held.indexOf(a) + …
+       |               ^
+     91|   expect(reads).not.toHaveBeenCalled(); expect(writes).not.toHaveBeenC…
+     92| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  17:17:37
+   Duration  2.03s (transform 410ms, setup 0ms, collect 1.11s, tests 265ms, environment 284ms, prepare 69ms)
+

@@ -1331,3 +1331,12 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - PR workflowの任意cacheを無効化（package-manager-cache:false）。lockfile npm ci・Nodepin・全検査・artifact・worker3・上限30分は維持、公開workflow不変更。cache予算契約を1件追加、42件へ。
 - 旧失敗・cancel・UNKNOWNを残し、変更後HEADの実CIを待つ。
 記録：2026-10-28 00:59 JST。
+
+## 正式CIで検出した既存固定資料移動の回帰と修正
+
+- `e8e096b67bddf2469e85ec374715ec81ed35fefb` の [run 40653849236](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40653849236) は正式6条件すべて同じ既存 `audit-comparison-navigation.mjs:88` で失敗。unit/契約/lint/型/両build/ブラウザー準備は成功。成果物12800868795、ZIP SHA256 `93de08d6e059118d2282e0834818c5d2d861ce3b04803342c39ba521c1dd2184` をダウンロード照合した。失敗成果物を成功成果物と扱わない。
+- 製品回帰: 新しい点検取得結果の失効guardを共通本文移動入口へ追加したため、独立した固定A/B資料が保存通知後に明示再選択され、保持本文から厳密再照合できても拒否していた。独立レビューでも同じ原因を確認。
+- 修正: `navigateAuditItem` に点検項目専用のstale/ref guardを限定。共通入口の保存中制限と完全範囲capture、固定資料の独立generation/選択context/epoch/再解析による一意照合を維持。古い点検項目の順送りを復活させる変更ではない。
+- 同一の既存GUI helper/期待値を変更せずChromium375/touchで修正前selection0..0のRED→修正後7群/44native操作/pageerror0 GREEN。ログ `comparison-regression-red.log` / `comparison-regression-green.log`。新機能未実装REDと区別する。新項目前後の失効・ABA・同値通知停止は別テストで維持する。正式全6条件は新HEADの実CIで改めて照合し、局所成功で代用しない。
+
+2026-10-28 17:19 JST

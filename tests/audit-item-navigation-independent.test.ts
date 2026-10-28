@@ -6,6 +6,8 @@ import { FormulaReportAudit } from '../components/FormulaReportAudit';
 import { createQuoteMarkdown, type QuoteSnapshot } from '../lib/formula-report-quotes';
 import { createTrackedDifferenceMarkdown } from '../lib/formula-report-diff-tracking';
 import { buildQuoteDifferenceMarkdown } from '../lib/formula-report-diff';
+import { createAuditRecordMarkdown } from '../lib/formula-report-audit-record';
+import { createAuditComparisonRecordMarkdown } from '../lib/formula-report-audit-comparison-record';
 import { defaultData, STORAGE_KEY } from '../lib/storage';
 import type { EvidenceRecord } from '../lib/calculation-evidence';
 import type { Memo } from '../lib/types';
@@ -70,4 +72,21 @@ it('independent: excluded detail selection gives focus to a connected control in
   expect(audit.contains(document.activeElement)).toBe(true);
   expect(document.activeElement?.isConnected).toBe(true);
   expect(document.activeElement).not.toBe(document.body);
+});
+
+
+it.each(['changed', 'deleted'])('independent regression: explicitly reselected fixed material after storage %s still navigates the held strict source', async kind => {
+  const fixed = (id: string) => createAuditRecordMarkdown('fixed ' + id, { recordId: id, formulaId: 'formula', reportId: 'report', generatedAt: at, bodySha256: 'a'.repeat(64), bodyLength: 0 });
+  const a = fixed('A'), b = fixed('B');
+  const material = createAuditComparisonRecordMarkdown('fixed material', { materialId: 'material', formulaId: 'formula', reportId: 'report', beforeRecordId: 'A', afterRecordId: 'B', preparedAt: at });
+  const held = ['prefix', a, material, b].join('\n\n');
+  await act(async () => root.render(createElement(FormulaReportAudit, { body: held, formulaId: 'formula', reportId: 'report', editing: true, onNavigate: nav })));
+  await click('根拠点検'); await click('比較資料1の詳細');
+  await act(async () => window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: kind === 'changed' ? 'changed original' : null })));
+  expect(host.querySelector('[aria-label="固定比較資料の詳細"]')).toBeNull();
+  await click('比較資料1の詳細');
+  const reads = vi.spyOn(Storage.prototype, 'getItem'), writes = vi.spyOn(Storage.prototype, 'setItem');
+  await click('比較元Aの出典本文へ移動');
+  expect(nav).toHaveBeenCalledWith(held.indexOf(a), held.indexOf(a) + a.length, expect.any(Function));
+  expect(reads).not.toHaveBeenCalled(); expect(writes).not.toHaveBeenCalled();
 });
