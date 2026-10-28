@@ -23,7 +23,18 @@ export type AuditAcquisition = { notes: Memo[]; links: FormulaReportEvidenceLink
 
 /** Parse once for this body. The strict insertion scanner is also the boundary
  * authority here: a poisoned region hides an unknown number of later items. */
+const inventoryInputs = new WeakMap<AuditInventory, { body: string; formulaId: string }>();
+/** A prepared navigation context may reuse only the exact parser result for its input. */
+export function isAuditInventoryFor(inventory: AuditInventory, body: string, formulaId: string): boolean {
+  const input = inventoryInputs.get(inventory);
+  return input?.body === body && input.formulaId === formulaId;
+}
 export function parseReportAudit(body: string, formulaId: string): AuditInventory {
+  const inventory = parseReportAuditInput(body, formulaId);
+  inventoryInputs.set(inventory, { body, formulaId });
+  return inventory;
+}
+function parseReportAuditInput(body: string, formulaId: string): AuditInventory {
   if (body.length > 100_000) return { items: [], complete: false, reason: '本文上限超過のため列挙できません。根拠0件とは判定していません。' };
   const originalBlocks = parseMarkdownBlocks(body);
   const auditRecords = scanAuditRecordEnvelopes(body, originalBlocks);

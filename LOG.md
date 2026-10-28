@@ -1340,3 +1340,17 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - 同一の既存GUI helper/期待値を変更せずChromium375/touchで修正前selection0..0のRED→修正後7群/44native操作/pageerror0 GREEN。ログ `comparison-regression-red.log` / `comparison-regression-green.log`。新機能未実装REDと区別する。新項目前後の失効・ABA・同値通知停止は別テストで維持する。正式全6条件は新HEADの実CIで改めて照合し、局所成功で代用しない。
 
 2026-10-28 17:19 JST
+
+## Issue #102：本文確認中の根拠点検前後ナビゲーション
+
+- PR #101 のmerge `7cdda5ce627fb431aec1a70ddd909e7fa01fdd3c` と取得した最新mainの一致を実確認。既存worktreeを保全し専用 `feat/audit-body-item-navigation` で開始。同目的の未完了Issue/PRがないことを調べてIssue #102を作成。設計を先行して記録。
+- 点検側の絞り込み・本文順・出現keyを共用し、本文側に現在名/位置と前後操作を追加。完全一意範囲を確認後、実選択完了callbackでだけ選択/戻り先/強調をまとめて更新。失敗・連打・遅延・保存中は古い成功を上書きしない。現在項目詳細への復帰と必要時だけの一覧スクロール、端でのfocus保持を維持。
+- 編集/ABA/同値通知/取得世代/切替で失効し、旧位置を有効と表示しない。固定A/B資料の独立した移動入口と既存3引数callback契約は維持。schema/engine/Markdown/容量/専用取消不変更。
+- 新機能23試験は基点で22 FAIL/1 PASS。初期実装の比較再実行4回を捕捉し、同じ0回期待を保ったまま、既存inventoryと本文/formula/reportに厳密束縛した私有一時候補contextへ修正。前後移動＋通常復帰まで再比較・原本取得・保存0回を確認。新機能未実装REDと既存不具合再現を混同しない。
+- 全体初回は2296 PASS/2 FAIL（固定資料callback引数の互換性期待）。固定資料は従来3引数を維持して同一期待で解消。lint初回20エラーは新UIのrender時ref参照/layout同期state更新であり、表示stateとイベント同期guardを分離して解消。検査抑制やassertion緩和なし。
+- 最終実装のローカル全単体2298件/104ファイル、型検査、lint、通常build/Pages build成功。追加独立2件は偽context/異入力inventory/前後加筆/削除/改変/重複/未知/別対象でcachedと従来経路の同値と安全停止を確認。独立レビュー阻害（比較4回）を解消し、再レビュー阻害未解消0。
+- focused Chromium375 touchは6群/31 native操作/pageerror0。light/dark CSS文字200%の局所画像を実視認。初回preview未起動・aria-disabledへのtap待機は試験環境/操作選択の失敗として区別し、端の検査をfocus+Enter/Spaceへ訂正。時間延長・強制clickなし。
+- 正式GUI期待値は既存全6条件を維持して1128検査/592geometry/132PNG/mobile各1337操作。契約46成功。3workers/30分上限/成功trace0は不変更。最終HEADの実CI、run/attempt/artifact SHAと件数はPR結果コメントで照合し、ローカル局所成功を正式結果の代用にしない。
+- WebKit時間変動は既存別残件で今回解決していない。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。CLI push dry-runは認証情報なしで未送信のため、認証済GitData connectorによる同一tree送信と取得照合を使用する。権限変更・マージ・Draft解除・auto-merge・公開は行わない。
+
+記録：2026-10-28 18:52 JST。

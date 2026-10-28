@@ -395,16 +395,16 @@ export function FormulaReportModal({ savedContextUncertain, originalGeneration, 
           }
         }}
         body={body} formulaId={formulaId} formulaTitle={formula?.title} reportId={id} reportTitle={title} editing={!baseline.report || body !== baseline.report.body} unsavedChanges={dirty} savedContextChanged={!!conflict || savedContextUncertain || heldContextUncertain} disabled={saving}
-        onNavigate={(start, end, onArrived) => {
-          if (!validSourceRange(body, start, end)) { setNotice({ text: "本文位置の文字境界を確認できないため移動しません。本文は保持しています。", failed: true }); return; }
+        onNavigate={(start, end, onArrived, onRejected) => {
+          if (savingRef.current || !validSourceRange(body, start, end)) { onRejected?.(); setNotice({ text: savingRef.current ? "保存中のため本文へ移動しません。本文は保持しています。" : "本文位置の文字境界を確認できないため移動しません。本文は保持しています。", failed: true }); return; }
           const epoch = ++auditNavigationEpoch.current;
           const position = positionEpoch.current, edit = auditEditEpoch.current;
           const selection = editorRef.current ? { start: editorRef.current.selectionStart, end: editorRef.current.selectionEnd } : null;
           setPreview(false);
           requestAnimationFrame(() => {
-            if (auditContextRef.current !== auditContext || auditNavigationEpoch.current !== epoch || positionEpoch.current !== position || auditEditEpoch.current !== edit
+            if (savingRef.current || auditContextRef.current !== auditContext || auditNavigationEpoch.current !== epoch || positionEpoch.current !== position || auditEditEpoch.current !== edit
               || editorRef.current?.value !== body.replace(/\r\n?/g, "\n")
-              || (selection && (editorRef.current.selectionStart !== selection.start || editorRef.current.selectionEnd !== selection.end))) return;
+              || (selection && (editorRef.current.selectionStart !== selection.start || editorRef.current.selectionEnd !== selection.end))) { onRejected?.(); return; }
             selectBodyRange(start, end); onArrived?.();
           });
         }} />

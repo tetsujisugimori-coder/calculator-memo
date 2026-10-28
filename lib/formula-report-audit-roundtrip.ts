@@ -1,4 +1,4 @@
-import { parseReportAudit } from './formula-report-audit';
+import { parseReportAudit, isAuditInventoryFor, type AuditInventory } from './formula-report-audit';
 import { inspectComparisonMaterials, validSourceRange } from './formula-report-audit-comparison-navigation';
 import { inspectAuditRecordMarker, scanAuditRecordEnvelopes } from './formula-report-audit-record';
 import { scanAuditComparisonRecordEnvelopes } from './formula-report-audit-comparison-record';
@@ -18,10 +18,10 @@ type Candidate = Pick<AuditNavigationTarget, 'kind' | 'identity' | 'start' | 'en
 /** Candidate authority comes exclusively from the existing parsers/scanners.
  * Exact text is compared only AFTER structural identification, never searched
  * as a substitute for parsing or used to repair a damaged envelope. */
-function candidates(body: string, formulaId: string, reportId: string): Candidate[] {
+function candidates(body: string, formulaId: string, reportId: string, inventory?: AuditInventory): Candidate[] {
   if (!reportId || body.length > 100_000 || !validSourceRange(body, 0, body.length)) return [];
   const result: Candidate[] = [];
-  for (const item of parseReportAudit(body, formulaId).items) {
+  for (const item of (inventory && isAuditInventoryFor(inventory, body, formulaId) ? inventory : parseReportAudit(body, formulaId)).items) {
     const id = item.quote?.snapshot?.quoteId ?? item.difference?.snapshot?.differenceId;
     if (item.canNavigate && id && validSourceRange(body, item.start, item.end)) {
       result.push({ kind: item.kind, identity: id, start: item.start, end: item.end, key: item.key });
@@ -49,9 +49,26 @@ function candidates(body: string, formulaId: string, reportId: string): Candidat
   return result;
 }
 
-export function captureAuditNavigationTarget(body: string, formulaId: string, reportId: string, start: number, end: number): AuditNavigationTarget | null {
+/** Per-view ephemeral authority. Prepared candidates are private, copied values;
+ * only parser-proven inventory for the identical input is reused. */
+export type AuditNavigationContext = Readonly<{ body: string; formulaId: string; reportId: string }>;
+const preparedCandidates = new WeakMap<AuditNavigationContext, Candidate[]>();
+export function prepareAuditNavigationContext(body: string, formulaId: string, reportId: string, inventory: AuditInventory): AuditNavigationContext {
+  const context = Object.freeze({ body, formulaId, reportId });
+  preparedCandidates.set(context, candidates(body, formulaId, reportId, inventory));
+  return context;
+}
+function currentCandidates(body: string, formulaId: string, reportId: string, context?: AuditNavigationContext): Candidate[] {
+  if (context?.body === body && context.formulaId === formulaId && context.reportId === reportId) {
+    const prepared = preparedCandidates.get(context);
+    if (prepared) return prepared;
+  }
+  return candidates(body, formulaId, reportId);
+}
+
+export function captureAuditNavigationTarget(body: string, formulaId: string, reportId: string, start: number, end: number, context?: AuditNavigationContext): AuditNavigationTarget | null {
   if (!validSourceRange(body, start, end) || start === end) return null;
-  const all = candidates(body, formulaId, reportId);
+  const all = currentCandidates(body, formulaId, reportId, context);
   const found = all.filter(candidate => candidate.start === start && candidate.end === end);
   if (found.length !== 1) return null;
   const target = found[0];
@@ -59,9 +76,9 @@ export function captureAuditNavigationTarget(body: string, formulaId: string, re
   return { ...target, formulaId, reportId, body, markdown: body.slice(start, end) };
 }
 
-export function resolveAuditNavigationTarget(body: string, formulaId: string, reportId: string, target: AuditNavigationTarget): AuditNavigationResolution {
+export function resolveAuditNavigationTarget(body: string, formulaId: string, reportId: string, target: AuditNavigationTarget, context?: AuditNavigationContext): AuditNavigationResolution {
   if (target.formulaId !== formulaId || target.reportId !== reportId) return { status: 'unavailable', reason: 'レポートまたは登録式が変わったため、以前の出現へ移動できません。' };
-  const matches = candidates(body, formulaId, reportId).filter(candidate => candidate.kind === target.kind && candidate.identity === target.identity);
+  const matches = currentCandidates(body, formulaId, reportId, context).filter(candidate => candidate.kind === target.kind && candidate.identity === target.identity);
   if (matches.length !== 1) return { status: 'unavailable', reason: '対象が削除・重複・不完全・未知形式になったか、完全な一意範囲を確認できません。位置を推測しません。' };
   const match = matches[0];
   if (body.slice(match.start, match.end) !== target.markdown || (body === target.body && (match.start !== target.start || match.end !== target.end))) {
