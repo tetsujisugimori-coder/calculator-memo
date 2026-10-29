@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 非GUI検証と診断経路の確認
+
+- 対象 `73f1621bd820b5036ff4befb98323a5a7b27f171`。Windows・Node 24.20.0で固定依存を `npm ci --ignore-scripts --offline --no-audit --no-fund` により約1分で取得。前回中断時のnpmログにaudit照会のECONNRESETはあるが、その後の処理も完了前に中断しており停止原因とは断定しない。初回中断は早すぎた可能性がある。
+- 同環境でlint、型検査、通常build、Pages buildは終了コード0。単体初回は2298成功・1失敗（checkoutのCRLFと期待例のLFの相違）。Gitの対象原本bytesを作業コピーに一時復元し、同一期待値で再実行して105 files・2299件成功。作業コピーは元のcheckout形式に戻し差分なし。
+- 契約試験は最初36/46成功、LF復元後37/46成功。bashがPATHになく起動不可と確認。Git Bashを追加したsandboxではOSの名前付きオブジェクト作成拒否、ホストでは38/46成功・8失敗（Windowsのsudoやパス等のLinux条件相違を含む）。失敗を隠さず、Ubuntu正式契約PASSとはしない。
+- GitHub ActionsのGUI workflowはpull_request専用、直接限定診断を起動する入口なし。workflow_dispatchがあるPages workflowは公開用であり、診断転用・公開は行わない。WSL LinuxディストリビューションおよびDockerも利用可能と確認できず、Ubuntu 24.04同条件の限定診断は未実施。既存正式GUIの無目的再試行は行っていない。
+- 追加診断の候補：Ubuntu 24.04 / Node 22.13.0で375/390の同一操作区間を新規contextと長prefix後に比較し、dispatch前後、DOM数、resource採取コストを分離。観測あり／なしの対照を含め、開始前に各試行上限・異常停止条件を固定する。実施環境とコストが確認できるまで計測・性能修正は保留。旧attemptの証拠と区別する。
+- 本記録後の文書HEADでは新たな検証を先取りしない。PARTIAL、マージ推奨NO、実機iPhone Safari・VoiceOver・OS文字拡大未検証を維持。
+
 ## 2026-10-29 JST: PR #103 既存CI証拠の再取得
 
 - PARTIAL、マージ推奨 NO。根因未確定のため性能修正と正式GUI再試行は行わない。READMEの初回復帰・本文側成功後の区別は既に `929b8f34c75b53e06798b021e393156d3ae803b8` に反映済み。
