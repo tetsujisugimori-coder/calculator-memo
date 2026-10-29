@@ -1,5 +1,11 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: #103 統合後ローカル検証の途中記録
+
+- 統合commit `c3afa7c53132ce78ef97614b8b4d02ee4d963fdc` をWindows／Node 24.20.0で検証。型、lint、通常build、Pages buildは成功。単体は他のbuild等と同時実行した初回に複数の5秒timeoutを観測し、未完走のまま中断。通常並列度で単独再実行した2回目は2289成功／10 timeout。原因は確定せず失敗を保持する。
+- 同じ期待値・5秒上限のままローカルunitのworkerを3に限定した3回目は105 files／2299件成功。これは並列度の異なる追加確認で、標準並列実行の失敗を消さない。正式GUIの3 workers・30分等は変更していない。
+- Windows／Git Bashの既存46契約は38成功／8失敗。Ubuntu正式契約・#105限定診断・#103正式GUIは未実施。artifactの利用枠・費用は未確認。PR上の最終HEADとCIの結果は別途照合する。
+
 ## 2026-10-29 JST: #103 と登録済み診断の重複整理
 
 - #104は `d25410379d669350c6fdc10ced225cfd1644b17a` でmainに統合済み。Pages workflowはactive、統合時の公開runは確認時点で発生していない。#103へmainを取り込み、診断workflow・CLI・計画はmainの版を保持。#103の過去LOGと診断再構成要約は失わず、[別名で保存](docs/maintenance/pr103-webkit-diagnosis-20261028/reconstructed-summary.md)した。
