@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 限定診断CLIの準備
+
+- 従来の失敗終了stubを、固定アプリcheckoutと診断コードを別に識別する手動workflow、4つのfresh WebKit caseを実行するCLI、case監督とmock検証に置換。[固定計画](docs/maintenance/pr103-webkit-diagnosis-20261028/proposed-plan.md)は幅と観測の各比較、順序・上限・停止条件・限界を記載。製品・正式workflowは不変。新規workflowはmain未登録でdispatch不可。
+- CLIは既存 `exerciseAuditRecordComparison` のfixture・11群・native tapを再利用し、幅以外の条件を固定して観測あり／なしを比較。操作時刻、資源観測、DOM等と進捗書込み負荷を記録。長prefixは再現せず蓄積を否定しない。計測器は未実測であり、実browser操作、Linux process-group cleanup、artifact保存と再取得は未検証。
+- mock 5件のうち4件成功（集計、欠測停止、非zero、timeoutと途中ログ）、Linux子孫cleanupの1件はWindowsで未実施。これは実browser PASSではない。JS構文・workflow静的検査・対象lint・diff checkを実施。正式GUI再試行なし。
+- Windows x64 10.0.26300では `wsl --list --verbose` が未インストールを返し、Docker／PodmanのCLIは見つからない。Vercelの対象名検索に該当projectなし。Ubuntu 24.04の実行枠・権限・費用・証拠取得可否はUNKNOWNで、新規有料契約や権限変更は行わない。
+- 過去の両attempt artifactの契約ログは各46/46成功と再読したが、新規Ubuntu実行ではない。Windowsの8失敗の名前・期待・結果と暫定分類は[対応表](docs/maintenance/pr103-webkit-diagnosis-20261028/contract-observations.md)。Ubuntu再実行での個別照合とGUI計測は未実施。
+- PARTIAL、マージ推奨NO。次は実行枠・費用・権限が確認されたUbuntu 24.04で、固定計画・46契約・限定CLIを順に実施する。iPhone Safari実機・VoiceOver・OS文字拡大未検証。
+
 ## 2026-10-29 JST: PR #103 診断計画と未完成workflowの下書き
 
 - GitHubの `workflow_dispatch` はworkflowファイルがdefault branchに必要で、現mainに診断用は存在しない。未マージbranchから新規workflowを手動起動できないため、正式GUI再試行・main変更・Pages公開workflow流用は行わない。
