@@ -9,7 +9,7 @@ import { FormulaAuditRecordComparison, type ComparisonMaterialInsertion } from "
 import { createAuditRecordMarkdown } from "../lib/formula-report-audit-record";
 import { downloadMarkdownReport } from "../lib/markdown-report";
 import { loadData, STORAGE_KEY } from "../lib/storage";
-import { captureAuditNavigationTarget, resolveAuditNavigationTarget, type AuditNavigationTarget } from "../lib/formula-report-audit-roundtrip";
+import { prepareAuditNavigationContext, captureAuditNavigationTarget, resolveAuditNavigationTarget, type AuditNavigationTarget } from "../lib/formula-report-audit-roundtrip";
 import { Modal } from "./Modal";
 import { RecordInfo, BlockInfo } from "./EvidenceRecordDetails";
 import { FormulaQuoteComparison, type QuoteSource } from "./FormulaQuoteComparison";
@@ -17,7 +17,7 @@ import { DifferenceSourceDialog } from "./FormulaDifferenceSources";
 
 type Acquisition = AuditAcquisition & { fetchedAt: string; raw: string | null };
 export type AuditRecordInsertion = { prepare: (markdown: string) => { start: number; end: number; insert: () => void }; disabled?: boolean; onOpen: () => void };
-type Props = { context?: string; onCancelNavigation?: () => void; comparisonInsertion?: Omit<ComparisonMaterialInsertion, "onInserted">; insertion?: AuditRecordInsertion; body: string; formulaId: string; formulaTitle?: string; reportId?: string; reportTitle?: string; editing: boolean; unsavedChanges?: boolean; savedContextChanged?: boolean; disabled?: boolean; onNavigate: (start: number, end: number, onArrived?: () => void) => void };
+type Props = { context?: string; onCancelNavigation?: () => void; comparisonInsertion?: Omit<ComparisonMaterialInsertion, "onInserted">; insertion?: AuditRecordInsertion; body: string; formulaId: string; formulaTitle?: string; reportId?: string; reportTitle?: string; editing: boolean; unsavedChanges?: boolean; savedContextChanged?: boolean; disabled?: boolean; onNavigate: (start: number, end: number, onArrived?: () => void, onRejected?: () => void) => void };
 const short = (value: string) => value.length > 24 ? `${value.slice(0, 24)}…` : value;
 
 /** Mounted for one report/body/definition/link/original generation by the editor.
@@ -28,16 +28,20 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
   const [recordError, setRecordError] = useState("");
   const [open, setOpen] = useState(false);
   const [suspended, setSuspended] = useState(false);
-  const [roundtrip, setRoundtrip] = useState<{ target: AuditNavigationTarget; origin: AuditNavigationTarget | null; selectedTarget: AuditNavigationTarget | null; scroll: number; focus: HTMLElement | null; epoch: number; context: string; revision: number } | null>(null);
+  const [roundtrip, setRoundtrip] = useState<{ target: AuditNavigationTarget; origin: AuditNavigationTarget | null; selectedTarget: AuditNavigationTarget | null; scroll: number; focus: HTMLElement | null; epoch: number; context: string; revision: number; auditItemKey?: string | null; moved?: boolean } | null>(null);
   const [navigationNotice, setNavigationNotice] = useState("");
   const [highlight, setHighlight] = useState<{ body: string; start: number; end: number } | null>(null);
   const [sourceResume, setSourceResume] = useState<{ key: string; nonce: number }>();
   const navigationEpoch = useRef(0);
+  const bodyMoveEpoch = useRef(0);
+  const bodyMoveBusy = useRef(false);
+  const [bodyMoving, setBodyMoving] = useState(false);
+  const cancelBodyMove = () => { bodyMoveEpoch.current += 1; bodyMoveBusy.current = false; setBodyMoving(false); };
   const rootRef = useRef<HTMLElement>(null);
   const resumeFocus = useRef(false);
   const currentContext = context ?? JSON.stringify([body, formulaId, reportId, savedContextChanged]);
   const contextRef = useRef(currentContext);
-  useLayoutEffect(() => { contextRef.current = currentContext; }, [currentContext]);
+  useLayoutEffect(() => { contextRef.current = currentContext; bodyMoveEpoch.current += 1; bodyMoveBusy.current = false; }, [currentContext]);
   useLayoutEffect(() => () => { navigationEpoch.current += 1; }, []);
   const [comparisonGeneration, setComparisonGeneration] = useState(0);
   const [acquisition, setAcquisition] = useState<Acquisition>();
@@ -70,10 +74,11 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     // (for example, a failed write confirmation). Never revive old copy UI.
     exportEpoch.current += 1; exportBusy.current = false;
   }, [savedContextChanged]);
-  const closeAudit = () => { onCancelNavigation?.(); navigationEpoch.current += 1; invalidateExport(); setOpen(false); setSuspended(false); setSelected(null); setSelectionNotice(""); setRoundtrip(null); setHighlight(null); setNavigationNotice(""); };
+  const closeAudit = () => { cancelBodyMove(); onCancelNavigation?.(); navigationEpoch.current += 1; invalidateExport(); setOpen(false); setSuspended(false); setSelected(null); setSelectionNotice(""); setRoundtrip(null); setHighlight(null); setNavigationNotice(""); };
   const [contextRevision, setContextRevision] = useState(0);
   const [observedContext, setObservedContext] = useState(currentContext);
   if (observedContext !== currentContext) {
+    setBodyMoving(false);
     setContextRevision(value => value + 1); setObservedContext(currentContext); setAcquisition(undefined); setStale(open); setSelected(null);
     setComparisonGeneration(value => value + 1); setRecordPreview(null); setPreparing(false);
     setExporting(false); setExportNotice(null); setManualCopy(null); setHighlight(null);
@@ -91,11 +96,12 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     committedContext.current = currentContext;
   }, [currentContext, open]);
   const inventory = useMemo(() => parseReportAudit(body, formulaId), [body, formulaId]);
+  const navigationContext = useMemo(() => prepareAuditNavigationContext(body, formulaId, reportId ?? "", inventory), [body, formulaId, reportId, inventory]);
   const items = useMemo(() => assessReportAudit(inventory, stale ? undefined : acquisition), [inventory, acquisition, stale]);
   useEffect(() => {
     const observe = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY && event.key !== null) return;
-      navigationEpoch.current += 1; setHighlight(null);
+      cancelBodyMove(); navigationEpoch.current += 1; setHighlight(null);
       setNavigationNotice("保存領域の通知で往復の追跡位置は失効しました。保持本文を保存原本と同一とは扱いません。現在一覧へ戻り、対象を選び直してください。");
       if (open || !acquisition || event.newValue !== acquisition.raw) {
         exportEpoch.current += 1; exportBusy.current = false;
@@ -196,30 +202,69 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
       else if (target.bottom > bounds.bottom) content.scrollTop += Math.min(target.top - bounds.top, target.bottom - bounds.bottom);
     }
   };
-  const suspendNavigation = (start: number, end: number, origin?: { start: number; end: number }) => {
+  const suspendNavigation = (start: number, end: number, origin?: { start: number; end: number }, auditItemKey?: string) => {
     if (disabled) { setNavigationNotice("保存中のため本文へ移動しません。"); return; }
-    const target = captureAuditNavigationTarget(body, formulaId, reportId ?? "", start, end);
+    const target = captureAuditNavigationTarget(body, formulaId, reportId ?? "", start, end, navigationContext);
     if (!target) { setNavigationNotice("完全な一意範囲を確認できないため本文へ移動しません。"); return; }
-    const originTarget = origin ? captureAuditNavigationTarget(body, formulaId, reportId ?? "", origin.start, origin.end) : null;
-    const selectedTarget = selectedItem ? captureAuditNavigationTarget(body, formulaId, reportId ?? "", selectedItem.start, selectedItem.end) : null;
+    const originTarget = origin ? captureAuditNavigationTarget(body, formulaId, reportId ?? "", origin.start, origin.end, navigationContext) : null;
+    const selectedTarget = selectedItem ? captureAuditNavigationTarget(body, formulaId, reportId ?? "", selectedItem.start, selectedItem.end, navigationContext) : null;
     const focus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const scroll = rootRef.current?.querySelector<HTMLElement>(".modal-content")?.scrollTop ?? 0;
+    cancelBodyMove();
     const epoch = ++navigationEpoch.current;
-    setRoundtrip({ target, origin: originTarget, selectedTarget, scroll, focus, epoch, context: currentContext, revision: contextRevision });
+    setRoundtrip({ target, origin: originTarget, selectedTarget, scroll, focus, epoch, context: currentContext, revision: contextRevision, ...(auditItemKey ? { auditItemKey: null } : {}) });
     invalidateExport(); setHighlight(null); setNavigationNotice("本文移動を確認しています。保存・再取得・再比較は行いません。"); setSuspended(true);
-    onNavigate(start, end, () => {
+    const arrived = () => {
       if (navigationEpoch.current !== epoch || contextRef.current !== currentContext) return;
+      // Initial list jumps preserve the pre-existing selection (including none).
+      // Only a successful body step changes the return detail to a new item.
+      if (auditItemKey) setRoundtrip(previous => previous && ({ ...previous, auditItemKey }));
       setHighlight({ body, start, end }); setNavigationNotice("点検対象の範囲を一時選択しました。本文は変更していません。戻らず編集を続けることもできます。");
+    };
+    if (auditItemKey) onNavigate(start, end, arrived, () => {
+      if (navigationEpoch.current !== epoch || contextRef.current !== currentContext) return;
+      setNavigationNotice("本文の選択位置・保存状態等が変わったため移動を中止しました。点検へ戻って選び直してください。");
     });
+    else onNavigate(start, end, arrived);
   };
   // Acquisition invalidation applies to audit items, not independently reselected fixed sources.
   const navigateAuditItem = (start: number, end: number) => {
     if (stale || staleRef.current) { setNavigationNotice("点検結果が失効中のため本文へ移動しません。明示照合後に選び直してください。"); return; }
-    suspendNavigation(start, end);
+    suspendNavigation(start, end, undefined, items.find(item => item.start === start && item.end === end)?.key);
+  };
+  const bodyItemValid = !!roundtrip && roundtrip.auditItemKey !== undefined && !stale
+    && roundtrip.revision === contextRevision && roundtrip.context === currentContext;
+  const bodyItemIndex = bodyItemValid ? visible.findIndex(item => item.key === roundtrip.auditItemKey) : -1;
+  const bodyItem = bodyItemIndex >= 0 ? visible[bodyItemIndex] : undefined;
+  const stepBody = (direction: -1 | 1, control: HTMLButtonElement) => {
+    if (disabled || bodyMoveBusy.current || staleRef.current || !bodyItemValid || bodyItemIndex < 0 || !roundtrip || roundtrip.epoch !== navigationEpoch.current) return;
+    const item = visible[bodyItemIndex + direction];
+    if (!item) return;
+    const target = item.canNavigate && captureAuditNavigationTarget(body, formulaId, reportId ?? "", item.start, item.end, navigationContext);
+    const resolution = target && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", target, navigationContext);
+    if (!target || !resolution || resolution.status !== "available") {
+      setNavigationNotice(`根拠${item.order}へ移動できません。${resolution && resolution.status === "unavailable" ? resolution.reason : "完全な一意範囲を確認できません。"} 現在の項目を保持し、飛ばしません。点検へ戻って詳細を確認してください。`); return;
+    }
+    const request = ++bodyMoveEpoch.current, epoch = navigationEpoch.current;
+    bodyMoveBusy.current = true; setBodyMoving(true);
+    setNavigationNotice("次の本文範囲を確認中です。完了までは現在の項目を保持します。");
+    const current = () => request === bodyMoveEpoch.current && epoch === navigationEpoch.current && contextRef.current === currentContext && !staleRef.current;
+    onNavigate(resolution.start, resolution.end, () => {
+      if (!current()) return;
+      bodyMoveBusy.current = false; setBodyMoving(false);
+      setSelected(item.key); setRoundtrip(previous => previous && ({ ...previous, target, selectedTarget: target, auditItemKey: item.key, moved: true }));
+      setHighlight({ body, start: resolution.start, end: resolution.end }); setNavigationNotice(resolution.reason);
+      if (control.isConnected) control.focus({ preventScroll: true });
+    }, () => {
+      if (!current()) return;
+      bodyMoveBusy.current = false; setBodyMoving(false);
+      setNavigationNotice("本文の選択位置・保存状態等が変わったため移動を中止しました。現在の項目を保持しています。");
+    });
   };
   const revisit = () => {
+    if (bodyMoveBusy.current || disabled) return;
     if (!roundtrip || roundtrip.epoch !== navigationEpoch.current) { setNavigationNotice("保存通知・新操作等により追跡位置が失効しています。現在の点検一覧から選び直してください。"); return; }
-    const result = resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.target);
+    const result = resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.target, navigationContext);
     if (result.status !== "available") { setHighlight(null); setNavigationNotice(result.reason); return; }
     const epoch = roundtrip.epoch;
     setHighlight(null);
@@ -230,16 +275,17 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
   };
   const returnToAudit = () => {
     if (!roundtrip) return;
+    cancelBodyMove();
     const validEpoch = roundtrip.epoch === navigationEpoch.current;
-    const target = resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.target);
+    const target = resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.target, navigationContext);
     if (!validEpoch || target.status !== "available") {
       setSelected(null); setSourceResume(undefined);
       setNavigationNotice(!validEpoch ? "保存通知等で戻り先は失効しています。旧詳細を復元せず、現在の一覧へ戻りました。" : target.reason);
     } else {
-      const selectedResult = roundtrip.selectedTarget && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.selectedTarget);
+      const selectedResult = roundtrip.selectedTarget && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.selectedTarget, navigationContext);
       if (!stale && !staleRef.current && roundtrip.revision === contextRevision && selectedResult?.status === "available") setSelected(selectedResult.key);
       else setSelected(null);
-      const origin = roundtrip.origin && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.origin);
+      const origin = roundtrip.origin && resolveAuditNavigationTarget(body, formulaId, reportId ?? "", roundtrip.origin, navigationContext);
       if (origin?.status === "available") setSourceResume(previous => ({ key: origin.key, nonce: (previous?.nonce ?? 0) + 1 }));
       setNavigationNotice(roundtrip.revision === contextRevision ? "元の点検一覧へ戻りました。絞り込み・選択・取得済み結果を保持し、原本は再取得していません。" : "対象を現在本文で再確認して戻りました。旧照合・比較結果は失効したままで、保存原本は再取得していません。");
     }
@@ -251,19 +297,33 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
     const content = rootRef.current?.querySelector<HTMLElement>(".modal-content");
     if (!content) return;
     // The exact connected control is restored only within an unchanged context.
-    if (roundtrip.revision === contextRevision && roundtrip.focus?.isConnected && rootRef.current?.contains(roundtrip.focus)) roundtrip.focus.focus({ preventScroll: true });
+    if (roundtrip.moved && selectedItem) rootRef.current?.querySelector<HTMLElement>('[data-audit-item-body-jump]')?.focus({ preventScroll: true });
+    else if (roundtrip.revision === contextRevision && roundtrip.focus?.isConnected && rootRef.current?.contains(roundtrip.focus)) roundtrip.focus.focus({ preventScroll: true });
     else content.querySelector<HTMLElement>("[data-audit-return-status]")?.focus({ preventScroll: true });
     content.scrollTop = roundtrip.scroll;
-  }, [open, suspended, roundtrip, currentContext, contextRevision]);
+    if (roundtrip.moved && selectedItem) {
+      const row = [...(rootRef.current?.querySelectorAll<HTMLElement>("[data-audit-item-key]") ?? [])].find(node => node.dataset.auditItemKey === selectedItem.key);
+      if (row) { const bounds = content.getBoundingClientRect(), target = row.getBoundingClientRect();
+        if (target.top < bounds.top) content.scrollTop += target.top - bounds.top;
+        else if (target.bottom > bounds.bottom) content.scrollTop += Math.min(target.top - bounds.top, target.bottom - bounds.bottom);
+      }
+    }
+  }, [open, suspended, roundtrip, currentContext, contextRevision, selectedItem]);
   return <section ref={rootRef} className="quote-tools report-audit-entry" aria-label="レポート全体の根拠点検">
     <button type="button" disabled={disabled} onClick={() => { insertion?.onOpen(); onCancelNavigation?.(); setComparisonGeneration(value => value + 1); setSelected(null); navigationEpoch.current += 1; setRoundtrip(null); setHighlight(null); setSuspended(false); setOpen(true); }}>根拠点検</button>
     {suspended && roundtrip && <section className="audit-roundtrip" aria-label="点検からの本文移動先">
       <h3>点検からの本文移動先（一時表示）</h3>
       <p role="status">{navigationNotice}</p>
+      {roundtrip.auditItemKey !== undefined && <section aria-label="本文確認中の点検項目の前後移動">
+        {!bodyItemValid ? <p role="status">前後移動は失効しています。点検へ戻り「保存記録と照合」後に選び直してください。</p>
+          : bodyItem ? <p role="status" aria-live="polite" aria-atomic="true">{`根拠${bodyItem.order}：${bodyItem.kind === "quote" ? "固定引用" : "比較差分"}。対象${visible.length}件中${bodyItemIndex + 1}件目`}</p>
+          : <p role="status">{visible.length ? "本文移動は未確定です。点検一覧から選択して移動してください。" : "現在の絞り込みには対象項目がありません。"}</p>}
+        <div className="modal-actions"><button type="button" aria-disabled={disabled || bodyMoving || !bodyItemValid || bodyItemIndex <= 0} onClick={event => { event.currentTarget.focus(); stepBody(-1, event.currentTarget); }}>前の項目</button><button type="button" aria-disabled={disabled || bodyMoving || !bodyItemValid || bodyItemIndex < 0 || bodyItemIndex === visible.length - 1} onClick={event => { event.currentTarget.focus(); stepBody(1, event.currentTarget); }}>次の項目</button></div>
+      </section>}
       {highlight?.body === body ? <><p>対象範囲：{highlight.start}〜{highlight.end}（原文UTF-16）。下線と枠は一時強調です。</p><pre className="audit-target-excerpt"><mark>{body.slice(highlight.start, highlight.end)}</mark></pre></> : <p>一時強調は未確定または失効しています。古い文字位置は使用しません。</p>}
       <p>保存原本との一致や根拠の有効性を保証しません。再移動時は現在本文の完全な一意範囲を確認します。</p>
       <button type="button" disabled={disabled} onClick={returnToAudit}>点検へ戻る</button>
-      <button type="button" disabled={disabled} onClick={revisit}>本文の対象へもう一度移動</button>
+      <button type="button" disabled={disabled || bodyMoving} onClick={revisit}>本文の対象へもう一度移動</button>
       <button type="button" onClick={closeAudit}>往復ナビゲーションを終了</button>
     </section>}
     {open && <Modal title="レポート全体の根拠点検" onClose={closeAudit} active={!suspended} wide>
@@ -320,7 +380,7 @@ export function FormulaReportAudit({ context, onCancelNavigation, comparisonInse
           <p role="status" aria-live="polite" aria-atomic="true">{`根拠${selectedItem.order}：${selectedItem.kind === "quote" ? "固定引用" : "比較差分"}。`}<span>{`対象${visible.length}件中${selectedIndex + 1}件目`}</span></p>
           <div className="modal-actions"><button type="button" aria-disabled={disabled || selectedIndex === 0} onClick={event => { event.currentTarget.focus(); step(-1); }}>前の項目</button><button type="button" aria-disabled={disabled || selectedIndex === visible.length - 1} onClick={event => { event.currentTarget.focus(); step(1); }}>次の項目</button></div>
           <label>表示する状態<select aria-label="詳細で表示する状態" value={filter} disabled={disabled} onChange={event => changeFilter(event.target.value)}><option value="all">すべて</option><option value="review">見直し対象</option><option value="unverified">未照合の出典あり</option></select></label>
-          <button type="button" disabled={disabled || !selectedItem.canNavigate} onClick={() => navigateAuditItem(selectedItem.start, selectedItem.end)}>この項目の本文へ移動</button>
+          <button type="button" data-audit-item-body-jump disabled={disabled || !selectedItem.canNavigate} onClick={() => navigateAuditItem(selectedItem.start, selectedItem.end)}>この項目の本文へ移動</button>
           {!selectedItem.canNavigate && <p>本文との対応位置を安全に確定できないため移動できません。詳細の前後移動は利用できます。</p>}
           {navigationNotice && <p role="status">{navigationNotice}</p>}
         </section>} item={selectedItem} body={body} formulaId={formulaId} source={source} links={links} onRefresh={refresh} onClose={() => setSelected(null)} />}
