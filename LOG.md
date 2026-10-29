@@ -1440,3 +1440,11 @@ Node.js 20廃止警告とジョブエラーは解消したが、Actionsログに
 - 修正後：同一独立回帰試験GREEN、関連45件を独立再実行して成功。既存roundtrip helper無変更の同一Chromium375 touchで7群GREEN、新body helper6群GREEN、両pageerror0。全単体2299件/105ファイル・lint・型・通常/Pages build成功。正式全6条件の成功は新HEADのCIと成果物を確認するまで保留。
 
 追記：2026-10-28 19:16 JST。
+
+### 2026-10-29 限定診断 run 40885754090 attempt 1
+
+- 登録済み main 計測器 `d25410379d669350c6fdc10ced225cfd1644b17a`、アプリ `52f4f6914fcd3c72b0829018842f653f06abe5f2`。Ubuntu 24.04.5 x64、Node 22.13.0、runner image 20261026.354.1。固定 checkout と配信前の識別確認は成功。
+- 追加試験 7/7、既存契約 46/46（ともに skip 0）。過去 Windows 8失敗の同名テストはいずれも成功したが、個々の原因を確定したわけではない。
+- 限定 GUI は case 0 がプレビューの HTTP 200 待機で 30秒 timeout、case 1–3 は計画に従い未開始。URL が preview.log に出力されたことと応答成功は別であり、原因 UNKNOWN。WebKit 操作や幅差・DOM 負荷は測れていない。再試行なし。
+- ジョブ 13:51:09–13:53:12 UTC、依存準備 13:51:22–13:52:34、診断 13:52:34–13:53:07、証拠保存 13:53:07–13:53:09。artifact 12902617118、22,612 bytes、7日保持、SHA-256 `a4453238a262e9c18973e1cc9fd6879776fff4144621bdb5028bbaf9ada85fd7`。ZIP再取得後の SHA が API digest と一致。Linux process group は namespace 内不在を確認。trace は採取対象外。
+- この限定診断は正式 GUI 成功を意味しない。PR #103 は Draft・PARTIAL・マージ推奨 NO を維持。実機 iPhone Safari、VoiceOver、OS 文字拡大は未検証。
