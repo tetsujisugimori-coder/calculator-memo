@@ -1,5 +1,21 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: #103 と登録済み診断の重複整理
+
+- #104は `d25410379d669350c6fdc10ced225cfd1644b17a` でmainに統合済み。Pages workflowはactive、統合時の公開runは確認時点で発生していない。#103へmainを取り込み、診断workflow・CLI・計画はmainの版を保持。#103の過去LOGと診断再構成要約は失わず、[別名で保存](docs/maintenance/pr103-webkit-diagnosis-20261028/reconstructed-summary.md)した。
+- #104レビューP3は登録後手順のみ補訂。必須の進捗JSON・ログ・artifact欠落をUNKNOWN／未完了とし、今回採取しないtraceの不存在と区別する。製品挙動・正式GUIの条件は変更しない。
+- 標準Ubuntu runnerの計算時間は公開repositoryでは無料と確認したが、artifact保存を含むアカウント利用枠・費用は権限不足で確認できず、Issue #105の限定診断は保留。追加7試験・新規46契約・4 caseとartifact再取得は未実施。過去attemptの証拠や未完走を保持し、原因はUNKNOWN。最終HEADの検証結果は実行後にPR記録で明示する。
+- #103はDraft・未merge・auto-mergeなし。実機iPhone Safari／VoiceOver／OS文字拡大は未検証。関連：#102、#103、#104、#105。
+
+## 2026-10-29 JST: PR #103 のWebKit限定診断を独立branchへ分離
+
+- 最新main `7cdda5ce627fb431aec1a70ddd909e7fa01fdd3c` を基点に、#103 の診断部分 `b1adc0e8368b0da638e66c8dfa34b1d439da2247` から必要なworkflow・CLI・集計・mock・文書だけを移した。製品・本文ナビ・正式GUI・Pages公開workflowは変更しない。[出所とmain差分](docs/maintenance/pr103-webkit-diagnosis-20261028/README.md)。
+- 固定アプリ `52f4f6914fcd3c72b0829018842f653f06abe5f2` を別checkoutし既存helperを再利用。両attemptの375／390当該区間記録から65 tapを確認し、11群・65 tapを各caseの条件に追加。手動workflowは追加7試験と既存46契約の全成功・skipなし・Windows失敗8件の試験名をGUI前に検査する。登録後手順・費用／権限・中止条件・証拠照合は[手順](docs/maintenance/pr103-webkit-diagnosis-20261028/after-registration.md)に記録。
+- Windows／Node 24で診断mock 6成功・Linux cleanup 1未実施、JS構文・対象lint・workflow静的検査・diff checkを確認。実browser、Ubuntu 46件再実行、Linux cleanup、artifact回収は未検証。正式GUI・限定GUIは今回実行しない。#103はPARTIAL／マージ推奨NO、実iPhone Safari／VoiceOver／OS文字拡大未検証。
+- 新規診断Issueは作成を試みたが自動承認審査が公開Issueの権限不足として拒否。未作成のまま #102／#103 を参照する。独立Draft PRは作成手続き前のため未確定。main登録・マージ・公開・auto-mergeは行わない。
+
+追記（2026-10-29 19:04 JST）：ユーザーの明示したIssue作成・相互参照の指示を追加確認し、未実行の照合後に再試行して [Issue #105](https://github.com/tetsujisugimori-coder/calculator-memo/issues/105) を作成、#102本文に追記した。[Draft PR #104](https://github.com/tetsujisugimori-coder/calculator-memo/pull/104) を作成し、#103には本文更新のGitHubエラー後、既存内容を保持して[コメント](https://github.com/tetsujisugimori-coder/calculator-memo/pull/103#issuecomment-6493740683)で相互参照した。過去の拒否・エラーは本記録で保持する。診断登録・限定実行・正式GUI再試行は未実施。
+
 ## 2026-10-29 JST: PR #103 診断の資源時系列と欠測集計
 
 - 全caseで20 tapごとの要求後・dispatch前に可視process treeを採取し、case単調時刻・操作番号・PID・process名・累積CPU tick・RSS・採取時間を記録。DOM観測あり／なし両群で同一の採取負荷とする。名前はbrowser帰属の手掛かりに限り、不可視・終了・reparent等の欠測と採取負荷を明示する。個別操作のbrowser CPU原因は断定できない。
@@ -36,7 +52,7 @@
 - PARTIAL、マージ推奨 NO。根因未確定のため性能修正と正式GUI再試行は行わない。READMEの初回復帰・本文側成功後の区別は既に `929b8f34c75b53e06798b021e393156d3ae803b8` に反映済み。
 - [run 40671009347](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40671009347) の両attemptは `52f4f6914fcd3c72b0829018842f653f06abe5f2`、cancelled。API時刻から再計算した準備／GUI／取消後は attempt 1: 226／1588／4秒、attempt 2: 212／1602／4秒。30分はjob全体の上限。両WebKit条件はGUI開始後約2秒で同時に開始した。
 - ZIPを再取得し、artifact 12809842419 / 12811567671 のSHA-256 `04d4e74ef080623cbb6858e5021ce5666748b99485feb56f6c0ab2af0f5b6534` / `dacd9afc1f80fc1bce7e431f5448bd20187ca7867cf50e332ea9c700819edc71` はAPI digestと一致。12条件のprovenanceでSHA・run・attemptを確認。各attemptでChromium4条件とWK375はpassed、WK390はsaved-record-comparisonでrunning。WK390はattempt 1で175検査・91 geometry・1276 touch、attempt 2で172・91・1262。全体はそれぞれ1115 / 1112検査、585 geometry、130 PNG。未完了をPASSとしない。
-- 自身の再集計：共通56区間（起動5区間を含む）の375→390合計はattempt 1で895.381→1519.041秒、attempt 2で934.714→1567.716秒。同一区間の1232操作のwrapperは533.328→1065.903秒 / 550.759→1090.396秒、dispatchは485.346→1017.678秒 / 496.623→1040.717秒。引用・比較挿入・記録比較など複数既存区間に差が共通。dispatchには操作可能待ち等が含まれ、ブラウザ処理のみとは断定できない。resource採取は各0.9秒未満で、可視プロセスに限定される。DOM蓄積、テスト待機、並列負荷の寄与は未確定。過去の限定診断は[再構成要約](docs/maintenance/pr103-webkit-diagnosis-20261028/README.md)として区別する。
+- 自身の再集計：共通56区間（起動5区間を含む）の375→390合計はattempt 1で895.381→1519.041秒、attempt 2で934.714→1567.716秒。同一区間の1232操作のwrapperは533.328→1065.903秒 / 550.759→1090.396秒、dispatchは485.346→1017.678秒 / 496.623→1040.717秒。引用・比較挿入・記録比較など複数既存区間に差が共通。dispatchには操作可能待ち等が含まれ、ブラウザ処理のみとは断定できない。resource採取は各0.9秒未満で、可視プロセスに限定される。DOM蓄積、テスト待機、並列負荷の寄与は未確定。過去の限定診断は[再構成要約](docs/maintenance/pr103-webkit-diagnosis-20261028/reconstructed-summary.md)として区別する。
 - 今回のWindows/Node 24ではCIのUbuntu 24.04/Node 22.13.0と同条件のWebKit計測環境を確保できなかった。`npm ci --ignore-scripts` は完了せず中断、最終HEADの単体・契約・lint・型・両buildは今回未実施。実機iPhone Safari、VoiceOver、OS文字拡大は未検証。
 - 次はUbuntu 24.04隔離環境で目的・上限・停止条件と計測負荷を先に固定し、長prefix・DOM数・操作待機を375/390比較する。正式全体結果とは区別する。関連：[Issue #102](https://github.com/tetsujisugimori-coder/calculator-memo/issues/102)、[Draft PR #103](https://github.com/tetsujisugimori-coder/calculator-memo/pull/103)。
 
@@ -44,7 +60,7 @@
 
 - 2026-10-28のWebKit390未完走診断は局所actionabilityの寄与を観測したが、候補CSSの総時間改善が一貫せず不採用。製品/試験/workflowはコードHEAD `52f4f6914fcd3c72b0829018842f653f06abe5f2` から変更しない。
 - READMEを実装契約に合わせ、一覧からの初回往復は元選択（未選択含む）・一覧位置・発火元focusを保持、本文側step成功時だけ移動先詳細復帰と明記。
-- 環境再起動で未commitの診断原ファイルが現環境に見つからず、[診断要約](docs/maintenance/pr103-webkit-diagnosis-20261028/README.md)を会話引継ぎから再構成。実測/独立照合の過去報告と今回API確認を区別し、JSON・trace・scriptを推定復元しない。
+- 環境再起動で未commitの診断原ファイルが現環境に見つからず、[診断要約](docs/maintenance/pr103-webkit-diagnosis-20261028/reconstructed-summary.md)を会話引継ぎから再構成。実測/独立照合の過去報告と今回API確認を区別し、JSON・trace・scriptを推定復元しない。
 - 過去run40671009347 attempt1/2の取消は維持。5条件完走・WK390未完了でPARTIAL、マージ推奨NO。候補撤回後2299単体/46契約/lint/型/両build成功は再起動前のコード52f4相当作業版報告で、最終文書HEADのCI成功ではない。
 - 本人の03:18 JST承認に従い、この文書commitはCI skip指定で提出。正式GUIの無根拠再試行なし。最終SHA/skip確認はPR本文に記録。実機Safari/VoiceOver/OS文字拡大未検証、時間変動の根因未確定。
 - 関連：[Issue #102](https://github.com/tetsujisugimori-coder/calculator-memo/issues/102)、[Draft PR #103](https://github.com/tetsujisugimori-coder/calculator-memo/pull/103)。Draft・未merge・auto-mergeなしを維持。

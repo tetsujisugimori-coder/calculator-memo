@@ -33,11 +33,32 @@ jobs:
           test "$(git -C app rev-parse HEAD)" = 52f4f6914fcd3c72b0829018842f653f06abe5f2
           test "$(git -C control rev-parse HEAD)" = "$GITHUB_SHA"
           { date -u +%FT%TZ; uname -a; node --version; cat /etc/os-release; printf 'diagnostic=%s\napplication=%s\n' "$GITHUB_SHA" "$(git -C app rev-parse HEAD)"; } > diagnostic-evidence/environment.txt
+      - name: Diagnostic mock and Linux cleanup tests
+        run: |
+          set -o pipefail
+          node --test --test-reporter=tap control/e2e/diagnostic-supervisor.node-test.mjs 2>&1 | tee diagnostic-evidence/diagnostic-tests.log
+          grep -Fx '# tests 7' diagnostic-evidence/diagnostic-tests.log
+          grep -Fx '# pass 7' diagnostic-evidence/diagnostic-tests.log
+          grep -Fx '# skipped 0' diagnostic-evidence/diagnostic-tests.log
       - name: Existing 46 contract tests before GUI
         run: |
           set -o pipefail
           cd app
-          node --test e2e/ci-contract.node-test.mjs 2>&1 | tee ../diagnostic-evidence/contracts.log
+          node --test --test-reporter=tap e2e/ci-contract.node-test.mjs 2>&1 | tee ../diagnostic-evidence/contracts.log
+          grep -Fx '# tests 46' ../diagnostic-evidence/contracts.log
+          grep -Fx '# pass 46' ../diagnostic-evidence/contracts.log
+          grep -Fx '# skipped 0' ../diagnostic-evidence/contracts.log
+          for name in \
+            'unit: command failure propagates and leaves the diagnostic log' \
+            'normal_build: command failure propagates and leaves the diagnostic log' \
+            'pages_build: command failure propagates and leaves the diagnostic log' \
+            'apt_config: command failure propagates and leaves the diagnostic log' \
+            'os_install: command failure propagates and leaves the diagnostic log' \
+            'log storage failure cannot be concealed by a successful command' \
+            'missing-context validation is nonzero at the process boundary' \
+            'bounded acquisition timeout fails and preserves its stage log and timing'; do
+            grep -F " - $name" ../diagnostic-evidence/contracts.log
+          done
       - name: Install fixed application dependencies and build
         run: |
           set -o pipefail

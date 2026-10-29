@@ -68,7 +68,7 @@ try {
       try { await exerciseAuditRecordComparison({ page, context, base, expect: pw.expect, passed: async name => { active.checks.push(name); await save(); if (active.checks.length === 1) await observe('first-comparison'); }, prefix: `diagnostic-${item.width}`, assertHorizontalFit, activate }); }
       finally { active.helperDurationMs = performance.now() - helperStart; }
       await observe('after'); active.aggregate = summarizeCase(active);
-      assert.equal(active.checks.length, 11); assert.equal(active.errors.length, 0); assert.ok(!active.timeout && !abort);
+      assert.equal(active.checks.length, 11); assert.equal(active.actions.length, 65); assert.equal(active.errors.length, 0); assert.ok(!active.timeout && !abort);
       assert.equal(active.aggregate.requestToEnd.missing, 0); assert.equal(active.aggregate.dispatch.missing, 0);
       assert.equal(active.aggregate.resource.missingSamples, 0); assert.equal(active.aggregate.resource.missingProcessTree, 0); assert.equal(active.aggregate.resource.collection.missing, 0);
       assert.equal(active.aggregate.dom.observations, active.aggregate.dom.expected);

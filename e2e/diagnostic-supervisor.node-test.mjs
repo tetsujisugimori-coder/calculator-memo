@@ -17,9 +17,9 @@ test('time sums and missing resource attribution are explicit', () => {
 async function temp(fn) { const dir = await mkdtemp(join(tmpdir(), 'pr103-diag-')); try { await fn(dir); } finally { await rm(dir, { recursive: true, force: true }); } }
 test('four mock cases aggregate only complete matching evidence', () => temp(async dir => {
   const driver = join(dir, 'mock.cjs');
-  await writeFile(driver, "const fs=require('fs'),i=Number(process.env.DIAG_CASE),observe=i%2===1; fs.writeFileSync(process.env.DIAG_OUTPUT+'/progress.json',JSON.stringify({status:'passed',identity:{diagnosticSha:process.env.DIAG_CODE_SHA,appSha:'52f4f6914fcd3c72b0829018842f653f06abe5f2'},cases:[{status:'passed',width:i<2?375:390,observe,checks:Array(11).fill('ok'),actions:[{}],errors:[],aggregate:{actions:1,requestToEnd:{missing:0},dispatch:{missing:0},resource:{missingSamples:0,missingProcessTree:0,collection:{missing:0}},dom:{observations:observe?3:0,expected:observe?3:0}}}]}));");
+  await writeFile(driver, "const fs=require('fs'),i=Number(process.env.DIAG_CASE),observe=i%2===1; fs.writeFileSync(process.env.DIAG_OUTPUT+'/progress.json',JSON.stringify({status:'passed',identity:{diagnosticSha:process.env.DIAG_CODE_SHA,appSha:'52f4f6914fcd3c72b0829018842f653f06abe5f2'},cases:[{status:'passed',width:i<2?375:390,observe,checks:Array(11).fill('ok'),actions:Array(65).fill({}),errors:[],aggregate:{actions:65,requestToEnd:{missing:0},dispatch:{missing:0},resource:{missingSamples:0,missingProcessTree:0,collection:{missing:0}},dom:{observations:observe?3:0,expected:observe?3:0}}}]}));");
   const r = await runPlan({ output: join(dir, 'out'), app: dir, driver, sha, timeoutMs: 5000, totalMs: 30000 });
-  assert.equal(r.status, 'passed'); assert.equal(r.cases.length, 4); assert.ok(r.cases.every(x => x.checkCount === 11 && x.actionCount === 1));
+  assert.equal(r.status, 'passed'); assert.equal(r.cases.length, 4); assert.ok(r.cases.every(x => x.checkCount === 11 && x.actionCount === 65));
 }));
 test('missing progress stops subsequent cases and persists failure', () => temp(async dir => {
   const driver = join(dir, 'mock.cjs'); await writeFile(driver, "console.log('partial');");
@@ -29,7 +29,7 @@ test('missing progress stops subsequent cases and persists failure', () => temp(
 }));
 test('passing child with missing timing evidence is rejected', () => temp(async dir => {
   const driver = join(dir, 'mock.cjs');
-  await writeFile(driver, "const fs=require('fs');fs.writeFileSync(process.env.DIAG_OUTPUT+'/progress.json',JSON.stringify({status:'passed',identity:{diagnosticSha:process.env.DIAG_CODE_SHA,appSha:'52f4f6914fcd3c72b0829018842f653f06abe5f2'},cases:[{status:'passed',width:375,observe:false,checks:Array(11).fill('ok'),actions:[{}],errors:[],aggregate:{actions:1,requestToEnd:{missing:1},dispatch:{missing:0},resource:{missingSamples:0,missingProcessTree:0,collection:{missing:0}},dom:{observations:0,expected:0}}}]}));");
+  await writeFile(driver, "const fs=require('fs');fs.writeFileSync(process.env.DIAG_OUTPUT+'/progress.json',JSON.stringify({status:'passed',identity:{diagnosticSha:process.env.DIAG_CODE_SHA,appSha:'52f4f6914fcd3c72b0829018842f653f06abe5f2'},cases:[{status:'passed',width:375,observe:false,checks:Array(11).fill('ok'),actions:Array(65).fill({}),errors:[],aggregate:{actions:65,requestToEnd:{missing:1},dispatch:{missing:0},resource:{missingSamples:0,missingProcessTree:0,collection:{missing:0}},dom:{observations:0,expected:0}}}]}));");
   const r = await runPlan({ output: join(dir, 'out'), app: dir, driver, sha, timeoutMs: 5000, totalMs: 30000 });
   assert.equal(r.status, 'failed'); assert.equal(r.cases.length, 1); assert.equal(r.cases[0].status, 'failed');
 }));

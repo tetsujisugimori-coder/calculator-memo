@@ -6,9 +6,11 @@
 
 対象アプリSHA `52f4f6914fcd3c72b0829018842f653f06abe5f2`、Ubuntu 24.04 x64、Node 22.13.0、両lockfile、Playwright 1.56.1同梱WebKit。実checkout SHA・diagnosticコードSHA・run/attemptまたはlocal ID・ブラウザ配信identityを記録・検証する。別環境はkernel、CPU/メモリ、アクセス権、依存取得、時間枠、費用、証拠保存・取得を記録し、不明はUNKNOWN。コンテナはhost kernel/resourceを共有しGitHub runnerと同一視しない。
 
-過去のrun 40671009347両attemptで共通に遅い `formula-audit-record-comparison` の既存helperを、既存fixtureと全11 `passed` 群・assertion・native tapを使ってfresh contextで実行する。前後の全体suiteは実行しない。long prefixの再現はないため蓄積の否定はできない。2幅はheight 844・DPR3・touch・locale・コード・操作を固定し幅だけ変える。これは正式375条件（height667・DPR2）と異なるため正式CIの時間比と直接同等ではない。
+過去のrun 40671009347両attemptで共通に遅い `formula-audit-record-comparison` の既存helperを、固定アプリSHAの既存fixtureと全11 `passed` 群・assertion・65 native tapを使ってfresh contextで実行する。65は両attemptの375/390の当該区間provenanceから再確認した要求数で、11群とともに実行後に検証する。キーボード・selectは別操作でtap数に含めない。前後の全体suiteは実行しない。long prefixの再現はないため蓄積の否定はできない。2幅はheight 844・DPR3・touch・locale・コード・操作を固定し幅だけ変える。これは正式375条件（height667・DPR2）と異なるため正式CIの時間比と直接同等ではない。
 
 幅差が特定区間の要求→完了やdispatch時間で現れるなら、fresh条件下で幅に関連する遅延の手掛かり。差が見えなければ、この短い条件で観測されなかっただけで、既存CIの原因やDOM蓄積は否定できない。dispatchはactionability待機とbrowser処理を含み、それだけでは因果分離不能。resource観測は可視子孫の累積CPU tickとRSSで、終了・reparent・不可視プロセスは欠落し得る。host/Node値だけでbrowser原因としない。
+
+helperの順序は、合成された固定A/B・旧版記録の比較、export、clipboard／download拒否、通知中の非同期コピー、入替と同一記録拒否、別pageによる変更／削除／無関係更新、再取得と未保存編集、両theme・文字200%・focus、本文移動と不明版拒否、空取得の比較不能export、終了と保存不変の11群。操作列の正本はアプリSHA内の `e2e/audit-record-comparison.mjs` であり、この要約で独自にfixtureを再構成しない。
 
 ## 実施順と上限
 
