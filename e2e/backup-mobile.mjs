@@ -25,6 +25,11 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
         await dialog.getByText("現行ローダーで受入可能", { exact: false }).waitFor();
         const geometry = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, page: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) }));
         assert.ok(geometry.page <= geometry.viewport, JSON.stringify(geometry));
+        const overflow = await dialog.locator(".modal-content").evaluate(content => {
+          const elements = [content, ...content.querySelectorAll("p, button")];
+          return elements.filter(element => element.scrollWidth > element.clientWidth + 1).map(element => ({ tag: element.tagName, text: element.textContent, scroll: element.scrollWidth, client: element.clientWidth }));
+        });
+        assert.deepEqual(overflow, []);
         const action = dialog.getByRole("button", { name: "JSONを書き出す" });
         await action.scrollIntoViewIfNeeded();
         const box = await action.boundingBox(); assert.ok(box && box.height >= 44 && box.width >= 44);

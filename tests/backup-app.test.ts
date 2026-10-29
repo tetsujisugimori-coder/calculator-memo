@@ -32,3 +32,22 @@ it("backs up saved bytes while unsaved calculation state remains in the app", as
     expect(host.textContent).toContain("未保存"); expect(write).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   } finally { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); }
 });
+
+it("does not calculate or save when Enter originates outside an open backup dialog", async () => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  const raw = JSON.stringify(defaultData); localStorage.clear(); localStorage.setItem(STORAGE_KEY, raw);
+  const host = document.createElement("div"); document.body.append(host); const root = createRoot(host);
+  const click = async (label: string) => { const b = [...host.querySelectorAll("button")].find(x => x.textContent === label); expect(b, label).toBeTruthy(); await act(async () => b!.click()); };
+  try {
+    await act(async () => root.render(createElement(CalculatorApp)));
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 20)); });
+    await click("1"); await click("データのバックアップ");
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 10)); });
+    const before = localStorage.getItem(STORAGE_KEY); const write = vi.spyOn(Storage.prototype, "setItem");
+    await act(async () => { document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); });
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 20)); });
+    expect(write).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(before);
+    expect(host.querySelector(".history-panel")?.textContent).not.toContain("= 1");
+  } finally { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); }
+});

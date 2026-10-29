@@ -368,7 +368,7 @@ export function CalculatorApp() {
     const onKey = (event: KeyboardEvent) => {
       if (storageStatus !== "ready") return;
       const target = event.target as HTMLElement;
-      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || copyNote || viewNote || reportMemoId || evidenceMemoId || confirm || libraryOpen || executionId) return;
+      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || backupOpen || copyNote || viewNote || reportMemoId || evidenceMemoId || confirm || libraryOpen || executionId) return;
       if (/^[0-9+\-*/^.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
       else if (event.key === "Backspace") { event.preventDefault(); editInput({ type: "backspace" }); }
@@ -376,7 +376,7 @@ export function CalculatorApp() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [storageStatus, calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, copyNote, viewNote, reportMemoId, evidenceMemoId, confirm, libraryOpen, executionId]);
+  }, [storageStatus, calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, backupOpen, copyNote, viewNote, reportMemoId, evidenceMemoId, confirm, libraryOpen, executionId]);
 
   return (
     <main className="app-shell" data-identification={data.settings.identificationMode ?? "auto"}>
