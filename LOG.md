@@ -7,6 +7,8 @@
 - Windows／Node 24で診断mock 6成功・Linux cleanup 1未実施、JS構文・対象lint・workflow静的検査・diff checkを確認。実browser、Ubuntu 46件再実行、Linux cleanup、artifact回収は未検証。正式GUI・限定GUIは今回実行しない。#103はPARTIAL／マージ推奨NO、実iPhone Safari／VoiceOver／OS文字拡大未検証。
 - 新規診断Issueは作成を試みたが自動承認審査が公開Issueの権限不足として拒否。未作成のまま #102／#103 を参照する。独立Draft PRは作成手続き前のため未確定。main登録・マージ・公開・auto-mergeは行わない。
 
+追記（2026-10-29 19:04 JST）：ユーザーの明示したIssue作成・相互参照の指示を追加確認し、未実行の照合後に再試行して [Issue #105](https://github.com/tetsujisugimori-coder/calculator-memo/issues/105) を作成、#102本文に追記した。[Draft PR #104](https://github.com/tetsujisugimori-coder/calculator-memo/pull/104) を作成し、#103には本文更新のGitHubエラー後、既存内容を保持して[コメント](https://github.com/tetsujisugimori-coder/calculator-memo/pull/103#issuecomment-6493740683)で相互参照した。過去の拒否・エラーは本記録で保持する。診断登録・限定実行・正式GUI再試行は未実施。
+
 ## 2026-10-28 JST: 根拠点検項目の前後ナビゲーション（Issue #100）
 
 - PR #99 merged と最新main `cd8d69039578965c963ffc0f1b1d31eb7174f61f` をAPI/専用cloneで実確認。既存作業を変更せず `feat/audit-item-navigation`、[Issue #100](https://github.com/tetsujisugimori-coder/calculator-memo/issues/100) で追跡。
