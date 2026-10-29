@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 診断計画と未完成workflowの下書き
+
+- GitHubの `workflow_dispatch` はworkflowファイルがdefault branchに必要で、現mainに診断用は存在しない。未マージbranchから新規workflowを手動起動できないため、正式GUI再試行・main変更・Pages公開workflow流用は行わない。
+- [診断計画案](docs/maintenance/pr103-webkit-diagnosis-20261028/proposed-plan.md)に固定対象、仮説、比較上のDPR/高さの差、暫定上限・停止条件、証拠と未完成点、別途選択が必要な実行経路を記録。4 caseのprefix・計測器・観測負荷対照は未完成で、計画案は実行指示として確定していない。
+- `.github/workflows/pr103-diagnostic-draft.yml` は契約試験のみの未完成下書き。未実行でGUI計測を実装しておらず、実行されても成功と誤認しないよう明示的に失敗終了する。実際のartifact保存・契約結果は未検証。正式workflow・製品コードは不変。
+- 今回の成果は計画案と下書きのみ。Ubuntu契約46件・限定計測・根因確定・性能修正・正式GUIは未実施。PARTIAL／マージ推奨NOを維持する。
+
 ## 2026-10-29 JST: PR #103 非GUI検証と診断経路の確認
 
 - 対象 `73f1621bd820b5036ff4befb98323a5a7b27f171`。Windows・Node 24.20.0で固定依存を `npm ci --ignore-scripts --offline --no-audit --no-fund` により約1分で取得。前回中断時のnpmログにaudit照会のECONNRESETはあるが、その後の処理も完了前に中断しており停止原因とは断定しない。初回中断は早すぎた可能性がある。
