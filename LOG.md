@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-10-30 JST: 保存原文のJSONバックアップ（Issue #106）
+
+- 変更内容: アプリ所有の `calculation-memo:data` の原文を独立形式に格納し、明示操作でダウンロード要求する。保存済み原文のみを対象に、未知・破損・欠落・読取失敗・容量超過・変更を区別する。復元は未実装。[設計](docs/design/json-backup.md)。
+- 変更理由: ブラウザ保存の消失に備え、利用者が任意に手元へ退避できるようにする。
+- 検証: 最終HEADのローカル・CI・正式GUI結果はPRに記録する。Windows／Node 24で試作の合成データによるChromium/WebKit 375・390px、両テーマ・CSS 200%の8条件でダウンロードと保存原文一致を確認。実機iPhone Safariは未実施。実行中に編集した初回全単体試験は7失敗を観測し、最終結果として扱わない。対象lintの初回エラーは修正。
+- 関連: [Issue #106](https://github.com/tetsujisugimori-coder/calculator-memo/issues/106)、PR作成前。
+- 残り: 最終HEADの全検証・独立レビュー・人間のマージ判断。完全な原子的取得や端末への保存完了は保証しない。
+
 ## 2026-10-29 JST: #103 統合後ローカル検証の途中記録
 
 - 統合commit `c3afa7c53132ce78ef97614b8b4d02ee4d963fdc` をWindows／Node 24.20.0で検証。型、lint、通常build、Pages buildは成功。単体は他のbuild等と同時実行した初回に複数の5秒timeoutを観測し、未完走のまま中断。通常並列度で単独再実行した2回目は2289成功／10 timeout。原因は確定せず失敗を保持する。

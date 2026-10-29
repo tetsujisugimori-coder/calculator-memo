@@ -556,3 +556,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 /* Audit traversal is ephemeral selection, not a confirmation/completion state. */
 .report-audit [data-audit-item-key][aria-current="true"] { outline: 2px solid currentColor; outline-offset: 3px; }
 [aria-label="点検項目の前後移動"] button[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+
+.backup-entry { padding: 0 clamp(18px, 4vw, 56px) 12px; }
+.backup-entry button { max-width: 100%; overflow-wrap: anywhere; }
+.backup-actions { flex-wrap: wrap; }

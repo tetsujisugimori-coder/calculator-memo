@@ -1,5 +1,9 @@
 # PR GUI regression
 
+## JSONバックアップの別枠GUI（2026-10-30 JST）
+
+既存の1128検査群・592 geometry・132 PNG・touch各1337・6条件・3 workers・30分は変更しない。別段階 `backup-gui` で Chromium/WebKit の375・390pxとlight/darkの計8条件を、CSS 200%・touchで検査する。合成データの出力JSON原文と保存前後、日時付きfilename、44px操作、横はみ出し、別pageの変更による失効を確認する。別段階の結果は既存件数に加算せず、保存結果・ログをCI artifactsで確認する。ダウンロードイベントは端末の保存完了やiPhone実機Safariを意味しない。失敗時の表示・未保存状態との非干渉・同一ターンABAは別の単体／統合テストで扱う。
+
 ## 本文確認中の前後移動・追加受入条件（2026-10-28 JST）
 
 追加契約は **1128検査群（既存1092＋本文側36）、geometry592箇所、代表PNG132枚、成功trace0**。既存6条件・3 workers・30分上限を維持。touch条件ごとのnative activationは **1337回（既存1306＋31）**。最終HEAD CIでの確認前に成功を意味しない。

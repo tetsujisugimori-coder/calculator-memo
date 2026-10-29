@@ -26,6 +26,7 @@ import { MarkdownReportModal } from "./MarkdownReportModal";
 import { SavedEvidenceModal } from "./SavedEvidenceModal";
 import { KatexFormula } from "./KatexFormula";
 import { Modal } from "./Modal";
+import { BackupModal } from "./BackupModal";
 import { StorageRecoveryBanner } from "./StorageRecoveryBanner";
 import { PlainNoteModal } from "./PlainNoteModal";
 import { CreateMemoModal } from "./CreateMemoModal";
@@ -81,6 +82,7 @@ export function CalculatorApp() {
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [executionId, setExecutionId] = useState<string | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [backupOpen, setBackupOpen] = useState(false);
   const [guideInsert, setGuideInsert] = useState<((latex: string) => void) | undefined>();
   const [copyNote, setCopyNote] = useState<CalculationNote | null>(null);
   const [viewNote, setViewNote] = useState<Memo | null>(null);
@@ -385,6 +387,7 @@ export function CalculatorApp() {
 
       <p role={hasUnsavedChanges ? "status" : undefined} aria-hidden={!hasUnsavedChanges} data-testid={hasUnsavedChanges ? "unsaved-changes" : undefined} style={{ visibility: hasUnsavedChanges ? "visible" : "hidden" }}>未保存です。再読み込み・終了に注意。</p>
       {storageConflict && <p role="alert" className="field-error">{storageConflict}</p>}
+      <div className="backup-entry"><button className="button-secondary" type="button" onClick={() => setBackupOpen(true)}>データのバックアップ</button></div>
       {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} protectionReason={storageIssue.protectionReason} onExport={exportOriginal} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw !== null && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
       <section className="workspace" id="calculator" inert={storageStatus !== "ready"}>
@@ -418,6 +421,7 @@ export function CalculatorApp() {
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => { explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false); setPlainNoteEditor(null); }} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
+      {backupOpen && <BackupModal onClose={() => setBackupOpen(false)} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}
       {viewNote && <Modal title={viewNote.title || (viewNote.type === "calculation" ? viewNote.displayExpression : "無題のメモ")} onClose={() => setViewNote(null)} wide={viewNote.type === "plain-calculation"}><div className="note-detail"><span className={`memo-kind detail-memo-kind ${viewNote.type === "plain-calculation" ? "plain" : ""}`}>{memoTypeLabel(viewNote.type)}</span>{viewNote.type === "calculation" ? <>{viewNote.displayMode === "katex" && viewNote.latexExpression ? <KatexFormula latex={viewNote.latexExpression} block /> : <p className="detail-expression">{viewNote.displayExpression}</p>}<strong className="detail-result">= {viewNote.resultText}{viewNote.unit}</strong>{viewNote.note && <div><span className="eyebrow">前提・補足</span><p>{viewNote.note}</p></div>}{viewNote.relatedMemoName && <div><span className="eyebrow">関連メモ名</span><p>{viewNote.relatedMemoName}</p></div>}{viewNote.tags.length > 0 && <div className="tags">{viewNote.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>}</> : viewNote.blocks !== undefined ? <MemoBlocks blocks={resolveMemoBlocks(viewNote)} /> : <MarkdownContent content={viewNote.content} />}<div className="modal-actions report-detail-actions">{viewNote.type === "plain-calculation" && <><button type="button" className="button-secondary" disabled={storageStatus !== "ready"} onClick={() => setReportMemoId(viewNote.id)}>レポート出力</button><button type="button" className="button-secondary" disabled={storageStatus !== "ready"} onClick={() => setEvidenceMemoId(viewNote.id)}>計算記録を開く</button></>}<button className="button-secondary" onClick={() => setViewNote(null)}>閉じる</button><button className="button-primary" onClick={() => { if (viewNote.type === "calculation") setCopyNote(viewNote); else copy(viewNote.blocks ? blocksToMarkdown(resolveMemoBlocks(viewNote)) : viewNote.content, "Markdown"); setViewNote(null); }}>コピー</button></div></div></Modal>}

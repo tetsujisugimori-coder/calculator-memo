@@ -73,6 +73,18 @@ jobs:
       - name: Desktop Chromium and mobile Chromium/WebKit touch regression
         id: gui
         run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/smoke.mjs
+      - name: Backup mobile GUI (separate coverage)
+        id: backup_gui
+        run: |
+          node node_modules/vite/bin/vite.js preview --config vite.pages.config.ts --host 127.0.0.1 --port 4173 > gui-evidence/backup-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/calculator-memo/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4173/calculator-memo/ > /dev/null
+          node e2e/run-stage.mjs backup-gui node e2e/backup-mobile.mjs
       - name: Preserve outcomes even when setup or tests fail
         if: always()
         env:
