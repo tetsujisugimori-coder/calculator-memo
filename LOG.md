@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 既存CI証拠の再取得
+
+- PARTIAL、マージ推奨 NO。根因未確定のため性能修正と正式GUI再試行は行わない。READMEの初回復帰・本文側成功後の区別は既に `929b8f34c75b53e06798b021e393156d3ae803b8` に反映済み。
+- [run 40671009347](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/40671009347) の両attemptは `52f4f6914fcd3c72b0829018842f653f06abe5f2`、cancelled。API時刻から再計算した準備／GUI／取消後は attempt 1: 226／1588／4秒、attempt 2: 212／1602／4秒。30分はjob全体の上限。両WebKit条件はGUI開始後約2秒で同時に開始した。
+- ZIPを再取得し、artifact 12809842419 / 12811567671 のSHA-256 `04d4e74ef080623cbb6858e5021ce5666748b99485feb56f6c0ab2af0f5b6534` / `dacd9afc1f80fc1bce7e431f5448bd20187ca7867cf50e332ea9c700819edc71` はAPI digestと一致。12条件のprovenanceでSHA・run・attemptを確認。各attemptでChromium4条件とWK375はpassed、WK390はsaved-record-comparisonでrunning。WK390はattempt 1で175検査・91 geometry・1276 touch、attempt 2で172・91・1262。全体はそれぞれ1115 / 1112検査、585 geometry、130 PNG。未完了をPASSとしない。
+- 自身の再集計：共通56区間（起動5区間を含む）の375→390合計はattempt 1で895.381→1519.041秒、attempt 2で934.714→1567.716秒。同一区間の1232操作のwrapperは533.328→1065.903秒 / 550.759→1090.396秒、dispatchは485.346→1017.678秒 / 496.623→1040.717秒。引用・比較挿入・記録比較など複数既存区間に差が共通。dispatchには操作可能待ち等が含まれ、ブラウザ処理のみとは断定できない。resource採取は各0.9秒未満で、可視プロセスに限定される。DOM蓄積、テスト待機、並列負荷の寄与は未確定。過去の限定診断は[再構成要約](docs/maintenance/pr103-webkit-diagnosis-20261028/README.md)として区別する。
+- 今回のWindows/Node 24ではCIのUbuntu 24.04/Node 22.13.0と同条件のWebKit計測環境を確保できなかった。`npm ci --ignore-scripts` は完了せず中断、最終HEADの単体・契約・lint・型・両buildは今回未実施。実機iPhone Safari、VoiceOver、OS文字拡大は未検証。
+- 次はUbuntu 24.04隔離環境で目的・上限・停止条件と計測負荷を先に固定し、長prefix・DOM数・操作待機を375/390比較する。正式全体結果とは区別する。関連：[Issue #102](https://github.com/tetsujisugimori-coder/calculator-memo/issues/102)、[Draft PR #103](https://github.com/tetsujisugimori-coder/calculator-memo/pull/103)。
+
 ## 2026-10-29 JST: PR #103 診断要約と復帰説明の訂正（文書のみ）
 
 - 2026-10-28のWebKit390未完走診断は局所actionabilityの寄与を観測したが、候補CSSの総時間改善が一貫せず不採用。製品/試験/workflowはコードHEAD `52f4f6914fcd3c72b0829018842f653f06abe5f2` から変更しない。
