@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 のWebKit限定診断を独立branchへ分離
+
+- 最新main `7cdda5ce627fb431aec1a70ddd909e7fa01fdd3c` を基点に、#103 の診断部分 `b1adc0e8368b0da638e66c8dfa34b1d439da2247` から必要なworkflow・CLI・集計・mock・文書だけを移した。製品・本文ナビ・正式GUI・Pages公開workflowは変更しない。[出所とmain差分](docs/maintenance/pr103-webkit-diagnosis-20261028/README.md)。
+- 固定アプリ `52f4f6914fcd3c72b0829018842f653f06abe5f2` を別checkoutし既存helperを再利用。両attemptの375／390当該区間記録から65 tapを確認し、11群・65 tapを各caseの条件に追加。手動workflowは追加7試験と既存46契約の全成功・skipなし・Windows失敗8件の試験名をGUI前に検査する。登録後手順・費用／権限・中止条件・証拠照合は[手順](docs/maintenance/pr103-webkit-diagnosis-20261028/after-registration.md)に記録。
+- Windows／Node 24で診断mock 6成功・Linux cleanup 1未実施、JS構文・対象lint・workflow静的検査・diff checkを確認。実browser、Ubuntu 46件再実行、Linux cleanup、artifact回収は未検証。正式GUI・限定GUIは今回実行しない。#103はPARTIAL／マージ推奨NO、実iPhone Safari／VoiceOver／OS文字拡大未検証。
+- 新規診断Issueは作成を試みたが自動承認審査が公開Issueの権限不足として拒否。未作成のまま #102／#103 を参照する。独立Draft PRは作成手続き前のため未確定。main登録・マージ・公開・auto-mergeは行わない。
+
 ## 2026-10-28 JST: 根拠点検項目の前後ナビゲーション（Issue #100）
 
 - PR #99 merged と最新main `cd8d69039578965c963ffc0f1b1d31eb7174f61f` をAPI/専用cloneで実確認。既存作業を変更せず `feat/audit-item-navigation`、[Issue #100](https://github.com/tetsujisugimori-coder/calculator-memo/issues/100) で追跡。

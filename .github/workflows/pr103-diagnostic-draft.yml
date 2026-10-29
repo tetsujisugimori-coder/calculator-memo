@@ -1,0 +1,89 @@
+name: PR 103 focused diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout diagnostic source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: control
+          persist-credentials: false
+      - name: Checkout fixed application
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: 52f4f6914fcd3c72b0829018842f653f06abe5f2
+          path: app
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Verify identities and record environment
+        run: |
+          mkdir -p diagnostic-evidence
+          test "$(git -C app rev-parse HEAD)" = 52f4f6914fcd3c72b0829018842f653f06abe5f2
+          test "$(git -C control rev-parse HEAD)" = "$GITHUB_SHA"
+          { date -u +%FT%TZ; uname -a; node --version; cat /etc/os-release; printf 'diagnostic=%s\napplication=%s\n' "$GITHUB_SHA" "$(git -C app rev-parse HEAD)"; } > diagnostic-evidence/environment.txt
+      - name: Diagnostic mock and Linux cleanup tests
+        run: |
+          set -o pipefail
+          node --test --test-reporter=tap control/e2e/diagnostic-supervisor.node-test.mjs 2>&1 | tee diagnostic-evidence/diagnostic-tests.log
+          grep -Fx '# tests 7' diagnostic-evidence/diagnostic-tests.log
+          grep -Fx '# pass 7' diagnostic-evidence/diagnostic-tests.log
+          grep -Fx '# skipped 0' diagnostic-evidence/diagnostic-tests.log
+      - name: Existing 46 contract tests before GUI
+        run: |
+          set -o pipefail
+          cd app
+          node --test --test-reporter=tap e2e/ci-contract.node-test.mjs 2>&1 | tee ../diagnostic-evidence/contracts.log
+          grep -Fx '# tests 46' ../diagnostic-evidence/contracts.log
+          grep -Fx '# pass 46' ../diagnostic-evidence/contracts.log
+          grep -Fx '# skipped 0' ../diagnostic-evidence/contracts.log
+          for name in \
+            'unit: command failure propagates and leaves the diagnostic log' \
+            'normal_build: command failure propagates and leaves the diagnostic log' \
+            'pages_build: command failure propagates and leaves the diagnostic log' \
+            'apt_config: command failure propagates and leaves the diagnostic log' \
+            'os_install: command failure propagates and leaves the diagnostic log' \
+            'log storage failure cannot be concealed by a successful command' \
+            'missing-context validation is nonzero at the process boundary' \
+            'bounded acquisition timeout fails and preserves its stage log and timing'; do
+            grep -F " - $name" ../diagnostic-evidence/contracts.log
+          done
+      - name: Install fixed application dependencies and build
+        run: |
+          set -o pipefail
+          cd app
+          npm ci --ignore-scripts 2>&1 | tee ../diagnostic-evidence/app-install.log
+          npm run build:pages 2>&1 | tee ../diagnostic-evidence/build.log
+      - name: Install fixed GUI dependencies and browser
+        run: |
+          set -o pipefail
+          cd app
+          npm ci --prefix e2e --ignore-scripts 2>&1 | tee ../diagnostic-evidence/gui-install.log
+          sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs 2>&1 | tee ../diagnostic-evidence/apt.log
+          sudo timeout --signal=TERM --kill-after=10s 300s "$(command -v node)" e2e/node_modules/playwright/cli.js install-deps webkit 2>&1 | tee ../diagnostic-evidence/os-install.log
+          timeout --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install webkit 2>&1 | tee ../diagnostic-evidence/browser-install.log
+      - name: Run bounded focused diagnostic
+        env:
+          DIAG_APP_ROOT: ${{ github.workspace }}/app
+          DIAG_OUTPUT: ${{ github.workspace }}/diagnostic-evidence/gui
+          DIAG_CODE_SHA: ${{ github.sha }}
+        run: node control/e2e/diagnostic-supervisor.mjs
+      - name: Preserve available evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr103-focused-${{ github.run_id }}-${{ github.run_attempt }}
+          path: diagnostic-evidence/
+          retention-days: 7
+          if-no-files-found: error
