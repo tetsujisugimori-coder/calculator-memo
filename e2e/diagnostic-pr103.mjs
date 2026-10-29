@@ -7,6 +7,7 @@ import { performance } from 'node:perf_hooks';
 import { pathToFileURL } from 'node:url';
 import { resolve, join } from 'node:path';
 import { once } from 'node:events';
+import { summarizeCase } from './diagnostic-aggregate.mjs';
 
 const app = resolve(process.env.DIAG_APP_ROOT || '.');
 const output = resolve(process.env.DIAG_OUTPUT || 'diagnostic-evidence');
@@ -46,7 +47,7 @@ try {
   status.prepareMs = performance.now() - started; status.previewWaitMs = performance.now() - prep; await save();
   for (const item of [cases[index]]) {
     if (abort || performance.now() - started > status.limits.totalMs - status.limits.caseMs) throw Error('insufficient remaining budget or interrupted');
-    active = { ...item, status: 'running', startedAt: new Date().toISOString(), actions: [], checks: [], observations: [], errors: [], startMs: performance.now() - started };
+    active = { ...item, status: 'running', startedAt: new Date().toISOString(), actions: [], checks: [], observations: [], resourceSamples: [], errors: [], startMs: performance.now() - started };
     status.cases.push(active); await save();
     const timer = setTimeout(() => { active.timeout = true; if (context) context.close().catch(() => {}); }, status.limits.caseMs);
     const caseStart = performance.now();
@@ -60,17 +61,21 @@ try {
       const page = await context.newPage(); page.setDefaultTimeout(10000);
       await page.goto(base); const served = await page.evaluate(async () => (await fetch('./__gui_provenance.json', { cache: 'no-store' })).json()); assert.deepEqual(served, status.identity);
       const observe = async label => { if (!item.observe) return; const t = performance.now(); const dom = await page.evaluate(() => ({ elements: document.querySelectorAll('*').length, dialogs: document.querySelectorAll('[role=dialog]').length })); active.observations.push({ label, ...dom, pages: context.pages().length, durationMs: performance.now() - t }); await save(); };
-      const activate = async locator => { const t = performance.now(), action = { requestMs: t - caseStart }; active.actions.push(action); await save(); try { const before = await page.evaluate(() => window.__guiTouchStarts); action.dispatchStartMs = performance.now() - caseStart; await locator.tap(); action.dispatchEndMs = performance.now() - caseStart; await pw.expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before); action.touchObservedMs = performance.now() - caseStart; } finally { action.endMs = performance.now() - caseStart; await save(); } };
+      const activate = async locator => { const t = performance.now(), action = { requestMs: t - caseStart }, actionIndex = active.actions.length; active.actions.push(action); await save(); try { if (actionIndex % 20 === 0) { const sampleMs = performance.now() - caseStart, resources = runtimeResources(); active.resourceSamples.push({ actionIndex, sampleMs, relation: 'after request before dispatch', resources }); await save(); } const before = await page.evaluate(() => window.__guiTouchStarts); action.dispatchStartMs = performance.now() - caseStart; await locator.tap(); action.dispatchEndMs = performance.now() - caseStart; await pw.expect.poll(() => page.evaluate(() => window.__guiTouchStarts)).toBeGreaterThan(before); action.touchObservedMs = performance.now() - caseStart; } finally { action.endMs = performance.now() - caseStart; active.aggregate = summarizeCase(active); await save(); } };
       const assertHorizontalFit = async () => { const size = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth })); assert.equal(size.viewport, item.width); assert.ok(size.document <= size.viewport + 1 && size.body <= size.viewport + 1); for (const modal of await page.getByRole('dialog').all()) { if (!(await modal.isVisible())) continue; const r = await modal.boundingBox(); assert.ok(r && r.x >= -1 && r.x + r.width <= item.width + 1); for (const area of await modal.locator('.modal-content').all()) { const s = await area.evaluate(e => ({ scroll: e.scrollWidth, client: e.clientWidth })); assert.ok(s.scroll <= s.client + 1); } } };
       await observe('before');
       const helperStart = performance.now();
       try { await exerciseAuditRecordComparison({ page, context, base, expect: pw.expect, passed: async name => { active.checks.push(name); await save(); if (active.checks.length === 1) await observe('first-comparison'); }, prefix: `diagnostic-${item.width}`, assertHorizontalFit, activate }); }
       finally { active.helperDurationMs = performance.now() - helperStart; }
-      await observe('after'); assert.equal(active.checks.length, 11); assert.equal(active.errors.length, 0); assert.ok(!active.timeout && !abort);
+      await observe('after'); active.aggregate = summarizeCase(active);
+      assert.equal(active.checks.length, 11); assert.equal(active.errors.length, 0); assert.ok(!active.timeout && !abort);
+      assert.equal(active.aggregate.requestToEnd.missing, 0); assert.equal(active.aggregate.dispatch.missing, 0);
+      assert.equal(active.aggregate.resource.missingSamples, 0); assert.equal(active.aggregate.resource.missingProcessTree, 0); assert.equal(active.aggregate.resource.collection.missing, 0);
+      assert.equal(active.aggregate.dom.observations, active.aggregate.dom.expected);
       assert.equal(server.exitCode, null, 'owned preview must remain alive'); assert.equal(server.signalCode, null, 'owned preview must remain alive');
       active.status = 'passed';
     } finally {
-      clearTimeout(timer); active.durationMs = performance.now() - caseStart; active.resourcesEnd = runtimeResources();
+      clearTimeout(timer); active.durationMs = performance.now() - caseStart; active.resourcesEnd = runtimeResources(); active.aggregate = summarizeCase(active);
       if (context) await context.close().catch(e => { active.errors.push('context close: ' + String(e)); active.status = 'failed'; process.exitCode = 1; }); context = null;
       if (browser) await browser.close().catch(e => { active.errors.push('browser close: ' + String(e)); active.status = 'failed'; process.exitCode = 1; }); browser = null;
       active.finishedAt = new Date().toISOString(); await save();

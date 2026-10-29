@@ -1,5 +1,11 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-29 JST: PR #103 診断の資源時系列と欠測集計
+
+- 全caseで20 tapごとの要求後・dispatch前に可視process treeを採取し、case単調時刻・操作番号・PID・process名・累積CPU tick・RSS・採取時間を記録。DOM観測あり／なし両群で同一の採取負荷とする。名前はbrowser帰属の手掛かりに限り、不可視・終了・reparent等の欠測と採取負荷を明示する。個別操作のbrowser CPU原因は断定できない。
+- 時間合計と欠測を分離する集計を追加し、必須の操作時間・resource観測・所定DOM観測の欠落は成功としない。mockで数値・欠測・異常終了・途中ログ・timeoutを検証。Linux child終了後のprocess group残存を確認し、残存にはTERM/KILLを試み、namespace内で不明なら失敗する。別groupやnamespace外の完全cleanupは保証しない。Linux実動作は未検証。
+- 親側環境は報告によるとDebian 13.6 x86_64・Node 24.22.1でdocker/podmanなし、calculator-memo用の保存済み環境なし。Ubuntu 24.04 / Node 22.13.0の条件とは異なる。正式GUI再実行、限定GUI実測、Ubuntuの新規契約46件は未実施。PARTIAL／マージ推奨NO。
+
 ## 2026-10-29 JST: PR #103 限定診断CLIの準備
 
 - 従来の失敗終了stubを、固定アプリcheckoutと診断コードを別に識別する手動workflow、4つのfresh WebKit caseを実行するCLI、case監督とmock検証に置換。[固定計画](docs/maintenance/pr103-webkit-diagnosis-20261028/proposed-plan.md)は幅と観測の各比較、順序・上限・停止条件・限界を記載。製品・正式workflowは不変。新規workflowはmain未登録でdispatch不可。

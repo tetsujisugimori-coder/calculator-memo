@@ -19,8 +19,20 @@ export async function runChild({ command, args, env, log, timeoutMs, graceMs = 5
   const timer = setTimeout(() => { timedOut = true; stop(); }, timeoutMs);
   const result = await new Promise(resolve => { child.once('error', e => { spawnError = String(e); }); child.once('close', (code, signalName) => resolve({ code, signal: signalName })); });
   clearTimeout(timer); clearTimeout(escalation); process.removeListener('SIGTERM', interrupt); process.removeListener('SIGINT', interrupt);
+  // A closed leader does not prove its process group is gone. Check the group
+  // created for this child, terminate remaining members, and fail closed if the
+  // platform cannot confirm disappearance. PID namespace visibility is limited.
+  let groupCleanup = 'unverified-platform';
+  if (process.platform === 'linux' && child.pid) {
+    const groupState = () => { try { process.kill(-child.pid, 0); return 'present'; } catch (e) { return e.code === 'ESRCH' ? 'absent' : 'unknown'; } };
+    const waitAbsent = async ms => { const deadline = performance.now() + ms; let state; do { state = groupState(); if (state !== 'present') return state; await new Promise(r => setTimeout(r, 50)); } while (performance.now() < deadline); return state; };
+    let state = groupState();
+    if (state === 'present') { signal('SIGTERM'); state = await waitAbsent(graceMs); }
+    if (state === 'present') { signal('SIGKILL'); state = await waitAbsent(graceMs); }
+    groupCleanup = state === 'absent' ? 'confirmed-absent-in-namespace' : 'unconfirmed';
+  }
   await new Promise(resolve => { if (out.destroyed) resolve(); else out.end(resolve); });
-  return { ...result, timedOut, interrupted, spawnError, logError, durationMs: performance.now() - started, ok: result.code === 0 && !timedOut && !interrupted && !spawnError && !logError };
+  return { ...result, timedOut, interrupted, spawnError, logError, groupCleanup, durationMs: performance.now() - started, ok: result.code === 0 && !timedOut && !interrupted && !spawnError && !logError && (process.platform !== 'linux' || groupCleanup === 'confirmed-absent-in-namespace') };
 }
 
 export async function runPlan({ output, app, driver, sha, timeoutMs = 300000, totalMs = 1200000 }) {
@@ -36,8 +48,8 @@ export async function runPlan({ output, app, driver, sha, timeoutMs = 300000, to
       const child = await runChild({ command: process.execPath, args: [driver], env: { ...process.env, DIAG_CASE: String(i), DIAG_APP_ROOT: app, DIAG_OUTPUT: dir, DIAG_CODE_SHA: sha }, log: join(dir, 'worker.log'), timeoutMs });
       let evidence;
       try { evidence = JSON.parse(await readFile(join(dir, 'progress.json'), 'utf8')); } catch (e) { item.evidenceError = String(e); }
-      const record = evidence?.cases?.[0];
-      const valid = evidence?.status === 'passed' && record?.status === 'passed' && record?.checks?.length === 11 && record?.actions?.length > 0 && record?.errors?.length === 0 && evidence?.identity?.diagnosticSha === sha;
+      const record = evidence?.cases?.[0], summary = record?.aggregate;
+      const valid = evidence?.status === 'passed' && record?.status === 'passed' && record?.checks?.length === 11 && record?.actions?.length > 0 && record?.errors?.length === 0 && evidence?.identity?.diagnosticSha === sha && evidence?.identity?.appSha === '52f4f6914fcd3c72b0829018842f653f06abe5f2' && record?.width === (i < 2 ? 375 : 390) && record?.observe === (i % 2 === 1) && summary?.actions === record?.actions?.length && summary?.requestToEnd?.missing === 0 && summary?.dispatch?.missing === 0 && summary?.resource?.missingSamples === 0 && summary?.resource?.missingProcessTree === 0 && summary?.resource?.collection?.missing === 0 && summary?.dom?.observations === summary?.dom?.expected;
       Object.assign(item, child, { status: child.ok && valid ? 'passed' : 'failed', checkCount: record?.checks?.length ?? null, actionCount: record?.actions?.length ?? null, finishedAt: new Date().toISOString() }); await save();
       if (!child.ok || !valid) throw Error(`case ${i} failed, timed out, or lacked evidence; remaining cases not started`);
     }
@@ -55,7 +67,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const root = fileURLToPath(new URL('../', import.meta.url));
   const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
   if (actual !== sha) throw Error('diagnostic checkout SHA mismatch');
-  const changes = execFileSync('git', ['status', '--porcelain', '--', 'e2e/diagnostic-pr103.mjs', 'e2e/diagnostic-supervisor.mjs'], { cwd: root, encoding: 'utf8' });
+  const changes = execFileSync('git', ['status', '--porcelain', '--', 'e2e/diagnostic-pr103.mjs', 'e2e/diagnostic-supervisor.mjs', 'e2e/diagnostic-aggregate.mjs'], { cwd: root, encoding: 'utf8' });
   if (changes.trim()) throw Error('diagnostic code must match its committed SHA');
   const result = await runPlan({ output, app, driver: fileURLToPath(new URL('./diagnostic-pr103.mjs', import.meta.url)), sha });
   if (result.status !== 'passed') process.exitCode = 1;
