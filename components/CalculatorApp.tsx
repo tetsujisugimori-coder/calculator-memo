@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { RestoreModal } from "./RestoreModal";
 import { trailingNumber } from "../lib/calculator";
 import { transitionInput, type InputAction } from "../lib/calculator-input";
 import { formatExpression, formatNumber } from "../lib/format";
@@ -50,7 +51,12 @@ function noteDraftFromCalculation(expression: string, displayExpression: string,
 
 export function CalculatorApp() {
   const headerRef = useRef<HTMLElement>(null);
-  const [data, setData] = useState<StoredData>(defaultData);
+  const [data, setDataState] = useState<StoredData>(defaultData);
+  const dataGeneration = useRef(0);
+  const [renderGeneration, setRenderGeneration] = useState(0);
+  const setData = useCallback((next: React.SetStateAction<StoredData>) => { dataGeneration.current++; setRenderGeneration(dataGeneration.current); setDataState(next); }, []);
+  const restoreOpenRef = useRef(false);
+  const [restoreOpen, setRestoreOpen] = useState(false);
   const [storageStatus, setStorageStatus] = useState<"loading" | "ready" | "error">("loading");
   const savedRaw = useRef<string | null>(null);
   const liveData = useRef(data);
@@ -130,12 +136,15 @@ export function CalculatorApp() {
       setStorageStatus("ready");
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [setData]);
   useEffect(() => {
-    if (storageStatus !== "ready" || conflictRef.current) return;
+    if (storageStatus !== "ready" || conflictRef.current || restoreOpenRef.current) return;
     let cancelled = false;
     void withStorageWriteLock(() => {
-      if (cancelled || conflictRef.current || liveData.current !== data) return;
+      if (cancelled || conflictRef.current || restoreOpenRef.current || liveData.current !== data) return;
+      // Loading/restoring an already-clean source must not normalize whitespace,
+      // unknown fields or numeric lexemes merely by mounting the application.
+      if (savedRaw.current !== null && JSON.stringify(data) === confirmedData.current) return;
       const saved = saveDataChecked(data, savedRaw.current);
       if (saved.ok) { savedRaw.current = saved.raw; confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw); return; }
       if (saved.reason === "uncertain") {
@@ -150,7 +159,7 @@ export function CalculatorApp() {
       }
     }).catch(() => { if (!cancelled) { conflictRef.current = true; setStorageConflict("保存用ロックを取得できず、保存処理を停止しました。編集内容を控えて再読み込みしてください。"); showToast("ローカル保存を確認できませんでした"); } });
     return () => { cancelled = true; };
-  }, [data, storageStatus, showToast]);
+  }, [data, storageStatus, showToast, restoreOpen]);
   useEffect(() => {
     const changed = (event: StorageEvent) => {
       if ((event.key === STORAGE_KEY || event.key === null) && event.newValue !== savedRaw.current) {
@@ -201,7 +210,7 @@ export function CalculatorApp() {
       setError(cause instanceof Error ? cause.message : "計算できませんでした");
       setAfterEquals(false);
     }
-  }, [expression]);
+  }, [expression, setData]);
 
   const restore = useCallback((item: Pick<HistoryEntry, "expression" | "result" | "resultText" | "displayExpression">) => {
     setExpression(item.expression); setResult({ value: item.result, text: item.resultText, displayExpression: item.displayExpression }); setError(""); setAfterEquals(false);
@@ -230,17 +239,17 @@ export function CalculatorApp() {
       return { ...current, notes: [note, ...current.notes] };
     });
     setNoteEditor(null); showToast(noteEditor?.editingId ? `${MEMO_LABELS.single}の更新を保存処理中です` : `${MEMO_LABELS.single}の追加を保存処理中です`);
-  }, [noteEditor, showToast, storageStatus]);
+  }, [noteEditor, showToast, storageStatus, setData]);
 
   const savePlainNote = useCallback(async (draft: PlainNoteDraft, candidates: EvidenceCandidate[] = []): Promise<string | void> => {
-    if (storageStatus !== "ready" || conflictRef.current) return "保存保護中です。編集内容は保持しています。元データを確認してください。";
+    if (storageStatus !== "ready" || conflictRef.current || restoreOpenRef.current) return "保存保護中です。編集内容は保持しています。元データを確認してください。";
     const current = liveData.current;
     const original = plainNoteEditor?.editingId ? current.notes.find(note => note.id === plainNoteEditor.editingId) : undefined;
     if (plainNoteEditor?.editingId && (original?.type !== "plain-calculation" || JSON.stringify(original) !== JSON.stringify(plainNoteEditor.draft))) return "編集開始後に原本が変更されました。上書きせず編集内容を保持しています。";
     explicitUnconfirmedRef.current = true; setExplicitUnconfirmed(true);
     try {
       return await withStorageWriteLock(() => {
-        if (conflictRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。編集内容を確認してもう一度保存してください。";
+        if (conflictRef.current || restoreOpenRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。編集内容を確認してもう一度保存してください。";
         const now = new Date().toISOString();
         const history = original?.type === "plain-calculation" ? original.calculationEvidence : undefined;
         // Only the preserved original supplies history. A draft cannot replace it.
@@ -271,16 +280,16 @@ export function CalculatorApp() {
         showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
       });
     } catch (cause) { return cause instanceof Error ? cause.message : "保存できませんでした。編集内容を保持しています。"; }
-  }, [plainNoteEditor, showToast, storageStatus]);
+  }, [plainNoteEditor, showToast, storageStatus, setData]);
 
   // Reports are explicit transactions, not optimistic autosave candidates. A
   // successful checked readback precedes publishing their confirmation in React.
   const persistFormulaReport = useCallback(async (request: FormulaReportSaveRequest): Promise<string | FormulaReport> => {
-    if (storageStatus !== "ready" || conflictRef.current) return "保存保護中です。レポート本文を控え、保存原本を確認してください。";
+    if (storageStatus !== "ready" || conflictRef.current || restoreOpenRef.current) return "保存保護中です。レポート本文を控え、保存原本を確認してください。";
     const current = liveData.current;
     try {
       return await withStorageWriteLock(() => {
-        if (conflictRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。レポートは保存していません。内容を確認してください。";
+        if (conflictRef.current || restoreOpenRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。レポートは保存していません。内容を確認してください。";
         // Resolve links only against the persisted original, never live unsaved memo edits.
         const original = loadData();
         if (original.status !== "ok" || original.raw !== savedRaw.current) {
@@ -311,7 +320,7 @@ export function CalculatorApp() {
         return formulaReports.entries.find(entry => entry.id === request.id)!;
       });
     } catch (cause) { return cause instanceof Error ? cause.message : "レポートを保存できませんでした。本文を保持しています。"; }
-  }, [storageStatus]);
+  }, [storageStatus, setData]);
 
   const requestDelete = useCallback((kind: "history" | "note", id: string) => {
     setConfirm({
@@ -319,7 +328,7 @@ export function CalculatorApp() {
       message: "この操作は取り消せません。必要な内容は先にコピーしてください。", confirmLabel: "削除する",
       action: () => { setData((current) => ({ ...current, [kind === "history" ? "history" : "notes"]: current[kind === "history" ? "history" : "notes"].filter((item) => item.id !== id) })); setConfirm(null); showToast("削除しました"); },
     });
-  }, [showToast]);
+  }, [showToast, setData]);
 
   const setPanel = (panel: Panel) => setData((current) => ({ ...current, settings: { ...current.settings, activePanel: panel } }));
   const setTheme = (theme: Theme) => setData((current) => ({ ...current, settings: { ...current.settings, theme } }));
@@ -347,7 +356,7 @@ export function CalculatorApp() {
     confirmLabel: "初期化する",
     action: async () => {
       const cleanData: StoredData = { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
-      if (!storageIssue || !await withStorageWriteLock(() => resetStoredData(storageIssue.raw)).catch(() => false)) {
+      if (!storageIssue || !await withStorageWriteLock(() => !restoreOpenRef.current && resetStoredData(storageIssue.raw)).catch(() => false)) {
         setConfirm(null);
         showToast("保存データを初期化できませんでした");
         return;
@@ -368,7 +377,7 @@ export function CalculatorApp() {
     const onKey = (event: KeyboardEvent) => {
       if (storageStatus !== "ready") return;
       const target = event.target as HTMLElement;
-      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || backupOpen || copyNote || viewNote || reportMemoId || evidenceMemoId || confirm || libraryOpen || executionId) return;
+      if (target.closest('[role="dialog"]') || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable || noteEditor || plainNoteEditor || createMenuOpen || guideOpen || backupOpen || restoreOpen || copyNote || viewNote || reportMemoId || evidenceMemoId || confirm || libraryOpen || executionId) return;
       if (/^[0-9+\-*/^.()%]$/.test(event.key)) { event.preventDefault(); changeExpression(event.key); }
       else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); calculate(); }
       else if (event.key === "Backspace") { event.preventDefault(); editInput({ type: "backspace" }); }
@@ -376,21 +385,40 @@ export function CalculatorApp() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [storageStatus, calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, backupOpen, copyNote, viewNote, reportMemoId, evidenceMemoId, confirm, libraryOpen, executionId]);
+  }, [storageStatus, calculate, changeExpression, editInput, noteEditor, plainNoteEditor, createMenuOpen, guideOpen, backupOpen, restoreOpen, copyNote, viewNote, reportMemoId, evidenceMemoId, confirm, libraryOpen, executionId]);
+
+  const restoreBlocked = storageStatus === "loading" ? "保存状態を読み込み中です。"
+    : hasUnsavedChanges || noteEditor || plainNoteEditor || createMenuOpen || libraryOpen || executionId || reportMemoId || confirm
+      ? "未保存または編集中の内容があります。内容を保ったまま復元を停止しています。保存を確認し、編集画面を閉じてください。" : "";
+  const restoreAllowed = useRef(false);
+  useLayoutEffect(() => { restoreAllowed.current = !restoreBlocked; }, [restoreBlocked]);
+  const restoreGeneration = useRef(0);
+  const openRestore = () => { restoreGeneration.current = dataGeneration.current; restoreOpenRef.current = true; setRestoreOpen(true); };
+  const applyRestored = (raw: string, restored: StoredData) => {
+    savedRaw.current = raw; liveData.current = restored;
+    confirmedData.current = JSON.stringify(restored); setConfirmedSerialized(confirmedData.current);
+    explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false);
+    conflictRef.current = false; setStorageConflict(""); setStorageIssue(null);
+    setData(restored); setStorageStatus("ready");
+  };
+  const protectUncertainRestore = () => {
+    conflictRef.current = true;
+    setStorageConflict("復元結果または画面更新が確認不能（UNKNOWN）のため自動保存を停止しています。復旧コピーと現在原文を保管し、内容を確認してから再読み込みしてください。");
+  };
 
   return (
     <main className="app-shell" data-identification={data.settings.identificationMode ?? "auto"}>
-      <header className="topbar" ref={headerRef}>
+      <header className="topbar" ref={headerRef} inert={restoreOpen}>
         <a className="wordmark" href="#calculator" aria-label="Calculation Memo ホーム"><span className="wordmark-mark">CM</span><span><strong>Calculation Memo</strong><small>計算を、意味のある記録へ。</small></span></a>
         <div className="header-actions"><button onClick={() => { setGuideInsert(undefined); setGuideOpen(true); }}>数式ガイド</button><label className="theme-select"><span>テーマ</span><select aria-label="テーマ" value={data.settings.theme} onChange={(e) => setTheme(e.target.value as Theme)}><option value="system">自動</option><option value="light">ライト</option><option value="dark">ダーク</option></select></label></div>
       </header>
 
       <p role={hasUnsavedChanges ? "status" : undefined} aria-hidden={!hasUnsavedChanges} data-testid={hasUnsavedChanges ? "unsaved-changes" : undefined} style={{ visibility: hasUnsavedChanges ? "visible" : "hidden" }}>未保存です。再読み込み・終了に注意。</p>
       {storageConflict && <p role="alert" className="field-error">{storageConflict}</p>}
-      <div className="backup-entry"><button className="button-secondary" type="button" onClick={() => setBackupOpen(true)}>データのバックアップ</button></div>
+      <div className="backup-entry" inert={restoreOpen}><button className="button-secondary" type="button" onClick={() => setBackupOpen(true)}>データのバックアップ</button><button className="button-secondary" type="button" onClick={openRestore}>JSONから復元</button></div>
       {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} protectionReason={storageIssue.protectionReason} onExport={exportOriginal} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw !== null && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
-      <section className="workspace" id="calculator" inert={storageStatus !== "ready"}>
+      <section className="workspace" id="calculator" inert={storageStatus !== "ready" || restoreOpen}>
         <aside id="history-panel" role="tabpanel" aria-labelledby="history-tab" className={`side-panel history-panel ${data.settings.activePanel === "history" ? "mobile-active" : ""}`}>
           <HistoryPanel history={data.history} onRestore={restore} onNote={openNoteForHistory} onCopy={(item) => copy(historyText(item))} onDelete={(id) => requestDelete("history", id)} onClearAll={() => setConfirm({ title: "すべての計算履歴を削除します", message: `${data.history.length}件の履歴を削除します。計算メモは削除されません。`, confirmLabel: "すべて削除", action: () => { setData((current) => ({ ...current, history: [] })); setConfirm(null); showToast("履歴をすべて削除しました"); } })} />
         </aside>
@@ -421,6 +449,10 @@ export function CalculatorApp() {
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => { explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false); setPlainNoteEditor(null); }} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
+      {restoreOpen && <RestoreModal blockedReason={restoreBlocked} generation={renderGeneration}
+        canApply={() => restoreAllowed.current && restoreOpenRef.current && dataGeneration.current === restoreGeneration.current}
+        onApplied={applyRestored} onUncertain={protectUncertainRestore}
+        onClose={() => { restoreOpenRef.current = false; setRestoreOpen(false); }} />}
       {backupOpen && <BackupModal onClose={() => setBackupOpen(false)} />}
       {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} onCopy={(text) => copy(text, "LaTeX")} onInsert={guideInsert} />}
       {copyNote && <CopyModal note={copyNote} onCopy={copy} onClose={() => setCopyNote(null)} />}

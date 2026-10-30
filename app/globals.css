@@ -560,3 +560,13 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .backup-entry { padding: 0 clamp(18px, 4vw, 56px) 12px; }
 .backup-entry button { max-width: 100%; overflow-wrap: anywhere; }
 .backup-actions { flex-wrap: wrap; }
+
+/* Restore comparison stays within the modal at mobile widths and 200% text. */
+.restore-content { min-width: 0; overflow-wrap: anywhere; }
+.restore-content button, .restore-file input { min-height: 44px; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.restore-file { display: grid; gap: .5rem; min-width: 0; }
+.restore-file input { width: 100%; min-width: 0; font: inherit; }
+.restore-comparison { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.restore-comparison th, .restore-comparison td { padding: .4rem .2rem; text-align: left; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.restore-approval { display: flex; align-items: center; gap: .6rem; min-height: 44px; margin-block: 1rem; }
+.restore-approval input { flex: 0 0 24px; width: 24px; height: 24px; }
