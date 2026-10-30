@@ -1,5 +1,23 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-30 (JST): PR #107 状態表示・独立GUIの限定再検証
+
+- 従来: バックアップGUIは正式GUIの後段で、30分timeout時にskip。変更: 独立job（15分、GUI5分、8条件）と別artifactへ分離し、正式jobの契約・30分・3workersは不変更。最終push時の既定回帰1回のみ、無条件rerunなし。[事前計画](docs/maintenance/pr107-backup-recheck-20261030/plan.md)。
+- 製品修正: 成功後の原文変更検出で旧成功表示が残るREDを確認。新要求開始時の表示消去、読取失敗時のsnapshot失効と再取得後の状態復帰を修正。保存原文・Enter保護・保存形式・ABA限界は不変更。
+- GUI: 要求前後のページ/modal横幅、長いfilename、重要ボタンの44pxと到達性、別page変更後の成功表示消去を追加。配信SHA/run/attemptとケース別進捗・PNGを保存。待機は状態成立で判断。
+- ローカル試験と最終HEADのCI・artifact・独立レビュー結果はPRコメントへ記録。旧HEADの成功は現行成功としない。実機iPhone/VoiceOver/OS文字拡大は未検証。
+- 関連: [Issue #106](https://github.com/tetsujisugimori-coder/calculator-memo/issues/106) / [Draft PR #107](https://github.com/tetsujisugimori-coder/calculator-memo/pull/107)。マージ・公開なし。
+
+
+## 2026-10-30 JST: 保存原文のJSONバックアップ（Issue #106）
+
+- 変更内容: アプリ所有の `calculation-memo:data` の原文を独立形式に格納し、明示操作でダウンロード要求する。保存済み原文のみを対象に、未知・破損・欠落・読取失敗・容量超過・変更を区別する。復元は未実装。[設計](docs/design/json-backup.md)。
+- 変更理由: ブラウザ保存の消失に備え、利用者が任意に手元へ退避できるようにする。
+- 検証: 最終HEADのローカル・CI・正式GUI結果はPRに記録する。Windows／Node 24で試作の合成データによるChromium/WebKit 375・390px、両テーマ・CSS 200%の8条件でダウンロードと保存原文一致を確認。実機iPhone Safariは未実施。実行中に編集した初回全単体試験は7失敗を観測し、最終結果として扱わない。対象lintの初回エラーは修正。
+- 関連: [Issue #106](https://github.com/tetsujisugimori-coder/calculator-memo/issues/106)、PR作成前。
+- 独立レビューで、バックアップ表示中にbody由来Enterが電卓へ届き履歴保存されるP2を検出。保存が発生するREDを確認し、画面表示中の全体キー処理を停止してGREENとした。モーダル内部の横はみ出し検査も別枠GUIへ追加。
+- 残り: 最終HEADの全検証・独立レビュー・人間のマージ判断。完全な原子的取得や端末への保存完了は保証しない。
+
 ## 2026-10-29 JST: #103 統合後ローカル検証の途中記録
 
 - 統合commit `c3afa7c53132ce78ef97614b8b4d02ee4d963fdc` をWindows／Node 24.20.0で検証。型、lint、通常build、Pages buildは成功。単体は他のbuild等と同時実行した初回に複数の5秒timeoutを観測し、未完走のまま中断。通常並列度で単独再実行した2回目は2289成功／10 timeout。原因は確定せず失敗を保持する。

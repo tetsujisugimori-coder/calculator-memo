@@ -1,5 +1,9 @@
 # PR GUI regression
 
+## JSONバックアップの別枠GUI（2026-10-30 JST）
+
+既存の1128検査群・592 geometry・132 PNG・touch各1337・6条件・3 workers・30分は変更しない。別段階 `backup-gui` で Chromium/WebKit の375・390pxとlight/darkの計8条件を、CSS 200%・touchで検査する。合成データの出力JSON原文と保存前後、日時付きfilename、44px操作、横はみ出し、別pageの変更による失効を確認する。別段階の結果は既存件数に加算せず、保存結果・ログをCI artifactsで確認する。ダウンロードイベントは端末の保存完了やiPhone実機Safariを意味しない。失敗時の表示・未保存状態との非干渉・同一ターンABAは別の単体／統合テストで扱う。
+
 ## 本文確認中の前後移動・追加受入条件（2026-10-28 JST）
 
 追加契約は **1128検査群（既存1092＋本文側36）、geometry592箇所、代表PNG132枚、成功trace0**。既存6条件・3 workers・30分上限を維持。touch条件ごとのnative activationは **1337回（既存1306＋31）**。最終HEAD CIでの確認前に成功を意味しない。
@@ -686,3 +690,9 @@ The added acceptance group reuses the existing formula-library delete/cancel con
 Activation evidence separates monotonic pre-dispatch/post-dispatch/touch-observation timestamps from the total wrapper time. Quote, audit-storage, fixed-record, and record-comparison stages now have separate boundaries; earlier `formula-calculation-quotes` totals included all four. Stage resource snapshots record their own observation/persist costs and visible Linux descendant-process counters separately from Node resource usage. Missing `/proc` or cgroup observations remain explicitly unavailable. Raw CPU ticks are not seconds; RSS sums are not unique memory.
 
 The local CSS contrast is diagnostic evidence, not a formal whole-suite result. All initial timeouts and the predeclared matrix outcomes remain in [the repair timing record](../docs/maintenance/pr93-gui-repair-20261026/webkit-timing.md). The nested-stack visual blur change mitigates an observed actionability-delay contribution; exact low-level WebKit/environment causes remain unknown. Final CI must still complete every condition and artifact contract on the final HEAD.
+
+## 独立バックアップGUI（PR #107）
+
+`verify-pr-gui.yml` の `backup` job は正式 `gui` job に依存しない。正式GUIの失敗/timeoutと独立して8条件を実行し、`pr-backup-<HEAD>-<attempt>` にSHA・配信provenance・ケース別進捗・要求後PNG・ログを保存する。正式の1128/592/132に加算しない。job15分、GUI5分、再試行なし、途中記録や8件未満は成功ではない。
+
+ローカルはPages build後 `node e2e/run-backup-gui.mjs`。専用4173番が使用済みなら停止し、既存serverを再利用しない。tracked dirty状態はローカルprovenanceに明記し、CIでは拒否。各contextが配信SHAを照合。追加workflow契約は `node --test e2e/backup-ci.node-test.mjs`（既存46契約と別集計）。
