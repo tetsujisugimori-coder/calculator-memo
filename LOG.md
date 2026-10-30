@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-30 (JST): PR #107 状態表示・独立GUIの限定再検証
+
+- 従来: バックアップGUIは正式GUIの後段で、30分timeout時にskip。変更: 独立job（15分、GUI5分、8条件）と別artifactへ分離し、正式jobの契約・30分・3workersは不変更。最終push時の既定回帰1回のみ、無条件rerunなし。[事前計画](docs/maintenance/pr107-backup-recheck-20261030/plan.md)。
+- 製品修正: 成功後の原文変更検出で旧成功表示が残るREDを確認。新要求開始時の表示消去、読取失敗時のsnapshot失効と再取得後の状態復帰を修正。保存原文・Enter保護・保存形式・ABA限界は不変更。
+- GUI: 要求前後のページ/modal横幅、長いfilename、重要ボタンの44pxと到達性、別page変更後の成功表示消去を追加。配信SHA/run/attemptとケース別進捗・PNGを保存。待機は状態成立で判断。
+- ローカル試験と最終HEADのCI・artifact・独立レビュー結果はPRコメントへ記録。旧HEADの成功は現行成功としない。実機iPhone/VoiceOver/OS文字拡大は未検証。
+- 関連: [Issue #106](https://github.com/tetsujisugimori-coder/calculator-memo/issues/106) / [Draft PR #107](https://github.com/tetsujisugimori-coder/calculator-memo/pull/107)。マージ・公開なし。
+
 
 ## 2026-10-30 JST: 保存原文のJSONバックアップ（Issue #106）
 

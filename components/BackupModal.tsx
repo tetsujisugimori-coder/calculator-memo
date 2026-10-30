@@ -20,15 +20,25 @@ export function BackupModal({ onClose }: { onClose: () => void }) {
   useEffect(() => { const timer = window.setTimeout(read, 0); return () => window.clearTimeout(timer); }, []);
   const download = () => {
     if (result?.status !== "ready" || invalidated.current || currentSnapshot.current !== result) return;
+    setMessage("");
+    const unchanged = () => {
+      try {
+        if (window.localStorage.getItem(STORAGE_KEY) === result.backup.entries[0].raw) return true;
+        invalidated.current = true; currentSnapshot.current = null; setResult({ status: "changed" });
+      } catch {
+        invalidated.current = true; currentSnapshot.current = null; setResult({ status: "unavailable" });
+      }
+      return false;
+    };
     let url: string | null = null;
     let link: HTMLAnchorElement | null = null;
     try {
-      if (window.localStorage.getItem(STORAGE_KEY) !== result.backup.entries[0].raw) { invalidated.current = true; setResult({ status: "changed" }); return; }
+      if (!unchanged()) return;
       const now = new Date();
       const pad = (n: number) => String(n).padStart(2, "0");
       const name = `calculator-memo-backup-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.json`;
       const blob = new Blob([serializeBackup(result.backup)], { type: "application/json;charset=utf-8" });
-      if (window.localStorage.getItem(STORAGE_KEY) !== result.backup.entries[0].raw) { invalidated.current = true; setResult({ status: "changed" }); return; }
+      if (!unchanged()) return;
       url = URL.createObjectURL(blob);
       link = document.createElement("a"); link.href = url; link.download = name; document.body.append(link); link.click();
       setMessage(`ダウンロードを要求しました（${name}）。端末への保存完了は確認できません。ファイルを確認してください。`);

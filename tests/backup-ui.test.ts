@@ -59,8 +59,47 @@ describe("backup modal", () => {
     expect(createUrl).not.toHaveBeenCalled();
     await click("JSONを書き出す"); expect(createUrl).toHaveBeenCalledOnce();
   });
+  it("invalidates a previous success on read failure, then clears errors on refresh", async () => {
+    await open(); await click("JSONを書き出す");
+    const reader = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw Error("read blocked"); });
+    await click("JSONを書き出す");
+    expect(host.textContent).not.toContain("ダウンロードを要求しました");
+    expect(host.textContent).toContain("保存領域を読み取れません");
+    expect(button("JSONを書き出す").disabled).toBe(true);
+    await click("再取得"); expect(button("JSONを書き出す").disabled).toBe(true);
+    reader.mockRestore(); await click("再取得");
+    expect(host.textContent).not.toContain("保存領域を読み取れません");
+    expect(button("JSONを書き出す").disabled).toBe(false);
+    await click("JSONを書き出す"); expect(createUrl).toHaveBeenCalledTimes(2);
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+  });
   it("reports download failures and preserves original", async () => {
     await open(); createUrl.mockImplementation(() => { throw Error("blocked"); }); await click("JSONを書き出す");
     expect(host.textContent).toContain("書き出しを開始できませんでした"); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   });
+});
+
+it("clears a previous download request on a later source mismatch and only re-enables after refresh", async () => {
+  // Use the same mounted dialog for success -> mismatch -> refresh -> success.
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  localStorage.clear(); localStorage.setItem(STORAGE_KEY, raw);
+  const url = vi.fn(() => "blob:test");
+  vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: url, revokeObjectURL: vi.fn() }));
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+  host = document.createElement("div"); document.body.append(host); root = createRoot(host);
+  try {
+    await open(); await click("JSONを書き出す");
+    expect(host.textContent).toContain("ダウンロードを要求しました");
+    localStorage.setItem(STORAGE_KEY, '{"version":999}');
+    const write = vi.spyOn(Storage.prototype, "setItem");
+    await click("JSONを書き出す");
+    expect(host.textContent).not.toContain("ダウンロードを要求しました");
+    expect(host.textContent).toContain("再取得してください");
+    expect(button("JSONを書き出す").disabled).toBe(true);
+    expect(url).toHaveBeenCalledTimes(1); expect(write).not.toHaveBeenCalled();
+    await click("再取得"); expect(button("JSONを書き出す").disabled).toBe(false);
+    expect(host.textContent).toContain("unsupported-version");
+    await click("JSONを書き出す"); expect(url).toHaveBeenCalledTimes(2);
+    expect(write).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe('{"version":999}');
+  } finally { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); }
 });

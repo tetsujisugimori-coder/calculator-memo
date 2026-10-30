@@ -73,18 +73,6 @@ jobs:
       - name: Desktop Chromium and mobile Chromium/WebKit touch regression
         id: gui
         run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/smoke.mjs
-      - name: Backup mobile GUI (separate coverage)
-        id: backup_gui
-        run: |
-          node node_modules/vite/bin/vite.js preview --config vite.pages.config.ts --host 127.0.0.1 --port 4173 > gui-evidence/backup-server.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
-          for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4173/calculator-memo/ > /dev/null; then break; fi
-            sleep 1
-          done
-          curl -fsS http://127.0.0.1:4173/calculator-memo/ > /dev/null
-          node e2e/run-stage.mjs backup-gui node e2e/backup-mobile.mjs
       - name: Preserve outcomes even when setup or tests fail
         if: always()
         env:
@@ -133,3 +121,65 @@ jobs:
           ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
         run: printf '\n[Download GUI screenshots, traces and diagnostics](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
 
+
+  backup:
+    name: Backup mobile GUI (independent)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BRANCH: ${{ github.head_ref }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      CI: "true"
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Install locked dependencies and build
+        id: backup_build
+        timeout-minutes: 4
+        run: |
+          node e2e/run-stage.mjs backup-app-install npm ci --ignore-scripts
+          node e2e/run-stage.mjs backup-build npm run build:pages
+          node e2e/run-stage.mjs backup-gui-install npm ci --prefix e2e --ignore-scripts
+      - name: Install fixed browsers with bounded setup
+        id: backup_browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs backup-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs backup-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Backup workflow contracts
+        id: backup_contract
+        run: node e2e/run-stage.mjs backup-contract node --test e2e/backup-ci.node-test.mjs
+      - name: Eight backup mobile cases (five-minute limit)
+        id: backup_gui
+        run: node e2e/run-stage.mjs backup-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-backup-gui.mjs
+      - name: Preserve independent outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          const record = { job: 'backup', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };
+          writeFileSync('gui-evidence/backup-ci-outcomes.json', JSON.stringify(record, null, 2) + '\n');
+          NODE
+          node e2e/evidence-inventory.mjs
+      - name: Upload independent backup evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-backup-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error

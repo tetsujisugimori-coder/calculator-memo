@@ -1,0 +1,137 @@
+{
+  "confirmed_at_jst": "2026-10-30T19:20:48.397432+09:00",
+  "runs": [
+    {
+      "name": "pr107",
+      "sha": "b4ad743b5e495ec813a36a11251d66d3dca2b1ad",
+      "run": "40972558005",
+      "attempt": "1",
+      "status": "running",
+      "stage": "webkit-mobile-390px: saved-record-comparison",
+      "checks": 1115,
+      "geometry": 585,
+      "png": 130,
+      "wk390_checks": 175,
+      "wk390_geometry": 91,
+      "wk390_touch": 1276,
+      "errors": 0,
+      "zip_sha256": "11046221d8c9375bf7ea1d524ead44db020f7b61067d54a25147853474bf49d9"
+    },
+    {
+      "name": "pr103",
+      "sha": "31c5955e41f60d02cc27e82c525c47c5991e0460",
+      "run": "40887114420",
+      "attempt": "1",
+      "status": "passed",
+      "stage": "complete",
+      "checks": 1128,
+      "geometry": 592,
+      "png": 132,
+      "wk390_checks": 188,
+      "wk390_geometry": 98,
+      "wk390_touch": 1337,
+      "errors": 0,
+      "zip_sha256": "e667138ce7f3126a103b9b45a7c05da7960ef1cd69861db19ae7e45ee8540aaf"
+    },
+    {
+      "name": "old1",
+      "sha": "52f4f6914fcd3c72b0829018842f653f06abe5f2",
+      "run": "40671009347",
+      "attempt": "1",
+      "status": "running",
+      "stage": "webkit-mobile-390px: saved-record-comparison",
+      "checks": 1115,
+      "geometry": 585,
+      "png": 130,
+      "wk390_checks": 175,
+      "wk390_geometry": 91,
+      "wk390_touch": 1276,
+      "errors": 0,
+      "zip_sha256": "04d4e74ef080623cbb6858e5021ce5666748b99485feb56f6c0ab2af0f5b6534"
+    },
+    {
+      "name": "old2",
+      "sha": "52f4f6914fcd3c72b0829018842f653f06abe5f2",
+      "run": "40671009347",
+      "attempt": "2",
+      "status": "running",
+      "stage": "webkit-mobile-390px: saved-record-comparison",
+      "checks": 1112,
+      "geometry": 585,
+      "png": 130,
+      "wk390_checks": 172,
+      "wk390_geometry": 91,
+      "wk390_touch": 1262,
+      "errors": 0,
+      "zip_sha256": "dacd9afc1f80fc1bce7e431f5448bd20187ca7867cf50e332ea9c700819edc71"
+    }
+  ],
+  "strict_check_prefix": {
+    "pr107": true,
+    "pr103": true,
+    "old1": true,
+    "old2": true
+  },
+  "strict_geometry_prefix": {
+    "pr107": true,
+    "pr103": true,
+    "old1": true,
+    "old2": true
+  },
+  "missing_checks": [
+    "webkit-mobile-390px: record comparison stays horizontally contained with reachable controls focus restoration and both themes at 200 percent text",
+    "webkit-mobile-390px: unsupported persisted record version refuses comparison and preserves the exact protected original",
+    "webkit-mobile-390px: unknown blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: mixed blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: duplicate blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: malformed blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: mode blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: missing blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: multiple blocks protected across header/keyboard/reset-cancel/copy/exact-file-export/reload",
+    "webkit-mobile-390px: repaired normal dataset supports editing/saving/reload; sibling preserved",
+    "webkit-mobile-390px: post-ready storage corruption blocks autosave and enters protection",
+    "webkit-mobile-390px: explicit confirmed reset alone clears protected synthetic data",
+    "webkit-mobile-390px: zero browser/runtime/network errors"
+  ],
+  "missing_geometry": [
+    {
+      "name": "webkit-mobile-390px-saved-record-comparison-light-200-percent",
+      "horizontalFit": "passed",
+      "retained": false
+    },
+    {
+      "name": "webkit-mobile-390px-saved-record-comparison-dark-200-percent",
+      "horizontalFit": "passed",
+      "retained": false
+    },
+    {
+      "name": "webkit-mobile-390px-protected-light",
+      "horizontalFit": "passed",
+      "retained": false
+    },
+    {
+      "name": "webkit-mobile-390px-protected-light-large-text",
+      "horizontalFit": "passed",
+      "retained": false
+    },
+    {
+      "name": "webkit-mobile-390px-protected-dark",
+      "horizontalFit": "passed",
+      "retained": false
+    },
+    {
+      "name": "webkit-mobile-390px-protected-dark-large-text",
+      "horizontalFit": "passed",
+      "retained": true
+    },
+    {
+      "name": "webkit-mobile-390px-normal-memos-after-repair",
+      "horizontalFit": "passed",
+      "retained": true
+    }
+  ],
+  "missing_png": [
+    "webkit-mobile-390px-normal-memos-after-repair.png",
+    "webkit-mobile-390px-protected-dark-large-text.png"
+  ]
+}

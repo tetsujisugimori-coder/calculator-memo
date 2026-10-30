@@ -690,3 +690,9 @@ The added acceptance group reuses the existing formula-library delete/cancel con
 Activation evidence separates monotonic pre-dispatch/post-dispatch/touch-observation timestamps from the total wrapper time. Quote, audit-storage, fixed-record, and record-comparison stages now have separate boundaries; earlier `formula-calculation-quotes` totals included all four. Stage resource snapshots record their own observation/persist costs and visible Linux descendant-process counters separately from Node resource usage. Missing `/proc` or cgroup observations remain explicitly unavailable. Raw CPU ticks are not seconds; RSS sums are not unique memory.
 
 The local CSS contrast is diagnostic evidence, not a formal whole-suite result. All initial timeouts and the predeclared matrix outcomes remain in [the repair timing record](../docs/maintenance/pr93-gui-repair-20261026/webkit-timing.md). The nested-stack visual blur change mitigates an observed actionability-delay contribution; exact low-level WebKit/environment causes remain unknown. Final CI must still complete every condition and artifact contract on the final HEAD.
+
+## 独立バックアップGUI（PR #107）
+
+`verify-pr-gui.yml` の `backup` job は正式 `gui` job に依存しない。正式GUIの失敗/timeoutと独立して8条件を実行し、`pr-backup-<HEAD>-<attempt>` にSHA・配信provenance・ケース別進捗・要求後PNG・ログを保存する。正式の1128/592/132に加算しない。job15分、GUI5分、再試行なし、途中記録や8件未満は成功ではない。
+
+ローカルはPages build後 `node e2e/run-backup-gui.mjs`。専用4173番が使用済みなら停止し、既存serverを再利用しない。tracked dirty状態はローカルprovenanceに明記し、CIでは拒否。各contextが配信SHAを照合。追加workflow契約は `node --test e2e/backup-ci.node-test.mjs`（既存46契約と別集計）。
