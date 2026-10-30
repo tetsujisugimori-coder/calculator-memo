@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-30 (JST): 安全なJSON全体復元（Issue #108）
+
+- #107統合main `c116b428341a5b7883012787c47dd76a75fc39a8`を取得して開始。入力・rawの厳密JSON/重複キー検証、補正除外の拒否、現在との比較、独立immutable copy読戻し、明示承認、共有lock・世代/原文照合・書込後照合を追加。[設計と制限](docs/design/json-restore.md)。
+- 復旧コピー8slot/合計4Mi UTF-16上限。既存copy上書き・自動削除・自動rollbackなし。上限/検証失敗では停止し、UNKNOWNを成功にしない。通常export対象はdataキー、recoveryは個別exportに分離。
+- 従来は起動直後に未変更データも再serializeしていたため、clean baselineでは保存しない局所変更を行い、復元原文の空白・未知巨大数値字句を維持。通常編集の保存形式/計算/確認記録は変更しない。
+- RED→GREENと最終HEADの単体・契約・lint・型・両build、独立restore8条件/backup8回帰・正式GUI・独立レビューの実測はPR記録に記す。未実行・未完走を成功扱いしない。実機iPhone/VoiceOver/OS文字拡大/端末保存完了は未検証。
+- 関連: [Issue #108](https://github.com/tetsujisugimori-coder/calculator-memo/issues/108)。Draft PR作成前。merge/Ready/auto-merge/公開はしない。
+
+
 ## 2026-10-30 (JST): PR #107 状態表示・独立GUIの限定再検証
 
 - 従来: バックアップGUIは正式GUIの後段で、30分timeout時にskip。変更: 独立job（15分、GUI5分、8条件）と別artifactへ分離し、正式jobの契約・30分・3workersは不変更。最終push時の既定回帰1回のみ、無条件rerunなし。[事前計画](docs/maintenance/pr107-backup-recheck-20261030/plan.md)。
