@@ -20,7 +20,7 @@
 
 合計4 Mi UTF-16コード単位（record JSONの長さ）、最大8件、各原文2 Miまで。ブラウザの実際のquotaはこの上限とは異なり、上限未満でも失敗し得る。空き不足、破損/未知record、読取失敗、set失敗、読戻し不一致ではデータキー上書きを拒否する。実行直前にもコピーのrecord文字列と現在rawの一致を確認する。ダウンロード開始や承認ボタンでこの条件を迂回できない。
 
-コピーはブラウザ保存が消去されるまで無期限保持し、自動清掃・削除UIは設けない。満杯なら今回の復元を停止し、古いコピーを勝手に捨てない。私的な原文を含むため、共有端末やサイトデータ管理に注意する。これは別キーへの保全であり、別の物理媒体への永続保証ではない。サイトデータの全消去・端末故障・保存領域自体の喪失では現データと同時に失われ得る。
+コピーは利用者の明示個別削除またはブラウザ保存の消去まで保持する。Issue #110で[保全コピー管理](recovery-copy-manager.md)を追加した。従来の「削除UIなし」から、対象確認・別承認・直前照合・1キー削除・読戻しを備えた管理へ変更し、自動清掃は引き続き行わない。満杯なら今回の復元を停止し、古いコピーを勝手に捨てない。私的な原文を含むため、共有端末やサイトデータ管理に注意する。これは別キーへの保全であり、別の物理媒体への永続保証ではない。サイトデータの全消去・端末故障・保存領域自体の喪失では現データと同時に失われ得る。
 
 再起動後も「保持中の復旧コピー」から各原文を既存backup形式で個別にダウンロード要求できる。正常なコピーは同じ入力検証・全体復元手順で戻せる。未知/破損のコピーは証拠として書き出せるが自動修復や復元の許可とはしない。raw:nullはキー欠落の記録であり復元用JSONはない。ダウンロードイベントは端末への保存完了を証明しない。
 
@@ -43,3 +43,7 @@ localStorageにCAS/全体transactionはない。古いクライアント、直�
 ネイティブinput type=fileとFile読取り、Blob/downloadを使い、File System Access APIやクラウド送信に依存しない。[Appleの互換性文書](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/CreatingContentforSafarioniPhone/CreatingContentforSafarioniPhone.html) はiOSのファイル入力対応を説明し、[Safari 18.4のWebKit発表](https://webkit.org/blog/16574/webkit-features-in-safari-18-4/)にもファイル入力機能が記載される。これは現在の実機/ファイル提供元の動作確認の代替ではない。読取不能時は端末内へファイルを保存して再選択できるが、その成功は実機で未検証。
 
 独立GUIはChromium/WebKit×375/390×light/darkの8条件、CSS200%、touch、プレビュー/比較/保全/承認/成功・失敗、長い名前、横幅、44px目安を検証する。正式GUIの6条件・1128検査・592geometry・132PNG・touch各1337・3workers・30分は不変更。既知WebKit遅延はIssue #105で分離する。実機iPhone Safari、VoiceOver、OS文字拡大、OSファイルピッカー、端末保存完了、長期保持は未検証。実測・最終HEAD・成果物・独立レビューはPR記録で示す。
+
+## 保全コピー管理との協調
+
+復元画面の生存中はshared recovery-session Web Lockで保全copy利用期間を保護する。管理画面の削除は同lockのexclusive ifAvailableと従来storage write lockを必要とし、復元画面を開いた別タブがある場合は削除しない。Web Locksがなければ復元の従来queue fallbackは維持するが新しい削除は不可。非協調の旧clientを含む万能の保護ではない。既存個別書出しも管理側と同じ既存backup v1生成/原文照合helperを再利用する。
