@@ -1,5 +1,25 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-01 (JST): PR #113 固定引用の3px横はみ出し原因実証と局所修正
+
+- [Issue #112](https://github.com/tetsujisugimori-coder/calculator-memo/issues/112) / [Draft PR #113](https://github.com/tetsujisugimori-coder/calculator-memo/pull/113)。開始HEAD730d55e/tree0b93247、main2549c8cをGitHubと照合。Libraryの承認済み依頼全文278行をこのexecutorで読んだ。
+- 元run41192402203/artifact13040192575の完全ZIP digest・CRCを確認し、traceのUUID2件・日時・入力・保存状態を試験側だけで固定。main/PR同環境の挿入→取消→再挿入で391/388を双方再現した。
+- 原因は引用ID/日時の段落内U+3000全角空白の行末超過。段落352に対しscroll373、右padding18を越える3px。閉じdetails非表示では不変、当該段落除去またはline-break:anywhereで388/388、復元で391/388。巨大grid幅を原因とした推測を採用しなかった。
+- 製品は当該pのclassとそのline-breakだけ変更。独立固定fixtureの同一期待値でRED exit1→GREEN exit0、保存raw一致・アプリset/remove/clear各0。Ch/WK×375/390×両theme CSS200%8/8も提出前dirty版で完了。[詳細・保持証拠](docs/maintenance/pr113-quote-overflow-20261101/README.md)。
+- 正式GUI6/1128/592/132/3workers/30分と既存2480単体・57契約を保持し、独立quote jobを追加。lint・型・両build成功。単体初回の既存例CRLF差1失敗は保全し、Git正本LFで再確認。最終HEAD CI・成果物・独立レビュー結果はPRへ追補し、旧結果を新版成功へ流用しない。
+- 候補4325195/run41217286703の新quote jobはANSI色コード付きVite出力のraw URL照合で準備待機失敗（ブラウザ測定0件）。失敗artifact13048114500のdigest/CRCを保持し、診断だけへ既存正式scenarioと同じ色コード除去を追加。待機上限・正式GUI・製品修正は不変。補正commit後の全CIを新最終HEADとして判定する。
+- Space旧2失敗UNKNOWN、実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証を維持。preview read-only・保存境界不変。Issue105投稿、Draft解除、merge/auto-merge/main push/公開は行わない。
+
+## 2026-10-31 (JST): JSONバックアップの選択復元プレビュー第1段階（Issue #112）
+
+- main `2549c8c15d9a5e4cea052eabc0020ad03104b49a` と PR #107/#109/#111 の統合を現物確認し、独立checkout・専用 `feat/selective-restore-preview` で開始。依頼全文を [Issue #112](https://github.com/tetsujisugimori-coder/calculator-memo/issues/112) へ掲載し、読戻し全文一致を確認。
+- 読み取り専用の分類・個別詳細・項目比較・名前空間別参照点検・一時選択を実装対象とした。[事前設計と26受入条件](docs/design/selective-restore-preview.md)。実際の部分復元・保存形式変更・snapshot更新・ID修正・永続選択は対象外。
+- 既存正式GUI契約を保持し、固有8条件と別評価する。PR #111の正式未完走/Issue #105は固有受入PASSで解消扱いにしない。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。
+- 環境: cloud Linux/Node 24.22.1。初回npmは既定cache書込不可で失敗、作業用 `/tmp` cacheで固定依存723packages取得成功。CIのUbuntu24.04/Node22.13.0とは区別する。
+- 新規core35/UI13、全単体115 files・2480件PASS。独立レビューの未知分類0件/数値丸め偽SAME/大量参照DOM懸念は局所修正し、RED→GREENと独立再probeを確認。参照は20件ページ、待機autosaveと旧file同一ターン操作も失効する。[検証記録](docs/maintenance/selective-preview-20261031/verification.md)。
+- 提出前treeのlint・型・両build・契約と、最終HEADのCI/8条件・正式GUI結果はPRに区別して記録する。未実施/未完走をPASSとしない。Draft PRは作成後に相互参照する。main変更・merge・auto-merge・Draft解除・公開は行わない。
+
+
 ## 2026-10-31 (JST): 復旧用保全コピーの管理（Issue #110）
 
 - PR #107/#109統合済みmain `4f3713beea68566ed716280c487b885c5ca5dd5b` から専用branchで開始。依頼全文を [Issue #110](https://github.com/tetsujisugimori-coder/calculator-memo/issues/110) へ保存・全文照合。

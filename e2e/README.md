@@ -1,5 +1,11 @@
 # PR GUI regression
 
+## PR #113 fixed quote overflow regression
+
+`node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control` replays the exact synthetic storage, two quote UUIDs/timestamps and 1844-character inserted bodies from run 41192402203. The diagnostic fixes generation only in the test page; production UUIDs, clocks and storage formats remain unchanged. It records visible versus closed-details geometry/styles, all-character ranges and isolated temporary causal interventions. The repaired paragraph alone receives `line-break:anywhere`; restoring its old line breaking must expose overflow in the fixed non-touch 390px condition.
+
+`node e2e/run-quote-overflow.mjs` adds eight independent native emulated-touch cases: Chromium/WebKit × 375/390 × light/dark at CSS200%. Each checks the unchanged strict horizontal-fit predicate and every inserted byte, two UUID calls, zero app localStorage set/remove/clear calls, and exact stored values. An owned loopback preview returns HEAD/tree/dirty and bundle digest identity. The independent `quote-overflow` job uses pinned dependencies and preserves its results, traces and PNGs in a separate artifact. It does not replace the formal six scenarios, 1128 checks, 592 geometry points, 132 PNGs, three workers, 30-minute job or successful-formal-trace suppression. Physical-device limitations remain unchanged. [Cause and local evidence](../docs/maintenance/pr113-quote-overflow-20261101/README.md).
+
 ## JSONバックアップの別枠GUI（2026-10-30 JST）
 
 既存の1128検査群・592 geometry・132 PNG・touch各1337・6条件・3 workers・30分は変更しない。別段階 `backup-gui` で Chromium/WebKit の375・390pxとlight/darkの計8条件を、CSS 200%・touchで検査する。合成データの出力JSON原文と保存前後、日時付きfilename、44px操作、横はみ出し、別pageの変更による失効を確認する。別段階の結果は既存件数に加算せず、保存結果・ログをCI artifactsで確認する。ダウンロードイベントは端末の保存完了やiPhone実機Safariを意味しない。失敗時の表示・未保存状態との非干渉・同一ターンABAは別の単体／統合テストで扱う。
@@ -702,3 +708,11 @@ The local CSS contrast is diagnostic evidence, not a formal whole-suite result. 
 `recovery` job は正式/backup/restore job に依存せず、同じ固定PR HEADでChromium/WebKit ×375/390 ×light/dark（CSS200%）の8条件を検証する。空一覧・複数/詳細・原文完全一致download・削除承認/取消/Enter・別ページの復元session lock拒否・実storage通知失効・対象だけの削除と原文/他コピー不変・容量再計算・不正/未知record・読取不能UNKNOWN・削除後読戻し不一致の終端UNKNOWN（再取得禁止、無補正、他保存不変）をnative touchで操作する。各条件の確認画面・結果・終端UNKNOWNのPNG3枚を保存する。実機iPhone/VoiceOver/OS保存完了の証明ではない。
 
 Pages build後 `node e2e/run-recovery-gui.mjs`。専用4193番を所有し、配信provenanceとHEADを照合。job15分/GUI5分で、不完全8条件・失敗・signal終了は非0。`pr-recovery-<HEAD>-<attempt>` に条件ごとの結果・PNG・provenance・stageログを保存（7日）。追加契約は `node --test e2e/recovery-ci.node-test.mjs`。正式1128検査・592 geometry・132PNG等へ加算しない。
+
+## Read-only selection restore preview (Issue #112)
+
+`node e2e/run-selection-preview-gui.mjs` owns a fresh loopback server on 4194, verifies served provenance against the exact checkout SHA, and drives `selection-preview-mobile.mjs`. The independent `selection-preview` PR job uses the same pinned Node/Playwright/browser setup, a 15-minute job boundary, and a five-minute GUI boundary. It does not replace or depend on formal/backup/restore/recovery jobs. The existing formal six conditions, 1128 checks, 592 geometry points, 132 PNGs, three workers and 30-minute contract remain unchanged.
+
+Eight fresh synthetic-only contexts cover Chromium/WebKit × 375/390 CSS px × light/dark, all with 200% root font-size and native emulated touch activation. They check valid and rejected upload, category list, literal escaped details, same/different/absent comparisons, missing backup reference, temporary selection/unselection, replacement-file invalidation, storage notification, real second-tab and same-tab invalidation, explicit re-acquisition, read failure UNKNOWN, long text layout, and absence of any restore execution action. An application-page Storage method spy must observe **zero** setItem/removeItem/clear calls across opening, inspecting, comparing, selecting, errors and closing. Synthetic writer-page changes and the same-tab test fixture write are explicitly outside that spy; final exact primary/recovery/unrelated values must match the initial fixture.
+
+Artifacts: `selection-preview-results.json`, `selection-preview-provenance.json`, `selection-preview-ci-outcomes.json`, owned-server log and selected/UNKNOWN representative PNGs. Incomplete cases or missing engines fail the runner; a static contract success is not browser success. Local dirty work is labelled dirty and is not final-HEAD evidence. CSS root-size stress and emulated touches are not physical iPhone Safari, VoiceOver, native OS text-size or OS-file-save verification.

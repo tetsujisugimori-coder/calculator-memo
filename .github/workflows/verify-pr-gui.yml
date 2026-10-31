@@ -307,3 +307,128 @@ jobs:
           retention-days: 7
           compression-level: 0
           if-no-files-found: error
+
+  selection-preview:
+    name: Selection restore preview mobile GUI (independent)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BRANCH: ${{ github.head_ref }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      CI: "true"
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Install locked dependencies and build
+        id: selection-preview_build
+        timeout-minutes: 4
+        run: |
+          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts
+          node e2e/run-stage.mjs selection-preview-build npm run build:pages
+          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts
+      - name: Install fixed browsers with bounded setup
+        id: selection-preview_browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Selection preview workflow contracts
+        id: selection-preview_contract
+        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs
+      - name: Eight selection-preview mobile cases (five-minute limit)
+        id: selection-preview_gui
+        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs
+      - name: Preserve independent outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          const record = { job: 'selection-preview', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };
+          writeFileSync('gui-evidence/selection-preview-ci-outcomes.json', JSON.stringify(record, null, 2) + '\n');
+          NODE
+          node e2e/evidence-inventory.mjs
+      - name: Upload independent selection-preview evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+  quote-overflow:
+    name: Fixed quote overflow GUI (independent)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BRANCH: ${{ github.head_ref }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      CI: "true"
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Install locked dependencies and build
+        id: quote-overflow_build
+        timeout-minutes: 4
+        run: |
+          node e2e/run-stage.mjs quote-overflow-app-install npm ci --ignore-scripts
+          node e2e/run-stage.mjs quote-overflow-build npm run build:pages
+          node e2e/run-stage.mjs quote-overflow-gui-install npm ci --prefix e2e --ignore-scripts
+      - name: Install fixed browsers with bounded setup
+        id: quote-overflow_browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs quote-overflow-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs quote-overflow-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Quote diagnostic syntax
+        id: quote-overflow_contract
+        run: node e2e/run-stage.mjs quote-overflow-contract node --check e2e/quote-overflow.mjs
+      - name: Fixed non-touch quote and eight mobile cases (five-minute limits)
+        id: quote-overflow_gui
+        run: |
+          GUI_EVIDENCE_DIR=gui-evidence/quote-overflow/narrow node e2e/run-stage.mjs quote-overflow-narrow timeout --signal=TERM --kill-after=10s 300s node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control
+          node e2e/run-stage.mjs quote-overflow-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-quote-overflow.mjs
+      - name: Preserve independent outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          const record = { job: 'quote-overflow', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };
+          writeFileSync('gui-evidence/quote-overflow-ci-outcomes.json', JSON.stringify(record, null, 2) + '\n');
+          NODE
+          node e2e/evidence-inventory.mjs
+      - name: Upload independent quote-overflow evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-quote-overflow-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
