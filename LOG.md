@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-31 (JST): JSONバックアップの選択復元プレビュー第1段階（Issue #112）
+
+- main `2549c8c15d9a5e4cea052eabc0020ad03104b49a` と PR #107/#109/#111 の統合を現物確認し、独立checkout・専用 `feat/selective-restore-preview` で開始。依頼全文を [Issue #112](https://github.com/tetsujisugimori-coder/calculator-memo/issues/112) へ掲載し、読戻し全文一致を確認。
+- 読み取り専用の分類・個別詳細・項目比較・名前空間別参照点検・一時選択を実装対象とした。[事前設計と26受入条件](docs/design/selective-restore-preview.md)。実際の部分復元・保存形式変更・snapshot更新・ID修正・永続選択は対象外。
+- 既存正式GUI契約を保持し、固有8条件と別評価する。PR #111の正式未完走/Issue #105は固有受入PASSで解消扱いにしない。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。
+- 環境: cloud Linux/Node 24.22.1。初回npmは既定cache書込不可で失敗、作業用 `/tmp` cacheで固定依存723packages取得成功。CIのUbuntu24.04/Node22.13.0とは区別する。
+- 新規core35/UI13、全単体115 files・2480件PASS。独立レビューの未知分類0件/数値丸め偽SAME/大量参照DOM懸念は局所修正し、RED→GREENと独立再probeを確認。参照は20件ページ、待機autosaveと旧file同一ターン操作も失効する。[検証記録](docs/maintenance/selective-preview-20261031/verification.md)。
+- 提出前treeのlint・型・両build・契約と、最終HEADのCI/8条件・正式GUI結果はPRに区別して記録する。未実施/未完走をPASSとしない。Draft PRは作成後に相互参照する。main変更・merge・auto-merge・Draft解除・公開は行わない。
+
+
 ## 2026-10-31 (JST): 復旧用保全コピーの管理（Issue #110）
 
 - PR #107/#109統合済みmain `4f3713beea68566ed716280c487b885c5ca5dd5b` から専用branchで開始。依頼全文を [Issue #110](https://github.com/tetsujisugimori-coder/calculator-memo/issues/110) へ保存・全文照合。

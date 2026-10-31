@@ -47,3 +47,7 @@ localStorageにCAS/全体transactionはない。古いクライアント、直�
 ## 保全コピー管理との協調
 
 復元画面の生存中はshared recovery-session Web Lockで保全copy利用期間を保護する。管理画面の削除は同lockのexclusive ifAvailableと従来storage write lockを必要とし、復元画面を開いた別タブがある場合は削除しない。Web Locksがなければ復元の従来queue fallbackは維持するが新しい削除は不可。非協調の旧clientを含む万能の保護ではない。既存個別書出しも管理側と同じ既存backup v1生成/原文照合helperを再利用する。
+
+## 読み取り専用の選択復元プレビューとの区別
+
+[第1段階の選択復元プレビュー](selective-restore-preview.md)は一覧・詳細・比較・参照点検・一時候補選択だけを行い、全体復元の保全・承認・置換経路を呼び出さない。UNKNOWN項目の閲覧を許しても全体復元の検証条件は緩めない。候補選択は実行承認でも復元可能性の保証でもない。
