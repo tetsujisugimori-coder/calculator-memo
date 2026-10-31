@@ -1,5 +1,11 @@
 # PR GUI regression
 
+## PR #113 fixed quote overflow regression
+
+`node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control` replays the exact synthetic storage, two quote UUIDs/timestamps and 1844-character inserted bodies from run 41192402203. The diagnostic fixes generation only in the test page; production UUIDs, clocks and storage formats remain unchanged. It records visible versus closed-details geometry/styles, all-character ranges and isolated temporary causal interventions. The repaired paragraph alone receives `line-break:anywhere`; restoring its old line breaking must expose overflow in the fixed non-touch 390px condition.
+
+`node e2e/run-quote-overflow.mjs` adds eight independent native emulated-touch cases: Chromium/WebKit × 375/390 × light/dark at CSS200%. Each checks the unchanged strict horizontal-fit predicate and every inserted byte, two UUID calls, zero app localStorage set/remove/clear calls, and exact stored values. An owned loopback preview returns HEAD/tree/dirty and bundle digest identity. The independent `quote-overflow` job uses pinned dependencies and preserves its results, traces and PNGs in a separate artifact. It does not replace the formal six scenarios, 1128 checks, 592 geometry points, 132 PNGs, three workers, 30-minute job or successful-formal-trace suppression. Physical-device limitations remain unchanged. [Cause and local evidence](../docs/maintenance/pr113-quote-overflow-20261101/README.md).
+
 ## JSONバックアップの別枠GUI（2026-10-30 JST）
 
 既存の1128検査群・592 geometry・132 PNG・touch各1337・6条件・3 workers・30分は変更しない。別段階 `backup-gui` で Chromium/WebKit の375・390pxとlight/darkの計8条件を、CSS 200%・touchで検査する。合成データの出力JSON原文と保存前後、日時付きfilename、44px操作、横はみ出し、別pageの変更による失効を確認する。別段階の結果は既存件数に加算せず、保存結果・ログをCI artifactsで確認する。ダウンロードイベントは端末の保存完了やiPhone実機Safariを意味しない。失敗時の表示・未保存状態との非干渉・同一ターンABAは別の単体／統合テストで扱う。

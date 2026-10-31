@@ -533,6 +533,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .quote-tools pre, .quote-tools code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
 .quote-tools select { display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; }
 .quote-tools li { min-width: 0; }
+.quote-identity { line-break: anywhere; }
 .quote-tools button { max-width: 100%; white-space: normal; }
 /* Citation snapshots remain readable without horizontal scrolling in saved previews. */
 .formula-report-preview pre:has(> code[data-language="text"]),
