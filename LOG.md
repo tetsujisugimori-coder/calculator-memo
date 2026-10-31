@@ -1,5 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-10-31 (JST): 復旧用保全コピーの管理（Issue #110）
+
+- PR #107/#109統合済みmain `4f3713beea68566ed716280c487b885c5ca5dd5b` から専用branchで開始。依頼全文を [Issue #110](https://github.com/tetsujisugimori-coder/calculator-memo/issues/110) へ保存・全文照合。
+- 一覧・詳細・既存形式の個別JSON出力・8slot/record UTF-16容量・明示個別削除を追加。[設計/25条件対応](docs/design/recovery-copy-manager.md)。現在data/非対象copyを書き換えず、外側同定不能・読取不完全・競合は操作停止。削除後不明はUNKNOWNとして自動再試行や補正をしない。
+- 復元開室中shared recovery-session lockと削除exclusive ifAvailable、既存write lockを併用。閉室の冪等解放・self-deadlockのない取得順を独立確認。非協調旧client、通知前ABA、CASなし、永続化の限界は残る。Web Locksなしは削除不可（従来復元fallbackは維持）。
+- 管理画面中は通常保存を凍結。別タブ通知・同一タブ世代/通知で確認と承認を失効。Enter・連打の誤削除を防ぎ、UNKNOWN後は保存保護を継続。
+- ローカル全単体2432 PASS、独立安全レビュー67 PASSで新規P1/P2なし。上限超過rawの容量計算前allocationは指摘候補を局所修正。初回GUI40px closeは44pxへ修正。既存0.1秒契約初回1失敗/単独成功を保持し、期待緩和なし。
+- 提出経路: ローカルcommit後のCLI pushは資格情報未構成で失敗（書込なし）。認可済みGitHubコネクタで同一treeをcommit/専用枝へ提出し、API由来commitのSHAと元ローカルcommitを区別してfetch照合する。認証設定変更・秘密情報取得・force pushなし。
+- 最終HEADのlint/型/両build・独立recovery/backup/restore・正式GUIの結果はPRへ区別して記録。実機iPhone Safari、VoiceOver、OS文字拡大、端末保存完了は未検証。正式GUI契約は変更しない。実データ操作・merge/Ready/auto-merge/公開なし。
+
+
 ## 2026-10-30 (JST): 安全なJSON全体復元（Issue #108）
 
 - #107統合main `c116b428341a5b7883012787c47dd76a75fc39a8`を取得して開始。入力・rawの厳密JSON/重複キー検証、補正除外の拒否、現在との比較、独立immutable copy読戻し、明示承認、共有lock・世代/原文照合・書込後照合を追加。[設計と制限](docs/design/json-restore.md)。

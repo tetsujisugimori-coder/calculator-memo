@@ -570,3 +570,21 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .restore-comparison th, .restore-comparison td { padding: .4rem .2rem; text-align: left; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
 .restore-approval { display: flex; align-items: center; gap: .6rem; min-height: 44px; margin-block: 1rem; }
 .restore-approval input { flex: 0 0 24px; width: 24px; height: 24px; }
+
+/* Recovery management uses vertical, wrapping read-only cards at mobile/200% text. */
+.recovery-manager, .recovery-manager section, .recovery-manager article { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.recovery-manager article, .recovery-confirmation { border: 1px solid var(--line); border-radius: .5rem; padding: .65rem; margin-block: .75rem; }
+.recovery-manager h3, .recovery-manager p, .recovery-manager dd { overflow-wrap: anywhere; white-space: normal; }
+.recovery-fields { display: grid; gap: .5rem; min-width: 0; }
+.recovery-fields dt { font-weight: 600; }
+.recovery-fields dd { margin: .2rem 0 0; }
+.recovery-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.recovery-manager button { min-height: 44px; min-width: 44px; max-width: 100%; height: auto; white-space: normal; overflow-wrap: anywhere; padding-block: .6rem; }
+.recovery-delete-approval { display: flex; align-items: center; gap: .6rem; min-height: 44px; margin-block: 1rem; }
+.recovery-delete-approval input { flex: 0 0 24px; width: 24px; height: 24px; }
+
+/* The management dialog header is outside its content wrapper. */
+.modal:has(> .modal-content > .recovery-manager) > .modal-header > .icon-button { min-width: 44px; min-height: 44px; flex-shrink: 0; }
+/* Do not let Japanese closing punctuation hang outside narrow 200% text fields. */
+.recovery-fields > div, .recovery-fields dt, .recovery-fields dd { min-width: 0; max-width: 100%; }
+.recovery-fields dd { line-break: anywhere; padding-inline-end: .5em; }

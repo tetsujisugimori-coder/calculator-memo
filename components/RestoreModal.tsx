@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { collectBackup, MAX_RAW_CODE_UNITS, serializeBackup, type BackupResult } from '../lib/backup';
+import { collectBackup, MAX_RAW_CODE_UNITS, type BackupResult } from '../lib/backup';
 import { STORAGE_KEY, withStorageWriteLock } from '../lib/storage';
 import { MAX_RESTORE_FILE_BYTES, validateRestoreBackup } from '../lib/restore-validation';
 import { preserveRestoreSource, readRecoveryCopies, restoreRaw, type RecoveryCopy } from '../lib/restore-storage';
+import { holdRecoverySession, exportRecoveryCopy, readRecoverySnapshot } from '../lib/recovery-manager';
 import type { StoredData } from '../lib/types';
 import { Modal } from './Modal';
 
@@ -22,6 +23,12 @@ export function RestoreModal({ onClose, blockedReason, generation, canApply, onA
   const [problem, setProblem] = useState('');
   const [terminal, setTerminal] = useState(false);
   const [invalid, setInvalid] = useState(true);
+  const [sessionReady, setSessionReady] = useState(false);
+  const sessionValid = useRef(false);
+  useEffect(() => {
+    const release = holdRecoverySession(ok => { sessionValid.current = ok; setSessionReady(ok); if (!ok) setProblem('復元用の保全利用ロックを取得できません。操作を停止しました。'); });
+    return () => { sessionValid.current = false; release(); };
+  }, []);
   const current = useRef<Preview | null>(null);
   const preserved = useRef<RecoveryCopy | null>(null);
   const token = useRef(0); const approval = useRef(false); const working = useRef(false); const finished = useRef(false);
@@ -45,7 +52,7 @@ export function RestoreModal({ onClose, blockedReason, generation, canApply, onA
     if (current.current && current.current.generation !== generation && !finished.current)
       invalidate('アプリ状態が変わったため確認を失効しました。この画面を閉じて開き直し、ファイルを選択してください。');
   }, [generation]);
-  const valid = (p: Preview) => alive.current && !finished.current && token.current === p.token && current.current === p && callbacks.current.canApply();
+  const valid = (p: Preview) => sessionValid.current && alive.current && !finished.current && token.current === p.token && current.current === p && callbacks.current.canApply();
   const select = async (file: File | undefined) => {
     if (working.current || finished.current) return;
     invalidate(''); setPreview(null);
@@ -105,12 +112,13 @@ export function RestoreModal({ onClose, blockedReason, generation, canApply, onA
   const exportCopy = (item: RecoveryCopy) => {
     let url: string | null = null;
     try {
-      if (localStorage.getItem(item.key) !== item.serialized) throw Error('changed');
       if (item.raw === null) { setMessage('この復旧コピーは「保存キーなし」を記録しています。復元用データのJSONはありません。'); return; }
-      const result = collectBackup({ getItem: () => item.raw });
-      if (result.status !== 'ready') throw Error('unavailable');
-      url = URL.createObjectURL(new Blob([serializeBackup(result.backup)], { type: 'application/json;charset=utf-8' }));
-      const a = document.createElement('a'); a.href = url; a.download = `calculator-memo-recovery-${item.createdAt.replace(/[:.]/g, '-')}.json`; document.body.append(a); a.click(); a.remove();
+      const snapshot = readRecoverySnapshot(localStorage);
+      if (snapshot.slots.find(s => s.key === item.key)?.serialized !== item.serialized) throw Error('changed');
+      const result = exportRecoveryCopy(localStorage, snapshot, item.key, () => alive.current);
+      if (!result.ok) throw Error(result.message);
+      url = URL.createObjectURL(new Blob([result.json], { type: 'application/json;charset=utf-8' }));
+      const a = document.createElement('a'); a.href = url; a.download = result.filename; document.body.append(a); a.click(); a.remove();
       setMessage('復旧コピーのダウンロードを要求しました。端末への保存完了は確認できません。ファイルを確認してください。');
     } catch { setProblem('復旧コピーの読取・書出しを確認できません。既存コピーは削除していません。'); }
     finally { if (url) { const value = url; window.setTimeout(() => URL.revokeObjectURL(value), 60_000); } }
@@ -135,15 +143,15 @@ export function RestoreModal({ onClose, blockedReason, generation, canApply, onA
           {countRows.map(([key,label]) => <tr key={key}><th>{label}</th><td>{currentEntry?.counts?.[key]?.toLocaleString() ?? 'UNKNOWN'}</td><td>{preview.candidate.counts[key].toLocaleString()}</td></tr>)}
         </tbody></table>
         <p>構造検証は数学的正しさ・参照先の現存性・真正性の証明ではありません。</p>
-        <button type="button" className="button-secondary" disabled={busy || terminal || !!blockedReason || invalid} onClick={() => void preserve()}>現在データを保全する</button>
+        <button type="button" className="button-secondary" disabled={busy || terminal || !!blockedReason || invalid || !sessionReady} onClick={() => void preserve()}>現在データを保全する</button>
         <p>保全状態: {copy ? '独立コピー読戻し確認済み（実行直前にも再確認）' : '未確認 — 復元不可'}</p>
         <label className="restore-approval"><input type="checkbox" checked={approved} disabled={!copy || busy || terminal || !!blockedReason} onChange={e => { approval.current = e.target.checked; setApproved(e.target.checked); }} />全体置換と保全状態を確認し、復元を承認します</label>
-        <button type="button" className="button-primary" disabled={!copy || !approved || busy || terminal || !!blockedReason} onClick={() => void execute()}>復元を実行する</button>
+        <button type="button" className="button-primary" disabled={!copy || !approved || busy || terminal || !!blockedReason || !sessionReady} onClick={() => void execute()}>復元を実行する</button>
         <p>Enterでは実行しません。ボタンをタップするか、フォーカスしてSpaceで明示操作してください。</p>
       </section>}
       {busy && <p role="status">処理中です。重複操作は受け付けません。</p>}
       {problem && <p role="alert">{problem}</p>}{message && <p role="status">{message}</p>}
-      {copies.length > 0 && <section aria-label="復旧コピー"><h3>保持中の復旧コピー</h3>{copies.map((item,i) => <div key={item.key}><p>{item.createdAt} — {item.raw === null ? '保存キーなし' : `${item.raw.length.toLocaleString()} UTF-16コード単位`}</p><button type="button" className="button-secondary" disabled={busy} onClick={() => exportCopy(item)}>復旧コピー {i+1} を書き出す</button></div>)}<p>正常なコピーは書き出したファイルを同じ検証手順で復元できます。破損・未知形式の原文は書出しによる保全だけを行い、自動修復しません。復旧コピーの削除機能はありません。</p></section>}
+      {copies.length > 0 && <section aria-label="復旧コピー"><h3>保持中の復旧コピー</h3>{copies.map((item,i) => <div key={item.key}><p>{item.createdAt} — {item.raw === null ? '保存キーなし' : `${item.raw.length.toLocaleString()} UTF-16コード単位`}</p><button type="button" className="button-secondary" disabled={busy} onClick={() => exportCopy(item)}>復旧コピー {i+1} を書き出す</button></div>)}<p>正常なコピーは書き出したファイルを同じ検証手順で復元できます。破損・未知形式の原文は書出しによる保全だけを行い、自動修復しません。個別削除と詳細確認は、この画面を閉じて「復旧コピーを管理」から行えます。</p></section>}
       <div className="modal-actions"><button type="button" className="button-secondary" disabled={busy} onClick={onClose}>閉じる</button></div>
     </div>
   </Modal>;

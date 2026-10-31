@@ -696,3 +696,9 @@ The local CSS contrast is diagnostic evidence, not a formal whole-suite result. 
 `verify-pr-gui.yml` の `backup` job は正式 `gui` job に依存しない。正式GUIの失敗/timeoutと独立して8条件を実行し、`pr-backup-<HEAD>-<attempt>` にSHA・配信provenance・ケース別進捗・要求後PNG・ログを保存する。正式の1128/592/132に加算しない。job15分、GUI5分、再試行なし、途中記録や8件未満は成功ではない。
 
 ローカルはPages build後 `node e2e/run-backup-gui.mjs`。専用4173番が使用済みなら停止し、既存serverを再利用しない。tracked dirty状態はローカルprovenanceに明記し、CIでは拒否。各contextが配信SHAを照合。追加workflow契約は `node --test e2e/backup-ci.node-test.mjs`（既存46契約と別集計）。
+
+## 独立保全コピー管理GUI（Issue #110）
+
+`recovery` job は正式/backup/restore job に依存せず、同じ固定PR HEADでChromium/WebKit ×375/390 ×light/dark（CSS200%）の8条件を検証する。空一覧・複数/詳細・原文完全一致download・削除承認/取消/Enter・別ページの復元session lock拒否・実storage通知失効・対象だけの削除と原文/他コピー不変・容量再計算・不正/未知record・読取不能UNKNOWN・削除後読戻し不一致の終端UNKNOWN（再取得禁止、無補正、他保存不変）をnative touchで操作する。各条件の確認画面・結果・終端UNKNOWNのPNG3枚を保存する。実機iPhone/VoiceOver/OS保存完了の証明ではない。
+
+Pages build後 `node e2e/run-recovery-gui.mjs`。専用4193番を所有し、配信provenanceとHEADを照合。job15分/GUI5分で、不完全8条件・失敗・signal終了は非0。`pr-recovery-<HEAD>-<attempt>` に条件ごとの結果・PNG・provenance・stageログを保存（7日）。追加契約は `node --test e2e/recovery-ci.node-test.mjs`。正式1128検査・592 geometry・132PNG等へ加算しない。
