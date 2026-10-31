@@ -574,8 +574,9 @@ async function exerciseFormulaQuotes(prefix) {
     await activate(report().getByRole("button", { name: "計算根拠を引用", exact: true }));
     await picker().getByLabel("引用する保存済み計算記録", { exact: true }).selectOption(JSON.stringify([memo.id, record.id]));
     await picker().getByLabel("引用するブロック", { exact: true }).selectOption("quote-result");
-    await expect(picker()).toContainText("-0");
-    await expect(picker()).not.toContainText("999");
+    // Assert recorded values, excluding acquisition timestamps and identifiers.
+    await expect(picker().locator(".evidence-block-values")).toContainText("-0");
+    await expect(picker().locator(".evidence-block-values")).not.toContainText("999");
     await activate(picker().getByRole("button", { name: "引用の挿入前プレビュー", exact: true }));
     await expect(picker().getByRole("region", { name: "引用の挿入前プレビュー", exact: true })).toContainText("quote-result");
     await inspectThemes(picker().getByRole("region", { name: "引用の挿入前プレビュー", exact: true }));
@@ -604,7 +605,7 @@ async function exerciseFormulaQuotes(prefix) {
   const beforeView = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
   await activate(tracking().getByRole("button", { name: "引用元の保存記録・ブロックを開く", exact: true }));
   const source = page.getByRole("dialog", { name: "引用元の保存記録・ブロック", exact: true });
-  await expect(source).toContainText("quote-result"); await expect(source).toContainText("-0"); await expect(source).not.toContainText("999");
+  await expect(source).toContainText("quote-result"); await expect(source.locator(".evidence-block-values")).toContainText("-0"); await expect(source.locator(".evidence-block-values")).not.toContainText("999");
   await activate(source.getByRole("button", { name: "引用元表示を閉じる", exact: true }));
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeView);
   await passed(prefix + ": saved calculation quote cancel insertion undo preview ordinary save reload and source block viewing preserve selected text negative zero and confirmation history in both themes at 200 percent");
@@ -625,7 +626,7 @@ async function exerciseFormulaQuotes(prefix) {
     await expect(selectedDifference()).toContainText("quote-result");
     await expect(selectedDifference()).toContainText("-0");
     await expect(selectedDifference()).toContainText("12");
-    await expect(comparison()).not.toContainText("999");
+    await expect(differences()).not.toContainText("999");
   };
   await openComparison();
   for (const theme of ["light", "dark"]) {

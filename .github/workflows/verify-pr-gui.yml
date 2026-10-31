@@ -411,6 +411,9 @@ jobs:
         run: |
           GUI_EVIDENCE_DIR=gui-evidence/quote-overflow/narrow node e2e/run-stage.mjs quote-overflow-narrow timeout --signal=TERM --kill-after=10s 300s node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control
           node e2e/run-stage.mjs quote-overflow-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-quote-overflow.mjs
+      - name: Acquisition timestamp collision RED GREEN and historical wrong-value control
+        id: quote_timestamp
+        run: GUI_EVIDENCE_DIR=gui-evidence/quote-timestamp node e2e/run-stage.mjs quote-timestamp node e2e/run-quote-timestamp-oracle.mjs
       - name: Preserve independent outcomes
         if: always()
         env:

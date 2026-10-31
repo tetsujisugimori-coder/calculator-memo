@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-01 (JST): PR #113 正式日時oracleの補正と有限対照
+
+- Issue #112 / Draft PR #113。基準94e657bから調査専用af47b42をpush。A run41250143451は基準94のWK390単独を588.859秒、188/98/22PNG/1337touch・exit0で完走。原本bytes・fixture実raw・全6903操作対・traceを別担当も独立照合した。[実測・原本digest・計画](docs/maintenance/pr113-webkit-20261101/README.md)。
+- 同HEAD正式E run41250143381はWK390が1039.141秒で188/98/22を完走したが、desktopの引用元dialog全体への999否定が取得日時.999Zに一致してexit1。971/1128・521/592・通常115/132PNG＋failure1を保全。A成功とE正式FAILを区別する。
+- 確認済みtest-side問題だけ最小補正。picker/sourceの値判定を単一BlockInfo、comparisonを両側を含む差分regionへ限定。固定.999Zで旧RED→補正GREEN、実内部値999の負対照（比較両側）reject、raw保持・app set/remove/clear0。製品・保存形式・参照ID・表示内容は変更しない。
+- CI責務分割案は根拠を評価したが、EもWK390完走のため資源競合の因果・分割必要性は未確定とし、未commit/未pushで保留。評価コード・レビュー・hash manifestをconsumerに保全し候補から除いた。正式6条件/1128checks/592geometry/132PNG/3workers/30分を維持する。
+- 既存2480/57は削減なし。次の候補では確認済みoracle修正と固定日時probe、A fixtureによる有限A2/B/C/D対照を行う。Windows AST4契約PASS、既存46は37pass/9Linux経路失敗、固定probe4ケースと比較両側負対照PASS。保留案の評価34契約は正式受入へ混ぜない。
+- 根拠をPR本文/コメント6550609404へ共有。独立prepushレビュー・lint/YAML/構文を確認し、最終HEADのUbuntu全試験・terminal・全成果物・最終独立レビューはこのcommitのChecks/PR最終報告へ追補する。旧成功を継承しない。
+- 旧取消理由はAPI注記で30m上限と確定。一方tap内部根因は未確定で、並列なら必ず未完走・分割が唯一解決とはしない。旧Space2件UNKNOWN、実機未検証、Draft/未マージ、Issue105新投稿禁止を維持。
+
 ## 2026-11-01 (JST): PR #113 WebKit390未完走の証拠保全と限定診断
 
 - Issue #112 / Draft PR #113。開始HEAD94e657b/tree583fc07、main2549c8c、local/origin/PR一致・cleanを確認。旧run41217834472の6成果物ZIP計71,224,548bytesをhash/CRC/全内部ファイルまで再検証し、全6 jobログとAPIを保全した。[詳細・manifest](docs/maintenance/pr113-webkit-20261101/README.md)。
