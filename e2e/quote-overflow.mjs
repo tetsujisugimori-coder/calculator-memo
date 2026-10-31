@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {stripVTControlCharacters} from 'node:util';
 import {chromium,webkit,expect} from '@playwright/test';
 import {spawn,execFileSync} from 'node:child_process';
 const [repoArg='.',label='quote-overflow']=process.argv.slice(2);
@@ -15,7 +16,7 @@ const result={label,sha:execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encodi
 Object.assign(result,{engine,width,hasTouch,themes,run:process.env.GITHUB_RUN_ID||'local',attempt:process.env.GITHUB_RUN_ATTEMPT||'1',playwright:JSON.parse(await fs.readFile(new URL('./node_modules/@playwright/test/package.json',import.meta.url),'utf8')).version,runner:{image:process.env.ImageOS,version:process.env.ImageVersion}});
 const port=4196, origin='http://127.0.0.1:'+port;
 const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','preview','--config','vite.pages.config.ts','--host','127.0.0.1','--port',String(port),'--strictPort'],{cwd:repo,stdio:['ignore','pipe','pipe']});
-let serverLog='';let serverReady=false;server.stdout.on('data',b=>{serverLog+=b;if(serverLog.includes(origin+'/calculator-memo/'))serverReady=true;});server.stderr.on('data',b=>serverLog+=b);
+let serverLog='';let serverReady=false;server.stdout.on('data',b=>{serverLog+=b;if(stripVTControlCharacters(serverLog).includes(origin+'/calculator-memo/'))serverReady=true;});server.stderr.on('data',b=>serverLog+=b);
 let browser,context,page;
 try{
   await expect.poll(async()=>{if(server.exitCode!==null)throw Error(serverLog);if(!serverReady)return 0;try{return (await fetch(origin+'/calculator-memo/')).status}catch{return 0}},{timeout:30000}).toBe(200);

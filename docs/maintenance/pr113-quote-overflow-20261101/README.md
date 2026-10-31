@@ -48,4 +48,10 @@ mainとPRの独立buildを同じWindows / Node24.20.0 / Playwright1.56.1 / Chrom
 
 実装担当とは別担当の独立レビューで初期の因果証拠・局所修正案を確認。全Text測定、build identity、明示横幅assertを補強。製品変更後および最終HEAD CIの独立確認はPRへ追補する。
 
+## 追加診断のCI準備判定補正
+
+候補 `43251958ca6bc39feed6db850d539e9dcc4425b4` のrun `41217286703` attempt1では、追加quote jobだけがブラウザ起動前の準備待機で失敗した。Viteが実際には正しいloopback URLを出していたが、CIのANSI色コードがポート番号の前後へ入っており、追加診断のraw文字列includesはURLを認識しなかった。artifact `13048114500`（112619bytes、SHA256 `1fe0a3388574d1abbea381a127e0086e2b96f1913e1e12a083be161d922af52a`）の完全digest/CRCとserver.log/result.jsonを確認して保持した。GUI測定は0件であり製品FAILでもGUI成功でもない。
+
+新診断の準備判定だけに、既存正式scenarioと同じ `stripVTControlCharacters` を適用する。30秒上限・横幅oracle・ブラウザ条件・製品修正は不変。元CI server.logの実bytesでraw照合false→色コード除去後trueを明示assertした（ci-ansi-readiness-check.json）。`FORCE_COLOR=1` 環境のローカル実GUIも成功したが、そのserver.log自体はplain URLだったためANSI出力の実証には用いない。独立レビュー後、補正commit後の新最終HEADの全CIを判定する。旧runの結果・取消・未完了は保持し、無根拠な同一CI再試行や成功選別を行わない。
+
 Space短間隔の旧2失敗は因果を証明しておらずUNKNOWNのまま。実機Safari・VoiceOver・OS文字拡大・ソフトキーボードは未検証。部分復元・ID再割当・snapshot再生成・自動修復・保存形式変更・永続選択は行っていない。Issue105へ新投稿せず、Draft・未マージ・未公開を維持する。戻し方は当該class/CSSと独立回帰追加のrevertで、保存データ変換は不要。

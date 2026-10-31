@@ -7,6 +7,7 @@
 - 原因は引用ID/日時の段落内U+3000全角空白の行末超過。段落352に対しscroll373、右padding18を越える3px。閉じdetails非表示では不変、当該段落除去またはline-break:anywhereで388/388、復元で391/388。巨大grid幅を原因とした推測を採用しなかった。
 - 製品は当該pのclassとそのline-breakだけ変更。独立固定fixtureの同一期待値でRED exit1→GREEN exit0、保存raw一致・アプリset/remove/clear各0。Ch/WK×375/390×両theme CSS200%8/8も提出前dirty版で完了。[詳細・保持証拠](docs/maintenance/pr113-quote-overflow-20261101/README.md)。
 - 正式GUI6/1128/592/132/3workers/30分と既存2480単体・57契約を保持し、独立quote jobを追加。lint・型・両build成功。単体初回の既存例CRLF差1失敗は保全し、Git正本LFで再確認。最終HEAD CI・成果物・独立レビュー結果はPRへ追補し、旧結果を新版成功へ流用しない。
+- 候補4325195/run41217286703の新quote jobはANSI色コード付きVite出力のraw URL照合で準備待機失敗（ブラウザ測定0件）。失敗artifact13048114500のdigest/CRCを保持し、診断だけへ既存正式scenarioと同じ色コード除去を追加。待機上限・正式GUI・製品修正は不変。補正commit後の全CIを新最終HEADとして判定する。
 - Space旧2失敗UNKNOWN、実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証を維持。preview read-only・保存境界不変。Issue105投稿、Draft解除、merge/auto-merge/main push/公開は行わない。
 
 ## 2026-10-31 (JST): JSONバックアップの選択復元プレビュー第1段階（Issue #112）

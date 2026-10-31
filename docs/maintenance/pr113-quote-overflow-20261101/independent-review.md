@@ -17,3 +17,13 @@
 このレビューではGUIや単体を再実行せず、ソースと保存済み実測・ログ・digestを独立に読んで照合した。初期指摘の文字RangeがfirstChildだけという不足、配信identity、明示横幅oracle、viewport/DPR/200%assertの補強を確認した。コード・試験・GitHub投稿は変更していない。
 
 最終commit後のHEAD/tree、local/remote/PR一致、全jobのterminal状態、正式6条件の完走と件数、各独立8条件、artifact digest/保持期限/中身と最終HEADの一致を後続レビューするまで、最終受入は未判定。Space短間隔の旧2失敗はUNKNOWN、実機Safari・VoiceOver・OS文字拡大・ソフトキーボードは未検証を維持する。
+
+## 追加診断jobの起動失敗に対するレビュー追補
+
+2026-11-01 JST。[run 41217286703 attempt 1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/41217286703)、HEAD `43251958ca6bc39feed6db850d539e9dcc4425b4` の独立quote job `124584368165` は起動時readiness判定で失敗した。artifact `13048114500` の完全ZIP 112,619 bytes、SHA256 `1fe0a3388574d1abbea381a127e0086e2b96f1913e1e12a083be161d922af52a` と全CRCを独立に再確認。build・browser setup・syntaxは成功、GUIは30秒のreadiness待機で失敗し、`observations=[]`。引用GUI未実行を製品の再FAILやPASSとは判定しない。
+
+`quote-overflow/narrow/server.log` の起動URLは `http://127.0.0.1:` と `4196` の間にANSI制御文字 `ESC[1m` が入っていた。URL全体は色装飾されており、raw文字列へ連続URLの`includes`を適用する従来判定ではreadyにならない。提案修正は `node:util` の `stripVTControlCharacters` importと、そのreadiness比較前の制御文字除去だけ。既存正式 `scenario.mjs` と同じ方式であり、30秒待機・HTTP200期待値・横幅oracle・正式GUI・製品2行の変更範囲を変えていない。根拠付きの診断起動補正として妥当で、未解決の阻害P1/P2指摘なし。
+
+補正後の `gui-evidence/quote-color-readiness/result.json` とログも独立照合した。FORCE_COLOR=1を指定したローカル実GUIはcompleted、全checkpoint388/388、旧auto負対照391/388、raw一致、set/remove/clear各0、ブラウザエラー0。ただしこのローカルserver.log自体のURLはplain文字列であり、実際のANSI付き出力通過をこの実GUIログ単独で証明するものではない。元CIのANSI付きログとの文字列照合は別に扱う。
+
+新しい最終HEADのCI・artifact独立照合は未完了。旧runの他jobが実行中または後続pushのconcurrencyにより取消となっても、旧run全体を成功に置換しない。起動失敗履歴を保持して、新しいHEADの全job・正式6条件・各独立8条件・artifactを改めて照合する必要がある。
