@@ -39,3 +39,14 @@ Linux Debian 13 / Node 24.22.1で独立checkout。CI予定のUbuntu24.04 / Node2
 提出前treeと最終commitの同一性を確認し、最終HEAD CIをPR本文・コメントで追跡する。文書中にこれから作るcommit自身のCI成功を先取りしない。
 
 - 提出前treeの `npm run lint`、`npx --no-install tsc --noEmit`、`npm run build`、`npm run build:pages` はすべてexit0。既存formal46 + 独立backup/restore/recovery/preview11 = **57契約PASS**（skip0）。通常buildの既存vinext API分類注意・proxy警告は成功と別に保持。
+
+### 提出後の試験oracle追補
+
+初回提出HEAD `7969059767880d73cc9c698dc46d84b8cd46bfb0` / CI run `41191910792` は旧版として保持。GUI担当との照合で読取失敗oracleの強化が未反映と判明し、専用comparison-stateと全表示項目のread-error/stale・旧same/different/absent消去を確認するassertへ局所修正。上表の強化記録はこの追補で実施時点を訂正する。製品・正式GUI契約は変更しない。最終HEADのCIは新runのみを採用し、旧runの成功/取消を流用しない。
+
+追補中の最新ローカルGUIでは、375px/CSS200%の開始日時説明に14pxの横はみ出しを検出した（p scrollWidth351/client337）。初期dirty版の成功で隠さず、表示P2として `.selection-preview p` の日本語閉じ句読点用end paddingを局所追加。geometry期待値・制限は変更しない。修正後Ch4条件と最終HEAD CIの8条件を別途確認する。
+
+
+追補実測: CSS修正後のCh375/390・両テーマ/CSS200%は4/4成功。Spaceを短い間隔で2回押すローカル試験では解除未成立のselector timeoutを2回観測し、フォーカス喪失ではないことを確認した。keydown/keyup/clickとaria状態の採取・対象focus確認を含む診断付き版は4/4成功。原因は未確定で、成功再試行だけで解消認定しない。イベント記録を結果JSONへ保持し、最終CIでも確認する。再focus・タイムアウト延長・検査除外はしていない。
+
+旧HEAD `7969059…` の独立preview CIは8/8成功・各13tap、provenance一致、16PNGを回収したが、弱いoracleを含む旧版としてのみ記録。新HEADの失効/読取失敗の検査成功へ流用しない。
