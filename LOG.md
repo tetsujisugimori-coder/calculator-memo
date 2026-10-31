@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-01 (JST): PR #113 WebKit390未完走の証拠保全と限定診断
+
+- Issue #112 / Draft PR #113。開始HEAD94e657b/tree583fc07、main2549c8c、local/origin/PR一致・cleanを確認。旧run41217834472の6成果物ZIP計71,224,548bytesをhash/CRC/全内部ファイルまで再検証し、全6 jobログとAPIを保全した。[詳細・manifest](docs/maintenance/pr113-webkit-20261101/README.md)。
+- 判断訂正: 従来はログだけで取消理由UNKNOWNとしていたが、今回取得したcheck annotationの30m0s上限超過と開始終了時刻、新規runなしを照合し、30分job上限による終了を確認した。WebKit遅延の根因は別途調査中。
+- 製品・正式scenario・合格基準を変更せず、試験側の派生copyだけでawait計測する診断を追加。最初のAは基準HEADのWK390単独・全prefix、20分上限、証拠保存予約、Ubuntu24.04/Node22.13.0。fixture未取得なら推定対照を行わない。
+- 新診断のUbuntu結果は未実行。総合PARTIAL/マージNOを維持し、原本と計測版の観測負荷差も記録する。正式6条件/1128checks/592geometry/132PNGと保存保護を弱めない。
+
 ## 2026-11-01 (JST): PR #113 固定引用の3px横はみ出し原因実証と局所修正
 
 - [Issue #112](https://github.com/tetsujisugimori-coder/calculator-memo/issues/112) / [Draft PR #113](https://github.com/tetsujisugimori-coder/calculator-memo/pull/113)。開始HEAD730d55e/tree0b93247、main2549c8cをGitHubと照合。Libraryの承認済み依頼全文278行をこのexecutorで読んだ。
