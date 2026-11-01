@@ -20,6 +20,74 @@ function backup(data: unknown = base, raw = JSON.stringify(data)): PreviewDocume
 }
 function plan(b: PreviewDocument, c = current(), keys = b.items.filter(v => v.category !== 'other').map(v => v.key)) { return generateRestorePlan({ backup: b, current: c, selectedKeys: keys }); }
 describe('stage two pure restore planning acceptance', () => {
+  const opaqueBody = '```calculator-memo-future-reference\n{"memoId":"missing"}\n```';
+  const parentData = (body = opaqueBody) => ({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [{ ...confirmation, body }] } }] } });
+  it.each([['reports:0'], ['reports:0', 'reports:0:confirmations:0'], ['reports:0:confirmations:0', 'reports:0']])('contains child diagnostics without duplicating references for selection %j', (...keys) => {
+    const data = parentData(), b = backup(data), c = current(data); const p = plan(b, c, keys);
+    const parent = p.items.find(v => v.category === 'reports')!;
+    expect(parent.operation).toBe('UNKNOWN'); expect(parent.unknowns.join()).toContain('["confirmations","r","c"]');
+    expect(p.counts.unknown).toBe(keys.length); expect(p.items).toHaveLength(keys.length); expect(p.counts.unknownReferences).toBe(1);
+    expect(p.references).toHaveLength(9); expect(parent.references).toHaveLength(3);
+    expect(p.references).toEqual(plan(b, c, ['reports:0']).references);
+  });
+  it.each([false, true])('retains parent UNKNOWN and normal ADD beside an unrelated BLOCKED child (reverse=%s)', reverse => {
+    const data = { ...parentData(), history: [history('normal')], notes: [noteEvidence] };
+    const keys = ['reports:0', 'notes:0:evidence:0', 'history:0']; if (reverse) keys.reverse();
+    const p = plan(backup(data), current(parentData()), keys);
+    expect(p.status).toBe('BLOCKED'); expect(p.candidate.data).toBeNull(); expect(p.counts.unknown).toBe(1);
+    expect(p.items.find(v => v.category === 'reports')?.unknowns.join()).toContain('["confirmations","r","c"]');
+    expect(p.items.find(v => v.category === 'reports')?.operation).toBe('UNKNOWN'); expect(p.items.find(v => v.category === 'history')?.operation).toBe('ADD');
+  });
+  it('does not invent parent UNKNOWN from an ordinary child', () => {
+    const data = parentData('ordinary frozen text'); const p = plan(backup(data), current(data), ['reports:0']);
+    expect(p.status).toBe('PASS'); expect(p.items[0].unknowns).toEqual([]); expect(p.counts.unknown).toBe(0);
+  });
+  it('does not confuse the same confirmation ID under another report scope or equal titles', () => {
+    const data = parentData('ordinary'); data.formulaLibrary.entries.push({ ...formula(), id: 'f2' });
+    data.formulaReports.entries.push({ ...report, id: 'r2', formulaId: 'f2', evidence: { version: 1, links: [], confirmations: [{ ...confirmation, formulaId: 'f2', body: opaqueBody }] } });
+    const b = backup(data), c = current(data); const good = plan(b, c, ['reports:0']);
+    expect(good.items[0].operation).toBe('UNCHANGED'); expect(good.items[0].unknowns).toEqual([]); expect(good.counts.unknown).toBe(0);
+    const bad = plan(b, c, ['reports:1']); expect(bad.counts.unknown).toBe(1); expect(bad.items[0].unknowns.join()).toContain('["confirmations","r2","c"]');
+  });
+  it('reports each contained child source while counting the parent row once', () => {
+    const data = parentData(); data.formulaReports.entries[0].evidence.confirmations.push({ ...confirmation, id: 'c2', body: '```calculator-memo-evidence\n{broken\n```' });
+    const b = backup(data), c = current(data); const p = plan(b, c, ['reports:0']);
+    expect(p.counts.unknown).toBe(1); expect(p.counts.unknownReferences).toBe(2);
+    expect(p.items[0].unknowns.join()).toContain('["confirmations","r","c"]'); expect(p.items[0].unknowns.join()).toContain('["confirmations","r","c2"]');
+    expect(p.items[0].unknowns.join()).toContain('UNSUPPORTED'); expect(p.items[0].unknowns.join()).toContain('UNPARSEABLE');
+    expect(plan(b, c, ['reports:0', 'reports:0:confirmations:0', 'reports:0:confirmations:1']).references).toEqual(p.references);
+  });
+  it('keeps a parent BLOCKED with its child UNKNOWN and missing-reference reasons together', () => {
+    const data = parentData(); const child = { ...data.formulaReports.entries[0].evidence.confirmations[0], links: [{ memoId: 'missing', recordId: 'missing' }] };
+    const altered = { ...data, formulaReports: { version: 1, entries: [{ ...data.formulaReports.entries[0], evidence: { version: 1, links: [], confirmations: [child] } }] } };
+    const p = plan(backup(altered), current(altered), ['reports:0']);
+    expect(p.items[0].operation).toBe('BLOCKED'); expect(p.items[0].blockedReasons.join()).toContain('含まれる子'); expect(p.items[0].unknowns.join()).toContain('含まれる子');
+    expect(p.counts.unknown).toBe(1); expect(p.counts.missingReferences).toBe(2); expect(p.counts.unknownReferences).toBe(1);
+  });
+  it('applies the same containment rule to memo/evidence and separates equal child IDs by scope', () => {
+    const data = { ...base, notes: [noteEvidence, { ...noteEvidence, id: 'n2', calculationEvidence: { version: 1, records: [{ ...evidence, futureReference: 'opaque' }] } }] };
+    const b = backup(data), c = current(data); const good = plan(b, c, ['notes:0']);
+    expect(good.items[0].unknowns).toEqual([]); expect(good.items[0].operation).toBe('UNCHANGED');
+    for (const keys of [['notes:1'], ['notes:1', 'notes:1:evidence:0'], ['notes:1:evidence:0', 'notes:1']]) {
+      const p = plan(b, c, keys); expect(p.items.find(v => v.category === 'notes')?.unknowns.join()).toContain('["evidence","n2","e"]'); expect(p.counts.unknown).toBe(keys.length);
+      expect(p.references).toEqual(plan(b, c, ['notes:1']).references);
+    }
+  });
+  it('preserves the contained child origin when its selected dependency becomes UNKNOWN', () => {
+    const data = parentData('ordinary');
+    const c = { ...confirmation, body: 'ordinary', links: [{ memoId: 'n', recordId: 'e' }] };
+    const altered = { ...data, notes: [{ ...noteEvidence, calculationPolicy: { version: 1, mode: 'manual', futureReference: 'opaque' } }], formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [c] } }] } };
+    const p = plan(backup(altered), current(altered), ['reports:0', 'notes:0']);
+    expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.items[0].unknowns.join()).toContain('["confirmations","r","c"]');
+    expect(p.counts.unknown).toBe(2);
+  });
+  it('bounds child diagnostic display without truncating canonical reference counts', () => {
+    const data = parentData(); data.formulaReports.entries[0].evidence.confirmations = Array.from({ length: 15 }, (_, i) => ({ ...confirmation, id: `c${i}`, body: opaqueBody }));
+    const b = backup(data), c = current(data); expect(b.validation).toBe('valid'); expect(c.validation).toBe('valid');
+    const p = plan(b, c, ['reports:0']); expect(p.counts.unknown).toBe(1); expect(p.counts.unknownReferences).toBe(15);
+    expect(p.items[0].unknowns).toHaveLength(21); expect(p.items[0].unknowns.join()).toContain('他10件');
+    expect(p.references.filter(v => v.namespace === 'after' && v.status === 'UNSUPPORTED')).toHaveLength(15);
+  });
   it.each(['plain', 'unknown', 'malformed'])('R1 confirmation body shares preview reference diagnostics without rewriting: %s', kind => {
     const body = kind === 'plain' ? 'ordinary frozen text' : kind === 'unknown' ? '```calculator-memo-future-reference\n{"memoId":"missing"}\n```' : '```calculator-memo-evidence\n{broken\n```';
     const data = { ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [{ ...confirmation, body }] } }] } };

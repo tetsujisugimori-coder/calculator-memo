@@ -1,7 +1,7 @@
 import { inspectPreviewReferences, parseSelectionCurrent, samePreviewStructure, type PreviewDocument, type PreviewItem, type PreviewReference } from './selection-preview';
 import { parseStrictJson, validateRestoreRaw, type RestoreCounts } from './restore-validation';
 
-export const PLAN_RULE_VERSION = 2;
+export const PLAN_RULE_VERSION = 3;
 export const MAX_PLAN_SELECTION = 200;
 const MAX_PLAN_REFERENCES = 20000;
 export type PlanStatus = 'PASS' | 'BLOCKED' | 'UNKNOWN' | 'STALE';
@@ -184,6 +184,28 @@ export function generateRestorePlan(input: Input): RestorePlan {
     append(item, candidateDoc, 'after', selected ? backup : current);
   }
   if (!referencesComplete) plan.reasons.push('参照検査上限20,000件。切り捨てた件数を正常0件としません。');
+  // Diagnostic containment is separate from the canonical reference inventory.
+  // Only category + parent scope + unique IDs establish the relationship.
+  const childIdentities = new Map<PlanItem, Set<string>>();
+  const diagnosticReferences = new Map<PlanItem, PlanReference[]>();
+  const children = (row: PlanItem, doc: PreviewDocument, namespace: 'backup' | 'after'): PreviewItem[] => {
+    const category = row.category === 'notes' ? 'evidence' : row.category === 'reports' ? 'confirmations' : null;
+    if (!category) return [];
+    if (!row.backupIdentity || row.id === null || group(doc, row.backupIdentity).length !== 1) {
+      row.unknowns.push(`${namespace}: 含まれる子の親を一意な種別・IDで同定できません。`); return [];
+    }
+    const warnings: string[] = [];
+    const found = doc.items.filter(item => item.category === category && item.scope === row.id).filter(item => {
+      if (!item.identity || group(doc, item.identity).length !== 1) {
+        warnings.push(`${namespace}: 含まれる子 ${category} / scope ${row.id} / ID ${item.id ?? 'UNKNOWN'} の同一性が不明です。`); return false;
+      }
+      if (item.validation !== 'valid') warnings.push(`${namespace}: 含まれる子 ${item.identity} の形式・数値検証が未完了です。`);
+      return true;
+    });
+    row.unknowns.push(...warnings.slice(0, 20));
+    if (warnings.length > 20) row.unknowns.push(`${namespace}: 他${warnings.length - 20}件の子の同定・検証が不明です。正常として補完しません。`);
+    return found;
+  };
   for (const row of plan.items) {
     row.references = plan.references.filter(ref => ref.source === (row.backupIdentity ?? row.key));
     // Intrinsic source-format uncertainty survives a failed full candidate.
@@ -193,6 +215,21 @@ export function generateRestorePlan(input: Input): RestorePlan {
     const after = row.references.filter(ref => ref.namespace === 'after');
     if (after.some(ref => ['MISSING', 'AMBIGUOUS'].includes(ref.status))) row.blockedReasons.push('復元後候補の参照先が欠落または曖昧です。');
     if (after.some(ref => ['UNKNOWN', 'UNSUPPORTED', 'UNPARSEABLE'].includes(ref.status))) row.unknowns.push('復元後の参照関係を完全検証できません。');
+    const backupChildren = new Set(children(row, backup, 'backup').map(item => item.identity!));
+    const afterChildren = new Set(candidateDoc ? children(row, candidateDoc, 'after').map(item => item.identity!) : []);
+    childIdentities.set(row, backupChildren);
+    const childRefs = plan.references.filter(ref => ref.namespace === 'backup' && backupChildren.has(ref.source) || ref.namespace === 'after' && afterChildren.has(ref.source));
+    diagnosticReferences.set(row, [...row.references, ...childRefs]);
+    const childUnknowns: string[] = [], childBlocked: string[] = [];
+    for (const ref of childRefs) {
+      const reason = `含まれる子 ${ref.source} [${ref.namespace}] ${ref.status}: ${ref.target} / ${ref.message}`;
+      if (['UNKNOWN', 'UNSUPPORTED', 'UNPARSEABLE'].includes(ref.status)) childUnknowns.push(reason);
+      if (ref.namespace === 'after' && ['MISSING', 'AMBIGUOUS'].includes(ref.status)) childBlocked.push(reason);
+    }
+    for (const [facts, reasons] of [[childUnknowns, row.unknowns], [childBlocked, row.blockedReasons]]) {
+      reasons.push(...facts.slice(0, 20));
+      if (facts.length > 20) reasons.push(`他${facts.length - 20}件の子の診断があります。出所は全参照の一覧で確認してください（参照実体は複製しません）。`);
+    }
     if (row.blockedReasons.length) row.operation = 'BLOCKED'; else if (row.unknowns.length) row.operation = 'UNKNOWN';
   }
   // Resolve direct checks first, then propagate through a bounded reverse graph.
@@ -204,8 +241,16 @@ export function generateRestorePlan(input: Input): RestorePlan {
     const rows = byKey.get(row.key) ?? []; rows.push(row); byKey.set(row.key, rows);
   }
   const dependents = new Map<PlanItem, Set<PlanItem>>();
+  const dependencyOrigins = new Map<PlanItem, Map<PlanItem, Set<string>>>();
   for (const source of plan.items) {
-    const targets = new Set(source.references.filter(ref => ref.namespace === 'backup' && ref.targetIdentity).flatMap(ref => byIdentity.get(ref.targetIdentity!) ?? []));
+    const targets = new Set<PlanItem>(), origins = new Map<PlanItem, Set<string>>();
+    const addTarget = (target: PlanItem, childIdentity?: string) => {
+      targets.add(target);
+      if (childIdentity) { const values = origins.get(target) ?? new Set(); values.add(childIdentity); origins.set(target, values); }
+    };
+    for (const ref of diagnosticReferences.get(source) ?? source.references) if (ref.namespace === 'backup' && ref.targetIdentity) for (const target of byIdentity.get(ref.targetIdentity) ?? []) addTarget(target, ref.source !== source.backupIdentity ? ref.source : undefined);
+    for (const identity of childIdentities.get(source) ?? []) for (const child of byIdentity.get(identity) ?? []) addTarget(child, identity);
+    dependencyOrigins.set(source, origins);
     if (source.coveredBy) for (const parent of byKey.get(source.coveredBy) ?? []) targets.add(parent);
     for (const target of targets) { const sources = dependents.get(target) ?? new Set(); sources.add(source); dependents.set(target, sources); }
   }
@@ -214,12 +259,14 @@ export function generateRestorePlan(input: Input): RestorePlan {
     const target = pending[i];
     for (const source of dependents.get(target) ?? []) {
       const hadUnknown = source.unknowns.length > 0;
+      const origins = [...(dependencyOrigins.get(source)?.get(target) ?? [])];
+      const origin = origins.length ? ` 含まれる子の出所: ${origins.slice(0, 20).join(', ')}${origins.length > 20 ? ` 他${origins.length - 20}件` : ''}` : '';
       if (target.operation === 'BLOCKED') {
-        const reason = `依存する選択項目 ${target.key} がBLOCKEDです。`;
+        const reason = `依存する選択項目 ${target.key} がBLOCKEDです。${origin}`;
         if (!source.blockedReasons.includes(reason)) source.blockedReasons.push(reason);
       }
       if (target.unknowns.length) {
-        const reason = `依存する選択項目 ${target.key} がUNKNOWNです。`;
+        const reason = `依存する選択項目 ${target.key} がUNKNOWNです。${origin}`;
         if (!source.unknowns.includes(reason)) source.unknowns.push(reason);
       }
       const next = target.operation === 'BLOCKED' ? 'BLOCKED' : source.operation === 'BLOCKED' ? 'BLOCKED' : 'UNKNOWN';

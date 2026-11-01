@@ -1,5 +1,16 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-02 (JST): PR #115 子の診断を選択親へ伝える局所修正
+
+- [独立再レビュー](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115#issuecomment-6564937628)で、R1/R2の直接条件は独立PASSだが、未明示選択の確認履歴UNKNOWNが親行/件数へ伝わらない項目別P2を確認。全体の偽PASSや保存欠陥とは扱わない。基準76f6535/treed404cd3、local/remote/PR一致・clean、main/base528a6a0a不変。
+- 子の診断表示と参照inventoryを分離。種別/親scope/一意IDで親子を結び、子の直接診断と選択依存先の影響を出所付きで親へ保持。親子両選択・逆順でも参照を複製せず、UNKNOWNは選択表示行ごと一度。BLOCKED優先でも両根拠を保持、正常ADDは維持。memo/evidenceもscope分離を限定点検。計画規則version3、保存形式version1不変。
+- 原Linux独自8probeは取得参照がなく親側も未取得。公開条件から再作成した8試験で6成功/2失敗(exit1)→8成功(exit0)、原本再実行とは称さない。基準core56自己再実行56成功、追加後core67/preview35/UI29の131成功。旧Windows原41の自己回帰41成功とは出典を分離。[方針・取得範囲・受入・実測記録](docs/maintenance/selective-plan-20261101/contained-diagnostics.md)。
+- 全単体/契約/lint/type/両build/8GUIと最終固定HEAD CIは実測後に同記録またはPR最終本文/Checksへ記録する。初回失敗と診断補完を分け、成功を先取りしない。正式6/1128/592/132/3workers/30分は維持し、局所受入で代替しない。
+- 提出前の最終core68/UI29は97成功（preview35を含む対象132）。全単体初回2559/2563・5秒timeout4件、該当4fileの単worker49成功を別保存。最後の表示上限対照追加後の全2564はCIで確認する。lint/error0・既存warning2、type/両build成功、Windows契約50/59は既存Linux経路差。形式上限超過fixtureとlint探索/証拠dir移動の初回失敗も保存し、補完を区別。
+- 拡張GUIは初回8/8成功・88+224 native touch・64PNG、親のみ/親子/禁止併存のUNKNOWN1/2行と参照非二重計上・出所を確認。raw/backupfile/保全/他key不変、app保存0、STALE/明示更新/focus/横幅を確認。76基点dirty版と最終commitのCIを区別し、後者の終端・成果物はPRへ記録する。
+- 旧76正式run41347113773は30分上限cancelled、5/6・1104/1128・581/592・130/132、未確認24/11/2、内部根因UNKNOWNとして別保全。新HEADへの流用や無根拠再実行はしない。自己点検を収束させてから一度pushし、docs追補だけで終盤CIを取消さない。
+- 保存/実部分復元/backup/全体復元/保全/計算/Stage3不変更。Draft・未マージ・auto-mergeなし、main更新/Ready/merge/公開なし。実機Safari/VoiceOver等は未検証、修正後の独立再レビューへ引き渡す。
+
 ## 2026-11-02 (JST): PR #115 独立レビューR1/R2の局所修正
 
 - 記録日2026-11-02 JST、元レビューは2026-11-01 UTC。[独立レビュー](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115#issuecomment-6559360058)の製品P2二件を元実装担当が修正。Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114) / Draft [#115](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115)。着手HEAD d58d1a4/tree14a4286、local/remote/PR一致・clean、main/base528a6a0a不変を確認。

@@ -25,6 +25,26 @@ const planLabel = "復元計画を明示的に再生成";
 beforeEach(() => { Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true }); vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} }); Object.defineProperty(navigator, "locks", { configurable: true, value: { request: vi.fn(async (_name: string, callback: () => unknown) => callback()) } }); localStorage.clear(); localStorage.setItem(STORAGE_KEY, source); localStorage.setItem(RECOVERY_KEYS[0], "synthetic protected recovery raw"); host = document.createElement("div"); document.body.append(host); root = createRoot(host); });
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); Object.defineProperty(navigator, "locks", { configurable: true, value: undefined }); });
 describe("read-only selection preview UI", () => {
+ it.each([false, true])("contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=%s)", async reverse => {
+  const f = { id: 'f', title: 'formula', expression: '3+1', createdAt: date, updatedAt: date };
+  const c = { id: 'c', formulaId: 'f', confirmedAt: date, evidenceSignature: '[]', definition: { version: 1, expression: '3+1', variables: [] }, title: 'snapshot', body: '```calculator-memo-future-reference\n{"memoId":"missing"}\n```', links: [] };
+  const e = { id: 'e', evaluator: 'calculator-memo-v1', status: 'confirmed', calculatedAt: date, persistedAt: date, blocks: [{ blockId: 'b', position: 1, expression: '4', inputs: [], result: '4', resultText: '4', status: 'success' }] };
+  const d = { ...data, formulaLibrary: { version: 1, entries: [f], selectedId: null }, formulaReports: { version: 1, entries: [{ id: 'r', formulaId: 'f', title: 'report', body: 'ordinary', createdAt: date, updatedAt: date, confirmedExpression: null, evidence: { version: 1, links: [], confirmations: [c] } }] } };
+  const raw = JSON.stringify(d), text = backup(JSON.stringify({ ...d, notes: [{ id: 'm', type: 'plain-calculation', title: 'memo', content: 'ordinary', createdAt: date, updatedAt: date, calculationEvidence: { version: 1, records: [e] } }] }));
+  localStorage.setItem(STORAGE_KEY, raw); await mount(); const write = vi.spyOn(Storage.prototype, 'setItem'), remove = vi.spyOn(Storage.prototype, 'removeItem'), clear = vi.spyOn(Storage.prototype, 'clear');
+  await upload(text); await click(compareLabel); const keys = ['reports:0', 'reports:0:confirmations:0']; if (reverse) keys.reverse();
+  for (const key of keys) await click('復元候補に選択', host.querySelector(`[data-preview-key="${key}"]`)!);
+  await click(planLabel); const panel = host.querySelector('.restore-plan')!;
+  expect(panel.textContent).toContain('判定不能 2件'); expect(panel.textContent).toContain('参照判定不能・曖昧: 1件'); expect(panel.textContent).toContain('全参照 10件'); expect(panel.textContent).toContain('["confirmations","r","c"]');
+  await click('候補から解除', host.querySelector('[data-preview-key="reports:0:confirmations:0"]')!); expect(panel.querySelector('[data-testid="restore-plan-state"]')?.textContent).toContain('STALE');
+  await click(planLabel); expect(panel.textContent).toContain('判定不能 1件'); expect(panel.textContent).toContain('全参照 10件'); expect(panel.querySelector('h4')?.textContent).toBe('reports / r: UNKNOWN');
+  await click('復元候補に選択', host.querySelector('[data-preview-key="notes:0:evidence:0"]')!); await click(planLabel);
+  expect(panel.querySelector('[data-testid="restore-plan-state"]')?.textContent).toBe('BLOCKED'); expect(panel.textContent).toContain('判定不能 1件'); expect(panel.textContent).toContain('UNKNOWN（検査未完了）');
+  expect([...panel.querySelectorAll('h4')].some(v => v.textContent === 'reports / r: UNKNOWN')).toBe(true);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(localStorage.getItem(RECOVERY_KEYS[0])).toBe('synthetic protected recovery raw');
+  expect(await host.querySelector<HTMLInputElement>('input[type="file"]')!.files![0].text()).toBe(text); expect(write).not.toHaveBeenCalled(); expect(remove).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled();
+  await click('プレビューを閉じる'); expect(document.activeElement).toBe(button('選択復元プレビュー'));
+ });
  it("R1 shows the same single unsupported confirmation reference in preview, details and plan", async () => {
   const f = { id: 'f', title: 'formula', expression: '3+1', createdAt: date, updatedAt: date };
   const c = { id: 'c', formulaId: 'f', confirmedAt: date, evidenceSignature: '[]', definition: { version: 1, expression: '3+1', variables: [] }, title: 'snapshot', body: '```calculator-memo-future-reference\n{"memoId":"missing"}\n```', links: [] };

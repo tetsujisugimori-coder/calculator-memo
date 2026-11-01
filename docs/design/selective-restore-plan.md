@@ -45,6 +45,10 @@ UNCHANGEDでも選択項目の出典はバックアップである。同じ本�
 
 全選択候補の構築が禁止行で停止しても、選択元の確認済みUNSUPPORTED/UNPARSEABLE/UNKNOWNを行へ残し、依存する行へ伝播する。バックアップ内のMISSINGだけでは復元後欠落とは断定しない。候補不成立時の復元後照合は具体的な未検証理由とnull件数で示し、禁止行を捨てた部分候補を有効とは扱わない。無関係な正常ADDは維持する。BLOCKEDが表示上優先でもunknownsを捨てず、両根拠は別々に伝播・集計するため実行禁止と判定不能の件数は重複し得る。[修正の自己検証](../maintenance/selective-plan-20261101/review-fixes.md)。
 
+計画規則version3では、選択親に含まれる子（reports/confirmations、notes/evidence）の診断も親へ保持する。親/子の種別、親scope、一意IDで対応させ、名前や配列位置では結び付けない。同定・検証不能はUNKNOWNとして出所を示す。バックアップ側の子の未知形式、復元後の子のUNKNOWN/欠落/曖昧、子が参照する選択項目の診断、明示選択された子のBLOCKED/UNKNOWNを親へ伝える。親未選択時の子単独変更禁止を、親全体選択時へ誤って持ち込まない。
+
+診断に使う親子関係と参照inventoryは別である。親の理由には子identity/名前空間/status/targetを示すが、plan.referencesや親row.referencesへ子の参照を複製しない。親子両選択・逆順でも参照実体件数を増やさない。UNKNOWN件数は明示選択されたPlanItem表示行ごと一度で、複数理由/namespaceでも同じ行を重複計数しない。親子を両方選べば別行なので各一度。子の直接診断は不明/禁止の各区分20件まで親へ表示し、超過件数と全参照一覧への案内を残す。未明示選択の子を選択行へ自動追加しない。[新P2の原因・出典・限定点検](../maintenance/selective-plan-20261101/contained-diagnostics.md)。
+
 未知数値・検証不能原文では、実効UNKNOWNだけでなく予定操作と差分の一致/変更認定も行わない。入力・対象の厳密検証がvalidの時だけADD/REPLACE/UNCHANGEDの予定を設定する。[7参照対照・別枠数値4対照のRED/GREEN](../maintenance/selective-plan-20261101/negative-controls.md)。
 
 生成は同期pure処理。UIは直前/直後に同じ取得原文・世代・選択・file requestを照合し、render時にも前提一致を判定する。通知を受けた旧PASSを再使用しない。通知なしABA/旧client/通知直前の競合は完全検知不可。Web Locksは読み取り計画の原子的保証にはならない。実行直前再照合は第3段階で必須。

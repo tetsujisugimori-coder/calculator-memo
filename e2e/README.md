@@ -726,3 +726,5 @@ Artifacts: `selection-preview-results.json`, `selection-preview-provenance.json`
 `node e2e/run-selective-restore-plan-gui.mjs` は既存の計画8条件に加え、各条件で `selective-restore-plan-review-mobile.mjs` を必ずawaitする。確認履歴の未知fenceはUNKNOWN、preview/詳細/計画の参照件数一致、禁止子込み・解除・再選択時の式/レポートUNKNOWN、選択/current raw変更のSTALEと明示再検証を確認する。原独立レビューと同じfixtureを使うが、修正の期待値を検証する実装担当の自己試験であり独立再レビューではない。
 
 合成backupファイルのbytes、current原文・保全slot・他key不変、appのsetItem/removeItem/clear各0、Space・focus復帰・native touch・CSS200%・両theme・375/390pxを検証。各条件は既存PNG2枚＋R1/R2 PNG3枚（計40PNG）を保存。既存の15分job/5分GUIを延長せず、正式6条件/1128/592/132/3workers/30分へ加算しない。
+
+子診断の親伝播P2回帰では同じ8条件内で親のみ、親子両選択、無関係BLOCKED併存を追加する。親行のUNKNOWNと子の出所、行件数1/2、参照実体10/7件の非二重計上、選択STALEと明示再生成を確認する。R1/R2の既存確認も保持。各条件へ親/親子/禁止併存のPNG3枚を追加し、現行の期待は計64PNG。合成f/r/cはcurrentとbackupで同一、backupだけに非選択の別メモ/根拠を置き、禁止併存を同contextで試験する。各contextのraw・backupfile・保全不変と書込0を照合し、15分/5分の境界は維持する。

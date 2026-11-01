@@ -68,7 +68,8 @@ export async function runReferenceReviewRegression(browser, { base, engine, widt
   }
   try {
     const snapshot = { ...baseData(theme), formulaLibrary: { version: 1, entries: [f], selectedId: null }, formulaReports: { version: 1, entries: [{ ...r, evidence: { version: 1, links: [], confirmations: [c] } }] } };
-    await phase(snapshot, snapshot, ['reports:0:confirmations:0'], async ({ page, dialog, panel, state, tap }) => {
+    const parentBackup = { ...snapshot, notes: [{ id: 'm', type: 'plain-calculation', title: 'unselected parent memo', content: 'not evaluated', createdAt: date, updatedAt: date, calculationEvidence: { version: 1, records: [e] } }] };
+    await phase(snapshot, parentBackup, ['reports:0:confirmations:0'], async ({ page, dialog, panel, state, tap, generate }) => {
       assert.equal(await state.innerText(), 'UNKNOWN'); const text = await panel.innerText();
       assert.ok(text.includes('判定不能 1件')); assert.ok(text.includes('参照判定不能・曖昧: 1件'));
       assert.equal(await panel.locator('article h4').innerText(), 'confirmations / c: UNKNOWN');
@@ -79,6 +80,25 @@ export async function runReferenceReviewRegression(browser, { base, engine, widt
       await tap(detail.getByRole('button', { name: '詳細を閉じる', exact: true }));
       result.observations.push({ finding: 'R1', state: 'UNKNOWN', unknownRows: 1, unknownAfterReferences: 1, previewUnknownReferences: 1 });
       await state.scrollIntoViewIfNeeded(); await page.screenshot({ path: `${stem}-confirmation.png` });
+      const parentCard = dialog.locator('[data-preview-key="reports:0"]'), childCard = dialog.locator('[data-preview-key="reports:0:confirmations:0"]');
+      const checkParent = async (both, blocked) => {
+        assert.equal(await state.innerText(), blocked ? 'BLOCKED' : 'UNKNOWN');
+        const parent = panel.locator('article').filter({ hasText: 'reports / r: UNKNOWN' }); assert.equal(await parent.count(), 1);
+        assert.ok((await parent.innerText()).includes('含まれる子 ["confirmations","r","c"]'));
+        const text = await panel.innerText(); assert.ok(text.includes(`判定不能 ${both ? 2 : 1}件`));
+        assert.ok(text.includes(blocked ? '参照判定不能・曖昧: UNKNOWN（検査未完了）' : '参照判定不能・曖昧: 1件'));
+        assert.ok(text.includes(`全参照 ${blocked ? 7 : 10}件`), 'parent diagnostic display never duplicates canonical references');
+        assert.equal(await panel.locator('article').count(), (both ? 2 : 1) + (blocked ? 1 : 0));
+        result.observations.push({ finding: 'contained-child', both, blocked, unknownRows: both ? 2 : 1, references: blocked ? 7 : 10, panel: text });
+      };
+      await tap(parentCard.getByRole('button', { name: '復元候補に選択', exact: true })); assert.ok((await state.innerText()).includes('STALE')); await tap(generate); await checkParent(true, false);
+      await state.scrollIntoViewIfNeeded(); await page.screenshot({ path: `${stem}-contained-both.png` });
+      await tap(childCard.getByRole('button', { name: '候補から解除', exact: true })); assert.ok((await state.innerText()).includes('STALE')); assert.equal(await panel.locator('article').count(), 0); await tap(generate); await checkParent(false, false);
+      await panel.locator('article li').filter({ hasText: '含まれる子' }).first().scrollIntoViewIfNeeded(); await page.screenshot({ path: `${stem}-contained-parent.png` });
+      await tap(dialog.locator('[data-preview-key="notes:0:evidence:0"]').getByRole('button', { name: '復元候補に選択', exact: true })); assert.ok((await state.innerText()).includes('STALE')); await tap(generate); await checkParent(false, true);
+      await state.scrollIntoViewIfNeeded(); await page.screenshot({ path: `${stem}-contained-blocked.png` });
+      await tap(childCard.getByRole('button', { name: '復元候補に選択', exact: true })); assert.ok((await state.innerText()).includes('STALE')); await tap(generate); await checkParent(true, true);
+      result.verified.push('contained child origin retained by selected parent; unknown rows count each selection once; canonical references unchanged; unrelated BLOCKED never hides UNKNOWN; selection STALE and explicit regeneration');
     });
     const backupData = { ...baseData(theme), notes: [{ id: 'm', type: 'plain-calculation', title: 'independent memo', content: 'never execute', createdAt: date, updatedAt: date, calculationEvidence: { version: 1, records: [e] } }], formulaLibrary: { version: 1, entries: [{ ...f, futureReference: 'opaque dependency' }], selectedId: null }, formulaReports: { version: 1, entries: [r] } };
     await phase(baseData(theme), backupData, ['reports:0', 'formulas:0', 'notes:0:evidence:0'], async ({ page, dialog, panel, state, tap, generate, acquire, raw }) => {
