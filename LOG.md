@@ -1,5 +1,17 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-02 (JST): PR #115 独立レビューR1/R2の局所修正
+
+- 記録日2026-11-02 JST、元レビューは2026-11-01 UTC。[独立レビュー](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115#issuecomment-6559360058)の製品P2二件を元実装担当が修正。Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114) / Draft [#115](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115)。着手HEAD d58d1a4/tree14a4286、local/remote/PR一致・clean、main/base528a6a0a不変を確認。
+- R1: 確認履歴の固定bodyにも既存本文参照parserを適用。通常文はPASS、未知fence/壊れた構造はUNKNOWN、preview・確認・計画の件数整合を維持。本文/snapshotは変更しない。
+- R2: 禁止子により全候補を構築できなくても、選択元の既知UNKNOWNを式と依存reportへ保持。禁止行を除外した候補を全体有効とせず、無関係な正常ADDは維持。BLOCKED優先表示でも両根拠を伝播・集計。計画規則version2、保存形式version1不変。
+- 原独立41試験を読取取得・hash固定し、入力/期待/timeout不変で修正前38成功/3失敗(exit1)→修正後41成功(exit0)。core56/preview35/UI27の118成功。これは自己再実行であり独立再レビューではない。[原因・試験・原本hash・初回失敗](docs/maintenance/selective-plan-20261101/review-fixes.md)。
+- ローカル既定全単体116files/2550中2541成功・既存5秒timeout9件(exit1)を保持。7該当fileの単worker診断107成功(exit0)。旧独立レビューの2539/2542・限定111件とは別記録。Windows契約50/59は既存Linux経路差9件、Ubuntu固定HEAD CIで別確認する。timeout/期待値を緩和しない。
+- 型・lint(error0/既存warning2)・通常/Pages build成功。R1/R2追加8条件GUI、最終固定HEADの正式CI終端・全成果物は実測後PRへ記録する。既存正式6/1128/592/132/3workers/30分不変、局所成功で正式未完を補完しない。
+- 提出前修正版GUIは既存受入とR1/R2を全8条件で成功、88+160 native touch・40PNG。backup実file/current/保全/他key不変、app set/remove/clear0、選択/raw STALE・明示再検証・Space/focus・横幅を確認。d58基点dirty修正版の結果であり、最終commit CIとは区別。初回のinput clear後の試験読取エラーを保存し、実file読戻しへ補正した。
+- 旧d58正式run41307579092は30分上限cancelled、4/6・1071/1128・568/592・128/132。未確認57/24/4、内部遅延根因UNKNOWN。新HEADの結果へ流用しない。別タスクが同じWindowsで並行中の可能性を記録し、専用4195/合成contextを使い他プロセスを停止しない。CPU競合がtimeout原因とは断定しない。
+- 保存/実復元/backup/全体復元/保全/計算機能は変更せず、Draft・未マージ・auto-mergeなしを維持。実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証、修正後独立再レビューは未実施で引き継ぐ。
+
 ## 2026-11-01 (JST): 選択復元の実行計画・安全判定（第2段階）
 
 - Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114)へ承認済み依頼全492行を記録・読戻し一致。main528a6a0a/tree17ae5b55、#113 mergedを確認し隔離clone/専用枝で開始。[事前受入・型別規則](docs/design/selective-restore-plan.md)。

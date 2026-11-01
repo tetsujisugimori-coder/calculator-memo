@@ -15,6 +15,10 @@ test('plan runner verifies served SHA and all eight native mobile cases, storage
   assert.match(spec, /assert.equal\(cases.length, 8\)/); assert.match(spec, /cases.every\(c => c.status === 'passed'\)/);
   assert.match(spec, /assert.deepEqual\(await stored\(\), original\)/); assert.match(spec, /assert.deepEqual\(await page.evaluate\(\(\) => window.__planWrites\), \[\]\)/);
   assert.match(spec, /assert.deepEqual\(errors, \[\]\)/); assert.match(spec, /observedTouchStarts >= result.touches/);
+  assert.match(spec, /await runReferenceReviewRegression\(browser, \{ base, engine: name, width, theme \}\)/);
+  const regression = await readFile(new URL('./selective-restore-plan-review-mobile.mjs', import.meta.url), 'utf8');
+  assert.match(regression, /app setItem\/removeItem\/clear zero/); assert.match(regression, /backup file bytes unchanged/);
+  assert.doesNotMatch(regression, /force:\s*true|test\.skip/);
   assert.match(spec, /\['chromium', chromium\], \['webkit', webkit\]/); assert.match(spec, /\[375, 390\]/); assert.match(spec, /\['light', 'dark'\]/);
   assert.doesNotMatch(spec, /force:\s*true|test\.skip/);
 });

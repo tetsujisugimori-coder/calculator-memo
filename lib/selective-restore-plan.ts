@@ -1,7 +1,7 @@
 import { inspectPreviewReferences, parseSelectionCurrent, samePreviewStructure, type PreviewDocument, type PreviewItem, type PreviewReference } from './selection-preview';
 import { parseStrictJson, validateRestoreRaw, type RestoreCounts } from './restore-validation';
 
-export const PLAN_RULE_VERSION = 1;
+export const PLAN_RULE_VERSION = 2;
 export const MAX_PLAN_SELECTION = 200;
 const MAX_PLAN_REFERENCES = 20000;
 export type PlanStatus = 'PASS' | 'BLOCKED' | 'UNKNOWN' | 'STALE';
@@ -186,6 +186,10 @@ export function generateRestorePlan(input: Input): RestorePlan {
   if (!referencesComplete) plan.reasons.push('参照検査上限20,000件。切り捨てた件数を正常0件としません。');
   for (const row of plan.items) {
     row.references = plan.references.filter(ref => ref.source === (row.backupIdentity ?? row.key));
+    // Intrinsic source-format uncertainty survives a failed full candidate.
+    // A missing backup target alone may still resolve in current/after data.
+    if (row.references.some(ref => ref.namespace === 'backup' && ['UNKNOWN', 'UNSUPPORTED', 'UNPARSEABLE'].includes(ref.status))) row.unknowns.push('バックアップ項目の参照形式を完全検証できません。');
+    if (!candidateDoc) row.reasons.push('全選択どおりの候補が未構築のため、復元後の参照先・内容の照合は未検証です。');
     const after = row.references.filter(ref => ref.namespace === 'after');
     if (after.some(ref => ['MISSING', 'AMBIGUOUS'].includes(ref.status))) row.blockedReasons.push('復元後候補の参照先が欠落または曖昧です。');
     if (after.some(ref => ['UNKNOWN', 'UNSUPPORTED', 'UNPARSEABLE'].includes(ref.status))) row.unknowns.push('復元後の参照関係を完全検証できません。');
@@ -209,11 +213,17 @@ export function generateRestorePlan(input: Input): RestorePlan {
   for (let i = 0; i < pending.length; i++) {
     const target = pending[i];
     for (const source of dependents.get(target) ?? []) {
-      const reason = `依存する選択項目 ${target.key} が${target.operation}です。`;
-      const reasons = target.operation === 'BLOCKED' ? source.blockedReasons : source.unknowns;
-      if (!reasons.includes(reason)) reasons.push(reason);
+      const hadUnknown = source.unknowns.length > 0;
+      if (target.operation === 'BLOCKED') {
+        const reason = `依存する選択項目 ${target.key} がBLOCKEDです。`;
+        if (!source.blockedReasons.includes(reason)) source.blockedReasons.push(reason);
+      }
+      if (target.unknowns.length) {
+        const reason = `依存する選択項目 ${target.key} がUNKNOWNです。`;
+        if (!source.unknowns.includes(reason)) source.unknowns.push(reason);
+      }
       const next = target.operation === 'BLOCKED' ? 'BLOCKED' : source.operation === 'BLOCKED' ? 'BLOCKED' : 'UNKNOWN';
-      if (source.operation !== next) { source.operation = next; pending.push(source); }
+      if (source.operation !== next || !hadUnknown && source.unknowns.length > 0) { source.operation = next; pending.push(source); }
     }
   }
   for (const ref of plan.references) if (ref.namespace === 'after' && ref.targetIdentity && ref.status === 'FOUND' && byIdentity.get(ref.targetIdentity)?.some(row => row.operation === 'BLOCKED' || row.operation === 'UNKNOWN')) {
@@ -227,6 +237,6 @@ export function generateRestorePlan(input: Input): RestorePlan {
   if (changed) plan.reasons.push(plan.lexical.message);
   for (const row of plan.items) if (row.proposedOperation === 'ADD' || row.proposedOperation === 'REPLACE') row.blockedReasons.push('原文字句を損失なく変更する方式が未確立です。候補操作を実行できません。');
   plan.status = plan.items.some(row => row.operation === 'BLOCKED') || referenceBlocked || plan.lexical.status === 'BLOCKED' || plan.candidate.status === 'BLOCKED' ? 'BLOCKED' : !selectedKeys.length || plan.items.some(row => row.operation === 'UNKNOWN') || referenceUnknown || plan.candidate.status !== 'PASS' ? 'UNKNOWN' : 'PASS';
-  plan.counts = { selected: selectedKeys.length, add: plan.items.filter(v => v.proposedOperation === 'ADD' && !v.coveredBy).length, replace: plan.items.filter(v => v.proposedOperation === 'REPLACE' && !v.coveredBy).length, unchanged: plan.items.filter(v => v.proposedOperation === 'UNCHANGED').length, blocked: plan.items.filter(v => v.blockedReasons.length > 0).length, unknown: plan.items.filter(v => v.operation === 'UNKNOWN').length, missingReferences: candidateDoc && referencesComplete ? post.filter(ref => ref.status === 'MISSING').length : null, unknownReferences: candidateDoc && referencesComplete ? post.filter(ref => ['AMBIGUOUS','UNSUPPORTED','UNPARSEABLE','UNKNOWN'].includes(ref.status)).length : null };
+  plan.counts = { selected: selectedKeys.length, add: plan.items.filter(v => v.proposedOperation === 'ADD' && !v.coveredBy).length, replace: plan.items.filter(v => v.proposedOperation === 'REPLACE' && !v.coveredBy).length, unchanged: plan.items.filter(v => v.proposedOperation === 'UNCHANGED').length, blocked: plan.items.filter(v => v.blockedReasons.length > 0).length, unknown: plan.items.filter(v => v.unknowns.length > 0 || v.operation === 'UNKNOWN').length, missingReferences: candidateDoc && referencesComplete ? post.filter(ref => ref.status === 'MISSING').length : null, unknownReferences: candidateDoc && referencesComplete ? post.filter(ref => ['AMBIGUOUS','UNSUPPORTED','UNPARSEABLE','UNKNOWN'].includes(ref.status)).length : null };
   return plan;
 }

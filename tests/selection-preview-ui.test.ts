@@ -25,6 +25,35 @@ const planLabel = "復元計画を明示的に再生成";
 beforeEach(() => { Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true }); vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} }); Object.defineProperty(navigator, "locks", { configurable: true, value: { request: vi.fn(async (_name: string, callback: () => unknown) => callback()) } }); localStorage.clear(); localStorage.setItem(STORAGE_KEY, source); localStorage.setItem(RECOVERY_KEYS[0], "synthetic protected recovery raw"); host = document.createElement("div"); document.body.append(host); root = createRoot(host); });
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); Object.defineProperty(navigator, "locks", { configurable: true, value: undefined }); });
 describe("read-only selection preview UI", () => {
+ it("R1 shows the same single unsupported confirmation reference in preview, details and plan", async () => {
+  const f = { id: 'f', title: 'formula', expression: '3+1', createdAt: date, updatedAt: date };
+  const c = { id: 'c', formulaId: 'f', confirmedAt: date, evidenceSignature: '[]', definition: { version: 1, expression: '3+1', variables: [] }, title: 'snapshot', body: '```calculator-memo-future-reference\n{"memoId":"missing"}\n```', links: [] };
+  const d = { ...data, formulaLibrary: { version: 1, entries: [f], selectedId: null }, formulaReports: { version: 1, entries: [{ id: 'r', formulaId: 'f', title: 'report', body: 'plain', createdAt: date, updatedAt: date, confirmedExpression: null, evidence: { version: 1, links: [], confirmations: [c] } }] } };
+  const raw = JSON.stringify(d); const text = backup(raw); localStorage.setItem(STORAGE_KEY, raw); await mount();
+  const write = vi.spyOn(Storage.prototype, 'setItem'), remove = vi.spyOn(Storage.prototype, 'removeItem'), clear = vi.spyOn(Storage.prototype, 'clear');
+  await upload(text); await click(compareLabel); const card = host.querySelector('[data-preview-key="reports:0:confirmations:0"]')!;
+  await click('個別詳細', card); expect(host.querySelector('.preview-detail')?.textContent).toContain('unsupported');
+  await click('復元候補に選択', card); expect(host.textContent).toContain('参照判定不能・未対応: 1件'); await click(planLabel);
+  const panel = host.querySelector('.restore-plan')!; expect(panel.querySelector('[data-testid="restore-plan-state"]')?.textContent).toBe('UNKNOWN');
+  expect(panel.textContent).toContain('判定不能 1件'); expect(panel.textContent).toContain('参照判定不能・曖昧: 1件'); expect(panel.querySelector('h4')?.textContent).toContain('confirmations / c: UNKNOWN');
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(localStorage.getItem(RECOVERY_KEYS[0])).toBe('synthetic protected recovery raw'); expect(await host.querySelector<HTMLInputElement>('input[type="file"]')!.files![0].text()).toBe(text);
+  expect(write).not.toHaveBeenCalled(); expect(remove).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled();
+ });
+ it("R2 keeps formula/report UNKNOWN across blocked-child removal, invalidates on raw and selection changes", async () => {
+  const f = { id: 'f', title: 'formula', expression: '3+1', createdAt: date, updatedAt: date, futureReference: 'opaque dependency' };
+  const e = { id: 'e', evaluator: 'calculator-memo-v1', status: 'confirmed', calculatedAt: date, persistedAt: date, blocks: [{ blockId: 'b', position: 1, expression: '4', inputs: [], result: '4', resultText: '4', status: 'success' }] };
+  const d = { ...data, formulaLibrary: { version: 1, entries: [f], selectedId: null }, formulaReports: { version: 1, entries: [{ id: 'r', formulaId: 'f', title: 'report', body: 'plain', createdAt: date, updatedAt: date, confirmedExpression: null }] }, notes: [{ id: 'm', type: 'plain-calculation', title: 'memo', content: 'plain', createdAt: date, updatedAt: date, calculationEvidence: { version: 1, records: [e] } }] };
+  await mount(); await upload(backup(JSON.stringify(d))); await click(compareLabel);
+  for (const key of ['reports:0', 'formulas:0', 'notes:0:evidence:0']) await click('復元候補に選択', host.querySelector(`[data-preview-key="${key}"]`)!);
+  await click(planLabel); const panel = host.querySelector('.restore-plan')!;
+  expect(panel.querySelector('[data-testid="restore-plan-state"]')?.textContent).toBe('BLOCKED'); expect(panel.textContent).toContain('判定不能 2件'); expect(panel.textContent).toContain('UNKNOWN（検査未完了）');
+  expect([...panel.querySelectorAll('h4')].filter(v => v.textContent?.includes(': UNKNOWN'))).toHaveLength(2);
+  const child = host.querySelector('[data-preview-key="notes:0:evidence:0"]')!; await click('候補から解除', child);
+  expect(panel.querySelector('[data-testid="restore-plan-state"]')?.textContent).toContain('STALE'); expect(panel.querySelectorAll('article')).toHaveLength(0);
+  await click(planLabel); expect(panel.textContent).toContain('判定不能 2件'); expect([...panel.querySelectorAll('h4')].filter(v => v.textContent?.includes(': UNKNOWN'))).toHaveLength(2);
+  localStorage.setItem(STORAGE_KEY, source + ' '); await click(planLabel); expect(panel.querySelector('[data-testid="restore-plan-state"]')?.textContent).toContain('STALE');
+  await click(compareLabel); await click(planLabel); expect(panel.textContent).toContain('判定不能 2件');
+ });
  it("shows opaque settings references as UNKNOWN instead of a zero-unknown PASS", async () => { const raw = JSON.stringify({ ...data, settings: { ...data.settings, futureReference: { id: 'unknown' } } }); localStorage.setItem(STORAGE_KEY, raw); await mount(); await upload(backup(raw)); await click(compareLabel); await click('復元候補に選択', host.querySelector('[data-preview-key]')!); await click(planLabel); expect(host.querySelector('[data-testid="restore-plan-state"]')?.textContent).toBe('UNKNOWN'); expect(host.textContent).toContain('復元後の参照判定不能・曖昧: 1件'); expect(host.textContent).not.toContain('事前検証PASS'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); });
  it("bounds a full 200-item plan to 20 rendered items and preserves the last page", async () => { const b = parseSelectionBackup(backup(JSON.stringify({ ...data, history: Array.from({ length: 200 }, (_, i) => ({ ...data.history[0], id: `bulk-${i}` })) }))); const c = parseSelectionCurrent(source); if (!b.ok || !c.ok) throw Error('fixture'); const plan = generateRestorePlan({ backup: b.preview, current: c.preview, selectedKeys: b.preview.items.filter(v => v.category === 'history').map(v => v.key) }); await act(async () => root.render(createElement(RestorePlanPanel, { plan, stale: '', onGenerate: vi.fn(), disabled: false }))); expect(host.querySelectorAll('article')).toHaveLength(20); for (let i = 0; i < 9; i++) await click('次の計画項目'); expect(host.querySelectorAll('article')).toHaveLength(20); expect(host.querySelector('article')?.textContent).toContain('bulk-180'); expect(button('次の計画項目').disabled).toBe(true); expect(host.querySelectorAll('pre').length).toBeLessThanOrEqual(20); });
  it("returns focus to the preview launcher even when touch did not focus it", async () => { await mount(); expect(document.activeElement?.textContent).not.toBe('選択復元プレビュー'); await click('プレビューを閉じる'); expect(document.activeElement).toBe(button('選択復元プレビュー')); });

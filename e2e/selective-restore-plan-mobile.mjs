@@ -1,6 +1,7 @@
 import { chromium, webkit } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { runReferenceReviewRegression } from './selective-restore-plan-review-mobile.mjs';
 const base = process.env.RESTORE_PLAN_TEST_URL || 'http://127.0.0.1:4195/calculator-memo/';
 const key = 'calculation-memo:data';
 const at = '2026-11-01T00:00:00.000Z';
@@ -65,7 +66,9 @@ try {
         await upload('{broken'); await dialog.getByRole('alert').waitFor(); assert.equal(await dialog.getByTestId('restore-plan-state').count(), 0); result.verified.push('replacement invalid JSON discards old plan');
         assert.deepEqual(await stored(), original); assert.deepEqual(await page.evaluate(() => window.__planWrites), []); assert.equal(await dialog.getByRole('button', { name: '復元を実行する', exact: true }).count(), 0);
         await tap(dialog.getByRole('button', { name: 'プレビューを閉じる', exact: true })); assert.equal(await entrance.evaluate(e => e === document.activeElement), true, 'modal returns focus'); assert.deepEqual(await stored(), original); assert.deepEqual(await page.evaluate(() => window.__planWrites), []); assert.deepEqual(errors, []); result.observedTouchStarts = await page.evaluate(() => window.__planTouch); assert.ok(result.observedTouchStarts >= result.touches);
-        result.verified.push('current/recovery/other raw unchanged, app set/remove/clear zero, native emulated touches, close focus, no errors'); result.status = 'passed';
+        result.verified.push('current/recovery/other raw unchanged, app set/remove/clear zero, native emulated touches, close focus, no errors');
+        result.reviewRegression = await runReferenceReviewRegression(browser, { base, engine: name, width, theme });
+        result.status = 'passed';
         await context.tracing.stop();
       } catch (error) { result.status = 'failed'; result.error = String(error); await page.screenshot({ path: `gui-evidence/restore-plan-${name}-${width}-${theme}-failure.png` }).catch(() => {}); await context.tracing.stop({ path: `gui-evidence/restore-plan-${name}-${width}-${theme}-trace.zip` }).catch(() => {}); throw error; }
       finally { result.finishedAt = new Date().toISOString(); await save(); await context.close(); }

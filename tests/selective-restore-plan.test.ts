@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { generateRestorePlan } from '../lib/selective-restore-plan';
-import { parseSelectionBackup, parseSelectionCurrent, type PreviewDocument } from '../lib/selection-preview';
+import { inspectPreviewReferences, parseSelectionBackup, parseSelectionCurrent, type PreviewDocument } from '../lib/selection-preview';
 const at = '2026-11-01T00:00:00.000Z';
 const base = { version: 1, history: [], notes: [], settings: { theme: 'light', activePanel: 'history' } };
 const history = (id: string, result = 2) => ({ id, expression: '1+1', displayExpression: '1+1', result, resultText: String(result), createdAt: at });
@@ -20,6 +20,41 @@ function backup(data: unknown = base, raw = JSON.stringify(data)): PreviewDocume
 }
 function plan(b: PreviewDocument, c = current(), keys = b.items.filter(v => v.category !== 'other').map(v => v.key)) { return generateRestorePlan({ backup: b, current: c, selectedKeys: keys }); }
 describe('stage two pure restore planning acceptance', () => {
+  it.each(['plain', 'unknown', 'malformed'])('R1 confirmation body shares preview reference diagnostics without rewriting: %s', kind => {
+    const body = kind === 'plain' ? 'ordinary frozen text' : kind === 'unknown' ? '```calculator-memo-future-reference\n{"memoId":"missing"}\n```' : '```calculator-memo-evidence\n{broken\n```';
+    const data = { ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [{ ...confirmation, body }] } }] } };
+    const b = backup(data), c = current(data); const original = JSON.stringify([b, c]);
+    const item = b.items.find(v => v.category === 'confirmations')!;
+    const preview = inspectPreviewReferences(item, b); const p = plan(b, c, [item.key]);
+    expect(p.status).toBe(kind === 'plain' ? 'PASS' : 'UNKNOWN');
+    expect(p.items[0].proposedOperation).toBe('UNCHANGED');
+    const unsupported = preview.filter(v => v.status !== 'found');
+    expect(unsupported).toHaveLength(kind === 'plain' ? 0 : 1);
+    expect(p.counts.unknownReferences).toBe(unsupported.length);
+    expect(p.items[0].references.filter(v => v.namespace === 'after' && v.status !== 'FOUND')).toHaveLength(unsupported.length);
+    expect(p.counts.unknown).toBe(kind === 'plain' ? 0 : 1);
+    expect(JSON.stringify([b, c])).toBe(original);
+  });
+  it.each([false, true])('R2 retains local UNKNOWN and dependencies when unrelated child blocks the full candidate (reverse=%s)', reverse => {
+    const b = backup({ ...base, history: [history('unrelated')], formulaLibrary: { ...library(), entries: [{ ...formula(), futureReference: 'opaque dependency' }] }, formulaReports: { version: 1, entries: [report] }, notes: [noteEvidence] });
+    const keys = ['reports:0', 'formulas:0', 'notes:0:evidence:0', 'history:0']; if (reverse) keys.reverse();
+    const p = plan(b, current(), keys);
+    expect(p.status).toBe('BLOCKED'); expect(p.candidate.status).toBe('UNKNOWN'); expect(p.candidate.data).toBeNull();
+    for (const category of ['formulas', 'reports']) { const row = p.items.find(v => v.category === category)!; expect(row.operation).toBe('UNKNOWN'); expect(row.unknowns.length).toBeGreaterThan(0); expect(row.reasons.join()).toContain('復元後'); }
+    expect(p.items.find(v => v.category === 'history')?.operation).toBe('ADD');
+    expect(p.items.find(v => v.category === 'evidence')?.operation).toBe('BLOCKED');
+    expect(p.counts.unknown).toBe(2); expect(p.counts.unknownReferences).toBeNull(); expect(p.counts.missingReferences).toBeNull();
+    const without = plan(b, current(), keys.filter(k => k !== 'notes:0:evidence:0'));
+    for (const category of ['formulas', 'reports']) expect(without.items.find(v => v.category === category)?.operation).toBe('UNKNOWN');
+    expect(without.counts.unknown).toBe(2);
+  });
+  it('R2 retains BLOCKED and UNKNOWN grounds together and propagates both', () => {
+    const b = backup({ ...base, formulaLibrary: { ...library(), entries: [{ ...formula(), futureReference: 'opaque' }] }, formulaReports: { version: 1, entries: [report] } });
+    const p = plan(b, current(), ['reports:0', 'formulas:0', 'formulas:0']);
+    expect(p.status).toBe('BLOCKED'); expect(p.counts.unknown).toBe(3);
+    expect(p.items.every(v => v.operation === 'BLOCKED' && v.unknowns.length > 0 && v.blockedReasons.length > 0)).toBe(true);
+    expect(p.items[0].unknowns.join()).toContain('依存');
+  });
   it.each([['reports:0','formulas:0'],['formulas:0','reports:0']])('propagates a selected dependency UNKNOWN independently of selection order %j', (...keys) => { const b = backup({ ...base, formulaLibrary: { ...library(), entries: [{ ...formula(), futureReference: 'opaque' }] }, formulaReports: { version: 1, entries: [report] } }); const p = plan(b, current(), keys); expect(p.items.find(v => v.category === 'reports')?.operation).toBe('UNKNOWN'); expect(p.references.some(v => v.namespace === 'after' && v.target === 'formulas/f' && v.status === 'UNKNOWN')).toBe(true); });
   it('propagates parent UNKNOWN when a covered child is selected before its parent', () => { const b = backup({ ...base, notes: [{ ...noteEvidence, calculationPolicy: { version: 1, mode: 'manual', futureReference: 'opaque' } }] }); const p = plan(b, current(), ['notes:0:evidence:0','notes:0']); expect(p.items[0].coveredBy).toBe('notes:0'); expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.items[0].unknowns.join()).toContain('依存'); });
   it.each(['settings', 'history-execution', 'note-policy'])('does not certify opaque nested reference fields in %s', kind => { const data = kind === 'settings' ? { ...base, history: [history('h')], settings: { ...base.settings, futureReference: { id: 'unknown' } } } : kind === 'history-execution' ? { ...base, history: [{ ...history('h'), formulaExecution: { formulaId: 'f', title: 'formula', expression: 'x+1', inputs: { x: '2' }, futureReference: { id: 'unknown' } } }], formulaLibrary: library() } : { ...base, notes: [{ ...note(), calculationPolicy: { version: 1, mode: 'manual', futureReference: { id: 'unknown' } } }] }; const b = backup(data); const p = plan(b, current(data), [kind === 'note-policy' ? 'notes:0' : 'history:0']); expect(p.status).toBe('UNKNOWN'); expect(p.references.some(v => v.namespace === 'after' && v.status === 'UNSUPPORTED')).toBe(true); });

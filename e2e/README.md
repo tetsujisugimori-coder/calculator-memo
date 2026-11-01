@@ -720,3 +720,9 @@ Pages build後 `node e2e/run-recovery-gui.mjs`。専用4193番を所有し、配
 Eight fresh synthetic-only contexts cover Chromium/WebKit × 375/390 CSS px × light/dark, all with 200% root font-size and native emulated touch activation. They check valid and rejected upload, category list, literal escaped details, same/different/absent comparisons, missing backup reference, temporary selection/unselection, replacement-file invalidation, storage notification, real second-tab and same-tab invalidation, explicit re-acquisition, read failure UNKNOWN, long text layout, and absence of any restore execution action. An application-page Storage method spy must observe **zero** setItem/removeItem/clear calls across opening, inspecting, comparing, selecting, errors and closing. Synthetic writer-page changes and the same-tab test fixture write are explicitly outside that spy; final exact primary/recovery/unrelated values must match the initial fixture.
 
 Artifacts: `selection-preview-results.json`, `selection-preview-provenance.json`, `selection-preview-ci-outcomes.json`, owned-server log and selected/UNKNOWN representative PNGs. Incomplete cases or missing engines fail the runner; a static contract success is not browser success. Local dirty work is labelled dirty and is not final-HEAD evidence. CSS root-size stress and emulated touches are not physical iPhone Safari, VoiceOver, native OS text-size or OS-file-save verification.
+
+## 選択復元計画 R1/R2 回帰（PR #115）
+
+`node e2e/run-selective-restore-plan-gui.mjs` は既存の計画8条件に加え、各条件で `selective-restore-plan-review-mobile.mjs` を必ずawaitする。確認履歴の未知fenceはUNKNOWN、preview/詳細/計画の参照件数一致、禁止子込み・解除・再選択時の式/レポートUNKNOWN、選択/current raw変更のSTALEと明示再検証を確認する。原独立レビューと同じfixtureを使うが、修正の期待値を検証する実装担当の自己試験であり独立再レビューではない。
+
+合成backupファイルのbytes、current原文・保全slot・他key不変、appのsetItem/removeItem/clear各0、Space・focus復帰・native touch・CSS200%・両theme・375/390pxを検証。各条件は既存PNG2枚＋R1/R2 PNG3枚（計40PNG）を保存。既存の15分job/5分GUIを延長せず、正式6条件/1128/592/132/3workers/30分へ加算しない。

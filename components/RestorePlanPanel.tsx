@@ -15,6 +15,7 @@ export function RestorePlanPanel({ plan, stale, onGenerate, disabled }: { plan: 
     {plan && !stale && <>
       <p>選択 {counts!.selected}件 / 追加予定 {counts!.add}件 / 上書き候補 {counts!.replace}件 / 変更不要 {counts!.unchanged}件</p>
       <p>実行禁止 {counts!.blocked}件 / 判定不能 {counts!.unknown}件 / 復元後の参照不足 {counts!.missingReferences === null ? 'UNKNOWN（検査未完了）' : `${counts!.missingReferences}件`}</p>
+      <p>同じ項目に実行禁止と判定不能の両方の根拠がある場合、それぞれの件数に含みます。</p>
       <p>復元後の参照判定不能・曖昧: {counts!.unknownReferences === null ? 'UNKNOWN（検査未完了）' : `${counts!.unknownReferences}件`}</p>
       <p>構造検証: {plan.candidate.status} / {plan.candidate.message}</p>
       <p>原文保持: {plan.lexical.status} / {plan.lexical.message}</p>

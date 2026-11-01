@@ -259,15 +259,16 @@ export function inspectPreviewReferences(item: PreviewItem, doc: PreviewDocument
         }
       }
     }
-    if (item.category === 'reports' && typeof v.body === 'string' && typeof v.formulaId === 'string') {
-      if (v.body.length > 100000) add('unparseable', 'report.body', '本文解析上限を超えています。本文を切り捨てて正常扱いしません。');
+    if ((item.category === 'reports' || item.category === 'confirmations') && typeof v.body === 'string' && typeof v.formulaId === 'string') {
+      const bodyTarget = item.category === 'confirmations' ? 'confirmation.body' : 'report.body';
+      if (v.body.length > 100000) add('unparseable', bodyTarget, '本文解析上限を超えています。本文を切り捨てて正常扱いしません。');
       else try {
         for (const block of parseMarkdownBlocks(v.body)) if (block.kind === 'code' && block.language.startsWith('calculator-memo-')) {
           if (!['calculator-memo-evidence', 'calculator-memo-difference', 'calculator-memo-audit-record', 'calculator-memo-audit-comparison-record'].some(prefix => block.language.startsWith(prefix))) add('unsupported', block.language, '未対応の本文内構造化形式です。参照先を推定しません。');
           else { parseStrictJson(block.text); if (!exactNumericTokens(block.text)) throw Error('構造化参照の数値精度を確認できません。'); }
         }
         const audit = parseReportAudit(v.body, v.formulaId);
-        if (!audit.complete) add('unparseable', 'report.body', audit.reason);
+        if (!audit.complete) add('unparseable', bodyTarget, audit.reason);
         for (const a of audit.items) {
           const quote = a.quote?.snapshot ?? a.difference?.snapshot?.quote;
           if (!quote) { add('unsupported', a.key, a.reason); continue; }
@@ -283,7 +284,7 @@ export function inspectPreviewReferences(item: PreviewItem, doc: PreviewDocument
           if (!a.metadata) add('unsupported', 'audit-comparison', a.reason);
           else { resolve('formulas', a.metadata.formulaId); resolve('reports', a.metadata.reportId); add('unsupported', `audit-comparison/${a.metadata.beforeRecordId}/${a.metadata.afterRecordId}`, '固定比較資料A/Bの記録IDを表示。過去点検記録への対応付けは今回未対応です。'); }
         }
-      } catch { add('unparseable', 'report.body', '本文の構造化参照を安全に解析できません。'); }
+      } catch { add('unparseable', bodyTarget, '本文の構造化参照を安全に解析できません。'); }
     }
     if (item.category === 'other') add('unsupported', item.key, '設定・その他の値は表示のみ。任意の未知フィールドの参照意味は推測しません。');
   }
