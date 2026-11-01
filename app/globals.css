@@ -600,3 +600,7 @@ fieldset { border: 0; padding: 0; margin: 0; } fieldset legend { font-size: 12px
 .modal:has(> .modal-content > .selection-preview) > .modal-header > .icon-button { min-width: 44px; min-height: 44px; flex-shrink: 0; }
 /* Reserve space for Japanese hanging closing punctuation at 200% text size. */
 .selection-preview p { min-width: 0; max-width: 100%; padding-inline-end: .5em; }
+.restore-plan { border: 2px solid var(--line); border-radius: .5rem; padding: .65rem; margin-block: 1rem; }
+.restore-plan li, .restore-plan h4, .restore-plan summary { min-width: 0; max-width: 100%; line-break: anywhere; overflow-wrap: anywhere; }
+.restore-plan ul { padding-inline-start: 1.2em; padding-inline-end: .5em; }
+.restore-plan summary { min-height: 44px; cursor: pointer; }

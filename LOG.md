@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-01 (JST): 選択復元の実行計画・安全判定（第2段階）
+
+- Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114)へ承認済み依頼全492行を記録・読戻し一致。main528a6a0a/tree17ae5b55、#113 mergedを確認し隔離clone/専用枝で開始。[事前受入・型別規則](docs/design/selective-restore-plan.md)。
+- 選択からADD/REPLACE/UNCHANGED/禁止/UNKNOWN、親子scope/ID衝突、3時点参照と残存項目への影響、version1仮構築をpure関数で検証。原文字句保持方式は未確立なので変更計画は実行BLOCKED。保存API・保全・評価・snapshot更新・実行承認を追加しない。
+- 選択/file/比較/原文/世代/保存条件変更で旧計画をSTALEへ。明示再取得/再生成のみ。UIの一覧/参照/前後内容をページ分割し、タッチ入口のfocus復帰欠陥は単体RED→局所修正GREEN。[自己検証・初回失敗と限界](docs/maintenance/selective-plan-20261101/verification.md)。
+- core43/UI23成功、最終全単体116files/2533成功、型・lint・両build成功。初回2531/2532は既存fixture CRLF差1件で保持。独立GUI8/8・88touch・16PNG成功（dirty提出前版）。正式契約のWindows経路差9件はUbuntu CIへ引継ぎ。最終commitの正式CI/独立GUI/成果物は確認待ち、Draft PR未作成。独立レビューは別工程で未実施。未検証を先取りしない。
+- 正式6/1128/592/132/3workers/30分・既存workflow/scenarioは不変。WebKit遅延根因UNKNOWN、実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証。main変更/merge/auto-merge/Ready/公開なし。第3段階はlossless編集・直前再照合・保全・承認・排他・読戻しを別途設計する。
+
 ## 2026-11-01 (JST): PR #113 WebKit actionability待機の継続診断
 
 - 本人の再依頼により6e34a40から独立cloud checkoutで継続。main2549c8c・既存成果を保全。21ZIP/251,393,260bytesと21jobログを再取得しhash/CRC/出典を記録。[計画・限界](docs/maintenance/pr113-webkit-resume-20261101/README.md)。

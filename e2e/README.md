@@ -1,5 +1,9 @@
 # PR GUI regression
 
+## 選択復元計画（第2段階）の独立受入
+
+`node e2e/run-selective-restore-plan-gui.mjs` は所有loopback previewとexact HEADの配信照合後、Chromium/WebKit ×375/390 ×light/dark・CSS200%の8条件を実行する。UNCHANGED事前検証PASS、ADDの構造PASS/原文保持BLOCKED、選択/別page/同タブ/読取失敗/ファイル変更の失効、keyboard Space・focus復帰、長ID・44px・横幅、current/recovery/other原文不変・app set/remove/clear=0を検査。2PNG/条件、失敗時trace、進捗JSONを保存する。独立workflow `selective-restore-plan.yml`（15分job/GUI5分）で既存正式6/1128/592/132/3workers/30分と別評価。実機Safari/VoiceOver/OS文字拡大/ソフトキーボードは未検証。自己検証であり独立レビューではない。
+
 ## PR #113 fixed quote overflow regression
 
 `node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control` replays the exact synthetic storage, two quote UUIDs/timestamps and 1844-character inserted bodies from run 41192402203. The diagnostic fixes generation only in the test page; production UUIDs, clocks and storage formats remain unchanged. It records visible versus closed-details geometry/styles, all-character ranges and isolated temporary causal interventions. The repaired paragraph alone receives `line-break:anywhere`; restoring its old line breaking must expose overflow in the fixed non-touch 390px condition.

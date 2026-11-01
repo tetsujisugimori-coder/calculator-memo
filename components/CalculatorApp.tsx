@@ -60,6 +60,9 @@ export function CalculatorApp() {
   const previewOpenRef = useRef(false);
   const previewEpoch = useRef(0);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const previewLauncher = useRef<HTMLButtonElement>(null);
+  const previewReturnPending = useRef(false);
+  useEffect(() => { if (!previewOpen && previewReturnPending.current) { previewReturnPending.current = false; previewLauncher.current?.focus(); } }, [previewOpen]);
   const restoreOpenRef = useRef(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
   const recoveryOpenRef = useRef(false);
@@ -439,7 +442,7 @@ export function CalculatorApp() {
 
       <p role={hasUnsavedChanges ? "status" : undefined} aria-hidden={!hasUnsavedChanges} data-testid={hasUnsavedChanges ? "unsaved-changes" : undefined} style={{ visibility: hasUnsavedChanges ? "visible" : "hidden" }}>未保存です。再読み込み・終了に注意。</p>
       {storageConflict && <p role="alert" className="field-error">{storageConflict}</p>}
-      <div className="backup-entry" inert={restoreOpen || recoveryOpen || previewOpen}><button className="button-secondary" type="button" onClick={() => setBackupOpen(true)}>データのバックアップ</button><button className="button-secondary" type="button" onClick={openRestore}>JSONから復元</button><button className="button-secondary" type="button" onClick={openRecovery}>復旧コピーを管理</button><button className="button-secondary" type="button" disabled={storageStatus === "loading"} onClick={() => { if (restoreOpenRef.current || recoveryOpenRef.current || previewOpenRef.current) return; previewEpoch.current++; previewOpenRef.current = true; setPreviewOpen(true); }}>選択復元プレビュー</button></div>
+      <div className="backup-entry" inert={restoreOpen || recoveryOpen || previewOpen}><button className="button-secondary" type="button" onClick={() => setBackupOpen(true)}>データのバックアップ</button><button className="button-secondary" type="button" onClick={openRestore}>JSONから復元</button><button className="button-secondary" type="button" onClick={openRecovery}>復旧コピーを管理</button><button ref={previewLauncher} className="button-secondary" type="button" disabled={storageStatus === "loading"} onClick={() => { if (restoreOpenRef.current || recoveryOpenRef.current || previewOpenRef.current) return; previewEpoch.current++; previewOpenRef.current = true; setPreviewOpen(true); }}>選択復元プレビュー</button></div>
       {storageIssue && <StorageRecoveryBanner reason={storageIssue.reason} message={storageIssue.message} protectionReason={storageIssue.protectionReason} onExport={exportOriginal} canCopy={storageIssue.raw !== null} onCopy={() => storageIssue.raw !== null && copy(storageIssue.raw, "元の保存データ")} onReset={confirmStorageReset} />}
 
       <section className="workspace" id="calculator" inert={storageStatus !== "ready" || restoreOpen || recoveryOpen || previewOpen}>
@@ -473,7 +476,7 @@ export function CalculatorApp() {
       {noteEditor && <NoteModal initial={noteEditor.draft} onSave={saveNote} onClose={() => setNoteEditor(null)} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {plainNoteEditor && <PlainNoteModal key={"id" in plainNoteEditor.draft ? plainNoteEditor.draft.id : "new-memo"} initial={plainNoteEditor.draft} sourceRevision={JSON.stringify([plainNoteEditor.editingId ? data.notes.find(note => note.id === plainNoteEditor.editingId) ?? null : null, storageConflict, storageStatus])} onSave={savePlainNote} onClose={() => { explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false); setPlainNoteEditor(null); }} onOpenGuide={(insert) => { setGuideInsert(() => insert); setGuideOpen(true); }} />}
       {createMenuOpen && <CreateMemoModal canCreateSingleCalculation={afterEquals && !error} onClose={() => setCreateMenuOpen(false)} onBlocks={() => { setCreateMenuOpen(false); setPlainNoteEditor({ draft: { title: "", content: "" } }); }} onSingleCalculation={() => { setCreateMenuOpen(false); openCurrentNote(); }} />}
-      {previewOpen && <SelectionPreviewModal generation={renderGeneration} getGeneration={() => dataGeneration.current} onClose={() => { previewOpenRef.current = false; setPreviewOpen(false); }} />}
+      {previewOpen && <SelectionPreviewModal generation={renderGeneration} getGeneration={() => dataGeneration.current} blockedReason={recoveryBlocked} onClose={() => { previewReturnPending.current = true; previewOpenRef.current = false; setPreviewOpen(false); }} />}
       {restoreOpen && <RestoreModal blockedReason={restoreBlocked} generation={renderGeneration}
         canApply={() => restoreAllowed.current && restoreOpenRef.current && dataGeneration.current === restoreGeneration.current}
         onApplied={applyRestored} onUncertain={protectUncertainRestore}

@@ -21,7 +21,7 @@ export type PreviewDocument = {
 };
 export type PreviewResult = { ok: true; preview: PreviewDocument } | { ok: false; message: string };
 export type PreviewComparison = { status: 'absent' | 'same' | 'different' | 'ambiguous' | 'unknown' | 'stale' | 'read-error' | 'unacquired'; message: string };
-export type PreviewReference = { namespace: 'backup' | 'current'; status: 'found' | 'missing' | 'ambiguous' | 'unsupported' | 'unparseable'; target: string; message: string };
+export type PreviewReference = { namespace: 'backup' | 'current'; status: 'found' | 'missing' | 'ambiguous' | 'unsupported' | 'unparseable'; target: string; message: string; targetIdentity?: string };
 const labels: Record<PreviewCategory, string> = { history: '計算履歴', notes: '数学メモ', formulas: '登録式', executions: '登録式の実行入力', reports: '数学レポート', evidence: '計算根拠記録（メモ内）', confirmations: '確認履歴（レポート内）', other: '設定・その他／未対応データ' };
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
 const id = (v: unknown): string | null => typeof v === 'string' && v.trim().length > 0 ? v : null;
@@ -84,12 +84,12 @@ function exactNumericTokens(raw: string): boolean {
   }
   return true;
 }
-function sameStructure(a: unknown, b: unknown): boolean {
+export function samePreviewStructure(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) return true;
-  if (Array.isArray(a)) return Array.isArray(b) && a.length === b.length && a.every((v, i) => sameStructure(v, b[i]));
+  if (Array.isArray(a)) return Array.isArray(b) && a.length === b.length && a.every((v, i) => samePreviewStructure(v, b[i]));
   if (!object(a) || !object(b)) return false;
   const keys = Object.keys(a);
-  return keys.length === Object.keys(b).length && keys.every(key => Object.hasOwn(b, key) && sameStructure(a[key], b[key]));
+  return keys.length === Object.keys(b).length && keys.every(key => Object.hasOwn(b, key) && samePreviewStructure(a[key], b[key]));
 }
 function document(raw: string | null, namespace: PreviewDocument['namespace']): PreviewDocument {
   if (raw === null) {
@@ -194,7 +194,7 @@ export function comparePreviewItem(item: PreviewItem, backup: PreviewDocument, c
   if (source.length !== 1 || targets.length > 1) return { status: 'ambiguous', message: '同じ種類・親スコープ内のIDが重複しています。対応付けはUNKNOWNです。' };
   if (item.validation !== 'valid' || backup.validation !== 'valid' || current.validation !== 'valid' || targets.some(v => v.validation !== 'valid')) return { status: 'unknown', message: '保存形式または項目を完全検証できないためUNKNOWNです。' };
   if (!targets.length) return { status: 'absent', message: '取得した現在データに対応IDは存在しません。復元可能性は未判定です。' };
-  return sameStructure(item.value, targets[0].value) ? { status: 'same', message: '種類・親スコープ・識別キー（設定は固定フィールド）が一意でJSON構造の内容が一致。原文文字列の完全一致ではありません。' } : { status: 'different', message: '種類・親スコープ・識別キー（設定は固定フィールド）が一意ですがJSON構造の内容が異なります。' };
+  return samePreviewStructure(item.value, targets[0].value) ? { status: 'same', message: '種類・親スコープ・識別キー（設定は固定フィールド）が一意でJSON構造の内容が一致。原文文字列の完全一致ではありません。' } : { status: 'different', message: '種類・親スコープ・識別キー（設定は固定フィールド）が一意ですがJSON構造の内容が異なります。' };
 }
 
 /** Structural lookups only. Nothing is evaluated, regenerated, repaired or saved.
@@ -207,11 +207,13 @@ export function inspectPreviewReferences(item: PreviewItem, doc: PreviewDocument
   const resolve = (category: PreviewCategory, targetId: unknown, scope: string | null = null) => {
     const identifier = id(targetId); const target = `${category}/${scope === null ? '' : `${scope}/`}${identifier ?? 'UNKNOWN'}`;
     if (identifier === null) { add('unparseable', target, '参照IDの型または値が不明です。'); return; }
-    const found = indexes.get(doc)?.get(identity(category, scope, identifier)) ?? [];
+    const targetIdentity = identity(category, scope, identifier);
+    const found = indexes.get(doc)?.get(targetIdentity) ?? [];
     if (found.length > 1) add('ambiguous', target, '参照先候補が複数あります。');
     else if (!found.length) add('missing', target, 'この原文内には参照先がありません。他の原文から補完しません。');
     else if (found[0].validation !== 'valid') add('unparseable', target, '参照先は1件ですが完全検証できません。');
     else add('found', target, 'この原文内で参照先を一意に確認。復元後の整合性保証ではありません。');
+    result[result.length - 1].targetIdentity = targetIdentity;
   };
   const links = (v: unknown) => {
     if (!Array.isArray(v)) { add('unparseable', 'evidence.links', '参照配列を解析できません。'); return; }

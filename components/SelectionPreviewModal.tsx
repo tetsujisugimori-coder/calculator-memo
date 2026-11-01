@@ -5,6 +5,8 @@ import { MAX_RESTORE_FILE_BYTES } from "../lib/restore-validation";
 import { STORAGE_KEY } from "../lib/storage";
 import { RECOVERY_CHANGED_EVENT } from "../lib/recovery-manager";
 import { Modal } from "./Modal";
+import { generateRestorePlan, PLAN_RULE_VERSION, type RestorePlan } from "../lib/selective-restore-plan";
+import { RestorePlanPanel } from "./RestorePlanPanel";
 
 const PAGE_SIZE = 20;
 const DETAIL_SIZE = 4000;
@@ -18,7 +20,7 @@ function ReferenceList({ references }: { references: PreviewReference[] }) {
 }
 
 /** Pure inspection UI: intentionally has no save, restore, download or recovery mutation capability. */
-export function SelectionPreviewModal({ onClose, generation, getGeneration }: { onClose: () => void; generation: number; getGeneration: () => number }) {
+export function SelectionPreviewModal({ onClose, generation, getGeneration, blockedReason = "" }: { onClose: () => void; generation: number; getGeneration: () => number; blockedReason?: string }) {
   const [backup, setBackup] = useState<PreviewDocument | null>(null);
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
@@ -34,6 +36,11 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration }: { 
   const [detailPage, setDetailPage] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectionMessage, setSelectionMessage] = useState("");
+  const [plan, setPlan] = useState<{ result: RestorePlan; backup: PreviewDocument; snapshot: Snapshot; selectionState: Set<string>; condition: string; rules: number; invalidated: boolean } | null>(null);
+  const selectionRevision = useRef(0);
+  const selectedRef = useRef(new Set<string>());
+  const conditionRef = useRef(blockedReason);
+  useLayoutEffect(() => { if (conditionRef.current !== blockedReason) { conditionRef.current = blockedReason; setPlan(previous => previous ? { ...previous, invalidated: true } : null); } }, [blockedReason]);
   const snapshot = useRef<Snapshot | null>(null);
   const activeBackup = useRef<PreviewDocument | null>(null);
   const alive = useRef(true);
@@ -76,7 +83,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration }: { 
   const chooseFile = async (file: File | undefined) => {
     const request = ++fileRequest.current;
     activeBackup.current = null;
-    setBackup(null); setSelected(new Set()); setDetail(null); setCategory("all"); setPage(0); setError(""); setSelectionMessage("");
+    setBackup(null); selectedRef.current = new Set(); selectionRevision.current++; setSelected(new Set()); setPlan(null); setDetail(null); setCategory("all"); setPage(0); setError(""); setSelectionMessage("");
     snapshot.current = null; setReadIssue(""); setCurrent(null); setAvailability("unacquired");
     setFileName(file?.name ?? ""); setLoading(false);
     if (!file) return;
@@ -120,9 +127,20 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration }: { 
   const toggle = (key: string) => {
     if (!backup || activeBackup.current !== backup) return;
     if (snapshot.current) verify();
-    setSelected(previous => { const next = new Set(previous); if (next.has(key)) next.delete(key); else if (next.size < SELECTION_LIMIT) next.add(key); return next; });
+    const next = new Set(selectedRef.current); if (next.has(key)) next.delete(key); else if (next.size < SELECTION_LIMIT) next.add(key);
+    selectedRef.current = next; selectionRevision.current++; setSelected(next);
     setSelectionMessage(selected.size >= SELECTION_LIMIT && !selected.has(key) ? `一度に選べる候補は${SELECTION_LIMIT}件までです。解除してから選択してください。` : "");
   };
+  const generatePlan = () => {
+    if (!backup || activeBackup.current !== backup || !verify()) return;
+    const captured = snapshot.current;
+    if (!captured) return;
+    const revision = selectionRevision.current; const request = fileRequest.current; const condition = conditionRef.current;
+    const result = generateRestorePlan({ backup, current: captured.document, selectedKeys: [...selectedRef.current], availability: "ready", blockedReason: condition });
+    if (!verify() || snapshot.current !== captured || activeBackup.current !== backup || fileRequest.current !== request || selectionRevision.current !== revision || conditionRef.current !== condition) return;
+    setPlan({ result, backup, snapshot: captured, selectionState: selectedRef.current, condition, rules: PLAN_RULE_VERSION, invalidated: false });
+  };
+  const planStale = plan && (plan.invalidated || plan.backup !== backup || plan.snapshot !== current || effectiveAvailability !== "ready" || plan.selectionState !== selected || plan.condition !== blockedReason || plan.rules !== PLAN_RULE_VERSION) ? "ファイル・選択・比較・保存状態・検証条件が変更されました。" : "";
   const currentDetail = detail && current && effectiveAvailability === "ready" && detail.identity !== null && ["same", "different"].includes(compare(detail).status) ? current.document.items.filter(item => item.identity === detail.identity && item.category === detail.category && item.scope === detail.scope) : [];
   const detailText = useMemo(() => detail ? JSON.stringify(detail.value, null, 2) ?? "UNKNOWN" : "", [detail]);
   const availabilityText = { ready: "取得時点の比較（継続的な同一性保証ではありません）", stale: "比較失効: 現在データの変更を検知しました。明示的に再取得してください。", invalid: readIssue || "現在原文は検証不能（UNKNOWN）です。", "read-error": readIssue || "現在データ: UNKNOWN。比較の成功表示を取り消しました。", unacquired: "現在データは未取得（UNKNOWN）" };
@@ -146,6 +164,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration }: { 
         <p>バックアップ内の参照先不足: {summary.missing}件 / 参照判定不能・未対応: {summary.unknownRefs}件</p>
         {selectionMessage && <p role="status">{selectionMessage}</p>}
       </section>
+      <RestorePlanPanel plan={plan?.result ?? null} stale={planStale} onGenerate={generatePlan} disabled={loading || !current || effectiveAvailability !== "ready" || chosen.length === 0} />
       <label className="preview-filter">データ分類<select aria-label="データ分類" value={category} onChange={event => { setCategory(event.target.value); setPage(0); }}>{[{ category: "all", label: "すべて", count: backup.items.length }, ...backup.categories].map(entry => <option key={entry.category} value={entry.category}>{entry.label}（{entry.count === null ? "UNKNOWN" : `${entry.count}件`}）</option>)}</select></label>
       <p>{filtered.length}件中 {filtered.length ? page * PAGE_SIZE + 1 : 0}〜{Math.min(filtered.length, (page + 1) * PAGE_SIZE)}件を表示</p>
       {filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(item => <article key={item.key} data-preview-key={item.key}>
