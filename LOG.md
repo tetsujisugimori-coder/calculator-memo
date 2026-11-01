@@ -10,6 +10,7 @@
 - Draft [#115](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115) を47eb804/tree1b77ea9fで提出。旧計画CI41303393061の8/8とZIP digest/CRC/16PNG/HEAD/treeを照合後、自己点検で未知の入れ子参照の偽PASS P2を3件REDで再現。計画専用の非対応検査と参照不明件数へ局所補正しGREEN。修正後116files/2538（core46/UI25）・lint/type/両build成功。最終HEADのCI・成果物はPRで別確認し、旧正式の進行中/中止を新成功へ置換しない。独立レビューは未実施。
 - 同P2の追加対照でUNCHANGED選択項目の参照先がbackup/currentで異なる偽PASS1件もRED再現。選択出典を変更不要時もbackupとして照合する局所補正後、core47/UI25・全2539件成功。新HEADの正式/独立CI終端・成果物はPRで別確認する。旧47/764の成功や取消を混算しない。
 - 依存影響の追加3対照で、全体禁止は維持されても、関連行のUNKNOWN伝播が選択順に依存することをRED再現。直接判定後の有限逆依存グラフへ局所補正し、core50/UI25・全2542件、lint/type/両build成功。最終候補のCI終端・成果物はPRへ追記し、旧候補の進行中/取消/成功を混算しない。
+- 未知数値の既存4対照を予定操作まで強化し、実効UNKNOWNでも予定REPLACEを残す表示をRED検出。厳密検証valid時だけ予定を認定する1条件補正後、全2542・lint/type/両build成功。[参照7件・数値4件・focusの追跡表](docs/maintenance/selective-plan-20261101/negative-controls.md)を追加。旧bed取消はAPI注記で新pr-gui-115要求によるconcurrencyと確定し、18m44・保存562/282/64・欠測を保全。30分timeoutとは区別する。
 
 ## 2026-11-01 (JST): PR #113 WebKit actionability待機の継続診断
 

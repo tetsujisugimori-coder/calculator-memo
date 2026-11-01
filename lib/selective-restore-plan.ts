@@ -108,7 +108,7 @@ export function generateRestorePlan(input: Input): RestorePlan {
       if (counts.get(key)! > 1) row.blockedReasons.push('同一項目が複数回選択されています。');
       if (!item.identity || item.id === null) row.unknowns.push('独立した識別子がない、または設定・未知領域です。');
       if (group(backup, item.identity).length > 1 || targets.length > 1) { row.collision = true; row.blockedReasons.push('同一種別・親スコープ内でIDが重複しています。'); }
-      if (usable && item.identity && targets.length <= 1 && group(backup, item.identity).length === 1) {
+      if (usable && item.identity && targets.length <= 1 && group(backup, item.identity).length === 1 && item.validation === 'valid' && backup.validation === 'valid' && current?.validation === 'valid' && targets.every(target => target.validation === 'valid')) {
         row.proposedOperation = !targets.length ? 'ADD' : samePreviewStructure(item.value, targets[0].value) ? 'UNCHANGED' : 'REPLACE';
         row.collision ||= row.proposedOperation === 'REPLACE';
         row.difference = !targets.length ? '現在側に対応IDなし。追加候補。' : row.proposedOperation === 'UNCHANGED' ? '全フィールドの構造・値が一致（原文字句一致とは別）。' : `同一IDの内容差異。上書き候補。差異フィールド: ${object(item.value) && object(targets[0].value) ? [...new Set([...Object.keys(item.value), ...Object.keys(targets[0].value)])].filter(k => !samePreviewStructure((item.value as Record<string, unknown>)[k], (targets[0].value as Record<string, unknown>)[k])).join(', ') : '全体'}`;
