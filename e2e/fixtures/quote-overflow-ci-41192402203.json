@@ -1,0 +1,1308 @@
+{
+  "source": {
+    "run": 41192402203,
+    "artifact": 13040192575,
+    "sha": "730d55e83920da50f7249e1f9adfab674b1e9a57",
+    "seedCall": "call@3780"
+  },
+  "seed": {
+    "version": 1,
+    "history": [
+      {
+        "id": "history-mvw9l6jb-7a09m",
+        "expression": "sqrt(81)+abs(-7)+2^3+pi-pi+e-e",
+        "displayExpression": "sqrt(81) ＋ abs( − 7) ＋ 2^3 ＋ pi − pi ＋ e − e",
+        "result": 24,
+        "resultText": "24",
+        "createdAt": "2026-10-31T10:34:44.951Z"
+      },
+      {
+        "id": "history-mvw9l4a6-tqiyi",
+        "expression": "sqrt(2)",
+        "displayExpression": "sqrt(2)",
+        "result": 1.4142135623730951,
+        "resultText": "1.414213562373",
+        "createdAt": "2026-10-31T10:34:42.030Z"
+      },
+      {
+        "id": "history-mvw9l3h2-d7uy0",
+        "expression": "sqrt(16)+abs(-2)",
+        "displayExpression": "sqrt(16) ＋ abs( − 2)",
+        "result": 6,
+        "resultText": "6",
+        "createdAt": "2026-10-31T10:34:40.982Z"
+      },
+      {
+        "id": "history-mvw9l1lg-a81ng",
+        "expression": "sqrt(16)+abs(-2)",
+        "displayExpression": "sqrt(16) ＋ abs( − 2)",
+        "result": 6,
+        "resultText": "6",
+        "createdAt": "2026-10-31T10:34:38.548Z"
+      },
+      {
+        "id": "history-mvw9l18j-28era",
+        "expression": "3^2",
+        "displayExpression": "3^2",
+        "result": 9,
+        "resultText": "9",
+        "createdAt": "2026-10-31T10:34:38.083Z"
+      },
+      {
+        "id": "history-mvw9l12t-vimza",
+        "expression": "2+1",
+        "displayExpression": "2 ＋ 1",
+        "result": 3,
+        "resultText": "3",
+        "createdAt": "2026-10-31T10:34:37.877Z"
+      },
+      {
+        "id": "history-mvw9kzta-1v0vc",
+        "expression": "sqrt(81)+abs(-7)+2^3+pi-pi+e-e",
+        "displayExpression": "sqrt(81) ＋ abs( − 7) ＋ 2^3 ＋ pi − pi ＋ e − e",
+        "result": 24,
+        "resultText": "24",
+        "createdAt": "2026-10-31T10:34:36.238Z"
+      },
+      {
+        "id": "history-mvw9kzn1-ypcgh",
+        "expression": "e",
+        "displayExpression": "e",
+        "result": 2.718281828459045,
+        "resultText": "2.718281828459",
+        "createdAt": "2026-10-31T10:34:36.013Z"
+      },
+      {
+        "id": "history-mvw9kzfp-4ip70",
+        "expression": "2*pi",
+        "displayExpression": "2 × pi",
+        "result": 6.283185307179586,
+        "resultText": "6.28318530718",
+        "createdAt": "2026-10-31T10:34:35.749Z"
+      },
+      {
+        "id": "history-mvw9kz7v-oywnp",
+        "expression": "sqrt(2)",
+        "displayExpression": "sqrt(2)",
+        "result": 1.4142135623730951,
+        "resultText": "1.414213562373",
+        "createdAt": "2026-10-31T10:34:35.467Z"
+      },
+      {
+        "id": "history-mvw9kz0d-fiddj",
+        "expression": "(-2)^2",
+        "displayExpression": "( − 2)^2",
+        "result": 4,
+        "resultText": "4",
+        "createdAt": "2026-10-31T10:34:35.197Z"
+      },
+      {
+        "id": "history-mvw9kyte-2dmg0",
+        "expression": "-2^2",
+        "displayExpression": "− 2^2",
+        "result": -4,
+        "resultText": "-4",
+        "createdAt": "2026-10-31T10:34:34.946Z"
+      },
+      {
+        "id": "history-mvw9kyku-ouc5k",
+        "expression": "2^3^2",
+        "displayExpression": "2^3^2",
+        "result": 512,
+        "resultText": "512",
+        "createdAt": "2026-10-31T10:34:34.638Z"
+      },
+      {
+        "id": "history-mvw9kxq6-bgt2d",
+        "expression": "1+2",
+        "displayExpression": "1 ＋ 2",
+        "result": 3,
+        "resultText": "3",
+        "createdAt": "2026-10-31T10:34:33.534Z"
+      },
+      {
+        "id": "history-mvw9kxdu-4kogk",
+        "expression": "(50+50)%",
+        "displayExpression": "(50 ＋ 50)%",
+        "result": 1,
+        "resultText": "1",
+        "createdAt": "2026-10-31T10:34:33.090Z"
+      },
+      {
+        "id": "history-mvw9kx4x-bknz7",
+        "expression": "(50+50)",
+        "displayExpression": "(50 ＋ 50)",
+        "result": 100,
+        "resultText": "100",
+        "createdAt": "2026-10-31T10:34:32.769Z"
+      },
+      {
+        "id": "history-mvw9kwzd-9qke9",
+        "expression": "12*2",
+        "displayExpression": "12 × 2",
+        "result": 24,
+        "resultText": "24",
+        "createdAt": "2026-10-31T10:34:32.569Z"
+      },
+      {
+        "id": "history-mvw9kwiq-nlruf",
+        "expression": "(2+3)",
+        "displayExpression": "(2 ＋ 3)",
+        "result": 5,
+        "resultText": "5",
+        "createdAt": "2026-10-31T10:34:31.970Z"
+      },
+      {
+        "id": "history-mvw9kw3c-wxsk2",
+        "expression": "12 × 2",
+        "displayExpression": "12 × 2",
+        "result": 24,
+        "resultText": "24",
+        "createdAt": "2026-10-31T10:34:31.416Z"
+      },
+      {
+        "id": "history-mvw9kvpf-zktkb",
+        "expression": "12 × − 34 ",
+        "displayExpression": "12 × − 34",
+        "result": -408,
+        "resultText": "-408",
+        "createdAt": "2026-10-31T10:34:30.915Z"
+      },
+      {
+        "id": "history-mvw9kuv9-pcr7m",
+        "expression": "12 * 2",
+        "displayExpression": "12 × 2",
+        "result": 24,
+        "resultText": "24",
+        "createdAt": "2026-10-31T10:34:29.829Z"
+      },
+      {
+        "id": "history-mvw9kuf6-uwa8v",
+        "expression": "12 * - 34 ",
+        "displayExpression": "12 × − 34",
+        "result": -408,
+        "resultText": "-408",
+        "createdAt": "2026-10-31T10:34:29.250Z"
+      },
+      {
+        "id": "history-mvw9ksxg-s2acp",
+        "expression": "0.0000002",
+        "displayExpression": "0.0000002",
+        "result": 2e-07,
+        "resultText": "0.0000002",
+        "createdAt": "2026-10-31T10:34:27.316Z"
+      },
+      {
+        "id": "history-mvw9ksjo-psdz7",
+        "expression": "-0.0000001*2",
+        "displayExpression": "− 0.0000001 × 2",
+        "result": -2e-07,
+        "resultText": "-0.0000002",
+        "createdAt": "2026-10-31T10:34:26.820Z"
+      },
+      {
+        "id": "history-mvw9krhy-pbmlf",
+        "expression": "-1/10000000",
+        "displayExpression": "− 1 ÷ 10,000,000",
+        "result": -1e-07,
+        "resultText": "-0.0000001",
+        "createdAt": "2026-10-31T10:34:25.462Z"
+      },
+      {
+        "id": "history-mvw9krdv-ti6b9",
+        "expression": "0.0000001*2",
+        "displayExpression": "0.0000001 × 2",
+        "result": 2e-07,
+        "resultText": "0.0000002",
+        "createdAt": "2026-10-31T10:34:25.315Z"
+      },
+      {
+        "id": "history-mvw9kqbg-8xv9k",
+        "expression": "1/10000000",
+        "displayExpression": "1 ÷ 10,000,000",
+        "result": 1e-07,
+        "resultText": "0.0000001",
+        "createdAt": "2026-10-31T10:34:23.931Z"
+      },
+      {
+        "id": "history-mvw9kq5j-tff86",
+        "expression": "2",
+        "displayExpression": "2",
+        "result": 2,
+        "resultText": "2",
+        "createdAt": "2026-10-31T10:34:23.719Z"
+      },
+      {
+        "id": "history-mvw9koj2-jevn8",
+        "expression": "8/2",
+        "displayExpression": "8 ÷ 2",
+        "result": 4,
+        "resultText": "4",
+        "createdAt": "2026-10-31T10:34:21.614Z"
+      },
+      {
+        "id": "history-mvw9knv7-q4bgn",
+        "expression": "7",
+        "displayExpression": "7",
+        "result": 7,
+        "resultText": "7",
+        "createdAt": "2026-10-31T10:34:20.755Z"
+      },
+      {
+        "id": "history-mvw9knqk-bq8h5",
+        "expression": "0.5",
+        "displayExpression": "0.5",
+        "result": 0.5,
+        "resultText": "0.5",
+        "createdAt": "2026-10-31T10:34:20.588Z"
+      },
+      {
+        "id": "history-mvw9knke-mr0wz",
+        "expression": "15+2",
+        "displayExpression": "15 ＋ 2",
+        "result": 17,
+        "resultText": "17",
+        "createdAt": "2026-10-31T10:34:20.366Z"
+      },
+      {
+        "id": "history-mvw9knij-2x8oe",
+        "expression": "12+3",
+        "displayExpression": "12 ＋ 3",
+        "result": 15,
+        "resultText": "15",
+        "createdAt": "2026-10-31T10:34:20.299Z"
+      },
+      {
+        "id": "history-mvw9kn8a-lyini",
+        "expression": "12+-3",
+        "displayExpression": "12 ＋ − 3",
+        "result": 9,
+        "resultText": "9",
+        "createdAt": "2026-10-31T10:34:19.930Z"
+      },
+      {
+        "id": "history-mvw9kmnn-mn57i",
+        "expression": "12+3",
+        "displayExpression": "12 ＋ 3",
+        "result": 15,
+        "resultText": "15",
+        "createdAt": "2026-10-31T10:34:19.187Z"
+      },
+      {
+        "id": "history-mvw9kmj7-8lan6",
+        "expression": "12+4",
+        "displayExpression": "12 ＋ 4",
+        "result": 16,
+        "resultText": "16",
+        "createdAt": "2026-10-31T10:34:19.027Z"
+      },
+      {
+        "id": "history-mvw9kmgl-fdqdd",
+        "expression": "12+3",
+        "displayExpression": "12 ＋ 3",
+        "result": 15,
+        "resultText": "15",
+        "createdAt": "2026-10-31T10:34:18.933Z"
+      },
+      {
+        "id": "history-mvw9kmcf-0jpy0",
+        "expression": "12+4",
+        "displayExpression": "12 ＋ 4",
+        "result": 16,
+        "resultText": "16",
+        "createdAt": "2026-10-31T10:34:18.783Z"
+      },
+      {
+        "id": "history-mvw9kld8-pfa6u",
+        "expression": "12+3",
+        "displayExpression": "12 ＋ 3",
+        "result": 15,
+        "resultText": "15",
+        "createdAt": "2026-10-31T10:34:17.516Z"
+      },
+      {
+        "id": "history-mvw9kl7t-assoh",
+        "expression": "12+4",
+        "displayExpression": "12 ＋ 4",
+        "result": 16,
+        "resultText": "16",
+        "createdAt": "2026-10-31T10:34:17.321Z"
+      },
+      {
+        "id": "history-mvw9kk73-b3lkj",
+        "expression": "12+3",
+        "displayExpression": "12 ＋ 3",
+        "result": 15,
+        "resultText": "15",
+        "createdAt": "2026-10-31T10:34:15.999Z"
+      },
+      {
+        "id": "history-mvw9kk1m-vmlnh",
+        "expression": "12-34",
+        "displayExpression": "12 − 34",
+        "result": -22,
+        "resultText": "-22",
+        "createdAt": "2026-10-31T10:34:15.802Z"
+      },
+      {
+        "id": "history-mvw9kjfw-3a367",
+        "expression": "12-0.5",
+        "displayExpression": "12 − 0.5",
+        "result": 11.5,
+        "resultText": "11.5",
+        "createdAt": "2026-10-31T10:34:15.020Z"
+      },
+      {
+        "id": "history-mvw9kj7d-5qyh9",
+        "expression": "7*2",
+        "displayExpression": "7 × 2",
+        "result": 14,
+        "resultText": "14",
+        "createdAt": "2026-10-31T10:34:14.712Z"
+      },
+      {
+        "id": "history-mvw9kj2c-runn9",
+        "expression": "12-5",
+        "displayExpression": "12 − 5",
+        "result": 7,
+        "resultText": "7",
+        "createdAt": "2026-10-31T10:34:14.532Z"
+      },
+      {
+        "id": "history-mvw9keg7-0e439",
+        "expression": "8/2",
+        "displayExpression": "8 ÷ 2",
+        "result": 4,
+        "resultText": "4",
+        "createdAt": "2026-10-31T10:34:08.551Z"
+      },
+      {
+        "id": "history-mvw9ke26-irv62",
+        "expression": "7*6",
+        "displayExpression": "7 × 6",
+        "result": 42,
+        "resultText": "42",
+        "createdAt": "2026-10-31T10:34:08.046Z"
+      },
+      {
+        "id": "history-mvw9kdon-li0ji",
+        "expression": "9-4",
+        "displayExpression": "9 − 4",
+        "result": 5,
+        "resultText": "5",
+        "createdAt": "2026-10-31T10:34:07.559Z"
+      },
+      {
+        "id": "history-mvw9kd9c-qjv27",
+        "expression": "12+34",
+        "displayExpression": "12 ＋ 34",
+        "result": 46,
+        "resultText": "46",
+        "createdAt": "2026-10-31T10:34:07.008Z"
+      }
+    ],
+    "notes": [
+      {
+        "title": "Synthetic isolated variables",
+        "content": "**計算**: `2*3` = **6**",
+        "blocks": [
+          {
+            "id": "legacy-variable-test",
+            "type": "calculation",
+            "expression": "2*3",
+            "displayExpression": "2*3",
+            "result": 6,
+            "resultText": "6",
+            "error": null,
+            "evaluationMode": "note-variables"
+          }
+        ],
+        "calculationEvidence": {
+          "version": 1,
+          "records": [
+            {
+              "calculatedAt": "2026-10-31T10:34:51.501Z",
+              "blocks": [
+                {
+                  "blockId": "calculation-mvw9lbb7-v87mz",
+                  "position": 1,
+                  "expression": "price = 2",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "2",
+                  "resultText": "2",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9lbfo-34ic2",
+                  "position": 2,
+                  "expression": "price * 5",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "price",
+                      "sourceBlockId": "calculation-mvw9lbb7-v87mz",
+                      "value": "2"
+                    }
+                  ],
+                  "result": "10",
+                  "resultText": "10",
+                  "status": "success"
+                }
+              ],
+              "id": "9e5d85fd-3bd6-481f-8e35-a5c0bf688bd6",
+              "persistedAt": "2026-10-31T10:34:51.527Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed"
+            },
+            {
+              "calculatedAt": "2026-10-31T10:34:59.907Z",
+              "blocks": [
+                {
+                  "blockId": "legacy-variable-test",
+                  "position": 1,
+                  "expression": "2*3",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "6",
+                  "resultText": "6",
+                  "status": "success"
+                }
+              ],
+              "id": "64a4bc75-8e5d-4981-bf19-ae013c8bd265",
+              "persistedAt": "2026-10-31T10:34:59.932Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed"
+            }
+          ]
+        },
+        "id": "plain-note-mvw9lblz-8d252",
+        "type": "plain-calculation",
+        "createdAt": "2026-10-31T10:34:51.527Z",
+        "updatedAt": "2026-10-31T10:34:59.932Z"
+      },
+      {
+        "title": "Synthetic scoped variables",
+        "content": "**計算**: `price = 1200` = **1,200**\n\n**計算**: `quantity = 5` = **5**\n\n**計算**: `subtotal = price * quantity` = **6,000**\n\n**計算**: `tax = 0.10` = **0.1**\n\n**計算**: `total = subtotal * (1 + tax)` = **6,600**\n\n**計算**: `x = 10` = **10**\n\n**計算**: `y = x * 2` = **20**\n\n**計算**: `x = 20` = **20**\n\nprice = 9999 (plain text only)\n\n**計算**: `price` = **1,200**",
+        "blocks": [
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l7wa-ihduq",
+            "type": "calculation",
+            "expression": "price = 1200",
+            "displayExpression": "price = 1200",
+            "result": 1200,
+            "resultText": "1,200",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l815-jzcdf",
+            "type": "calculation",
+            "expression": "quantity = 5",
+            "displayExpression": "quantity = 5",
+            "result": 5,
+            "resultText": "5",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l88f-rld2d",
+            "type": "calculation",
+            "expression": "subtotal = price * quantity",
+            "displayExpression": "subtotal = price * quantity",
+            "result": 6000,
+            "resultText": "6,000",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l8cj-pdg1e",
+            "type": "calculation",
+            "expression": "tax = 0.10",
+            "displayExpression": "tax = 0.10",
+            "result": 0.1,
+            "resultText": "0.1",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l8gq-i651d",
+            "type": "calculation",
+            "expression": "total = subtotal * (1 + tax)",
+            "displayExpression": "total = subtotal * (1 + tax)",
+            "result": 6600.000000000001,
+            "resultText": "6,600",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l8o3-9nddn",
+            "type": "calculation",
+            "expression": "x = 10",
+            "displayExpression": "x = 10",
+            "result": 10,
+            "resultText": "10",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l8sg-rqkyn",
+            "type": "calculation",
+            "expression": "y = x * 2",
+            "displayExpression": "y = x * 2",
+            "result": 20,
+            "resultText": "20",
+            "error": null
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l8z2-mamxv",
+            "type": "calculation",
+            "expression": "x = 20",
+            "displayExpression": "x = 20",
+            "result": 20,
+            "resultText": "20",
+            "error": null
+          },
+          {
+            "id": "text-mvw9la9j-81cw8",
+            "type": "text",
+            "content": "price = 9999 (plain text only)"
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9lafy-7xiw8",
+            "type": "calculation",
+            "expression": "price",
+            "displayExpression": "price",
+            "result": 1200,
+            "resultText": "1,200",
+            "error": null
+          }
+        ],
+        "calculationEvidence": {
+          "version": 1,
+          "records": [
+            {
+              "calculatedAt": "2026-10-31T10:34:50.344Z",
+              "blocks": [
+                {
+                  "blockId": "calculation-mvw9l7wa-ihduq",
+                  "position": 1,
+                  "expression": "price = 1200",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "1200",
+                  "resultText": "1,200",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l815-jzcdf",
+                  "position": 2,
+                  "expression": "quantity = 5",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "5",
+                  "resultText": "5",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l88f-rld2d",
+                  "position": 3,
+                  "expression": "subtotal = price * quantity",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "price",
+                      "sourceBlockId": "calculation-mvw9l7wa-ihduq",
+                      "value": "1200"
+                    },
+                    {
+                      "kind": "variable",
+                      "name": "quantity",
+                      "sourceBlockId": "calculation-mvw9l815-jzcdf",
+                      "value": "5"
+                    }
+                  ],
+                  "result": "6000",
+                  "resultText": "6,000",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l8cj-pdg1e",
+                  "position": 4,
+                  "expression": "tax = 0.10",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "0.1",
+                  "resultText": "0.1",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l8gq-i651d",
+                  "position": 5,
+                  "expression": "total = subtotal * (1 + tax)",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "subtotal",
+                      "sourceBlockId": "calculation-mvw9l88f-rld2d",
+                      "value": "6000"
+                    },
+                    {
+                      "kind": "variable",
+                      "name": "tax",
+                      "sourceBlockId": "calculation-mvw9l8cj-pdg1e",
+                      "value": "0.1"
+                    }
+                  ],
+                  "result": "6600.000000000001",
+                  "resultText": "6,600",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l8o3-9nddn",
+                  "position": 6,
+                  "expression": "x = 10",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "10",
+                  "resultText": "10",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l8sg-rqkyn",
+                  "position": 7,
+                  "expression": "y = x * 2",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "x",
+                      "sourceBlockId": "calculation-mvw9l8o3-9nddn",
+                      "value": "10"
+                    }
+                  ],
+                  "result": "20",
+                  "resultText": "20",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9l8z2-mamxv",
+                  "position": 8,
+                  "expression": "x = 20",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "20",
+                  "resultText": "20",
+                  "status": "success"
+                },
+                {
+                  "blockId": "calculation-mvw9lafy-7xiw8",
+                  "position": 10,
+                  "expression": "price",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "price",
+                      "sourceBlockId": "calculation-mvw9l7wa-ihduq",
+                      "value": "1200"
+                    }
+                  ],
+                  "result": "1200",
+                  "resultText": "1,200",
+                  "status": "success"
+                }
+              ],
+              "id": "e1b7e6a8-00a5-4655-9f1d-f72bd26aa119",
+              "persistedAt": "2026-10-31T10:34:50.398Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed"
+            }
+          ]
+        },
+        "id": "plain-note-mvw9laqm-f9z3e",
+        "type": "plain-calculation",
+        "createdAt": "2026-10-31T10:34:50.398Z",
+        "updatedAt": "2026-10-31T10:34:50.398Z"
+      },
+      {
+        "title": "Synthetic math blocks",
+        "content": "**計算**: `abs(-3)^2+sqrt(16)` = **13**",
+        "blocks": [
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9l59v-tqlkj",
+            "type": "calculation",
+            "expression": "abs(-3)^2+sqrt(16)",
+            "displayExpression": "abs(-3)^2+sqrt(16)",
+            "result": 13,
+            "resultText": "13",
+            "error": null
+          }
+        ],
+        "calculationEvidence": {
+          "version": 1,
+          "records": [
+            {
+              "calculatedAt": "2026-10-31T10:34:43.708Z",
+              "blocks": [
+                {
+                  "blockId": "calculation-mvw9l59v-tqlkj",
+                  "position": 1,
+                  "expression": "sqrt(2)",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "1.4142135623730951",
+                  "resultText": "1.414213562373",
+                  "status": "success"
+                }
+              ],
+              "id": "f427c462-83dd-4c6f-8838-b14e00c209cb",
+              "persistedAt": "2026-10-31T10:34:43.757Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed"
+            },
+            {
+              "calculatedAt": "2026-10-31T10:34:44.018Z",
+              "blocks": [
+                {
+                  "blockId": "calculation-mvw9l59v-tqlkj",
+                  "position": 1,
+                  "expression": "abs(-3)^2+sqrt(16)",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "13",
+                  "resultText": "13",
+                  "status": "success"
+                }
+              ],
+              "id": "acd7fe2d-42d8-4e83-8ce8-3d779c305145",
+              "persistedAt": "2026-10-31T10:34:44.034Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed"
+            }
+          ]
+        },
+        "id": "plain-note-mvw9l5m6-p7k5i",
+        "type": "plain-calculation",
+        "createdAt": "2026-10-31T10:34:43.757Z",
+        "updatedAt": "2026-10-31T10:34:44.034Z"
+      },
+      {
+        "title": "Synthetic math single",
+        "expression": "2*pi",
+        "displayExpression": "2 × pi",
+        "latexExpression": null,
+        "result": 6.283185307179586,
+        "resultText": "6.28318530718",
+        "unit": "",
+        "note": "",
+        "tags": [],
+        "relatedMemoName": "",
+        "displayMode": "plain",
+        "id": "calc-note-mvw9l4ib-42sy8",
+        "schemaVersion": 1,
+        "type": "calculation",
+        "createdAt": "2026-10-31T10:34:42.323Z",
+        "updatedAt": "2026-10-31T10:34:42.910Z"
+      },
+      {
+        "title": "Synthetic tiny result",
+        "expression": "0.0000002",
+        "displayExpression": "0.0000002",
+        "latexExpression": null,
+        "result": 2e-07,
+        "resultText": "0.0000002",
+        "unit": "",
+        "note": "",
+        "tags": [],
+        "relatedMemoName": "",
+        "displayMode": "plain",
+        "id": "calc-note-mvw9kt3j-ewiz9",
+        "schemaVersion": 1,
+        "type": "calculation",
+        "createdAt": "2026-10-31T10:34:27.535Z",
+        "updatedAt": "2026-10-31T10:34:27.535Z"
+      },
+      {
+        "title": "Synthetic edited result",
+        "expression": "12+-3",
+        "displayExpression": "12 ＋ − 3",
+        "latexExpression": null,
+        "result": 9,
+        "resultText": "9",
+        "unit": "",
+        "note": "",
+        "tags": [],
+        "relatedMemoName": "",
+        "displayMode": "plain",
+        "id": "calc-note-mvw9knd0-cjlad",
+        "schemaVersion": 1,
+        "type": "calculation",
+        "createdAt": "2026-10-31T10:34:20.100Z",
+        "updatedAt": "2026-10-31T10:34:20.100Z"
+      },
+      {
+        "title": "Synthetic block memo",
+        "content": "Synthetic block text.\n\n**計算**: `2*(5+3)` = **16**",
+        "blocks": [
+          {
+            "id": "text-mvw9kh6x-qzhuc",
+            "type": "text",
+            "content": "Synthetic block text."
+          },
+          {
+            "evaluationMode": "note-variables",
+            "id": "calculation-mvw9kha2-99mz7",
+            "type": "calculation",
+            "expression": "2*(5+3)",
+            "displayExpression": "2*(5+3)",
+            "result": 16,
+            "resultText": "16",
+            "error": null
+          }
+        ],
+        "calculationEvidence": {
+          "version": 1,
+          "records": [
+            {
+              "calculatedAt": "2026-10-31T10:34:12.474Z",
+              "blocks": [
+                {
+                  "blockId": "calculation-mvw9kha2-99mz7",
+                  "position": 2,
+                  "expression": "2*(5+3)",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "16",
+                  "resultText": "16",
+                  "status": "success"
+                }
+              ],
+              "id": "f57baaeb-93e6-4197-96c7-087c9a14025f",
+              "persistedAt": "2026-10-31T10:34:12.511Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed"
+            }
+          ]
+        },
+        "id": "plain-note-mvw9khi8-jhspq",
+        "type": "plain-calculation",
+        "createdAt": "2026-10-31T10:34:12.511Z",
+        "updatedAt": "2026-10-31T10:34:12.511Z"
+      },
+      {
+        "title": "Synthetic single memo edited",
+        "expression": "12+34",
+        "displayExpression": "12 ＋ 34",
+        "latexExpression": null,
+        "result": 46,
+        "resultText": "46",
+        "unit": "",
+        "note": "Synthetic data only.",
+        "tags": [],
+        "relatedMemoName": "",
+        "displayMode": "plain",
+        "id": "calc-note-mvw9kgg9-ggbms",
+        "schemaVersion": 1,
+        "type": "calculation",
+        "createdAt": "2026-10-31T10:34:11.144Z",
+        "updatedAt": "2026-10-31T10:34:11.712Z"
+      },
+      {
+        "id": "quote-memo",
+        "type": "plain-calculation",
+        "title": "Quote saved source",
+        "content": "Current draft is not historical evidence",
+        "createdAt": "2026-10-24T00:00:00.000Z",
+        "updatedAt": "2026-10-24T00:00:00.000Z",
+        "blocks": [
+          {
+            "id": "quote-source",
+            "type": "calculation",
+            "expression": "z = 999",
+            "displayExpression": "z = 999",
+            "result": 999,
+            "resultText": "999",
+            "error": null,
+            "evaluationMode": "note-variables"
+          }
+        ],
+        "calculationEvidence": {
+          "version": 1,
+          "records": [
+            {
+              "id": "quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+              "calculatedAt": "2026-10-24T00:00:00.000Z",
+              "persistedAt": "2026-10-24T00:00:00.000Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed",
+              "blocks": [
+                {
+                  "blockId": "quote-source",
+                  "position": 1,
+                  "expression": "z = -0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "-0",
+                  "resultText": "0",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-result",
+                  "position": 2,
+                  "expression": "z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "z",
+                      "sourceBlockId": "quote-source",
+                      "value": "-0"
+                    }
+                  ],
+                  "result": "-0",
+                  "resultText": "0",
+                  "status": "success"
+                }
+              ]
+            },
+            {
+              "id": "quote-comparison-record",
+              "calculatedAt": "2026-10-24T00:00:00.000Z",
+              "persistedAt": "2026-10-24T00:00:00.000Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed",
+              "blocks": [
+                {
+                  "blockId": "quote-source",
+                  "position": 1,
+                  "expression": "z = 6",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "6",
+                  "resultText": "6",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-result",
+                  "position": 2,
+                  "expression": "z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "z",
+                      "sourceBlockId": "quote-source",
+                      "value": "6"
+                    }
+                  ],
+                  "result": "12",
+                  "resultText": "12",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-added",
+                  "position": 3,
+                  "expression": "8",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "8",
+                  "resultText": "8",
+                  "status": "success"
+                }
+              ]
+            },
+            {
+              "id": "quote-unlinked-record",
+              "calculatedAt": "2026-10-24T00:00:00.000Z",
+              "persistedAt": "2026-10-24T00:00:00.000Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed",
+              "blocks": [
+                {
+                  "blockId": "quote-source",
+                  "position": 1,
+                  "expression": "z = 6",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "6",
+                  "resultText": "6",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-result",
+                  "position": 2,
+                  "expression": "z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "z",
+                      "sourceBlockId": "quote-source",
+                      "value": "6"
+                    }
+                  ],
+                  "result": "12",
+                  "resultText": "12",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-added",
+                  "position": 3,
+                  "expression": "8",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "8",
+                  "resultText": "8",
+                  "status": "success"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "quote-other-memo",
+        "type": "plain-calculation",
+        "title": "Unrelated linked memo",
+        "content": "Current draft is not historical evidence",
+        "createdAt": "2026-10-24T00:00:00.000Z",
+        "updatedAt": "2026-10-24T00:00:00.000Z",
+        "blocks": [
+          {
+            "id": "quote-source",
+            "type": "calculation",
+            "expression": "z = 999",
+            "displayExpression": "z = 999",
+            "result": 999,
+            "resultText": "999",
+            "error": null,
+            "evaluationMode": "note-variables"
+          }
+        ],
+        "calculationEvidence": {
+          "version": 1,
+          "records": [
+            {
+              "id": "quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+              "calculatedAt": "2026-10-24T00:00:00.000Z",
+              "persistedAt": "2026-10-24T00:00:00.000Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed",
+              "blocks": [
+                {
+                  "blockId": "quote-source",
+                  "position": 1,
+                  "expression": "z = -0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "-0",
+                  "resultText": "0",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-result",
+                  "position": 2,
+                  "expression": "z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "z",
+                      "sourceBlockId": "quote-source",
+                      "value": "-0"
+                    }
+                  ],
+                  "result": "-0",
+                  "resultText": "0",
+                  "status": "success"
+                }
+              ]
+            },
+            {
+              "id": "quote-comparison-record",
+              "calculatedAt": "2026-10-24T00:00:00.000Z",
+              "persistedAt": "2026-10-24T00:00:00.000Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed",
+              "blocks": [
+                {
+                  "blockId": "quote-source",
+                  "position": 1,
+                  "expression": "z = 6",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "6",
+                  "resultText": "6",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-result",
+                  "position": 2,
+                  "expression": "z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "z",
+                      "sourceBlockId": "quote-source",
+                      "value": "6"
+                    }
+                  ],
+                  "result": "12",
+                  "resultText": "12",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-added",
+                  "position": 3,
+                  "expression": "8",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "8",
+                  "resultText": "8",
+                  "status": "success"
+                }
+              ]
+            },
+            {
+              "id": "quote-unlinked-record",
+              "calculatedAt": "2026-10-24T00:00:00.000Z",
+              "persistedAt": "2026-10-24T00:00:00.000Z",
+              "evaluator": "calculator-memo-v1",
+              "status": "confirmed",
+              "blocks": [
+                {
+                  "blockId": "quote-source",
+                  "position": 1,
+                  "expression": "z = 6",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "6",
+                  "resultText": "6",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-result",
+                  "position": 2,
+                  "expression": "z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0",
+                  "evaluationMode": "note-variables",
+                  "inputs": [
+                    {
+                      "kind": "variable",
+                      "name": "z",
+                      "sourceBlockId": "quote-source",
+                      "value": "6"
+                    }
+                  ],
+                  "result": "12",
+                  "resultText": "12",
+                  "status": "success"
+                },
+                {
+                  "blockId": "quote-added",
+                  "position": 3,
+                  "expression": "8",
+                  "evaluationMode": "note-variables",
+                  "inputs": [],
+                  "result": "8",
+                  "resultText": "8",
+                  "status": "success"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "settings": {
+      "theme": "light",
+      "activePanel": "notes"
+    },
+    "formulaLibrary": {
+      "version": 1,
+      "entries": [
+        {
+          "id": "quote-formula",
+          "title": "Quote formula",
+          "expression": "x * 2",
+          "createdAt": "2026-10-24T00:00:00.000Z",
+          "updatedAt": "2026-10-24T00:00:00.000Z"
+        }
+      ],
+      "selectedId": "quote-formula"
+    },
+    "formulaReports": {
+      "version": 1,
+      "entries": [
+        {
+          "id": "quote-report",
+          "formulaId": "quote-formula",
+          "title": "Quote report",
+          "body": "前文\n選択した文章も残す\n後文",
+          "createdAt": "2026-10-24T00:00:00.000Z",
+          "updatedAt": "2026-10-24T00:00:00.000Z",
+          "confirmedExpression": null,
+          "evidence": {
+            "version": 1,
+            "links": [
+              {
+                "memoId": "quote-memo",
+                "recordId": "quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+              },
+              {
+                "memoId": "quote-memo",
+                "recordId": "quote-comparison-record"
+              },
+              {
+                "memoId": "quote-other-memo",
+                "recordId": "quote-comparison-record"
+              }
+            ],
+            "confirmations": []
+          }
+        }
+      ]
+    }
+  },
+  "quotedBodies": [
+    "前文\n\n\n```text\n計算根拠引用（固定スナップショット）\n引用ID：eb903e94-df54-4b5a-a815-70a5696ef5c5\n登録式ID：quote-formula\nメモID：quote-memo\n記録ID：quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\nブロックID：quote-result\n引用日時：2026-10-31T10:35:25.558Z\n計算日時：2026-10-24T00:00:00.000Z\n保存要求時刻：2026-10-24T00:00:00.000Z\n本文順：2\n実行順：2\n計算モード：note-variables\n当時の式：\nz*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0\n当時の表示結果：\n0\n当時の内部結果：-0\n記録内の状態：成功・確定記録。真正性や数学的証明の保証ではありません。\n実使用参照元・内部値：\nvariable / z / 元ブロックID：quote-source / 内部値：-0\n追跡対象は同じIDの保存記録全体です。現在の計算メモ本文や新しい別IDの計算記録とは比較しません。\n```\n\n```calculator-memo-evidence-v1\n{\"version\":1,\"quoteId\":\"eb903e94-df54-4b5a-a815-70a5696ef5c5\",\"formulaId\":\"quote-formula\",\"memoId\":\"quote-memo\",\"blockId\":\"quote-result\",\"citedAt\":\"2026-10-31T10:35:25.558Z\",\"record\":{\"id\":\"quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\"calculatedAt\":\"2026-10-24T00:00:00.000Z\",\"persistedAt\":\"2026-10-24T00:00:00.000Z\",\"evaluator\":\"calculator-memo-v1\",\"status\":\"confirmed\",\"blocks\":[{\"blockId\":\"quote-source\",\"position\":1,\"expression\":\"z = -0\",\"evaluationMode\":\"note-variables\",\"inputs\":[],\"result\":\"-0\",\"resultText\":\"0\",\"status\":\"success\"},{\"blockId\":\"quote-result\",\"position\":2,\"expression\":\"z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0\",\"evaluationMode\":\"note-variables\",\"inputs\":[{\"kind\":\"variable\",\"name\":\"z\",\"sourceBlockId\":\"quote-source\",\"value\":\"-0\"}],\"result\":\"-0\",\"resultText\":\"0\",\"status\":\"success\"}]}}\n```\n\n選択した文章も残す\n後文",
+    "前文\n\n\n```text\n計算根拠引用（固定スナップショット）\n引用ID：5122c088-f45f-491e-aaf0-8d39573ff0f5\n登録式ID：quote-formula\nメモID：quote-memo\n記録ID：quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\nブロックID：quote-result\n引用日時：2026-10-31T10:35:28.037Z\n計算日時：2026-10-24T00:00:00.000Z\n保存要求時刻：2026-10-24T00:00:00.000Z\n本文順：2\n実行順：2\n計算モード：note-variables\n当時の式：\nz*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0\n当時の表示結果：\n0\n当時の内部結果：-0\n記録内の状態：成功・確定記録。真正性や数学的証明の保証ではありません。\n実使用参照元・内部値：\nvariable / z / 元ブロックID：quote-source / 内部値：-0\n追跡対象は同じIDの保存記録全体です。現在の計算メモ本文や新しい別IDの計算記録とは比較しません。\n```\n\n```calculator-memo-evidence-v1\n{\"version\":1,\"quoteId\":\"5122c088-f45f-491e-aaf0-8d39573ff0f5\",\"formulaId\":\"quote-formula\",\"memoId\":\"quote-memo\",\"blockId\":\"quote-result\",\"citedAt\":\"2026-10-31T10:35:28.037Z\",\"record\":{\"id\":\"quote-record-rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\"calculatedAt\":\"2026-10-24T00:00:00.000Z\",\"persistedAt\":\"2026-10-24T00:00:00.000Z\",\"evaluator\":\"calculator-memo-v1\",\"status\":\"confirmed\",\"blocks\":[{\"blockId\":\"quote-source\",\"position\":1,\"expression\":\"z = -0\",\"evaluationMode\":\"note-variables\",\"inputs\":[],\"result\":\"-0\",\"resultText\":\"0\",\"status\":\"success\"},{\"blockId\":\"quote-result\",\"position\":2,\"expression\":\"z*2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0\",\"evaluationMode\":\"note-variables\",\"inputs\":[{\"kind\":\"variable\",\"name\":\"z\",\"sourceBlockId\":\"quote-source\",\"value\":\"-0\"}],\"result\":\"-0\",\"resultText\":\"0\",\"status\":\"success\"}]}}\n```\n\n選択した文章も残す\n後文"
+  ],
+  "acquisitionParagraphs": [
+    "取得日時：2026-10-31T10:35:01.037Z",
+    "取得日時：2026-10-31T10:35:01.592Z",
+    "取得日時：2026-10-31T10:35:02.361Z",
+    "取得日時：2026-10-31T10:35:02.779Z",
+    "取得日時：2026-10-31T10:35:04.621Z",
+    "取得日時：2026-10-31T10:35:05.888Z",
+    "取得日時：2026-10-31T10:35:06.461Z",
+    "取得日時：2026-10-31T10:35:07.317Z",
+    "取得日時：2026-10-31T10:35:08.652Z",
+    "原本取得日時：2026-10-31T10:35:08.748Z",
+    "比較対象の原本取得日時：2026-10-31T10:35:13.397Z。未保存編集・未反映試算は含みません。",
+    "取得日時：2026-10-31T10:35:13.923Z",
+    "比較対象の原本取得日時：2026-10-31T10:35:13.923Z。未保存編集・未反映試算は含みません。",
+    "原本取得日時：2026-10-31T10:35:15.453Z",
+    "取得日時：2026-10-31T10:35:15.917Z",
+    "比較対象の原本取得日時：2026-10-31T10:35:15.917Z。未保存編集・未反映試算は含みません。",
+    "原本取得日時：2026-10-31T10:35:16.053Z",
+    "取得日時：2026-10-31T10:35:17.050Z",
+    "比較対象の原本取得日時：2026-10-31T10:35:17.050Z。未保存編集・未反映試算は含みません。",
+    "原本取得日時：2026-10-31T10:35:17.698Z",
+    "原本取得日時：2026-10-31T10:35:21.239Z",
+    "原本取得日時：2026-10-31T10:35:22.019Z",
+    "取得日時：2026-10-31T10:35:24.168Z",
+    "比較対象の原本取得日時：2026-10-31T10:35:24.168Z。未保存編集・未反映試算は含みません。",
+    "原本取得日時：2026-10-31T10:35:24.268Z",
+    "取得日時：2026-10-31T10:35:24.268Z。成功した確定計算記録だけが保存される既存形式です。未確認・エラー・結果なし・状態不明の値を確定記録へ補完しません。",
+    "保存原本取得日時：2026-10-31T10:35:24.268Z。一致は取得時点の記録との比較だけで、数学的証明・真正性・利用者の明示確認ではありません。現在のメモ本文や新しく追加された別IDの記録は自動追跡しません。引用を自動更新しません。"
+  ]
+}

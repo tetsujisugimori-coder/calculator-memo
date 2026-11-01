@@ -1,5 +1,50 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-01 (JST): PR #113 WebKit actionability待機の継続診断
+
+- 本人の再依頼により6e34a40から独立cloud checkoutで継続。main2549c8c・既存成果を保全。21ZIP/251,393,260bytesと21jobログを再取得しhash/CRC/出典を記録。[計画・限界](docs/maintenance/pr113-webkit-resume-20261101/README.md)。
+- 旧A traceのtap API353.516秒中299.165秒はvisible/enabled/stable合成待機。dispatch自体やRAF単独根因と断定せず、正式scenario無変更の診断observerでrect/RAF/visibilityを有限計測する。
+- local無観測78.320秒・観測67.994秒、両15検査/6geometry/PNG実数0。3PNGとの初報誤りを訂正。順序/観測負荷交絡と旧helper copy不足を保持し、Ubuntu固定同runner2条件・同HEAD正式CIで別確認する。
+- 独立点検でobserver無上限/元例外上書き/helper実体不足を局所修正、13契約独立PASS。共通12分deadlineと190秒未満NOT_RUNで診断job15分の証拠保存余裕を確保し、raw厳密一致負対照も確認。製品・正式検査数/期待値・timeoutは不変。旧2診断の累積paths再起動のみ手動化し、旧証拠保持。CI分割・推測性能修正は採用しない。
+- 最終HEADのunit2480/既存契約57/lint/type/両build/独立GUI/正式6/成果物はこのcommitのChecksとPR最終報告へ記録。未実行を先取りしない。Issue112/Draft113、未マージ・未公開・旧SpaceUNKNOWN・実機未検証を維持。
+
+## 2026-11-01 (JST): PR #113 正式日時oracleの補正と有限対照
+
+- Issue #112 / Draft PR #113。基準94e657bから調査専用af47b42をpush。A run41250143451は基準94のWK390単独を588.859秒、188/98/22PNG/1337touch・exit0で完走。原本bytes・fixture実raw・全6903操作対・traceを別担当も独立照合した。[実測・原本digest・計画](docs/maintenance/pr113-webkit-20261101/README.md)。
+- 同HEAD正式E run41250143381はWK390が1039.141秒で188/98/22を完走したが、desktopの引用元dialog全体への999否定が取得日時.999Zに一致してexit1。971/1128・521/592・通常115/132PNG＋failure1を保全。A成功とE正式FAILを区別する。
+- 確認済みtest-side問題だけ最小補正。picker/sourceの値判定を単一BlockInfo、comparisonを両側を含む差分regionへ限定。固定.999Zで旧RED→補正GREEN、実内部値999の負対照（比較両側）reject、raw保持・app set/remove/clear0。製品・保存形式・参照ID・表示内容は変更しない。
+- CI責務分割案は根拠を評価したが、EもWK390完走のため資源競合の因果・分割必要性は未確定とし、未commit/未pushで保留。評価コード・レビュー・hash manifestをconsumerに保全し候補から除いた。正式6条件/1128checks/592geometry/132PNG/3workers/30分を維持する。
+- 既存2480/57は削減なし。次の候補では確認済みoracle修正と固定日時probe、A fixtureによる有限A2/B/C/D対照を行う。Windows AST4契約PASS、既存46は37pass/9Linux経路失敗、固定probe4ケースと比較両側負対照PASS。保留案の評価34契約は正式受入へ混ぜない。
+- 根拠をPR本文/コメント6550609404へ共有。独立prepushレビュー・lint/YAML/構文を確認し、最終HEADのUbuntu全試験・terminal・全成果物・最終独立レビューはこのcommitのChecks/PR最終報告へ追補する。旧成功を継承しない。
+- 旧取消理由はAPI注記で30m上限と確定。一方tap内部根因は未確定で、並列なら必ず未完走・分割が唯一解決とはしない。旧Space2件UNKNOWN、実機未検証、Draft/未マージ、Issue105新投稿禁止を維持。
+
+## 2026-11-01 (JST): PR #113 WebKit390未完走の証拠保全と限定診断
+
+- Issue #112 / Draft PR #113。開始HEAD94e657b/tree583fc07、main2549c8c、local/origin/PR一致・cleanを確認。旧run41217834472の6成果物ZIP計71,224,548bytesをhash/CRC/全内部ファイルまで再検証し、全6 jobログとAPIを保全した。[詳細・manifest](docs/maintenance/pr113-webkit-20261101/README.md)。
+- 判断訂正: 従来はログだけで取消理由UNKNOWNとしていたが、今回取得したcheck annotationの30m0s上限超過と開始終了時刻、新規runなしを照合し、30分job上限による終了を確認した。WebKit遅延の根因は別途調査中。
+- 製品・正式scenario・合格基準を変更せず、試験側の派生copyだけでawait計測する診断を追加。最初のAは基準HEADのWK390単独・全prefix、20分上限、証拠保存予約、Ubuntu24.04/Node22.13.0。fixture未取得なら推定対照を行わない。
+- 新診断のUbuntu結果は未実行。総合PARTIAL/マージNOを維持し、原本と計測版の観測負荷差も記録する。正式6条件/1128checks/592geometry/132PNGと保存保護を弱めない。
+
+## 2026-11-01 (JST): PR #113 固定引用の3px横はみ出し原因実証と局所修正
+
+- [Issue #112](https://github.com/tetsujisugimori-coder/calculator-memo/issues/112) / [Draft PR #113](https://github.com/tetsujisugimori-coder/calculator-memo/pull/113)。開始HEAD730d55e/tree0b93247、main2549c8cをGitHubと照合。Libraryの承認済み依頼全文278行をこのexecutorで読んだ。
+- 元run41192402203/artifact13040192575の完全ZIP digest・CRCを確認し、traceのUUID2件・日時・入力・保存状態を試験側だけで固定。main/PR同環境の挿入→取消→再挿入で391/388を双方再現した。
+- 原因は引用ID/日時の段落内U+3000全角空白の行末超過。段落352に対しscroll373、右padding18を越える3px。閉じdetails非表示では不変、当該段落除去またはline-break:anywhereで388/388、復元で391/388。巨大grid幅を原因とした推測を採用しなかった。
+- 製品は当該pのclassとそのline-breakだけ変更。独立固定fixtureの同一期待値でRED exit1→GREEN exit0、保存raw一致・アプリset/remove/clear各0。Ch/WK×375/390×両theme CSS200%8/8も提出前dirty版で完了。[詳細・保持証拠](docs/maintenance/pr113-quote-overflow-20261101/README.md)。
+- 正式GUI6/1128/592/132/3workers/30分と既存2480単体・57契約を保持し、独立quote jobを追加。lint・型・両build成功。単体初回の既存例CRLF差1失敗は保全し、Git正本LFで再確認。最終HEAD CI・成果物・独立レビュー結果はPRへ追補し、旧結果を新版成功へ流用しない。
+- 候補4325195/run41217286703の新quote jobはANSI色コード付きVite出力のraw URL照合で準備待機失敗（ブラウザ測定0件）。失敗artifact13048114500のdigest/CRCを保持し、診断だけへ既存正式scenarioと同じ色コード除去を追加。待機上限・正式GUI・製品修正は不変。補正commit後の全CIを新最終HEADとして判定する。
+- Space旧2失敗UNKNOWN、実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証を維持。preview read-only・保存境界不変。Issue105投稿、Draft解除、merge/auto-merge/main push/公開は行わない。
+
+## 2026-10-31 (JST): JSONバックアップの選択復元プレビュー第1段階（Issue #112）
+
+- main `2549c8c15d9a5e4cea052eabc0020ad03104b49a` と PR #107/#109/#111 の統合を現物確認し、独立checkout・専用 `feat/selective-restore-preview` で開始。依頼全文を [Issue #112](https://github.com/tetsujisugimori-coder/calculator-memo/issues/112) へ掲載し、読戻し全文一致を確認。
+- 読み取り専用の分類・個別詳細・項目比較・名前空間別参照点検・一時選択を実装対象とした。[事前設計と26受入条件](docs/design/selective-restore-preview.md)。実際の部分復元・保存形式変更・snapshot更新・ID修正・永続選択は対象外。
+- 既存正式GUI契約を保持し、固有8条件と別評価する。PR #111の正式未完走/Issue #105は固有受入PASSで解消扱いにしない。実機iPhone Safari/VoiceOver/OS文字拡大は未検証。
+- 環境: cloud Linux/Node 24.22.1。初回npmは既定cache書込不可で失敗、作業用 `/tmp` cacheで固定依存723packages取得成功。CIのUbuntu24.04/Node22.13.0とは区別する。
+- 新規core35/UI13、全単体115 files・2480件PASS。独立レビューの未知分類0件/数値丸め偽SAME/大量参照DOM懸念は局所修正し、RED→GREENと独立再probeを確認。参照は20件ページ、待機autosaveと旧file同一ターン操作も失効する。[検証記録](docs/maintenance/selective-preview-20261031/verification.md)。
+- 提出前treeのlint・型・両build・契約と、最終HEADのCI/8条件・正式GUI結果はPRに区別して記録する。未実施/未完走をPASSとしない。Draft PRは作成後に相互参照する。main変更・merge・auto-merge・Draft解除・公開は行わない。
+
+
 ## 2026-10-31 (JST): 復旧用保全コピーの管理（Issue #110）
 
 - PR #107/#109統合済みmain `4f3713beea68566ed716280c487b885c5ca5dd5b` から専用branchで開始。依頼全文を [Issue #110](https://github.com/tetsujisugimori-coder/calculator-memo/issues/110) へ保存・全文照合。

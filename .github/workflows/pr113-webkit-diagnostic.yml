@@ -1,0 +1,75 @@
+name: PR 113 WebKit bounded diagnostic
+# Historical bounded diagnostics are explicit-only; PR path filters match cumulative changes.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  baseline-a:
+    name: Diagnostic A - baseline WebKit 390 solo
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: 94e657b311740a1ae5803fe008c969a598c43969
+      WK_APP_ROOT: ${{ github.workspace }}/baseline-app
+      GUI_EVIDENCE_DIR: ${{ github.workspace }}/gui-evidence/webkit-a
+      E2E_SCENARIO: webkit-mobile-390px
+      PR_BRANCH: feat/selective-restore-preview
+      CI: 'true'
+    steps:
+      - name: Reserve evidence time within thirty minute job cap
+        run: node -e "require('node:fs').appendFileSync(process.env.GITHUB_ENV,'WK_DEADLINE_UTC_MS='+(Date.now()+27*60*1000)+'\n')"
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set up pinned Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Prepare exact baseline and locked tools
+        timeout-minutes: 5
+        run: |
+          mkdir -p gui-evidence/webkit-a
+          node e2e/run-stage.mjs diagnostic-app-install npm ci --ignore-scripts
+          node e2e/run-stage.mjs diagnostic-gui-install npm ci --prefix e2e --ignore-scripts
+          node --test e2e/webkit-diagnostic.node-test.mjs e2e/diagnostic-supervisor.node-test.mjs > gui-evidence/webkit-a/diagnostic-contracts.log 2>&1
+          git worktree add --detach "$WK_APP_ROOT" "$EXPECTED_SHA"
+          test "$(git -C "$WK_APP_ROOT" rev-parse HEAD)" = "$EXPECTED_SHA"
+          cmp package-lock.json "$WK_APP_ROOT/package-lock.json"
+          cmp e2e/package-lock.json "$WK_APP_ROOT/e2e/package-lock.json"
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$WK_APP_ROOT/node_modules"
+          ln -s "$GITHUB_WORKSPACE/e2e/node_modules" "$WK_APP_ROOT/e2e/node_modules"
+          (cd "$WK_APP_ROOT" && npm run build:pages) > gui-evidence/webkit-a/build.log 2>&1
+          { date -u +%FT%TZ; uname -a; node --version; cat /etc/os-release; git rev-parse HEAD; git -C "$WK_APP_ROOT" rev-parse HEAD; } > gui-evidence/webkit-a/environment.txt
+      - name: Install matching WebKit with bounded acquisition
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs diagnostic-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs diagnostic-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps webkit
+      - name: First A - unmodified full prefix and assertions, one worker, twenty minute cap
+        run: node e2e/run-stage.mjs diagnostic-a /usr/bin/time -v -o gui-evidence/webkit-a/resources.log node e2e/run-webkit-diagnostic.mjs
+      - name: Record exact outcome and inventory even on interruption
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence/webkit-a
+          node --input-type=module -e "import{writeFileSync}from'node:fs';writeFileSync('gui-evidence/webkit-a/job-outcomes.json',JSON.stringify({head:process.env.EXPECTED_SHA,diagnosticHead:'${{ github.sha }}',run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,steps:JSON.parse(process.env.STEP_OUTCOMES),at:new Date().toISOString()},null,2)+'\n')"
+          node e2e/evidence-inventory.mjs
+      - name: Preserve every diagnostic A result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr113-webkit-a-${{ github.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error

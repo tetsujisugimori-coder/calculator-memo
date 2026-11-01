@@ -1,0 +1,88 @@
+name: PR 113 WebKit finite controls
+# Historical bounded diagnostics are explicit-only; PR path filters match cumulative changes.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read # Read the single, fixed diagnostic A artifact from the same repository.
+defaults:
+  run:
+    shell: bash
+jobs:
+  controls:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      WK_BASELINE_ROOT: ${{ github.workspace }}/baseline-app
+      WK_MAIN_ROOT: ${{ github.workspace }}/main-app
+      WK_A_DIRECTORY: ${{ github.workspace }}/source-a/webkit-a
+      WK_A_ARTIFACT: '13060862890'
+      GUI_EVIDENCE_DIR: ${{ github.workspace }}/gui-evidence/webkit-controls
+      CI: 'true'
+    steps:
+      - name: Checkout exact control source
+        id: checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up pinned Node
+        id: node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Read fixed A artifact with digest failure enforced
+        id: source_a
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: '13060862890'
+          run-id: '41250143451'
+          github-token: ${{ github.token }}
+          path: source-a
+          digest-mismatch: error
+      - name: Prepare exact applications and identical locked tools
+        id: apps
+        timeout-minutes: 5
+        run: |
+          mkdir -p gui-evidence/webkit-controls
+          node e2e/run-stage.mjs controls-app-install npm ci --ignore-scripts
+          node e2e/run-stage.mjs controls-gui-install npm ci --prefix e2e --ignore-scripts
+          git worktree add --detach "$WK_BASELINE_ROOT" 94e657b311740a1ae5803fe008c969a598c43969
+          git worktree add --detach "$WK_MAIN_ROOT" 2549c8c15d9a5e4cea052eabc0020ad03104b49a
+          for app in "$WK_BASELINE_ROOT" "$WK_MAIN_ROOT"; do
+            cmp package-lock.json "$app/package-lock.json"
+            cmp e2e/package-lock.json "$app/e2e/package-lock.json"
+            ln -s "$GITHUB_WORKSPACE/node_modules" "$app/node_modules"
+            ln -s "$GITHUB_WORKSPACE/e2e/node_modules" "$app/e2e/node_modules"
+            (cd "$app" && npm run build:pages) > "gui-evidence/webkit-controls/$(basename "$app")-build.log" 2>&1
+          done
+          { date -u +%FT%TZ; uname -a; node --version; cat /etc/os-release; git rev-parse HEAD; } > gui-evidence/webkit-controls/environment.txt
+      - name: Install matching browsers with bounded acquisition
+        id: browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs controls-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs controls-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Four finite focused controls, same captured A fixture
+        id: controls
+        run: node e2e/run-stage.mjs controls timeout --signal=TERM --kill-after=25s 780s node e2e/run-webkit-controls.mjs
+      - name: Preserve outcomes and inventory
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence/webkit-controls
+          node --input-type=module -e "import{writeFileSync}from'node:fs';writeFileSync('gui-evidence/webkit-controls/job-outcomes.json',JSON.stringify({head:'${{ github.sha }}',run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,steps:JSON.parse(process.env.STEP_OUTCOMES),at:new Date().toISOString()},null,2)+'\n')"
+          node e2e/evidence-inventory.mjs
+      - name: Retain all control results including unfinished conditions
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr113-webkit-controls-${{ github.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error

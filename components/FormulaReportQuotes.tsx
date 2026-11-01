@@ -68,7 +68,7 @@ export function FormulaQuoteStatus({ body, formulaId, links, source, onRefresh, 
     <p>引用本文や追跡情報の編集・削除で照合不能になり得ます。追跡用フェンス全体を削除した通常テキストは自動認識できません。</p>
     <ol>{assessments.map((item, index) => <li key={`${item.start}-${index}`}>
       <p role="status">引用{index + 1}：{item.reason}</p>
-      {item.snapshot && <><p>引用ID：{item.snapshot.quoteId}　引用日時：{item.snapshot.citedAt}</p><p>メモID：{item.snapshot.memoId}　記録ID：{item.snapshot.record.id}　ブロックID：{item.snapshot.blockId}</p>
+      {item.snapshot && <><p className="quote-identity">引用ID：{item.snapshot.quoteId}　引用日時：{item.snapshot.citedAt}</p><p>メモID：{item.snapshot.memoId}　記録ID：{item.snapshot.record.id}　ブロックID：{item.snapshot.blockId}</p>
         {!links.some(link => link.memoId === item.snapshot!.memoId && link.recordId === item.snapshot!.record.id) && <p>現在の保存済み根拠リンクにはありません。引用時点の本文は保持しています。</p>}
         <button type="button" disabled={!!source.error || !!source.stale || resolveReportEvidence(source.notes, [{ memoId: item.snapshot.memoId, recordId: item.snapshot.record.id }])[0].status !== "available"} onClick={() => setOpened(index)}>引用元の保存記録・ブロックを開く</button>
         <button type="button" disabled={item.status === "invalid"} onClick={() => { onCompareOpen?.(); setComparing(index); }}>別の保存記録と比較</button></>}

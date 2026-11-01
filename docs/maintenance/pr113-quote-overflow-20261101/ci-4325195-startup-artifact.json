@@ -1,0 +1,15 @@
+{
+  "id": 13048114500,
+  "bytes": 112619,
+  "digest": "sha256:1fe0a3388574d1abbea381a127e0086e2b96f1913e1e12a083be161d922af52a",
+  "zipCrcVerified": true,
+  "expiresAt": "2026-11-07T15:59:59Z",
+  "name": "pr-quote-overflow-43251958ca6bc39feed6db850d539e9dcc4425b4-1",
+  "workflow_run": {
+    "id": 41217286703,
+    "repository_id": 1308745365,
+    "head_repository_id": 1308745365,
+    "head_branch": "feat/selective-restore-preview",
+    "head_sha": "43251958ca6bc39feed6db850d539e9dcc4425b4"
+  }
+}

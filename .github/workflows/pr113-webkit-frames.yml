@@ -1,0 +1,86 @@
+name: PR 113 WebKit frame observation pair
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  actions: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  observation-pair:
+    if: github.event.pull_request.number == 113
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BRANCH: ${{ github.head_ref }}
+      PR_NUMBER: 113
+      WK_A_DIRECTORY: ${{ github.workspace }}/source-a/webkit-a
+      GUI_EVIDENCE_DIR: ${{ github.workspace }}/gui-evidence/frame-pair
+      CI: 'true'
+    steps:
+      - name: Reserve bounded diagnosis and evidence time
+        id: budget
+        run: echo "WK_PAIR_DEADLINE_MS=$(( $(date +%s) * 1000 + 720000 ))" >> "$GITHUB_ENV"
+      - name: Checkout exact candidate
+        id: checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Pinned Node
+        id: node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Preserve fixed original A fixture provenance
+        id: fixture
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          artifact-ids: '13060862890'
+          run-id: '41250143451'
+          github-token: ${{ github.token }}
+          path: source-a
+          digest-mismatch: error
+      - name: Locked dependencies and candidate build
+        id: build
+        timeout-minutes: 4
+        run: |
+          mkdir -p gui-evidence/frame-pair
+          npm ci --ignore-scripts
+          npm ci --prefix e2e --ignore-scripts
+          npm run build:pages
+          node --test e2e/webkit-diagnostic.node-test.mjs e2e/webkit-frame-pair.node-test.mjs
+      - name: Matching WebKit with bounded acquisition
+        id: browser
+        timeout-minutes: 5
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps webkit
+      - name: One unobserved and one observed case on the same runner
+        id: pair
+        run: |
+          remaining=$(( (WK_PAIR_DEADLINE_MS - $(date +%s) * 1000) / 1000 ))
+          if (( remaining < 1 )); then remaining=1; fi
+          if (( remaining > 420 )); then remaining=420; fi
+          timeout --signal=TERM --kill-after=15s "${remaining}s" node e2e/run-webkit-frame-pair.mjs
+      - name: Preserve outcomes and evidence even on failure
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence/frame-pair
+          node --input-type=module -e "import{writeFileSync}from'node:fs';writeFileSync('gui-evidence/frame-pair/job-outcomes.json',JSON.stringify({head:process.env.EXPECTED_SHA,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,steps:JSON.parse(process.env.STEP_OUTCOMES),at:new Date().toISOString()},null,2)+'\n')"
+          node e2e/evidence-inventory.mjs
+      - name: Upload all pair outcomes, never substitute for formal acceptance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr113-webkit-frames-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
