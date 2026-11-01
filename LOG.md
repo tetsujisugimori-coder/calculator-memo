@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-01 (JST): PR #113 WebKit actionability待機の継続診断
+
+- 本人の再依頼により6e34a40から独立cloud checkoutで継続。main2549c8c・既存成果を保全。21ZIP/251,393,260bytesと21jobログを再取得しhash/CRC/出典を記録。[計画・限界](docs/maintenance/pr113-webkit-resume-20261101/README.md)。
+- 旧A traceのtap API353.516秒中299.165秒はvisible/enabled/stable合成待機。dispatch自体やRAF単独根因と断定せず、正式scenario無変更の診断observerでrect/RAF/visibilityを有限計測する。
+- local無観測78.320秒・観測67.994秒、両15検査/6geometry/PNG実数0。3PNGとの初報誤りを訂正。順序/観測負荷交絡と旧helper copy不足を保持し、Ubuntu固定同runner2条件・同HEAD正式CIで別確認する。
+- 独立点検でobserver無上限/元例外上書き/helper実体不足を局所修正、13契約独立PASS。共通12分deadlineと190秒未満NOT_RUNで診断job15分の証拠保存余裕を確保し、raw厳密一致負対照も確認。製品・正式検査数/期待値・timeoutは不変。旧2診断の累積paths再起動のみ手動化し、旧証拠保持。CI分割・推測性能修正は採用しない。
+- 最終HEADのunit2480/既存契約57/lint/type/両build/独立GUI/正式6/成果物はこのcommitのChecksとPR最終報告へ記録。未実行を先取りしない。Issue112/Draft113、未マージ・未公開・旧SpaceUNKNOWN・実機未検証を維持。
+
 ## 2026-11-01 (JST): PR #113 正式日時oracleの補正と有限対照
 
 - Issue #112 / Draft PR #113。基準94e657bから調査専用af47b42をpush。A run41250143451は基準94のWK390単独を588.859秒、188/98/22PNG/1337touch・exit0で完走。原本bytes・fixture実raw・全6903操作対・traceを別担当も独立照合した。[実測・原本digest・計画](docs/maintenance/pr113-webkit-20261101/README.md)。

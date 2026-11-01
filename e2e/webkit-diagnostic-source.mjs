@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 
 // Only named Node-side functions are instrumented. Nested browser callbacks,
 // assertions, source fixture values, action order and timeout values stay intact.
-export function diagnosticSource(original, observerUrl, focused) {
+export function diagnosticSource(original, observerUrl, focused, options = {}) {
   let source = original;
   const replaceOnce = (before, after) => {
     assert.equal(source.split(before).length, 2, 'Unambiguous diagnostic insertion: ' + before.slice(0, 100));
@@ -26,6 +26,10 @@ diag.bind(() => ({ stage: metadata.stage, checks: metadata.checks.length, checkp
   await context.close(); context = null; page = null;
   return;
   await exerciseHeader(prefix);`);
+  if (options.executablePath) replaceOnce('browser = await playwright[scenario.engine].launch();',
+    `browser = await playwright[scenario.engine].launch({ executablePath: ${JSON.stringify(options.executablePath)} });`);
+  if (options.tapFrames) replaceOnce('await locator.tap();',
+    'await diag.beginTapFrames(locator);\n      try { await locator.tap(); } finally { await diag.endTapFrames(page); }');
   const tree = ts.createSourceFile('scenario.mjs', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
   const names = new Set(['exercise', 'exerciseSavedRecordComparison', 'activate', 'screenshot', 'assertHorizontalFit', 'stage', 'passed', 'storage']);
   const locations = [];

@@ -18,11 +18,27 @@ await mkdir(output, { recursive: true });
 const sha = git('rev-parse', 'HEAD');
 assert.match(sha, /^[0-9a-f]{40}$/);
 if (process.env.EXPECTED_SHA) assert.equal(sha, process.env.EXPECTED_SHA);
+const diagnosticFiles = ['run-webkit-diagnostic.mjs', 'webkit-diagnostic-source.mjs', 'webkit-diagnostic-observer.mjs'];
+const diagnosticSources = {};
+await mkdir(join(output, 'diagnostic-source'), { recursive: true });
+for (const name of diagnosticFiles) {
+  const bytes = await readFile(join(codeRoot, 'e2e', name));
+  await writeFile(join(output, 'diagnostic-source', name), bytes);
+  diagnosticSources[name] = { bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') };
+}
+const diagnosticWorkingTree = execFileSync('git', ['status', '--short'], { cwd: codeRoot, encoding: 'utf8' }).trim();
 const source = await readFile(join(app, 'e2e/scenario.mjs'), 'utf8');
-const derived = diagnosticSource(source.replaceAll('\r\n', '\n'), pathToFileURL(join(codeRoot, 'e2e/webkit-diagnostic-observer.mjs')).href, focused);
+const observation = { executablePath: process.env.WK_LOCAL_EXECUTABLE || null, tapFrames: process.env.WK_TAP_FRAMES === '1' };
+assert.ok(!observation.executablePath || !process.env.GITHUB_ACTIONS, 'Local executable override forbidden in GitHub Actions');
+if (observation.executablePath) {
+  const bytes = await readFile(observation.executablePath);
+  await writeFile(join(output, 'diagnostic-source/local-browser-wrapper.sh'), bytes);
+  observation.executableSha256 = createHash('sha256').update(bytes).digest('hex');
+}
+const derived = diagnosticSource(source.replaceAll('\r\n', '\n'), pathToFileURL(join(output, 'diagnostic-source/webkit-diagnostic-observer.mjs')).href, focused, observation);
 const generated = join(app, 'e2e/.webkit-diagnostic-' + process.pid + '.mjs');
 const identity = { sha, tree: git('rev-parse', 'HEAD^{tree}'), branch: process.env.PR_BRANCH || git('rev-parse', '--abbrev-ref', 'HEAD'), run: process.env.GITHUB_RUN_ID || 'local', attempt: process.env.GITHUB_RUN_ATTEMPT || '1' };
-const record = { diagnosticOnly: true, mode: focused ? 'focused-comparison' : 'full-prefix', scenario, ...identity,
+const record = { diagnosticSources, diagnosticWorkingTree, observation, diagnosticOnly: true, mode: focused ? 'focused-comparison' : 'full-prefix', scenario, ...identity,
   diagnosticSha: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: codeRoot, encoding: 'utf8' }).trim(),
   sourceBlob: git('rev-parse', 'HEAD:e2e/scenario.mjs'), node: process.version, platform: process.platform,
   startedAt: new Date().toISOString(), sourceSha256: derived.originalSha256, derivedSha256: derived.derivedSha256, awaitLocations: derived.locations,
@@ -50,6 +66,11 @@ try {
 } catch (error) { record.status = 'diagnostic-failed'; record.error = String(error.stack || error); }
 finally {
   await unlink(generated).catch(() => {});
+  record.diagnosticSourcesUnchangedAtEnd = {};
+  for (const name of diagnosticFiles) {
+    try { record.diagnosticSourcesUnchangedAtEnd[name] = createHash('sha256').update(await readFile(join(codeRoot, 'e2e', name))).digest('hex') === diagnosticSources[name].sha256; }
+    catch (error) { record.diagnosticSourcesUnchangedAtEnd[name] = { status: 'UNKNOWN', error: String(error) }; }
+  }
   record.finishedAt = new Date().toISOString(); await save();
 }
 if (record.status !== 'diagnostic-passed') process.exitCode = 1;

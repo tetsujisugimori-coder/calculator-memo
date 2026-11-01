@@ -12,6 +12,10 @@ export function observer(directory, fixture = null) {
     appendFileSync(directory + '/operations.ndjson', JSON.stringify({ utc: new Date().toISOString(), monotonicMs: started, ...record }) + '\n');
     ioMs += performance.now() - started;
   }
+  function emitObservation(record) {
+    try { emit(record); }
+    catch (error) { console.error('NOT_OBSERVABLE tap frame evidence write failed:', String(error)); }
+  }
   return {
     fixture,
     bind(readState) { state = readState; },
@@ -39,6 +43,41 @@ export function observer(directory, fixture = null) {
       }));
       writeFileSync(directory + '/comparison-start-screen.json', JSON.stringify(screen, null, 2) + '\n');
       emit({ event: 'screen-capture', observerOnly: true, durationMs: performance.now() - started, state: state() });
+    },
+    async beginTapFrames(locator) {
+      const started = performance.now();
+      try { await locator.evaluate(element => {
+        const record = { started: performance.now(), initialVisibility: document.visibilityState, samples: [], lifecycle: [], stopped: false, truncated: false };
+        globalThis.__wkDiagnosticTapFrames = record;
+        const onVisibility = () => { if (record.lifecycle.length < 100) record.lifecycle.push({ event: 'visibilitychange', at: performance.now(), visibility: document.visibilityState }); else { record.truncated = true; record.stop(); } };
+        document.addEventListener('visibilitychange', onVisibility);
+        const sample = timestamp => {
+          if (record.stopped) return;
+          if (record.samples.length >= 1200 || performance.now() - record.started > 10000) { record.truncated = true; record.stop(); return; }
+          const begin = performance.now();
+          const rect = element.getBoundingClientRect();
+          const end = performance.now();
+          record.samples.push({ timestamp, begin, rectMs: end - begin, connected: element.isConnected, visibility: document.visibilityState, x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+          record.raf = requestAnimationFrame(sample);
+        };
+        record.stop = () => { record.stopped = true; cancelAnimationFrame(record.raf); document.removeEventListener('visibilitychange', onVisibility); };
+        record.raf = requestAnimationFrame(sample);
+      }); } catch (error) { emitObservation({ event: 'tap-frame-observer-error', phase: 'begin', result: 'NOT_OBSERVABLE', error: String(error), state: state() }); }
+      finally { emitObservation({ event: 'tap-frame-observer-cost', phase: 'begin', durationMs: performance.now() - started, state: state() }); }
+    },
+    async endTapFrames(page) {
+      const started = performance.now();
+      try { const record = await page.evaluate(() => {
+        const record = globalThis.__wkDiagnosticTapFrames;
+        if (!record) return { missing: true };
+        record.stop();
+        const { stop, raf, ...value } = record;
+        delete globalThis.__wkDiagnosticTapFrames;
+        return { ...value, ended: performance.now() };
+      });
+      emitObservation({ event: 'tap-frames', observerOnly: true, state: state(), record });
+      } catch (error) { emitObservation({ event: 'tap-frame-observer-error', phase: 'end', result: 'NOT_OBSERVABLE', error: String(error), state: state() }); }
+      finally { emitObservation({ event: 'tap-frame-observer-cost', phase: 'end', durationMs: performance.now() - started, state: state() }); }
     },
     async awaited(operation, location) {
       const id = ++serial, parent = scope.getStore() ?? null, started = performance.now();

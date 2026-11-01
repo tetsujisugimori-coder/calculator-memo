@@ -1,9 +1,7 @@
 name: PR 113 WebKit finite controls
+# Historical bounded diagnostics are explicit-only; PR path filters match cumulative changes.
 on:
-  pull_request:
-    paths:
-      - 'e2e/run-webkit-controls.mjs'
-      - '.github/workflows/pr113-webkit-controls.yml'
+  workflow_dispatch:
 permissions:
   contents: read
   actions: read # Read the single, fixed diagnostic A artifact from the same repository.
@@ -12,7 +10,7 @@ defaults:
     shell: bash
 jobs:
   controls:
-    if: github.event.pull_request.number == 113
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -27,7 +25,7 @@ jobs:
         id: checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Set up pinned Node
@@ -77,13 +75,13 @@ jobs:
           STEP_OUTCOMES: ${{ toJSON(steps) }}
         run: |
           mkdir -p gui-evidence/webkit-controls
-          node --input-type=module -e "import{writeFileSync}from'node:fs';writeFileSync('gui-evidence/webkit-controls/job-outcomes.json',JSON.stringify({head:'${{ github.event.pull_request.head.sha }}',run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,steps:JSON.parse(process.env.STEP_OUTCOMES),at:new Date().toISOString()},null,2)+'\n')"
+          node --input-type=module -e "import{writeFileSync}from'node:fs';writeFileSync('gui-evidence/webkit-controls/job-outcomes.json',JSON.stringify({head:'${{ github.sha }}',run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,steps:JSON.parse(process.env.STEP_OUTCOMES),at:new Date().toISOString()},null,2)+'\n')"
           node e2e/evidence-inventory.mjs
       - name: Retain all control results including unfinished conditions
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: pr113-webkit-controls-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          name: pr113-webkit-controls-${{ github.sha }}-${{ github.run_attempt }}
           path: gui-evidence/
           retention-days: 7
           compression-level: 0
