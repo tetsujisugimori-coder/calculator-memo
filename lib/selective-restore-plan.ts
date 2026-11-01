@@ -189,8 +189,35 @@ export function generateRestorePlan(input: Input): RestorePlan {
     const after = row.references.filter(ref => ref.namespace === 'after');
     if (after.some(ref => ['MISSING', 'AMBIGUOUS'].includes(ref.status))) row.blockedReasons.push('復元後候補の参照先が欠落または曖昧です。');
     if (after.some(ref => ['UNKNOWN', 'UNSUPPORTED', 'UNPARSEABLE'].includes(ref.status))) row.unknowns.push('復元後の参照関係を完全検証できません。');
-    if (row.coveredBy) { const parent = plan.items.find(p => p.key === row.coveredBy); if (!parent || ['BLOCKED', 'UNKNOWN'].includes(parent.operation)) row.blockedReasons.push('依存する親項目が禁止/不明です。'); }
     if (row.blockedReasons.length) row.operation = 'BLOCKED'; else if (row.unknowns.length) row.operation = 'UNKNOWN';
+  }
+  // Resolve direct checks first, then propagate through a bounded reverse graph.
+  // A child/source selected before its parent/target must receive the same result.
+  const byIdentity = new Map<string, PlanItem[]>();
+  const byKey = new Map<string, PlanItem[]>();
+  for (const row of plan.items) {
+    if (row.backupIdentity) { const rows = byIdentity.get(row.backupIdentity) ?? []; rows.push(row); byIdentity.set(row.backupIdentity, rows); }
+    const rows = byKey.get(row.key) ?? []; rows.push(row); byKey.set(row.key, rows);
+  }
+  const dependents = new Map<PlanItem, Set<PlanItem>>();
+  for (const source of plan.items) {
+    const targets = new Set(source.references.filter(ref => ref.namespace === 'backup' && ref.targetIdentity).flatMap(ref => byIdentity.get(ref.targetIdentity!) ?? []));
+    if (source.coveredBy) for (const parent of byKey.get(source.coveredBy) ?? []) targets.add(parent);
+    for (const target of targets) { const sources = dependents.get(target) ?? new Set(); sources.add(source); dependents.set(target, sources); }
+  }
+  const pending = plan.items.filter(row => row.operation === 'BLOCKED' || row.operation === 'UNKNOWN');
+  for (let i = 0; i < pending.length; i++) {
+    const target = pending[i];
+    for (const source of dependents.get(target) ?? []) {
+      const reason = `依存する選択項目 ${target.key} が${target.operation}です。`;
+      const reasons = target.operation === 'BLOCKED' ? source.blockedReasons : source.unknowns;
+      if (!reasons.includes(reason)) reasons.push(reason);
+      const next = target.operation === 'BLOCKED' ? 'BLOCKED' : source.operation === 'BLOCKED' ? 'BLOCKED' : 'UNKNOWN';
+      if (source.operation !== next) { source.operation = next; pending.push(source); }
+    }
+  }
+  for (const ref of plan.references) if (ref.namespace === 'after' && ref.targetIdentity && ref.status === 'FOUND' && byIdentity.get(ref.targetIdentity)?.some(row => row.operation === 'BLOCKED' || row.operation === 'UNKNOWN')) {
+    ref.status = 'UNKNOWN'; ref.message = '参照先IDは存在しますが、依存する選択項目の事前検証が禁止/不明です。';
   }
   const post = plan.references.filter(ref => ref.namespace === 'after');
   const referenceBlocked = post.some(ref => ['MISSING', 'AMBIGUOUS'].includes(ref.status));

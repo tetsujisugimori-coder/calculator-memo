@@ -36,6 +36,8 @@ Windows 10.0.26300 / Node24.20.0 / npm11.17.0、固定Playwright1.56.1。CIのUb
 - 旧正式run41303393058は提出後点検時点で5独立job success、正式jobはunit/lint/type/両build/契約を通過してGUI準備中。今回P2修正pushで既存concurrencyによる旧run中止が発生したら、その旧結果を保持し、新HEADの正式完走へ混算しない。推測性能修正・無根拠rerun・上限変更は行わない。
 - タスクへのPR添付はローカルapp応答が返らず、確認readも応答なし。実行結果は不確定、再送なし。GitHubのDraft PR115自体の作成・全文/HEAD読戻しは確定。コード作業やCIを阻害しない。
 - 同じ参照安全性の追加対照で、UNCHANGEDの選択レポートがバックアップと現在で異なる参照先内容を持つ場合も偽PASSとなる1件をRED再現。変更不要でも選択項目の参照出典はバックアップとして比較する1行補正でUNKNOWNへ。対象core47/preview35/UI25＝107件GREEN、全116files/2539件PASS、lint/type/Pages build PASS。通常buildは確認後PRへ記録。旧76484bbの8条件CI成功も新候補へ流用しない。
+- 依存影響の受入を順序違いで追加し、直接UNKNOWNとなる登録式→選択レポート、および子を親より先に選ぶ場合の3件が、全体BLOCKEDは維持しながら関連行ADDのままになることをRED再現。直接判定後に有限の逆依存グラフで伝播する方式へ局所補正。関連行と復元後の参照をUNKNOWN/BLOCKEDへ揃える。無関係行の診断は維持する。
+- 上記補正後、全116files/2542件（core50/UI25）・lint/type/両build PASS。P2修正は全て振舞いRED→GREENに基づくもので、性能推測変更や成功選別のCI再試行ではない。最終候補の正式6条件を別HEADで終端確認する。
 
 ### 提出直前の確定結果（11:44 UTC）
 
