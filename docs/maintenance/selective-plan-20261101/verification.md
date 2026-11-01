@@ -27,6 +27,15 @@ Windows 10.0.26300 / Node24.20.0 / npm11.17.0、固定Playwright1.56.1。CIのUb
 
 ## 保存非干渉と残余
 
+### 提出後の自己点検P2と修正（2026-11-01 JST）
+
+- 初回提出47eb804/tree1b77ea9fの独立計画CI [41303393061](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/41303393061) は8/8成功。artifact13081574106の完全ZIP3,205,224bytes、SHA256 `ba2af3ca506e0cb9879dd8331029279e7ab901738e537c22639cf4bf5c040aa9` をAPIと一致確認。ZIP CRC全35file・16PNGのchunk CRC/IDAT展開、provenanceのHEAD/tree/dirty=false/run/attemptを照合。保持期限2026-11-08T11:50:02Z。旧HEADの証拠として保持する。
+- 追加自己点検で、設定・履歴formulaExecution・メモcalculationPolicyの未知の入れ子参照がUNCHANGED計画でPASSになるP2を3件の振舞い試験で再現（期待UNKNOWN/実PASS）。独立レビューの発見とは称しない。
+- ローダーが保持する未知の入れ子情報を参照なしとは推測せず、計画専用の追加検査でUNSUPPORTED/UNKNOWNへ。既存第1段階parser・保存形式・保存処理は緩和しない。設定の未知fieldは未選択でも検査し、参照不明件数を別表示。3件RED→GREEN、未知設定のUIと200選択/20DOMページの受入も追加した。
+- 修正後ローカル全単体 **116files/2538 PASS**（core46/UI25）、lint/error0・型・両build PASS。旧CIのunit2533・旧独立8/8を修正後成功へ流用しない。最終HEADの正式/独立CIと成果物を再確認する。
+- 旧正式run41303393058は提出後点検時点で5独立job success、正式jobはunit/lint/type/両build/契約を通過してGUI準備中。今回P2修正pushで既存concurrencyによる旧run中止が発生したら、その旧結果を保持し、新HEADの正式完走へ混算しない。推測性能修正・無根拠rerun・上限変更は行わない。
+- タスクへのPR添付はローカルapp応答が返らず、確認readも応答なし。実行結果は不確定、再送なし。GitHubのDraft PR115自体の作成・全文/HEAD読戻しは確定。コード作業やCIを阻害しない。
+
 ### 提出直前の確定結果（11:44 UTC）
 
 - 全単体: **116 files / 2533件 PASS**、121.68秒。新規core43/UI増分10を含む。初回CRLF差1失敗は取り消さず上記に保存。最終型検査・lint（error0/既存warning2）・通常/Pages build PASS。

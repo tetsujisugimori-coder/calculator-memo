@@ -22,12 +22,38 @@ export type PlanItem = {
 export type RestorePlan = {
   ruleVersion: number; status: PlanStatus; executionAllowed: false;
   items: PlanItem[]; reasons: string[]; references: PlanReference[];
-  counts: { selected: number; add: number; replace: number; unchanged: number; blocked: number; unknown: number; missingReferences: number | null };
+  counts: { selected: number; add: number; replace: number; unchanged: number; blocked: number; unknown: number; missingReferences: number | null; unknownReferences: number | null };
   candidate: { status: PlanStatus; data: unknown | null; before: RestoreCounts | null; after: RestoreCounts | null; message: string };
   lexical: { status: 'PASS' | 'BLOCKED' | 'UNKNOWN'; currentRoundTripChanges: boolean | null; unselectedRepresentation: 'UNCHANGED' | 'NOT_PROVEN'; message: string };
 };
 type Input = { backup: PreviewDocument; current: PreviewDocument | null; selectedKeys: readonly string[]; availability?: 'ready' | 'stale' | 'read-error' | 'invalid' | 'unacquired'; blockedReason?: string };
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+/** Existing readers preserve opaque metadata. A version-1 shape alone does not
+ * prove that nested future fields contain no references. Never certify them. */
+function planReferences(item: PreviewItem, doc: PreviewDocument): PreviewReference[] {
+  const refs = [...inspectPreviewReferences(item, doc)];
+  const check = (v: unknown, fields: readonly string[], path: string) => {
+    if (!object(v)) return;
+    for (const key of Object.keys(v)) if (!fields.includes(key)) refs.push({ namespace: doc.namespace, status: 'unsupported', target: `${item.key}/${path}/${key}`, message: '入れ子の未知フィールドの参照意味は未対応です。正常として補完しません。' });
+  };
+  const value = item.value; if (!object(value)) return refs;
+  if (item.category === 'history') check(value.formulaExecution, ['formulaId','title','expression','inputs'], 'formulaExecution');
+  if (item.category === 'notes') {
+    check(value.calculationPolicy, ['version','mode'], 'calculationPolicy');
+    check(value.calculationEvidence, ['version','records'], 'calculationEvidence');
+  }
+  if (item.category === 'notes' || item.category === 'evidence') if (Array.isArray(value.blocks)) for (const [index, block] of value.blocks.entries()) {
+    check(block, item.category === 'evidence' ? ['blockId','position','expression','evaluationMode','references','inputs','result','resultText','status'] : ['id','type','content','latex','expression','displayExpression','result','resultText','error','evaluationMode','references','evaluationState'], `blocks/${index}`);
+    if (!object(block)) continue;
+    check(block.evaluationState, ['version','status','signature','attemptError'], `blocks/${index}/evaluationState`);
+    check(block.references, ['version','entries'], `blocks/${index}/references`);
+    if (object(block.references) && Array.isArray(block.references.entries)) for (const [i, entry] of block.references.entries.entries()) check(entry, ['slot','blockId'], `blocks/${index}/references/${i}`);
+    if (Array.isArray(block.inputs)) for (const [i, input] of block.inputs.entries()) check(input, ['kind','name','sourceBlockId','value'], `blocks/${index}/inputs/${i}`);
+  }
+  return refs;
+}
+const ordinarySettings = (item: PreviewItem) => item.key === 'settings' && object(item.value) && Object.keys(item.value).every(key => ['theme','activePanel','identificationMode'].includes(key));
 
 /** Display-only hypothetical encoding. Never a storage payload. Preserve -0 for
  * structural validation; source whitespace, key/number spellings remain separate. */
@@ -63,7 +89,7 @@ export function generateRestorePlan(input: Input): RestorePlan {
   };
   const plan: RestorePlan = {
     ruleVersion: PLAN_RULE_VERSION, status: 'UNKNOWN', executionAllowed: false, items: [], reasons: [], references: [],
-    counts: { selected: selectedKeys.length, add: 0, replace: 0, unchanged: 0, blocked: 0, unknown: 0, missingReferences: null },
+    counts: { selected: selectedKeys.length, add: 0, replace: 0, unchanged: 0, blocked: 0, unknown: 0, missingReferences: null, unknownReferences: null },
     candidate: { status: 'UNKNOWN', data: null, before: null, after: null, message: '仮構築は未検証です。' },
     lexical: { status: 'UNKNOWN', currentRoundTripChanges: null, unselectedRepresentation: 'NOT_PROVEN', message: '原文字句保持は未検証です。' },
   };
@@ -138,7 +164,7 @@ export function generateRestorePlan(input: Input): RestorePlan {
   let referencesComplete = true;
   const append = (item: PreviewItem, doc: PreviewDocument, namespace: PlanReference['namespace'], expected?: PreviewDocument) => {
     if (plan.references.length >= MAX_PLAN_REFERENCES) { referencesComplete = false; return; }
-    for (const ref of inspectPreviewReferences(item, doc)) {
+    for (const ref of planReferences(item, doc)) {
       if (plan.references.length >= MAX_PLAN_REFERENCES) { referencesComplete = false; break; }
       const result: PlanReference = { ...ref, namespace, source: item.identity ?? item.key, status: ref.status.toUpperCase() as Uppercase<PreviewReference['status']> };
       if (namespace === 'after' && ref.targetIdentity && ref.status === 'found' && expected) {
@@ -148,12 +174,12 @@ export function generateRestorePlan(input: Input): RestorePlan {
       plan.references.push(result);
     }
   };
-  for (const item of backup.items) if (item.category !== 'other' || selectedKeys.includes(item.key)) append(item, backup, 'backup');
-  if (current) for (const item of current.items) if (item.category !== 'other' || selectedKeys.includes(item.key)) append(item, current, 'current');
+  for (const item of backup.items) if (!ordinarySettings(item) || selectedKeys.includes(item.key)) append(item, backup, 'backup');
+  if (current) for (const item of current.items) if (!ordinarySettings(item) || selectedKeys.includes(item.key)) append(item, current, 'current');
   if (candidateDoc && current) for (const item of candidateDoc.items) {
     // Ordinary known settings have no structured references. Unknown top-level
     // fields are not silently treated as supported.
-    if (item.key === 'settings') continue;
+    if (ordinarySettings(item)) continue;
     const selected = plan.items.some(row => row.proposedOperation !== 'UNCHANGED' && (row.backupIdentity === item.identity || item.category === 'evidence' && row.category === 'notes' && row.id === item.scope || item.category === 'confirmations' && row.category === 'reports' && row.id === item.scope));
     append(item, candidateDoc, 'after', selected ? backup : current);
   }
@@ -174,6 +200,6 @@ export function generateRestorePlan(input: Input): RestorePlan {
   if (changed) plan.reasons.push(plan.lexical.message);
   for (const row of plan.items) if (row.proposedOperation === 'ADD' || row.proposedOperation === 'REPLACE') row.blockedReasons.push('原文字句を損失なく変更する方式が未確立です。候補操作を実行できません。');
   plan.status = plan.items.some(row => row.operation === 'BLOCKED') || referenceBlocked || plan.lexical.status === 'BLOCKED' || plan.candidate.status === 'BLOCKED' ? 'BLOCKED' : !selectedKeys.length || plan.items.some(row => row.operation === 'UNKNOWN') || referenceUnknown || plan.candidate.status !== 'PASS' ? 'UNKNOWN' : 'PASS';
-  plan.counts = { selected: selectedKeys.length, add: plan.items.filter(v => v.proposedOperation === 'ADD' && !v.coveredBy).length, replace: plan.items.filter(v => v.proposedOperation === 'REPLACE' && !v.coveredBy).length, unchanged: plan.items.filter(v => v.proposedOperation === 'UNCHANGED').length, blocked: plan.items.filter(v => v.blockedReasons.length > 0).length, unknown: plan.items.filter(v => v.operation === 'UNKNOWN').length, missingReferences: candidateDoc && referencesComplete ? post.filter(ref => ref.status === 'MISSING').length : null };
+  plan.counts = { selected: selectedKeys.length, add: plan.items.filter(v => v.proposedOperation === 'ADD' && !v.coveredBy).length, replace: plan.items.filter(v => v.proposedOperation === 'REPLACE' && !v.coveredBy).length, unchanged: plan.items.filter(v => v.proposedOperation === 'UNCHANGED').length, blocked: plan.items.filter(v => v.blockedReasons.length > 0).length, unknown: plan.items.filter(v => v.operation === 'UNKNOWN').length, missingReferences: candidateDoc && referencesComplete ? post.filter(ref => ref.status === 'MISSING').length : null, unknownReferences: candidateDoc && referencesComplete ? post.filter(ref => ['AMBIGUOUS','UNSUPPORTED','UNPARSEABLE','UNKNOWN'].includes(ref.status)).length : null };
   return plan;
 }

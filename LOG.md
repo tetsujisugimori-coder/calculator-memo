@@ -7,6 +7,7 @@
 - 選択/file/比較/原文/世代/保存条件変更で旧計画をSTALEへ。明示再取得/再生成のみ。UIの一覧/参照/前後内容をページ分割し、タッチ入口のfocus復帰欠陥は単体RED→局所修正GREEN。[自己検証・初回失敗と限界](docs/maintenance/selective-plan-20261101/verification.md)。
 - core43/UI23成功、最終全単体116files/2533成功、型・lint・両build成功。初回2531/2532は既存fixture CRLF差1件で保持。独立GUI8/8・88touch・16PNG成功（dirty提出前版）。正式契約のWindows経路差9件はUbuntu CIへ引継ぎ。最終commitの正式CI/独立GUI/成果物は確認待ち、Draft PR未作成。独立レビューは別工程で未実施。未検証を先取りしない。
 - 正式6/1128/592/132/3workers/30分・既存workflow/scenarioは不変。WebKit遅延根因UNKNOWN、実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証。main変更/merge/auto-merge/Ready/公開なし。第3段階はlossless編集・直前再照合・保全・承認・排他・読戻しを別途設計する。
+- Draft [#115](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115) を47eb804/tree1b77ea9fで提出。旧計画CI41303393061の8/8とZIP digest/CRC/16PNG/HEAD/treeを照合後、自己点検で未知の入れ子参照の偽PASS P2を3件REDで再現。計画専用の非対応検査と参照不明件数へ局所補正しGREEN。修正後116files/2538（core46/UI25）・lint/type/両build成功。最終HEADのCI・成果物はPRで別確認し、旧正式の進行中/中止を新成功へ置換しない。独立レビューは未実施。
 
 ## 2026-11-01 (JST): PR #113 WebKit actionability待機の継続診断
 
