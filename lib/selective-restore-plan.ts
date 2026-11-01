@@ -180,7 +180,7 @@ export function generateRestorePlan(input: Input): RestorePlan {
     // Ordinary known settings have no structured references. Unknown top-level
     // fields are not silently treated as supported.
     if (ordinarySettings(item)) continue;
-    const selected = plan.items.some(row => row.proposedOperation !== 'UNCHANGED' && (row.backupIdentity === item.identity || item.category === 'evidence' && row.category === 'notes' && row.id === item.scope || item.category === 'confirmations' && row.category === 'reports' && row.id === item.scope));
+    const selected = plan.items.some(row => row.backupIdentity === item.identity || item.category === 'evidence' && row.category === 'notes' && row.id === item.scope || item.category === 'confirmations' && row.category === 'reports' && row.id === item.scope);
     append(item, candidateDoc, 'after', selected ? backup : current);
   }
   if (!referencesComplete) plan.reasons.push('参照検査上限20,000件。切り捨てた件数を正常0件としません。');

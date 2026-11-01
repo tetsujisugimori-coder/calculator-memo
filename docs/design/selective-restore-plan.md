@@ -37,6 +37,8 @@ Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114
 
 既存ローダーが保持する未知の入れ子fieldも、参照を含まないとは推測しない。履歴のformulaExecution、メモのcalculationPolicy/calculationEvidence、ブロック・参照entries・入力・evaluationStateの未知fieldを追加でUNSUPPORTEDへ分類する。設定も既知3キー以外を含む場合は、未選択でも参照検証の対象外として全体UNKNOWN。参照不足件数と参照判定不能件数を分け、未完了は数値0にしない。
 
+UNCHANGEDでも選択項目の出典はバックアップである。同じ本文/IDが現在にあっても、バックアップ側と復元後側の参照先内容が異なればUNKNOWNとし、単に変更不要だからFOUNDとは認定しない。
+
 生成は同期pure処理。UIは直前/直後に同じ取得原文・世代・選択・file requestを照合し、render時にも前提一致を判定する。通知を受けた旧PASSを再使用しない。通知なしABA/旧client/通知直前の競合は完全検知不可。Web Locksは読み取り計画の原子的保証にはならない。実行直前再照合は第3段階で必須。
 
 ## 第3段階への引継ぎ
