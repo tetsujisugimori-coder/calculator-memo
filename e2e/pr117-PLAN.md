@@ -1,0 +1,32 @@
+# PR #118 bounded diagnostic plan — 2026-11-02 UTC
+
+Start: diagnosis 2e578abfd12374445d9ab7f94398a78803926338 / tree 0ab4dc7006e7435cb6da3cc7e55f9e94f5857fe3, parent/main A 9a62ade53f1743d5728051dc52a17bb12bbefe44. B 2f95a1d965df47aed76a399ef13729f1b2b412aa. Remote and PR metadata agree; new isolated clean clone. No old work or evidence reused as files. Review 6576859588 read in full. No .agents directory or subordinate AGENTS.md exists in this checkout.
+
+Hypotheses: R1 target keydown absent (A), keydown without target click (B), click without desired state (C), desired state on replacement with disconnected old target (D: stale-reference suspicion only), incomplete or contradictory observation (E/UNKNOWN). DefaultPrevented is observed at named listener locations; we do not patch preventDefault or identify its caller. Passive listeners can miss stopped propagation; absence of a record is not proof of absence of an event. Observation/snapshot overhead may change timing.
+
+R2 distinguishes awaited browser/harness operations, checks/waits, screenshot/geometry collection, teardown and artifact processing using source-located start/end records, wall observation timestamps plus monotonic duration. Last started is not root cause. Per-operation synchronous append plus independent stdout, bounded 32 MiB per worker; diagnostic IO errors are nonzero. Abrupt process termination may leave a partial final JSONL line; parser reports it and retains earlier complete records. No reconstruction of historical wall timestamps from monotonic times.
+
+Finite execution: one unedited control then one observed 8-case selection-preview run on each A/B (32 executions, 8 unique conditions, not 32 independent tests). Fail-fast, all original assertions, inputs and timeouts retained. One separate instrumented six-condition formal-contract run on fixed B only, three workers, 30-minute job, no retry, no timeout extension. This is an observation run, not formal product acceptance. Existing source artifacts reanalyzed separately. No unlimited experiment or green-seeking rerun.
+
+Workflow trigger inventory before push: diagnostic push starts fixed A/B/artifact/R2 jobs. PR synchronize also starts unchanged verify-pr-gui.yml and selective-restore-plan.yml; these are automatic unrelated runs on diagnostic A-derived HEAD, never fixed-B acceptance. Their terminal outcomes must be reported separately; no changes to those workflows or protection settings. A later documentation-only push would repeat cumulative PR CI, so results go into PR body/comments and local evidence after the implementation push.
+
+Fault expectations fixed before execution (each raw subject failure exits nonzero; the oracle exits zero only after verifying expected failure, classification and saved evidence):
+
+| Fault | Expected observation/class | Subject exit | Required evidence |
+| --- | --- | --- | --- |
+| target keydown, no click | B / UNKNOWN | 1 | before/after/events |
+| click, no state change | C / UNKNOWN | 1 | before/after/events |
+| DOM replacement, desired state | D suspicion / UNKNOWN | 1 | old disconnected/new identity |
+| focus moved before Space | A / UNKNOWN | 1 | active destination, key events |
+| defaultPrevented | B / UNKNOWN | 1 | capture/bubble defaultPrevented |
+| original-style locator timeout | B or E based on acquired evidence, original TimeoutError preserved | 1 | failure-final, original error |
+| started without completion / killed subject | incomplete operation, cause UNKNOWN | nonzero signal | persisted start, previous completion |
+| journal fails mid-output | diagnostic error, original failure preserved | 1 | independent stdout and partial journal |
+| observer itself throws | E / UNKNOWN, no success | 1 | diagnostic error and original failure |
+| required artifact missing | explicit missing evidence | 1 | inventory and missing paths |
+
+Normal synthetic browser control must exit 0 and classify SUCCESS. Faults never enter product code or application storage. Same predicates are applied to the historical diagnostic's acquired records where feasible; missing new fields are RED (coverage deficit), not a claim that the original detector promised this capability. Report any unavailable old/new executable comparison honestly.
+
+The timeout fault also runs once through the generated original A harness: after the second Space snapshot, remove only the synthetic target row; the unchanged original locator assertion must reach its original timeout and exit nonzero. Expect E/UNKNOWN for the disappeared target, failed result JSON and failure-final snapshot. This first-condition failure is a raw fault execution, separate from A/B success counts. No original timeout is shortened or extended.
+
+Safety: synthetic fresh contexts only; app setItem/removeItem/clear each 0; current/recovery/other raw and uploaded backup bytes invariant under original assertions. No product blob, PR117 branch, executionAllowed=false, storage contract, formal expectations, skip/retry or timeout change. Draft, merge NO, Stage3B HOLD. LOG.md left unchanged because this task only authorizes diagnostic-specific files/records; this plan and final PR report are the scoped audit record.

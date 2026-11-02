@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
   actions: read
+defaults:
+  run:
+    shell: bash
 jobs:
   artifacts:
     runs-on: ubuntu-24.04
@@ -43,6 +46,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           path: diagnostics
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -67,11 +71,12 @@ jobs:
           EXPECTED_SHA: ${{ matrix.sha }}
           CI: 'true'
         run: |
-          cp ../diagnostics/e2e/pr117-r1-diagnosis.mjs e2e/
+          cp ../diagnostics/e2e/pr117-*.mjs e2e/
           node --input-type=module -e "import {chromium,webkit} from './e2e/node_modules/playwright/index.mjs'; for(const [name,e] of [['chromium',chromium],['webkit',webkit]]){const b=await e.launch();console.log('DIAG_JSON '+JSON.stringify({kind:'browser',name,version:b.version(),node:process.version}));await b.close();}"
           uname -a
           cat /etc/os-release
           set +e
+          failed=0
           for mode in control observed; do
             export DIAG_OBSERVE=0
             if [ "$mode" = observed ]; then export DIAG_OBSERVE=1; fi
@@ -82,12 +87,41 @@ jobs:
             if [ "$mode" = observed ]; then runner=e2e/pr117-observed-runner.generated.mjs; fi
             timeout --signal=TERM --kill-after=10s 300s node "$runner" > "$mode.log" 2>&1
             result=$?
+            if [ "$result" != 0 ]; then failed=1; fi
             cat "$mode.log"
             printf 'DIAG_EXIT mode=%s sha=%s exit=%s\n' "$mode" "$EXPECTED_SHA" "$result"
             node --input-type=module -e "import fs from 'node:fs';const p=JSON.parse(fs.readFileSync('gui-evidence/selection-preview-results.json'));console.log('DIAG_JSON '+JSON.stringify({kind:'run-record',mode:process.argv[1],record:p}));" "$mode"
+            if [ "$?" != 0 ]; then failed=1; fi
             mv gui-evidence "diagnostic-$mode-${{ github.run_id }}-${{ github.run_attempt }}"
+            if [ "$?" != 0 ]; then failed=1; fi
           done
-          # Exit 0 means collection completed, never acceptance. Individual exit values are above.
+          exit "$failed"
+      - name: Synthetic fault oracle once on A, raw subject exits retained
+        if: always() && matrix.sha == '9a62ade53f1743d5728051dc52a17bb12bbefe44'
+        working-directory: app
+        env:
+          PR117_LEGACY_GIT_ROOT: ../diagnostics
+          PR117_FAULT_OUT: faults-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          cp ../diagnostics/e2e/pr117-*.mjs e2e/
+          node --test e2e/pr117-diagnosis.node-test.mjs | tee faults.log
+      - name: Original assertion timeout fault once on A, expected nonzero
+        if: always() && matrix.sha == '9a62ade53f1743d5728051dc52a17bb12bbefe44'
+        working-directory: app
+        env:
+          EXPECTED_SHA: ${{ matrix.sha }}
+          DIAG_OBSERVE: '1'
+          DIAG_FAULT: original-timeout
+        run: |
+          node e2e/pr117-r1-diagnosis.mjs
+          set +e
+          timeout --signal=TERM --kill-after=10s 300s node e2e/pr117-timeout-runner.generated.mjs > original-timeout.log 2>&1
+          result=$?
+          set -e
+          printf 'RAW_FAULT_EXIT original-timeout=%s\n' "$result"
+          test "$result" = 1
+          node --input-type=module -e "import fs from 'node:fs';const p=JSON.parse(fs.readFileSync('gui-evidence/selection-preview-results.json'));if(p.status!=='failed'||!p.error.includes('TimeoutError'))throw Error('original timeout not preserved');const lines=fs.readFileSync('gui-evidence/r1-chromium-375-light.jsonl','utf8').trim().split('\n').map(JSON.parse);if(!lines.some(x=>x.phase==='failure-final')||!lines.some(x=>x.phase==='failure-classification'&&x.category==='E'))throw Error('missing failure snapshot/classification');"
+          mv gui-evidence "fault-original-timeout-${{ github.run_id }}-${{ github.run_attempt }}"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -97,5 +131,60 @@ jobs:
             app/*.log
             app/gui-evidence/
             app/e2e/pr117-*.generated.mjs
+            app/faults-*/
+            app/fault-original-timeout-*/
           overwrite: false
           retention-days: 7
+  r2:
+    name: One fixed B formal-contract observation, separate from acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          path: diagnostics
+          persist-credentials: false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: 2f95a1d965df47aed76a399ef13729f1b2b412aa
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Fixed setup within existing thirty minute job budget
+        working-directory: app
+        run: |
+          npm ci --ignore-scripts
+          npm run build:pages
+          npm ci --prefix e2e --ignore-scripts
+          sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          sudo timeout --signal=TERM --kill-after=10s 300s node e2e/node_modules/playwright/cli.js install-deps chromium webkit
+          timeout --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install chromium webkit
+      - name: Generate diagnostic copies and execute each original condition once
+        working-directory: app
+        env:
+          EXPECTED_SHA: 2f95a1d965df47aed76a399ef13729f1b2b412aa
+          CI: 'true'
+          PR_BRANCH: feat/selective-restore-execution-safety
+        run: |
+          cp ../diagnostics/e2e/pr117-*.mjs e2e/
+          node e2e/pr117-r2-diagnosis.mjs
+          for file in e2e/pr117-r2-*.generated.mjs; do node --check "$file"; done
+          node e2e/pr117-r2-smoke.generated.mjs
+      - name: Inventory and classify acquired progress without requiring finally
+        if: always()
+        working-directory: app
+        run: node e2e/pr117-progress-analysis.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: r2-fixed-B-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            app/gui-evidence/
+            app/pr117-r2-manifest.json
+            app/e2e/pr117-r2-*.generated.mjs
+          overwrite: false
+          retention-days: 7
+          if-no-files-found: error

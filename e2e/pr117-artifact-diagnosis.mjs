@@ -26,7 +26,7 @@ for(const [id,digest] of [[13115926677,'31385ddcd600c532db45c6b76f25c7140e888fec
  else if(e.name==='provenance.json'){
   emit('provenance',{artifact:id,path:file.slice(dir.length+1),status:p.status,sha:p.sha,expectedSha:p.expectedSha,startedAt:p.startedAt,finishedAt:p.finishedAt,stage:p.stage,checks:p.checks?.length,lastChecks:p.checks?.slice(-5),geometry:p.screenshotCheckpoints?.length,png:p.screenshotCheckpoints?.filter(x=>x.retained).length,errors:p.errors,failure:p.failure,workers:p.workers,scenarios:p.scenarios,resourcesAtStart:p.resourcesAtStart,resourcesAtEnd:p.resourcesAtEnd,lastStageResource:p.resourcesByStage?.slice(-1),stages:p.timings?.stages,input:p.timings?.input,lastActivations:p.timings?.activations?.slice(-5),slowActivations:p.timings?.activations?.toSorted((a,b)=>b.durationMs-a.durationMs).slice(0,8)});
  }else if(/timing|resource|outcomes|summary/.test(e.name))emit('record',{artifact:id,path:file.slice(dir.length+1),record:p});
- }catch(error){emit('json-error',{file,error:String(error)});}}
+ }catch(error){emit('json-error',{file,error:String(error)});process.exitCode=1;}}
  else if(e.name.endsWith('.log')){const lines=bytes.toString().split('\n');emit('log-tail',{artifact:id,path:file.slice(dir.length+1),tail:lines.slice(-16)});}
  }}await walk(dir);
 }
