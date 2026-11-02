@@ -10,6 +10,33 @@ defaults:
   run:
     shell: bash
 jobs:
+  progress-replay:
+    name: Lossless compact replay of acquired R2 streams, no browser run
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Replay exact authenticated R2 artifact through compact encoder and decoder
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR117_REPLAY_OUT: progress-replay-${{ github.run_id }}-${{ github.run_attempt }}
+        run: node e2e/pr117-progress-replay.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: progress-replay-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            progress-replay-*/summary.json
+            progress-replay-*/compact/
+          retention-days: 7
+          overwrite: false
+          if-no-files-found: error
   artifacts:
     runs-on: ubuntu-24.04
     timeout-minutes: 8

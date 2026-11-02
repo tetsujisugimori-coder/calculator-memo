@@ -6,12 +6,12 @@ import {createR1Probe} from './pr117-r1-probe.mjs';
 import {createJournal,requireArtifacts} from './pr117-diagnostic-core.mjs';
 const [name,out]=process.argv.slice(2);assert.ok(name&&out);mkdirSync(out,{recursive:false});
 if(name==='incomplete'){
-  const journal=createJournal(out+'/operations.jsonl',{condition:'synthetic-incomplete'});
+  const journal=createJournal(out+'/operations.jsonl',{condition:'synthetic-incomplete'},{compact:true});
   await journal.run({kind:'browser-or-harness-operation',operation:'completed-control',waitingFor:'resolved'},async()=>42);
   journal.start({kind:'check-or-wait',operation:'synthetic-never-completes',waitingFor:'external termination'});
   console.log('READY_TO_KILL');await new Promise(()=>{});
 }else if(name==='write-failure'){
-  let count=0;const journal=createJournal(out+'/unused.jsonl',{}, {write:line=>{if(++count>1)throw Error('injected mid-output EIO');writeFileSync(out+'/partial.jsonl',line,{flag:'a'});}});
+  let count=0;const journal=createJournal(out+'/unused.jsonl',{}, {compact:true,write:line=>{if(++count>2)throw Error('injected mid-output EIO');writeFileSync(out+'/partial.jsonl',line,{flag:'a'});}});
   try{await journal.run({kind:'check-or-wait',operation:'original-operation'},async()=>{throw Error('ORIGINAL_FAILURE');});}catch(error){assert.equal(error.message,'ORIGINAL_FAILURE');}
   writeFileSync(out+'/result.json',JSON.stringify(journal.summary()));journal.assertHealthy();
 }else if(name==='missing-artifact'){

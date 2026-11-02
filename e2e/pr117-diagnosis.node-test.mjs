@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {spawn,execFileSync} from 'node:child_process';
 import {readFileSync,mkdirSync,writeFileSync,readdirSync} from 'node:fs';
 import {resolve} from 'node:path';
-import {classifySpace,createJournal,analyzeProgress,requireArtifacts} from './pr117-diagnostic-core.mjs';
+import {classifySpace,createJournal,createProgressCodec,decodeProgress,analyzeProgress,requireArtifacts} from './pr117-diagnostic-core.mjs';
 const out=resolve(process.env.PR117_FAULT_OUT||('pr117-faults-'+Date.now()));mkdirSync(out,{recursive:false});
 const before={target:{identity:1,pressed:'false'}},after={target:{identity:1,pressed:'false'},original:{isConnected:true}};
 test('classifier requires sufficient evidence and never identifies product/browser cause',()=>{
@@ -20,6 +20,14 @@ test('journal preserves exact original exception, records failures and detects t
   assert.throws(()=>requireArtifacts(['a'],['a','b']),/missing/);
 });
 const faults=[['normal','SUCCESS',0],['no-click','B',1],['no-state','C',1],['replace','D',1],['focus','A',1],['prevent-default','B',1],['timeout','B',1],['observer-error','E',1],['pre-target',null,1],['write-failure',null,1],['missing-artifact',null,1],['incomplete',null,1]];
+test('compact stream preserves metadata, outcomes, partial tails and missing-dictionary failures',async()=>{
+  const lines=[],journal=createJournal(out+'/compact.jsonl',{condition:'synthetic',sha:'fixed'},{compact:true,write:line=>lines.push(line),mirror:()=>{}});
+  await journal.run({kind:'check-or-wait',source:'test.mjs',line:1,operation:'original wait',waitingFor:'same condition'},async()=>42);journal.start({kind:'evidence-collection',operation:'capture'});
+  const decoded=decodeProgress(lines.join(''));assert.equal(decoded.malformed.length,0);assert.equal(decoded.records[0].condition,'synthetic');assert.equal(decoded.records[1].operation,'original wait');assert.equal(decoded.records[1].status,'succeeded');assert.equal(analyzeProgress(lines.join('')+'{"partial":').incomplete.length,1);
+  assert.ok(decodeProgress(lines.slice(2).join('')).malformed.length>0);
+  const encode=createProgressCodec({condition:'fixed'}),ordinary={id:'original:1',status:'started',startedAt:'2026-11-02T00:00:00Z',startMs:1,stage:'one',operation:'wait',kind:'check-or-wait'};
+  assert.deepEqual(decodeProgress(encode(ordinary).join('')).records,[{condition:'fixed',...ordinary}]);
+});
 for(const [name,expected,expectedExit]of faults)test('raw fault subject: '+name,async()=>{
   const directory=resolve(out,name),child=spawn(process.execPath,['e2e/pr117-fault-subject.mjs',name,directory],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';
   child.stdout.on('data',chunk=>{stdout+=chunk;if(name==='incomplete'&&stdout.includes('READY_TO_KILL'))child.kill('SIGKILL');});child.stderr.on('data',chunk=>{stderr+=chunk;});
