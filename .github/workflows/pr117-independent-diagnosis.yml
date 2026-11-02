@@ -1,0 +1,101 @@
+name: PR117 independent fixed comparison
+on:
+  push:
+    branches: [diagnosis/pr117-gui-fixed-ab]
+    paths: ['e2e/pr117-*.mjs', '.github/workflows/pr117-independent-diagnosis.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  artifacts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Authenticate official original artifact reads and stream structured diagnostics
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIAGNOSTIC_OUT: original-${{ github.run_id }}-${{ github.run_attempt }}
+        run: node e2e/pr117-artifact-diagnosis.mjs | tee artifact-analysis.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-analysis-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            original-*/
+            artifact-analysis.log
+          overwrite: false
+          retention-days: 7
+  r1:
+    strategy:
+      fail-fast: false
+      matrix:
+        sha: [9a62ade53f1743d5728051dc52a17bb12bbefe44, 2f95a1d965df47aed76a399ef13729f1b2b412aa]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          path: diagnostics
+          persist-credentials: false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ matrix.sha }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Fixed dependencies, product Pages build and original browsers
+        working-directory: app
+        run: |
+          npm ci --ignore-scripts
+          npm run build:pages
+          npm ci --prefix e2e --ignore-scripts
+          sudo timeout --signal=TERM --kill-after=10s 300s node e2e/node_modules/playwright/cli.js install-deps chromium webkit
+          timeout --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install chromium webkit
+      - name: One untouched original run then one observational run, no retries
+        working-directory: app
+        env:
+          EXPECTED_SHA: ${{ matrix.sha }}
+          CI: 'true'
+        run: |
+          cp ../diagnostics/e2e/pr117-r1-diagnosis.mjs e2e/
+          node --input-type=module -e "import {chromium,webkit} from './e2e/node_modules/playwright/index.mjs'; for(const [name,e] of [['chromium',chromium],['webkit',webkit]]){const b=await e.launch();console.log('DIAG_JSON '+JSON.stringify({kind:'browser',name,version:b.version(),node:process.version}));await b.close();}"
+          uname -a
+          cat /etc/os-release
+          set +e
+          for mode in control observed; do
+            export DIAG_OBSERVE=0
+            if [ "$mode" = observed ]; then export DIAG_OBSERVE=1; fi
+            node e2e/pr117-r1-diagnosis.mjs
+            generator_code=$?
+            if [ "$generator_code" != 0 ]; then exit "$generator_code"; fi
+            runner=e2e/run-selection-preview-gui.mjs
+            if [ "$mode" = observed ]; then runner=e2e/pr117-observed-runner.generated.mjs; fi
+            timeout --signal=TERM --kill-after=10s 300s node "$runner" > "$mode.log" 2>&1
+            result=$?
+            cat "$mode.log"
+            printf 'DIAG_EXIT mode=%s sha=%s exit=%s\n' "$mode" "$EXPECTED_SHA" "$result"
+            node --input-type=module -e "import fs from 'node:fs';const p=JSON.parse(fs.readFileSync('gui-evidence/selection-preview-results.json'));console.log('DIAG_JSON '+JSON.stringify({kind:'run-record',mode:process.argv[1],record:p}));" "$mode"
+            mv gui-evidence "diagnostic-$mode-${{ github.run_id }}-${{ github.run_attempt }}"
+          done
+          # Exit 0 means collection completed, never acceptance. Individual exit values are above.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: r1-${{ matrix.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            app/diagnostic-*/
+            app/*.log
+            app/gui-evidence/
+            app/e2e/pr117-*.generated.mjs
+          overwrite: false
+          retention-days: 7
