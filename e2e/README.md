@@ -1,3 +1,9 @@
+# Stage 3A 独立受入
+
+`node e2e/run-selective-safety-gui.mjs` は既存正式GUIと別の8条件（Chromium/WebKit ×375/390 ×light/dark）を実行する。CSS200%に加えて対象textのcomputed font-sizeを実測して2倍にする対照、原文保持候補/直前再検証、STALEと明示再生成、長ID/数式/未知field、touch/Space/フォーカス復帰、44px/横幅/クリッピング、app set/remove/clear各0・全保存原文不変を検査する。実OS文字拡大の検査ではない。
+
+実行ごと `gui-evidence/stage3a-<HEAD>-<UTC>-<UUID>/` を非recursive mkdirで新設し、provenance（SHA/tree/dirty/bundle/run/attempt）、結果、PNG3枚/条件・失敗traceを保存する。再実行で以前のdirectoryを使わない。job15分/GUI5分、成果物7日。欠測・signal・失敗は非0。`selective-safety-ci.node-test.mjs` は独立契約で、既存正式6/1128/592/132/3workers/30分を変更しない。PR #115の5/6欠測やUNKNOWN原因を局所成功で解決しない。実機Safari/VoiceOver/OS文字拡大/softkeyboardはNOT_TESTED。
+
 # PR GUI regression
 
 ## 選択復元計画（第2段階）の独立受入

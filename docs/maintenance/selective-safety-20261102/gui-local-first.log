@@ -1,0 +1,10 @@
+{
+  "sha": "9a62ade53f1743d5728051dc52a17bb12bbefe44",
+  "startedAt": "2026-11-02T03:55:40.640Z",
+  "status": "failed",
+  "expectedCases": 8,
+  "cases": [],
+  "error": "Error: browserType.launch: Executable doesn't exist at /workspace/stage3a-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
+  "finishedAt": "2026-11-02T03:55:40.655Z"
+}
+Stage3A evidence: gui-evidence/stage3a-9a62ade53f17-2026-11-02T03-55-40-006Z-8264c59d-e8da-40bc-a882-b68b1bb86864

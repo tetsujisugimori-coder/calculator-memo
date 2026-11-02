@@ -1,0 +1,21 @@
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/selective-restore-safety.test.ts tests/selective-safety-ui.test.ts tests/selective-storage-simulator.test.ts
+
+
+ RUN  v3.2.4 /workspace/calculator-memo-stage3a
+
+ ✓ tests/selective-storage-simulator.test.ts (15 tests) 9ms
+ ✓ tests/selective-restore-safety.test.ts (66 tests) 157ms
+ ✓ tests/selective-safety-ui.test.ts (9 tests) 434ms
+
+ Test Files  3 passed (3)
+      Tests  90 passed (90)
+   Start at  03:52:22
+   Duration  2.55s (transform 910ms, setup 0ms, collect 4.10s, tests 599ms, environment 381ms, prepare 233ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

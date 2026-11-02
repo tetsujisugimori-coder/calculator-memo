@@ -1,0 +1,57 @@
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/selective-safety-ui.test.ts tests/selection-preview-ui.test.ts
+
+
+ RUN  v3.2.4 /workspace/calculator-memo-stage3a
+
+ ❯ tests/selective-safety-ui.test.ts (9 tests | 7 failed) 441ms
+   ✓ shows Stage 3A PASS separately from Stage 2 BLOCKED and never writes 142ms
+   × withdraws old success on selection 52ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × withdraws old success on storage 39ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × withdraws old success on same-tab 37ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × withdraws old success on generation 37ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × withdraws old success on read-error 35ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × withdraws old success on file 37ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × withdraws old success on unsaved 37ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   ✓ raw changed between last capture and candidate generation does not publish PASS 25ms
+ ✓ tests/selection-preview-ui.test.ts (29 tests) 1766ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on selection
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on storage
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on same-tab
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on generation
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on read-error
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on file
+ FAIL  tests/selective-safety-ui.test.ts > withdraws old success on unsaved
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ tests/selective-safety-ui.test.ts:37:23
+     35|  if(kind==='file')await upload('{');
+     36|  if(kind==='unsaved')await act(async()=>root.render(createElement(Sele…
+     37|  expect(flight()).not.toContain('PASS');expect(state()).not.toBe('原文保持…
+       |                       ^
+     38| });
+     39| it('raw changed between last capture and candidate generation does not…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  7 failed | 31 passed (38)
+   Start at  03:47:48
+   Duration  4.22s (transform 997ms, setup 0ms, collect 3.07s, tests 2.21s, environment 710ms, prepare 126ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
