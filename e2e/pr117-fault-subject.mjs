@@ -23,7 +23,7 @@ if(name==='incomplete'){
     const context=await browser.newContext();page=await context.newPage();page.on('pageerror',e=>result.pageerrors.push(String(e)));
     await page.setContent('<article data-preview-key="synthetic"><button aria-pressed="false">choose</button></article><button id="other">other</button>');
     await page.evaluate(()=>{window.__writes=[];for(const method of ['setItem','removeItem','clear']){const fn=Storage.prototype[method];Storage.prototype[method]=function(...args){window.__writes.push(method);return fn.apply(this,args);};}document.querySelector('article button').addEventListener('click',e=>{if(!window.__noState)e.currentTarget.setAttribute('aria-pressed',e.currentTarget.getAttribute('aria-pressed')==='true'?'false':'true');});});
-    probe=createR1Probe(page,{condition:name},out+'/r1.jsonl');await probe.install(page.locator('article'));
+    probe=createR1Probe(page,{condition:name},out+'/r1.jsonl');if(name==='pre-target')throw Error('PRE_TARGET_FAILURE');await probe.install(page.locator('article'));
     await page.locator('article button').focus();await probe.beforeSpace(1,'true');
     if(['no-click','prevent-default','timeout'].includes(name))await page.evaluate(()=>document.querySelector('article button').addEventListener('keydown',e=>e.preventDefault()));
     if(name==='no-state')await page.evaluate(()=>{window.__noState=true;});

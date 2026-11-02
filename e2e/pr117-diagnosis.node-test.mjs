@@ -19,7 +19,7 @@ test('journal preserves exact original exception, records failures and detects t
   assert.equal(parsed.lastCompleted.status,'failed');assert.equal(parsed.incomplete.length,1);assert.equal(parsed.stopClass,'evidence-collection');assert.equal(parsed.malformed.length,1);
   assert.throws(()=>requireArtifacts(['a'],['a','b']),/missing/);
 });
-const faults=[['normal','SUCCESS',0],['no-click','B',1],['no-state','C',1],['replace','D',1],['focus','A',1],['prevent-default','B',1],['timeout','B',1],['observer-error','E',1],['write-failure',null,1],['missing-artifact',null,1],['incomplete',null,1]];
+const faults=[['normal','SUCCESS',0],['no-click','B',1],['no-state','C',1],['replace','D',1],['focus','A',1],['prevent-default','B',1],['timeout','B',1],['observer-error','E',1],['pre-target',null,1],['write-failure',null,1],['missing-artifact',null,1],['incomplete',null,1]];
 for(const [name,expected,expectedExit]of faults)test('raw fault subject: '+name,async()=>{
   const directory=resolve(out,name),child=spawn(process.execPath,['e2e/pr117-fault-subject.mjs',name,directory],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';
   child.stdout.on('data',chunk=>{stdout+=chunk;if(name==='incomplete'&&stdout.includes('READY_TO_KILL'))child.kill('SIGKILL');});child.stderr.on('data',chunk=>{stderr+=chunk;});
@@ -38,6 +38,7 @@ for(const [name,expected,expectedExit]of faults)test('raw fault subject: '+name,
   if(name==='incomplete'){const parsed=analyzeProgress(readFileSync(directory+'/operations.jsonl','utf8'));assert.equal(parsed.incomplete.length,1);assert.equal(parsed.lastCompleted.operation,'completed-control');assert.equal(parsed.lastStarted.operation,'synthetic-never-completes');}
   if(name==='write-failure'){const r=JSON.parse(readFileSync(directory+'/result.json'));assert.ok(r.diagnosticErrors.length);assert.match(stdout,/ORIGINAL_FAILURE/);assert.match(stderr,/diagnostic recording failed/);}
   if(name==='missing-artifact')assert.match(stderr,/missing diagnostic evidence/);
+  if(name==='pre-target'){const records=readFileSync(directory+'/r1.jsonl','utf8').trim().split('\n').map(JSON.parse);assert.ok(records.some(r=>r.phase==='failure-final'&&r.state.observerUnavailable&&r.state.active.tag));assert.ok(records.some(r=>r.phase==='failure-classification'&&r.category==='E'&&r.originalError.includes('PRE_TARGET_FAILURE')));}
 });
 test('legacy source lacks new evidence fields (static coverage RED, no old fault execution claimed)',()=>{
   const legacy=execFileSync('git',['-C',process.env.PR117_LEGACY_GIT_ROOT||'.','show','2e578abfd12374445d9ab7f94398a78803926338:e2e/pr117-r1-diagnosis.mjs'],{encoding:'utf8'});

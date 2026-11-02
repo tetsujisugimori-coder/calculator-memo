@@ -10,9 +10,8 @@ function once(text,from,to){assert.equal(text.split(from).length,2,'unique sourc
 const variant=process.env.DIAG_FAULT==='original-timeout'?'timeout':'observed';
 let copy="import {createR1Probe} from './pr117-r1-probe.mjs';\nlet diagnosticFailures=0;\n"+source;
 copy=once(copy,'let page;','let page,probe,originalFailure;');
-copy=once(copy,"const article=dialog.locator('[data-preview-key]').filter({hasText:note.id});",`const article=dialog.locator('[data-preview-key]').filter({hasText:note.id});
-    probe=createR1Probe(page,{sha:process.env.EXPECTED_SHA,engine:engineName,width,theme,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT},'gui-evidence/r1-'+engineName+'-'+width+'-'+theme+'.jsonl',original);
-    await probe.install(article);page.on('pageerror',()=>{void probe.snapshot('pageerror');});`);
+copy=once(copy,'page=await context.newPage();',`page=await context.newPage();probe=createR1Probe(page,{sha:process.env.EXPECTED_SHA,engine:engineName,width,theme,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT},'gui-evidence/r1-'+engineName+'-'+width+'-'+theme+'.jsonl');`);
+copy=once(copy,"const article=dialog.locator('[data-preview-key]').filter({hasText:note.id});",`const article=dialog.locator('[data-preview-key]').filter({hasText:note.id});probe.setOriginalStorage(original);await probe.install(article);`);
 copy=once(copy,"await article.getByRole('button',{name:'復元候補に選択',exact:true}).focus();await page.keyboard.press('Space');","await probe.snapshot('before-focus');await article.getByRole('button',{name:'復元候補に選択',exact:true}).focus();await probe.beforeSpace(1,'true');await page.keyboard.press('Space');await probe.afterSpace(1);");
 copy=once(copy,"await page.keyboard.press('Space');current.keyboardEvents=","await probe.beforeSpace(2,'false');await page.keyboard.press('Space');await probe.afterSpace(2);"+(variant==='timeout'?"await article.evaluate(row=>row.remove());":"")+"current.keyboardEvents=");
 copy=once(copy,'}catch(error){if(page)current.keyboardEvents=','}catch(error){originalFailure=error;if(probe)await probe.snapshot("test-failure");if(page)current.keyboardEvents=');
