@@ -1,0 +1,167 @@
+import { describe, expect, it, vi } from 'vitest';
+import { generateRestorePlan } from '../lib/selective-restore-plan';
+import { inspectPreviewReferences, parseSelectionBackup, parseSelectionCurrent, type PreviewDocument } from '../lib/selection-preview';
+const at = '2026-11-01T00:00:00.000Z';
+const base = { version: 1, history: [], notes: [], settings: { theme: 'light', activePanel: 'history' } };
+const history = (id: string, result = 2) => ({ id, expression: '1+1', displayExpression: '1+1', result, resultText: String(result), createdAt: at });
+const note = (id = 'n') => ({ id, type: 'plain-calculation', title: 'memo', content: 'unexecuted', createdAt: at, updatedAt: at });
+const formula = (expression = 'x+1') => ({ id: 'f', title: 'formula', expression, createdAt: at, updatedAt: at });
+const library = (expression = 'x+1') => ({ version: 1, entries: [formula(expression)], selectedId: null });
+const report = { id: 'r', formulaId: 'f', title: 'report', body: 'preserved', createdAt: at, updatedAt: at, confirmedExpression: null };
+const evidence = { id: 'e', evaluator: 'calculator-memo-v1', status: 'confirmed', calculatedAt: at, persistedAt: at, blocks: [{ blockId: 'b', position: 1, expression: '2', inputs: [], result: '2', resultText: '2', status: 'success' }] };
+const noteEvidence = { ...note(), calculationEvidence: { version: 1, records: [evidence] } };
+const confirmation = { id: 'c', formulaId: 'f', confirmedAt: at, evidenceSignature: '[]', definition: { version: 1, expression: 'x+1', variables: ['x'] }, title: 'report', body: 'preserved', links: [] };
+function current(data: unknown = base, raw = JSON.stringify(data)): PreviewDocument { const r = parseSelectionCurrent(raw); if (!r.ok) throw Error(r.message); return r.preview; }
+function backup(data: unknown = base, raw = JSON.stringify(data)): PreviewDocument {
+  const d = data as Record<string, unknown>;
+  const entries = (v: unknown) => (v as { entries?: unknown[] })?.entries?.length ?? 0;
+  const text = JSON.stringify({ format: 'calculator-memo-backup', formatVersion: 1, appStorageVersion: 1, acquisition: 'captured', createdAt: at, acquiredAt: at, entries: [{ key: 'calculation-memo:data', raw, utf16CodeUnits: raw.length, validation: 'ok', counts: { history: (d.history as unknown[]).length, notes: (d.notes as unknown[]).length, formulas: entries(d.formulaLibrary), reports: entries(d.formulaReports), executions: (d.formulaExecutions as unknown[] | undefined)?.length ?? 0 } }] });
+  const r = parseSelectionBackup(text); if (!r.ok) throw Error(r.message); return r.preview;
+}
+function plan(b: PreviewDocument, c = current(), keys = b.items.filter(v => v.category !== 'other').map(v => v.key)) { return generateRestorePlan({ backup: b, current: c, selectedKeys: keys }); }
+describe('stage two pure restore planning acceptance', () => {
+  const opaqueBody = '```calculator-memo-future-reference\n{"memoId":"missing"}\n```';
+  const parentData = (body = opaqueBody) => ({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [{ ...confirmation, body }] } }] } });
+  it.each([['reports:0'], ['reports:0', 'reports:0:confirmations:0'], ['reports:0:confirmations:0', 'reports:0']])('contains child diagnostics without duplicating references for selection %j', (...keys) => {
+    const data = parentData(), b = backup(data), c = current(data); const p = plan(b, c, keys);
+    const parent = p.items.find(v => v.category === 'reports')!;
+    expect(parent.operation).toBe('UNKNOWN'); expect(parent.unknowns.join()).toContain('["confirmations","r","c"]');
+    expect(p.counts.unknown).toBe(keys.length); expect(p.items).toHaveLength(keys.length); expect(p.counts.unknownReferences).toBe(1);
+    expect(p.references).toHaveLength(9); expect(parent.references).toHaveLength(3);
+    expect(p.references).toEqual(plan(b, c, ['reports:0']).references);
+  });
+  it.each([false, true])('retains parent UNKNOWN and normal ADD beside an unrelated BLOCKED child (reverse=%s)', reverse => {
+    const data = { ...parentData(), history: [history('normal')], notes: [noteEvidence] };
+    const keys = ['reports:0', 'notes:0:evidence:0', 'history:0']; if (reverse) keys.reverse();
+    const p = plan(backup(data), current(parentData()), keys);
+    expect(p.status).toBe('BLOCKED'); expect(p.candidate.data).toBeNull(); expect(p.counts.unknown).toBe(1);
+    expect(p.items.find(v => v.category === 'reports')?.unknowns.join()).toContain('["confirmations","r","c"]');
+    expect(p.items.find(v => v.category === 'reports')?.operation).toBe('UNKNOWN'); expect(p.items.find(v => v.category === 'history')?.operation).toBe('ADD');
+  });
+  it('does not invent parent UNKNOWN from an ordinary child', () => {
+    const data = parentData('ordinary frozen text'); const p = plan(backup(data), current(data), ['reports:0']);
+    expect(p.status).toBe('PASS'); expect(p.items[0].unknowns).toEqual([]); expect(p.counts.unknown).toBe(0);
+  });
+  it('does not confuse the same confirmation ID under another report scope or equal titles', () => {
+    const data = parentData('ordinary'); data.formulaLibrary.entries.push({ ...formula(), id: 'f2' });
+    data.formulaReports.entries.push({ ...report, id: 'r2', formulaId: 'f2', evidence: { version: 1, links: [], confirmations: [{ ...confirmation, formulaId: 'f2', body: opaqueBody }] } });
+    const b = backup(data), c = current(data); const good = plan(b, c, ['reports:0']);
+    expect(good.items[0].operation).toBe('UNCHANGED'); expect(good.items[0].unknowns).toEqual([]); expect(good.counts.unknown).toBe(0);
+    const bad = plan(b, c, ['reports:1']); expect(bad.counts.unknown).toBe(1); expect(bad.items[0].unknowns.join()).toContain('["confirmations","r2","c"]');
+  });
+  it('reports each contained child source while counting the parent row once', () => {
+    const data = parentData(); data.formulaReports.entries[0].evidence.confirmations.push({ ...confirmation, id: 'c2', body: '```calculator-memo-evidence\n{broken\n```' });
+    const b = backup(data), c = current(data); const p = plan(b, c, ['reports:0']);
+    expect(p.counts.unknown).toBe(1); expect(p.counts.unknownReferences).toBe(2);
+    expect(p.items[0].unknowns.join()).toContain('["confirmations","r","c"]'); expect(p.items[0].unknowns.join()).toContain('["confirmations","r","c2"]');
+    expect(p.items[0].unknowns.join()).toContain('UNSUPPORTED'); expect(p.items[0].unknowns.join()).toContain('UNPARSEABLE');
+    expect(plan(b, c, ['reports:0', 'reports:0:confirmations:0', 'reports:0:confirmations:1']).references).toEqual(p.references);
+  });
+  it('keeps a parent BLOCKED with its child UNKNOWN and missing-reference reasons together', () => {
+    const data = parentData(); const child = { ...data.formulaReports.entries[0].evidence.confirmations[0], links: [{ memoId: 'missing', recordId: 'missing' }] };
+    const altered = { ...data, formulaReports: { version: 1, entries: [{ ...data.formulaReports.entries[0], evidence: { version: 1, links: [], confirmations: [child] } }] } };
+    const p = plan(backup(altered), current(altered), ['reports:0']);
+    expect(p.items[0].operation).toBe('BLOCKED'); expect(p.items[0].blockedReasons.join()).toContain('含まれる子'); expect(p.items[0].unknowns.join()).toContain('含まれる子');
+    expect(p.counts.unknown).toBe(1); expect(p.counts.missingReferences).toBe(2); expect(p.counts.unknownReferences).toBe(1);
+  });
+  it('applies the same containment rule to memo/evidence and separates equal child IDs by scope', () => {
+    const data = { ...base, notes: [noteEvidence, { ...noteEvidence, id: 'n2', calculationEvidence: { version: 1, records: [{ ...evidence, futureReference: 'opaque' }] } }] };
+    const b = backup(data), c = current(data); const good = plan(b, c, ['notes:0']);
+    expect(good.items[0].unknowns).toEqual([]); expect(good.items[0].operation).toBe('UNCHANGED');
+    for (const keys of [['notes:1'], ['notes:1', 'notes:1:evidence:0'], ['notes:1:evidence:0', 'notes:1']]) {
+      const p = plan(b, c, keys); expect(p.items.find(v => v.category === 'notes')?.unknowns.join()).toContain('["evidence","n2","e"]'); expect(p.counts.unknown).toBe(keys.length);
+      expect(p.references).toEqual(plan(b, c, ['notes:1']).references);
+    }
+  });
+  it('preserves the contained child origin when its selected dependency becomes UNKNOWN', () => {
+    const data = parentData('ordinary');
+    const c = { ...confirmation, body: 'ordinary', links: [{ memoId: 'n', recordId: 'e' }] };
+    const altered = { ...data, notes: [{ ...noteEvidence, calculationPolicy: { version: 1, mode: 'manual', futureReference: 'opaque' } }], formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [c] } }] } };
+    const p = plan(backup(altered), current(altered), ['reports:0', 'notes:0']);
+    expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.items[0].unknowns.join()).toContain('["confirmations","r","c"]');
+    expect(p.counts.unknown).toBe(2);
+  });
+  it('bounds child diagnostic display without truncating canonical reference counts', () => {
+    const data = parentData(); data.formulaReports.entries[0].evidence.confirmations = Array.from({ length: 15 }, (_, i) => ({ ...confirmation, id: `c${i}`, body: opaqueBody }));
+    const b = backup(data), c = current(data); expect(b.validation).toBe('valid'); expect(c.validation).toBe('valid');
+    const p = plan(b, c, ['reports:0']); expect(p.counts.unknown).toBe(1); expect(p.counts.unknownReferences).toBe(15);
+    expect(p.items[0].unknowns).toHaveLength(21); expect(p.items[0].unknowns.join()).toContain('他10件');
+    expect(p.references.filter(v => v.namespace === 'after' && v.status === 'UNSUPPORTED')).toHaveLength(15);
+  });
+  it.each(['plain', 'unknown', 'malformed'])('R1 confirmation body shares preview reference diagnostics without rewriting: %s', kind => {
+    const body = kind === 'plain' ? 'ordinary frozen text' : kind === 'unknown' ? '```calculator-memo-future-reference\n{"memoId":"missing"}\n```' : '```calculator-memo-evidence\n{broken\n```';
+    const data = { ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [{ ...confirmation, body }] } }] } };
+    const b = backup(data), c = current(data); const original = JSON.stringify([b, c]);
+    const item = b.items.find(v => v.category === 'confirmations')!;
+    const preview = inspectPreviewReferences(item, b); const p = plan(b, c, [item.key]);
+    expect(p.status).toBe(kind === 'plain' ? 'PASS' : 'UNKNOWN');
+    expect(p.items[0].proposedOperation).toBe('UNCHANGED');
+    const unsupported = preview.filter(v => v.status !== 'found');
+    expect(unsupported).toHaveLength(kind === 'plain' ? 0 : 1);
+    expect(p.counts.unknownReferences).toBe(unsupported.length);
+    expect(p.items[0].references.filter(v => v.namespace === 'after' && v.status !== 'FOUND')).toHaveLength(unsupported.length);
+    expect(p.counts.unknown).toBe(kind === 'plain' ? 0 : 1);
+    expect(JSON.stringify([b, c])).toBe(original);
+  });
+  it.each([false, true])('R2 retains local UNKNOWN and dependencies when unrelated child blocks the full candidate (reverse=%s)', reverse => {
+    const b = backup({ ...base, history: [history('unrelated')], formulaLibrary: { ...library(), entries: [{ ...formula(), futureReference: 'opaque dependency' }] }, formulaReports: { version: 1, entries: [report] }, notes: [noteEvidence] });
+    const keys = ['reports:0', 'formulas:0', 'notes:0:evidence:0', 'history:0']; if (reverse) keys.reverse();
+    const p = plan(b, current(), keys);
+    expect(p.status).toBe('BLOCKED'); expect(p.candidate.status).toBe('UNKNOWN'); expect(p.candidate.data).toBeNull();
+    for (const category of ['formulas', 'reports']) { const row = p.items.find(v => v.category === category)!; expect(row.operation).toBe('UNKNOWN'); expect(row.unknowns.length).toBeGreaterThan(0); expect(row.reasons.join()).toContain('復元後'); }
+    expect(p.items.find(v => v.category === 'history')?.operation).toBe('ADD');
+    expect(p.items.find(v => v.category === 'evidence')?.operation).toBe('BLOCKED');
+    expect(p.counts.unknown).toBe(2); expect(p.counts.unknownReferences).toBeNull(); expect(p.counts.missingReferences).toBeNull();
+    const without = plan(b, current(), keys.filter(k => k !== 'notes:0:evidence:0'));
+    for (const category of ['formulas', 'reports']) expect(without.items.find(v => v.category === category)?.operation).toBe('UNKNOWN');
+    expect(without.counts.unknown).toBe(2);
+  });
+  it('R2 retains BLOCKED and UNKNOWN grounds together and propagates both', () => {
+    const b = backup({ ...base, formulaLibrary: { ...library(), entries: [{ ...formula(), futureReference: 'opaque' }] }, formulaReports: { version: 1, entries: [report] } });
+    const p = plan(b, current(), ['reports:0', 'formulas:0', 'formulas:0']);
+    expect(p.status).toBe('BLOCKED'); expect(p.counts.unknown).toBe(3);
+    expect(p.items.every(v => v.operation === 'BLOCKED' && v.unknowns.length > 0 && v.blockedReasons.length > 0)).toBe(true);
+    expect(p.items[0].unknowns.join()).toContain('依存');
+  });
+  it.each([['reports:0','formulas:0'],['formulas:0','reports:0']])('propagates a selected dependency UNKNOWN independently of selection order %j', (...keys) => { const b = backup({ ...base, formulaLibrary: { ...library(), entries: [{ ...formula(), futureReference: 'opaque' }] }, formulaReports: { version: 1, entries: [report] } }); const p = plan(b, current(), keys); expect(p.items.find(v => v.category === 'reports')?.operation).toBe('UNKNOWN'); expect(p.references.some(v => v.namespace === 'after' && v.target === 'formulas/f' && v.status === 'UNKNOWN')).toBe(true); });
+  it('propagates parent UNKNOWN when a covered child is selected before its parent', () => { const b = backup({ ...base, notes: [{ ...noteEvidence, calculationPolicy: { version: 1, mode: 'manual', futureReference: 'opaque' } }] }); const p = plan(b, current(), ['notes:0:evidence:0','notes:0']); expect(p.items[0].coveredBy).toBe('notes:0'); expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.items[0].unknowns.join()).toContain('依存'); });
+  it.each(['settings', 'history-execution', 'note-policy'])('does not certify opaque nested reference fields in %s', kind => { const data = kind === 'settings' ? { ...base, history: [history('h')], settings: { ...base.settings, futureReference: { id: 'unknown' } } } : kind === 'history-execution' ? { ...base, history: [{ ...history('h'), formulaExecution: { formulaId: 'f', title: 'formula', expression: 'x+1', inputs: { x: '2' }, futureReference: { id: 'unknown' } } }], formulaLibrary: library() } : { ...base, notes: [{ ...note(), calculationPolicy: { version: 1, mode: 'manual', futureReference: { id: 'unknown' } } }] }; const b = backup(data); const p = plan(b, current(data), [kind === 'note-policy' ? 'notes:0' : 'history:0']); expect(p.status).toBe('UNKNOWN'); expect(p.references.some(v => v.namespace === 'after' && v.status === 'UNSUPPORTED')).toBe(true); });
+  it('blocks child-only evidence changes without selecting a parent automatically', () => { const b = backup({ ...base, notes: [noteEvidence] }); const p = plan(b, current({ ...base, notes: [note()] }), ['notes:0:evidence:0']); expect(p.items[0].operation).toBe('BLOCKED'); expect(p.items).toHaveLength(1); expect(p.items[0].scope).toBe('n'); });
+  it('includes identical selected evidence in the parent operation and preserves every snapshot', () => { const b = backup({ ...base, notes: [noteEvidence] }); const p = plan(b, current(), ['notes:0', 'notes:0:evidence:0']); expect(p.items[1].coveredBy).toBe('notes:0'); expect(p.counts.add).toBe(1); expect(p.candidate.status).toBe('PASS'); expect((p.candidate.data as { notes: unknown[] }).notes).toEqual([noteEvidence]); expect(p.references.filter(v => v.namespace === 'after').every(v => v.status === 'FOUND')).toBe(true); });
+  it('identical child evidence needs no parent mutation', () => { const data = { ...base, notes: [noteEvidence] }; const p = plan(backup(data), current(data), ['notes:0:evidence:0']); expect(p.items[0].proposedOperation).toBe('UNCHANGED'); expect(p.status).toBe('PASS'); });
+  it('keeps identical evidence IDs in distinct parent scopes separate', () => { const b = backup({ ...base, notes: [noteEvidence, { ...noteEvidence, id: 'n2' }] }); const p = plan(b, current(), ['notes:0:evidence:0', 'notes:1:evidence:0']); expect(p.items[0].backupIdentity).not.toBe(p.items[1].backupIdentity); expect(p.items.every(v => !v.collision)).toBe(true); expect(p.items.every(v => v.operation === 'BLOCKED')).toBe(true); });
+  it('blocks a standalone confirmation and includes it only through the selected report', () => { const b = backup({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [], confirmations: [confirmation] } }] } }); expect(plan(b, current(), ['reports:0:confirmations:0']).items[0].operation).toBe('BLOCKED'); const p = plan(b, current({ ...base, formulaLibrary: library() }), ['reports:0', 'reports:0:confirmations:0']); expect(p.items[1].coveredBy).toBe('reports:0'); expect(p.candidate.status).toBe('PASS'); expect(p.counts.add).toBe(1); });
+  it('detects removal of a referenced child by replacing its parent and displays the preexisting reference', () => { const data = { ...base, notes: [noteEvidence], formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, evidence: { version: 1, links: [{ memoId: 'n', recordId: 'e' }], confirmations: [] } }] } }; const p = plan(backup({ ...base, notes: [note()] }), current(data)); expect(p.references.some(v => v.namespace === 'current' && v.target === 'evidence/n/e' && v.status === 'FOUND')).toBe(true); expect(p.references.some(v => v.namespace === 'after' && v.target === 'evidence/n/e' && v.status === 'MISSING')).toBe(true); expect(p.status).toBe('BLOCKED'); expect(p.counts.missingReferences).toBe(1); });
+  it('refuses hypothetical format violations such as two report IDs for one formula', () => { const b = backup({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [{ ...report, id: 'new-report' }] } }); const p = plan(b, current({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [report] } }), ['reports:0']); expect(p.candidate.status).toBe('BLOCKED'); expect(p.candidate.message).toContain('仮構築後'); expect(p.candidate.after).toBeNull(); });
+  it('classifies single ADD, validates hypothetical version 1 but blocks lexical execution', () => { const p = plan(backup({ ...base, history: [history('h')] })); expect(p.items[0].operation).toBe('ADD'); expect(p.counts.add).toBe(1); expect(p.candidate.status).toBe('PASS'); expect(p.candidate.after?.history).toBe(1); expect(p.status).toBe('BLOCKED'); expect(p.executionAllowed).toBe(false); expect(p.lexical.unselectedRepresentation).toBe('NOT_PROVEN'); });
+  it('constructs multiple additions across independent collections', () => { const p = plan(backup({ ...base, history: [history('h')], notes: [note()], formulaLibrary: library() })); expect(p.counts.add).toBe(3); expect(p.candidate.status).toBe('PASS'); expect(p.candidate.after).toMatchObject({ history: 1, notes: 1, formulas: 1 }); });
+  it('UNCHANGED can receive preflight PASS without execution approval', () => { const data = { ...base, history: [history('h')] }; const p = plan(backup(data), current(data)); expect(p.status).toBe('PASS'); expect(p.items[0].operation).toBe('UNCHANGED'); expect(p.lexical.status).toBe('PASS'); expect(p.executionAllowed).toBe(false); });
+  it('classifies explicit overwrite and preserves every unrelated item', () => { const b = backup({ ...base, history: [history('h', 3)] }); const c = current({ ...base, history: [history('h'), history('retained')] }); const p = plan(b, c); expect(p.items[0]).toMatchObject({ operation: 'REPLACE', collision: true }); expect(p.items[0].difference).toContain('result'); expect((p.candidate.data as { history: unknown[] }).history).toEqual([history('h', 3), history('retained')]); });
+  it.each(['history', 'notes'] as const)('blocks duplicated %s IDs without first-match merge', category => { const item = category === 'history' ? history('x') : note('x'); const p = plan(backup({ ...base, [category]: [item, item] })); expect(p.status).toBe('BLOCKED'); expect(p.items.every(v => v.collision && v.operation === 'BLOCKED')).toBe(true); expect(p.candidate.data).toBeNull(); });
+  it('blocks duplicates in the current destination', () => { const p = plan(backup({ ...base, history: [history('h')] }), current({ ...base, history: [history('h'), history('h')] })); expect(p.items[0].blockedReasons.join()).toContain('重複'); });
+  it('does not invent a missing identifier', () => { const p = plan(backup({ ...base, history: [{ ...history('h'), id: undefined }] })); expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.items[0].id).toBeNull(); });
+  it('blocks selecting one item twice', () => { const p = plan(backup({ ...base, history: [history('h')] }), current(), ['history:0', 'history:0']); expect(p.items.every(v => v.operation === 'BLOCKED')).toBe(true); });
+  it('rejects fabricated selection keys', () => { const p = plan(backup(), current(), ['history:999']); expect(p.status).toBe('BLOCKED'); expect(p.items[0].category).toBeNull(); });
+  it('distinguishes namespaces for equal IDs across kinds', () => { const p = plan(backup({ ...base, history: [history('same')], notes: [note('same')] })); expect(p.counts.add).toBe(2); expect(p.items.every(v => !v.collision)).toBe(true); });
+  it('does not treat settings as an ordinary independent record', () => { const p = plan(backup(), current(), ['settings']); expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.status).toBe('UNKNOWN'); });
+  it('no selection does not become PASS', () => expect(plan(backup()).status).toBe('UNKNOWN'));
+  it('does not invent initial settings when the current key is absent', () => { const c = parseSelectionCurrent(null); if (!c.ok) throw Error(); const p = plan(backup({ ...base, history: [history('h')] }), c.preview); expect(p.candidate.data).toBeNull(); expect(p.candidate.message).toContain('推測生成せず'); });
+  it('rejects selection limits without silently taking the first 200', () => { const p = plan(backup(), current(), Array(201).fill('settings')); expect(p.status).toBe('BLOCKED'); expect(p.items).toHaveLength(0); });
+  it.each(['read-error', 'invalid', 'unacquired'] as const)('current %s stays UNKNOWN', availability => { const p = generateRestorePlan({ backup: backup({ ...base, notes: [note()] }), current: null, selectedKeys: ['notes:0'], availability }); expect(p.status).toBe('UNKNOWN'); expect(p.candidate.after).toBeNull(); expect(p.counts.missingReferences).toBeNull(); });
+  it('STALE never retains a PASS item', () => { const b = backup({ ...base, history: [history('h')] }); const p = generateRestorePlan({ backup: b, current: current(), selectedKeys: ['history:0'], availability: 'stale' }); expect(p.status).toBe('STALE'); expect(p.items[0].operation).toBe('STALE'); });
+  it('unsaved editing conditions prohibit planning success', () => { const data = { ...base, history: [history('h')] }; const p = generateRestorePlan({ backup: backup(data), current: current(data), selectedKeys: ['history:0'], blockedReason: '未保存編集' }); expect(p.status).toBe('BLOCKED'); expect(p.items[0].blockedReasons).toContain('未保存編集'); });
+  it('uses formulaId as the execution key without adding an id', () => { const p = plan(backup({ ...base, formulaLibrary: library(), formulaExecutions: [{ formulaId: 'f', expression: 'x+1', inputs: { x: '2' } }] })); expect(p.items.find(v => v.category === 'executions')?.id).toBe('f'); expect((p.candidate.data as { formulaExecutions: Record<string, unknown>[] }).formulaExecutions[0]).not.toHaveProperty('id'); });
+  it('finds an equivalent current reference when dependency is not selected', () => { const b = backup({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [report] } }); const p = plan(b, current({ ...base, formulaLibrary: library() }), ['reports:0']); expect(p.references.some(v => v.namespace === 'after' && v.target === 'formulas/f' && v.status === 'FOUND')).toBe(true); });
+  it('resolves a simultaneously selected dependency in the candidate only', () => { const b = backup({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [report] } }); const p = plan(b); expect(p.references.some(v => v.namespace === 'after' && v.target === 'formulas/f' && v.status === 'FOUND')).toBe(true); expect(p.candidate.status).toBe('PASS'); });
+  it('detects a missing reference rather than counting it as zero', () => { const p = plan(backup({ ...base, formulaReports: { version: 1, entries: [report] } })); expect(p.counts.missingReferences).toBe(1); expect(p.items[0].operation).toBe('BLOCKED'); expect(p.references.some(v => v.namespace === 'after' && v.status === 'MISSING')).toBe(true); });
+  it('same reference ID with changed content becomes UNKNOWN', () => { const b = backup({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [report] } }); const p = plan(b, current({ ...base, formulaLibrary: library('x+9') }), ['reports:0']); expect(p.references.some(v => v.namespace === 'after' && v.status === 'UNKNOWN')).toBe(true); expect(p.items[0].unknowns.length).toBeGreaterThan(0); });
+  it('UNCHANGED source still requires reference equivalence with its backup namespace', () => { const b = backup({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [report] } }); const p = plan(b, current({ ...base, formulaLibrary: library('x+9'), formulaReports: { version: 1, entries: [report] } }), ['reports:0']); expect(p.items[0].proposedOperation).toBe('UNCHANGED'); expect(p.status).toBe('UNKNOWN'); expect(p.references.some(v => v.namespace === 'after' && v.target === 'formulas/f' && v.status === 'UNKNOWN')).toBe(true); });
+  it('propagates changed formula identity to an unselected surviving report', () => { const b = backup({ ...base, formulaLibrary: library('x+9') }); const p = plan(b, current({ ...base, formulaLibrary: library(), formulaReports: { version: 1, entries: [report] } })); expect(p.references.some(v => v.namespace === 'after' && v.source.includes('reports') && v.status === 'UNKNOWN')).toBe(true); expect(p.reasons.join()).toContain('意味的同一性'); });
+  it('preserves -0 through hypothetical construction and distinguishes zero', () => { const b = backup({ ...base, history: [history('h', -0)] }, JSON.stringify({ ...base, history: [history('h', -0)] }).replace('"result":0', '"result":-0')); const p = plan(b, current({ ...base, history: [history('h', 0)] })); expect(p.items[0].proposedOperation).toBe('REPLACE'); expect(Object.is((p.candidate.data as { history: { result: number }[] }).history[0].result, -0)).toBe(true); expect(p.candidate.status).toBe('PASS'); });
+  it.each(['9007199254740993', '1.00000000000000001', '1e-999', '1e9999999'])('never certifies unknown numeric token %s', token => { const data = { ...base, history: [history('h')] }; const b = backup(data, JSON.stringify(data).replace('"result":2', `"result":${token}`)); const p = plan(b, current(data)); expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.items[0].proposedOperation).toBeNull(); expect(p.items[0].difference).not.toContain('一致'); expect(p.candidate.status).not.toBe('PASS'); });
+  it('decimal exponent equivalence is structural only and source whitespace is retained for no-op', () => { const data = { ...base, history: [history('h', 100)] }; const raw = ` ${JSON.stringify(data).replace('"result":100', '"result":1e2')} `; const p = plan(backup(data), current(data, raw)); expect(p.status).toBe('PASS'); expect(p.lexical.currentRoundTripChanges).toBe(true); expect(p.lexical.unselectedRepresentation).toBe('UNCHANGED'); });
+  it('records whole-document lexical changes even for an unselected number', () => { const data = { ...base, history: [history('retained', 100)] }; const raw = ` ${JSON.stringify(data).replace('"result":100', '"result":1e2')} `; const p = plan(backup({ ...base, notes: [note()] }), current(data, raw)); expect(p.lexical.currentRoundTripChanges).toBe(true); expect(p.lexical.status).toBe('BLOCKED'); expect(p.candidate.status).toBe('PASS'); });
+  it('rejects unsupported input validation rather than normalizing it', () => { const b = backup({ ...base, future: { snapshot: 100 } }); const p = plan(b, current(), ['other:future']); expect(p.items[0].operation).toBe('UNKNOWN'); expect(p.candidate.status).not.toBe('PASS'); });
+  it('does not hide a successful diagnosis when another selected row is blocked', () => { const b = backup({ ...base, history: [history('h')] }); const p = plan(b, current(), ['history:0', 'bogus']); expect(p.items[0].operation).toBe('ADD'); expect(p.items[1].operation).toBe('BLOCKED'); expect(p.status).toBe('BLOCKED'); });
+  it('never mutates input objects/raw or accesses any storage/evaluator capability', () => { const reads = vi.fn(() => { throw Error('forbidden'); }); const writes = vi.fn(); vi.stubGlobal('localStorage', { getItem: reads, setItem: writes, removeItem: writes, clear: writes }); const b = backup({ ...base, notes: [note()] }); const c = current(); const before = JSON.stringify([b, c]); const p = plan(b, c); expect(JSON.stringify([b, c])).toBe(before); expect(reads).not.toHaveBeenCalled(); expect(writes).not.toHaveBeenCalled(); expect(p.executionAllowed).toBe(false); vi.unstubAllGlobals(); });
+});

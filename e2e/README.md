@@ -1,5 +1,9 @@
 # PR GUI regression
 
+## 選択復元計画（第2段階）の独立受入
+
+`node e2e/run-selective-restore-plan-gui.mjs` は所有loopback previewとexact HEADの配信照合後、Chromium/WebKit ×375/390 ×light/dark・CSS200%の8条件を実行する。UNCHANGED事前検証PASS、ADDの構造PASS/原文保持BLOCKED、選択/別page/同タブ/読取失敗/ファイル変更の失効、keyboard Space・focus復帰、長ID・44px・横幅、current/recovery/other原文不変・app set/remove/clear=0を検査。2PNG/条件、失敗時trace、進捗JSONを保存する。独立workflow `selective-restore-plan.yml`（15分job/GUI5分）で既存正式6/1128/592/132/3workers/30分と別評価。実機Safari/VoiceOver/OS文字拡大/ソフトキーボードは未検証。自己検証であり独立レビューではない。
+
 ## PR #113 fixed quote overflow regression
 
 `node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control` replays the exact synthetic storage, two quote UUIDs/timestamps and 1844-character inserted bodies from run 41192402203. The diagnostic fixes generation only in the test page; production UUIDs, clocks and storage formats remain unchanged. It records visible versus closed-details geometry/styles, all-character ranges and isolated temporary causal interventions. The repaired paragraph alone receives `line-break:anywhere`; restoring its old line breaking must expose overflow in the fixed non-touch 390px condition.
@@ -716,3 +720,11 @@ Pages build後 `node e2e/run-recovery-gui.mjs`。専用4193番を所有し、配
 Eight fresh synthetic-only contexts cover Chromium/WebKit × 375/390 CSS px × light/dark, all with 200% root font-size and native emulated touch activation. They check valid and rejected upload, category list, literal escaped details, same/different/absent comparisons, missing backup reference, temporary selection/unselection, replacement-file invalidation, storage notification, real second-tab and same-tab invalidation, explicit re-acquisition, read failure UNKNOWN, long text layout, and absence of any restore execution action. An application-page Storage method spy must observe **zero** setItem/removeItem/clear calls across opening, inspecting, comparing, selecting, errors and closing. Synthetic writer-page changes and the same-tab test fixture write are explicitly outside that spy; final exact primary/recovery/unrelated values must match the initial fixture.
 
 Artifacts: `selection-preview-results.json`, `selection-preview-provenance.json`, `selection-preview-ci-outcomes.json`, owned-server log and selected/UNKNOWN representative PNGs. Incomplete cases or missing engines fail the runner; a static contract success is not browser success. Local dirty work is labelled dirty and is not final-HEAD evidence. CSS root-size stress and emulated touches are not physical iPhone Safari, VoiceOver, native OS text-size or OS-file-save verification.
+
+## 選択復元計画 R1/R2 回帰（PR #115）
+
+`node e2e/run-selective-restore-plan-gui.mjs` は既存の計画8条件に加え、各条件で `selective-restore-plan-review-mobile.mjs` を必ずawaitする。確認履歴の未知fenceはUNKNOWN、preview/詳細/計画の参照件数一致、禁止子込み・解除・再選択時の式/レポートUNKNOWN、選択/current raw変更のSTALEと明示再検証を確認する。原独立レビューと同じfixtureを使うが、修正の期待値を検証する実装担当の自己試験であり独立再レビューではない。
+
+合成backupファイルのbytes、current原文・保全slot・他key不変、appのsetItem/removeItem/clear各0、Space・focus復帰・native touch・CSS200%・両theme・375/390pxを検証。各条件は既存PNG2枚＋R1/R2 PNG3枚（計40PNG）を保存。既存の15分job/5分GUIを延長せず、正式6条件/1128/592/132/3workers/30分へ加算しない。
+
+子診断の親伝播P2回帰では同じ8条件内で親のみ、親子両選択、無関係BLOCKED併存を追加する。親行のUNKNOWNと子の出所、行件数1/2、参照実体10/7件の非二重計上、選択STALEと明示再生成を確認する。R1/R2の既存確認も保持。各条件へ親/親子/禁止併存のPNG3枚を追加し、現行の期待は計64PNG。合成f/r/cはcurrentとbackupで同一、backupだけに非選択の別メモ/根拠を置き、禁止併存を同contextで試験する。各contextのraw・backupfile・保全不変と書込0を照合し、15分/5分の境界は維持する。

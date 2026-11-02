@@ -1,5 +1,40 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-02 (JST): PR #115 子の診断を選択親へ伝える局所修正
+
+- [独立再レビュー](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115#issuecomment-6564937628)で、R1/R2の直接条件は独立PASSだが、未明示選択の確認履歴UNKNOWNが親行/件数へ伝わらない項目別P2を確認。全体の偽PASSや保存欠陥とは扱わない。基準76f6535/treed404cd3、local/remote/PR一致・clean、main/base528a6a0a不変。
+- 子の診断表示と参照inventoryを分離。種別/親scope/一意IDで親子を結び、子の直接診断と選択依存先の影響を出所付きで親へ保持。親子両選択・逆順でも参照を複製せず、UNKNOWNは選択表示行ごと一度。BLOCKED優先でも両根拠を保持、正常ADDは維持。memo/evidenceもscope分離を限定点検。計画規則version3、保存形式version1不変。
+- 原Linux独自8probeは取得参照がなく親側も未取得。公開条件から再作成した8試験で6成功/2失敗(exit1)→8成功(exit0)、原本再実行とは称さない。基準core56自己再実行56成功、追加後core67/preview35/UI29の131成功。旧Windows原41の自己回帰41成功とは出典を分離。[方針・取得範囲・受入・実測記録](docs/maintenance/selective-plan-20261101/contained-diagnostics.md)。
+- 全単体/契約/lint/type/両build/8GUIと最終固定HEAD CIは実測後に同記録またはPR最終本文/Checksへ記録する。初回失敗と診断補完を分け、成功を先取りしない。正式6/1128/592/132/3workers/30分は維持し、局所受入で代替しない。
+- 提出前の最終core68/UI29は97成功（preview35を含む対象132）。全単体初回2559/2563・5秒timeout4件、該当4fileの単worker49成功を別保存。最後の表示上限対照追加後の全2564はCIで確認する。lint/error0・既存warning2、type/両build成功、Windows契約50/59は既存Linux経路差。形式上限超過fixtureとlint探索/証拠dir移動の初回失敗も保存し、補完を区別。
+- 拡張GUIは初回8/8成功・88+224 native touch・64PNG、親のみ/親子/禁止併存のUNKNOWN1/2行と参照非二重計上・出所を確認。raw/backupfile/保全/他key不変、app保存0、STALE/明示更新/focus/横幅を確認。76基点dirty版と最終commitのCIを区別し、後者の終端・成果物はPRへ記録する。
+- 旧76正式run41347113773は30分上限cancelled、5/6・1104/1128・581/592・130/132、未確認24/11/2、内部根因UNKNOWNとして別保全。新HEADへの流用や無根拠再実行はしない。自己点検を収束させてから一度pushし、docs追補だけで終盤CIを取消さない。
+- 保存/実部分復元/backup/全体復元/保全/計算/Stage3不変更。Draft・未マージ・auto-mergeなし、main更新/Ready/merge/公開なし。実機Safari/VoiceOver等は未検証、修正後の独立再レビューへ引き渡す。
+
+## 2026-11-02 (JST): PR #115 独立レビューR1/R2の局所修正
+
+- 記録日2026-11-02 JST、元レビューは2026-11-01 UTC。[独立レビュー](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115#issuecomment-6559360058)の製品P2二件を元実装担当が修正。Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114) / Draft [#115](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115)。着手HEAD d58d1a4/tree14a4286、local/remote/PR一致・clean、main/base528a6a0a不変を確認。
+- R1: 確認履歴の固定bodyにも既存本文参照parserを適用。通常文はPASS、未知fence/壊れた構造はUNKNOWN、preview・確認・計画の件数整合を維持。本文/snapshotは変更しない。
+- R2: 禁止子により全候補を構築できなくても、選択元の既知UNKNOWNを式と依存reportへ保持。禁止行を除外した候補を全体有効とせず、無関係な正常ADDは維持。BLOCKED優先表示でも両根拠を伝播・集計。計画規則version2、保存形式version1不変。
+- 原独立41試験を読取取得・hash固定し、入力/期待/timeout不変で修正前38成功/3失敗(exit1)→修正後41成功(exit0)。core56/preview35/UI27の118成功。これは自己再実行であり独立再レビューではない。[原因・試験・原本hash・初回失敗](docs/maintenance/selective-plan-20261101/review-fixes.md)。
+- ローカル既定全単体116files/2550中2541成功・既存5秒timeout9件(exit1)を保持。7該当fileの単worker診断107成功(exit0)。旧独立レビューの2539/2542・限定111件とは別記録。Windows契約50/59は既存Linux経路差9件、Ubuntu固定HEAD CIで別確認する。timeout/期待値を緩和しない。
+- 型・lint(error0/既存warning2)・通常/Pages build成功。R1/R2追加8条件GUI、最終固定HEADの正式CI終端・全成果物は実測後PRへ記録する。既存正式6/1128/592/132/3workers/30分不変、局所成功で正式未完を補完しない。
+- 提出前修正版GUIは既存受入とR1/R2を全8条件で成功、88+160 native touch・40PNG。backup実file/current/保全/他key不変、app set/remove/clear0、選択/raw STALE・明示再検証・Space/focus・横幅を確認。d58基点dirty修正版の結果であり、最終commit CIとは区別。初回のinput clear後の試験読取エラーを保存し、実file読戻しへ補正した。
+- 旧d58正式run41307579092は30分上限cancelled、4/6・1071/1128・568/592・128/132。未確認57/24/4、内部遅延根因UNKNOWN。新HEADの結果へ流用しない。別タスクが同じWindowsで並行中の可能性を記録し、専用4195/合成contextを使い他プロセスを停止しない。CPU競合がtimeout原因とは断定しない。
+- 保存/実復元/backup/全体復元/保全/計算機能は変更せず、Draft・未マージ・auto-mergeなしを維持。実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証、修正後独立再レビューは未実施で引き継ぐ。
+
+## 2026-11-01 (JST): 選択復元の実行計画・安全判定（第2段階）
+
+- Issue [#114](https://github.com/tetsujisugimori-coder/calculator-memo/issues/114)へ承認済み依頼全492行を記録・読戻し一致。main528a6a0a/tree17ae5b55、#113 mergedを確認し隔離clone/専用枝で開始。[事前受入・型別規則](docs/design/selective-restore-plan.md)。
+- 選択からADD/REPLACE/UNCHANGED/禁止/UNKNOWN、親子scope/ID衝突、3時点参照と残存項目への影響、version1仮構築をpure関数で検証。原文字句保持方式は未確立なので変更計画は実行BLOCKED。保存API・保全・評価・snapshot更新・実行承認を追加しない。
+- 選択/file/比較/原文/世代/保存条件変更で旧計画をSTALEへ。明示再取得/再生成のみ。UIの一覧/参照/前後内容をページ分割し、タッチ入口のfocus復帰欠陥は単体RED→局所修正GREEN。[自己検証・初回失敗と限界](docs/maintenance/selective-plan-20261101/verification.md)。
+- core43/UI23成功、最終全単体116files/2533成功、型・lint・両build成功。初回2531/2532は既存fixture CRLF差1件で保持。独立GUI8/8・88touch・16PNG成功（dirty提出前版）。正式契約のWindows経路差9件はUbuntu CIへ引継ぎ。最終commitの正式CI/独立GUI/成果物は確認待ち、Draft PR未作成。独立レビューは別工程で未実施。未検証を先取りしない。
+- 正式6/1128/592/132/3workers/30分・既存workflow/scenarioは不変。WebKit遅延根因UNKNOWN、実機Safari/VoiceOver/OS文字拡大/softkeyboard未検証。main変更/merge/auto-merge/Ready/公開なし。第3段階はlossless編集・直前再照合・保全・承認・排他・読戻しを別途設計する。
+- Draft [#115](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115) を47eb804/tree1b77ea9fで提出。旧計画CI41303393061の8/8とZIP digest/CRC/16PNG/HEAD/treeを照合後、自己点検で未知の入れ子参照の偽PASS P2を3件REDで再現。計画専用の非対応検査と参照不明件数へ局所補正しGREEN。修正後116files/2538（core46/UI25）・lint/type/両build成功。最終HEADのCI・成果物はPRで別確認し、旧正式の進行中/中止を新成功へ置換しない。独立レビューは未実施。
+- 同P2の追加対照でUNCHANGED選択項目の参照先がbackup/currentで異なる偽PASS1件もRED再現。選択出典を変更不要時もbackupとして照合する局所補正後、core47/UI25・全2539件成功。新HEADの正式/独立CI終端・成果物はPRで別確認する。旧47/764の成功や取消を混算しない。
+- 依存影響の追加3対照で、全体禁止は維持されても、関連行のUNKNOWN伝播が選択順に依存することをRED再現。直接判定後の有限逆依存グラフへ局所補正し、core50/UI25・全2542件、lint/type/両build成功。最終候補のCI終端・成果物はPRへ追記し、旧候補の進行中/取消/成功を混算しない。
+- 未知数値の既存4対照を予定操作まで強化し、実効UNKNOWNでも予定REPLACEを残す表示をRED検出。厳密検証valid時だけ予定を認定する1条件補正後、全2542・lint/type/両build成功。[参照7件・数値4件・focusの追跡表](docs/maintenance/selective-plan-20261101/negative-controls.md)を追加。旧bed取消はAPI注記で新pr-gui-115要求によるconcurrencyと確定し、18m44・保存562/282/64・欠測を保全。30分timeoutとは区別する。
+
 ## 2026-11-01 (JST): PR #113 WebKit actionability待機の継続診断
 
 - 本人の再依頼により6e34a40から独立cloud checkoutで継続。main2549c8c・既存成果を保全。21ZIP/251,393,260bytesと21jobログを再取得しhash/CRC/出典を記録。[計画・限界](docs/maintenance/pr113-webkit-resume-20261101/README.md)。
