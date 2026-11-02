@@ -153,7 +153,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
     backupText: backupText.current, backupIdentity: `${fileRequest.current}:${fileName}`,
     currentRaw: window.localStorage.getItem(STORAGE_KEY), selectedKeys: [...selectedRef.current],
     generation: getGenerationRef.current(), epoch: safetyEpoch.current + selectionRevision.current,
-    planRuleVersion: PLAN_RULE_VERSION, safetyRuleVersion: SAFETY_RULE_VERSION, unsaved: !!conditionRef.current,
+    planRuleVersion: PLAN_RULE_VERSION, safetyRuleVersion: SAFETY_RULE_VERSION, unsaved: !!conditionRef.current, blockedReason: conditionRef.current,
   });
   const prepareSafety = () => {
     if (!plan || planStale || !verify()) return;

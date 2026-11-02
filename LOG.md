@@ -2,6 +2,8 @@
 
 ## 2026-11-02 (JST): 選択復元 Stage 3A 原文保持・直前検証（実行禁止）
 
+- [Draft PR #117](https://github.com/tetsujisugimori-coder/calculator-memo/pull/117)へ通常git commit/pushで提出し、PR本文/Issue進捗の読戻し一致。初回固有GUIの別タブ競合後はrawを戻しても既存保存保護が継続するため、PASSという試験前提を訂正し、保護継続・明示reloadと新規計画を検査。初回job/artifact/ログは別保全。上流の保護理由を一律未保存文で隠さず表示する局所改善と統合2件を追加（固有92件）。最終SHAのCIはPR Checksで確認する。
+
 - 最新main `9a62ade53f1743d5728051dc52a17bb12bbefe44` / tree `36a0080c11caf4c28e5497de86daa9ad7039aa26`、clean、既存Issue/PR/Actionsを確認して隔離checkoutと専用branchで開始。[Issue #116](https://github.com/tetsujisugimori-coder/calculator-memo/issues/116)へ本人依頼全文を掲載し、読戻し完全一致。PR #115のPARTIALと正式GUI欠測を継続する。
 - [実装前設計・受入とStage 3B引継ぎ](docs/design/selective-restore-execution-safety.md)。既存厳格JSON scannerに任意のUTF-16構文位置取得を追加し、元原文sliceだけを挿入/置換。全非変更区間を厳密比較し、候補を再解析・厳格構造/参照計画へ照合。既存libraryの追加や別parser、全体JSON再生成、欠落collection生成を見送った。未知値/参照は補完しない。
 - 既存配列の親5種ADD/REPLACE/UNCHANGEDのみ。親子は親1操作、子単独/設定/未知/参照不明は拒否。バックアップ全文/識別情報・現在全文・選択集合・世代/規則/epoch・候補・未保存編集を二読/再生成で再検証。読み取り専用UIを追加し、Stage 2は変更せずexecutionAllowed=falseを維持。

@@ -1,0 +1,52 @@
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/selective-restore-safety.test.ts tests/selective-safety-ui.test.ts tests/selective-storage-simulator.test.ts
+
+
+ RUN  v3.2.4 /workspace/calculator-memo-stage3a
+
+ ✓ tests/selective-storage-simulator.test.ts (15 tests) 10ms
+ ✓ tests/selective-restore-safety.test.ts (67 tests) 120ms
+ ❯ tests/selective-safety-ui.test.ts (10 tests | 1 failed) 1076ms
+   ✓ shows Stage 3A PASS separately from Stage 2 BLOCKED and never writes 125ms
+   ✓ withdraws old success on selection 47ms
+   ✓ withdraws old success on storage 39ms
+   ✓ withdraws old success on same-tab 37ms
+   ✓ withdraws old success on generation 35ms
+   ✓ withdraws old success on read-error 36ms
+   ✓ withdraws old success on file 35ms
+   ✓ withdraws old success on unsaved 36ms
+   ✓ raw changed between last capture and candidate generation does not publish PASS 24ms
+   × application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection 663ms
+     → Cannot read properties of null (reading 'querySelectorAll')
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/selective-safety-ui.test.ts > application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection
+TypeError: Cannot read properties of null (reading 'querySelectorAll')
+ ❯ button tests/selective-safety-ui.test.ts:11:62
+      9| let host:HTMLDivElement;let root:ReturnType<typeof createRoot>;let gen…
+     10| const raw=JSON.stringify(base);const prepare='原文保持候補を明示的に生成';const che…
+     11| const button=(label:string,scope:ParentNode=host)=>[...scope.querySele…
+       |                                                              ^
+     12| const click=async(label:string,scope:ParentNode=host)=>act(async()=>bu…
+     13| const state=()=>host.querySelector('[data-testid="restore-safety-state…
+ ❯ tests/selective-safety-ui.test.ts:12:69
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ click tests/selective-safety-ui.test.ts:12:56
+ ❯ ready tests/selective-safety-ui.test.ts:18:78
+ ❯ tests/selective-safety-ui.test.ts:46:154
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 91 passed (92)
+   Start at  04:06:07
+   Duration  3.27s (transform 1.38s, setup 0ms, collect 4.25s, tests 1.21s, environment 427ms, prepare 290ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

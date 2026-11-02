@@ -1,0 +1,9 @@
+{
+  "kind": "test-only deliberate fault, not original-main defect",
+  "parentHead": "2e157e1809753f91b0a3de8c5468a209606591a0",
+  "time": "2026-11-02T04:07:50.852176+00:00",
+  "exitCode": 1,
+  "testSHA256": "1fb77d8878593bb7e7d77a10d3c9630d6c7c1edab1393a65f74947fa17ee961a",
+  "testUnchanged": true,
+  "mutation": "omit second read"
+}

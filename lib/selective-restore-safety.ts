@@ -6,7 +6,7 @@ import { applySourceEdits, sourceProperty, type SourceEdit, type PreservedRange 
 export const SAFETY_RULE_VERSION = 1;
 export type SafetyContext = {
   backupText: string; backupIdentity: string; currentRaw: string | null; selectedKeys: readonly string[];
-  generation: number; epoch: number; planRuleVersion: number; safetyRuleVersion: number; unsaved: boolean;
+  generation: number; epoch: number; planRuleVersion: number; safetyRuleVersion: number; unsaved: boolean; blockedReason?: string;
 };
 export type SafetyCandidate = {
   status: PlanStatus; executionAllowed: false; reasons: string[]; unknowns: string[];
@@ -15,7 +15,7 @@ export type SafetyCandidate = {
 };
 const canonical = (keys: readonly string[]) => [...keys].sort();
 const sameKeys = (a: readonly string[], b: readonly string[]) => samePreviewStructure(canonical(a), canonical(b));
-const sameContext = (a: SafetyContext, b: SafetyContext) => a.backupText === b.backupText && a.backupIdentity === b.backupIdentity && a.currentRaw === b.currentRaw && sameKeys(a.selectedKeys, b.selectedKeys) && a.generation === b.generation && a.epoch === b.epoch && a.planRuleVersion === b.planRuleVersion && a.safetyRuleVersion === b.safetyRuleVersion && a.unsaved === b.unsaved;
+const sameContext = (a: SafetyContext, b: SafetyContext) => a.backupText === b.backupText && a.backupIdentity === b.backupIdentity && a.currentRaw === b.currentRaw && sameKeys(a.selectedKeys, b.selectedKeys) && a.generation === b.generation && a.epoch === b.epoch && a.planRuleVersion === b.planRuleVersion && a.safetyRuleVersion === b.safetyRuleVersion && a.unsaved === b.unsaved && a.blockedReason === b.blockedReason;
 function collection(root: JsonSourceNode, category: PreviewItem['category']): JsonSourceNode | undefined {
   if (category === 'history' || category === 'notes') return sourceProperty(root, category);
   if (category === 'executions') return sourceProperty(root, 'formulaExecutions');
@@ -36,7 +36,7 @@ export function generateSafetyCandidate(context: SafetyContext, suppliedPlan: Re
   const result: SafetyCandidate = { status: 'UNKNOWN', executionAllowed: false, reasons: [], unknowns: [], raw: null, edits: [], preserved: [], unchangedKeys: [], context: { ...context, selectedKeys: canonical(context.selectedKeys) } };
   const stop = (status: PlanStatus, message: string) => { result.status = status; result.reasons.push(message); return result; };
   if (context.planRuleVersion !== PLAN_RULE_VERSION || suppliedPlan.ruleVersion !== PLAN_RULE_VERSION || context.safetyRuleVersion !== SAFETY_RULE_VERSION || suppliedPlan.status === 'STALE') return stop('STALE', '計画規則・安全規則または計画が失効しています。');
-  if (context.unsaved) return stop('BLOCKED', '未保存編集または保存待ちがあり、実行準備を禁止します。');
+  if (context.unsaved || context.blockedReason) return stop('BLOCKED', context.blockedReason || '未保存編集または保存待ちがあり、実行準備を禁止します。');
   if (context.currentRaw === null) return stop('BLOCKED', '保存キーがありません。設定やcollectionは推測生成しません。');
   if (!sameKeys(context.selectedKeys, suppliedPlan.items.map(item => item.key))) return stop('STALE', '計画と選択集合が一致しません。');
   if (!context.selectedKeys.length || new Set(context.selectedKeys).size !== context.selectedKeys.length) return stop('BLOCKED', '空選択・重複選択は受理しません。');

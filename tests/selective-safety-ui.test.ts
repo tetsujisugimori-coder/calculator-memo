@@ -13,7 +13,7 @@ const click=async(label:string,scope:ParentNode=host)=>act(async()=>button(label
 const state=()=>host.querySelector('[data-testid="restore-safety-state"]')?.textContent;
 const flight=()=>host.querySelector('[data-testid="restore-safety-preflight"]')?.textContent;
 async function upload(text=wrap(JSON.stringify({...base,history:[history('new')]}))) {
- const input=host.querySelector('input')!;await act(async()=>{Object.defineProperty(input,'files',{configurable:true,value:[{name:'synthetic.json',size:new TextEncoder().encode(text).length,text:()=>Promise.resolve(text)}]});input.dispatchEvent(new Event('change',{bubbles:true}));});
+ const input=host.querySelector('input[type="file"]')!;await act(async()=>{Object.defineProperty(input,'files',{configurable:true,value:[{name:'synthetic.json',size:new TextEncoder().encode(text).length,text:()=>Promise.resolve(text)}]});input.dispatchEvent(new Event('change',{bubbles:true}));});
 }
 async function ready(){await upload();await click('現在データを明示的に再取得して比較');await click('復元候補に選択',host.querySelector('[data-preview-key="history:0"]')!);await click('復元計画を明示的に再生成');await click(prepare);}
 beforeEach(async()=>{
@@ -39,4 +39,13 @@ it.each(['selection','storage','same-tab','generation','read-error','file','unsa
 it('raw changed between last capture and candidate generation does not publish PASS',async()=>{
  await upload();await click('現在データを明示的に再取得して比較');await click('復元候補に選択',host.querySelector('[data-preview-key="history:0"]')!);await click('復元計画を明示的に再生成');
  localStorage.setItem(STORAGE_KEY,raw+' ');await click(prepare);expect(state()).not.toBe('原文保持・候補生成: PASS');
+});
+it('application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection',async()=>{
+ const { CalculatorApp }=await import('../components/CalculatorApp');
+ vi.stubGlobal('ResizeObserver',class {observe(){}disconnect(){}});
+ await act(async()=>root.render(createElement(CalculatorApp)));await act(async()=>new Promise(resolve=>setTimeout(resolve,20)));await click('選択復元プレビュー');await ready();expect(state()).toBe('原文保持・候補生成: PASS');
+ localStorage.setItem(STORAGE_KEY,raw+' ');await act(async()=>window.dispatchEvent(new StorageEvent('storage',{key:STORAGE_KEY,newValue:raw+' '})));
+ localStorage.setItem(STORAGE_KEY,raw);await act(async()=>window.dispatchEvent(new StorageEvent('storage',{key:STORAGE_KEY,newValue:raw})));
+ await click('現在データを明示的に再取得して比較');await click('復元計画を明示的に再生成');await click(prepare);
+ expect(state()).toBe('原文保持・候補生成: BLOCKED');expect(host.textContent).toContain('現在の保存状態が未確認または保存保護中');expect(button(check).disabled).toBe(true);vi.unstubAllGlobals();
 });

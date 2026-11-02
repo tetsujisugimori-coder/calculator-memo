@@ -1,0 +1,22 @@
+{
+  "run": 41386034547,
+  "job": 125086973412,
+  "head": "2e157e1809753f91b0a3de8c5468a209606591a0",
+  "status": "failure",
+  "completedCases": 0,
+  "startedCases": 1,
+  "browser": "chromium",
+  "width": 375,
+  "theme": "light",
+  "reason": "test expected PASS after reverting synthetic raw, but CalculatorApp deliberately retains storage conflict until reload",
+  "artifact": {
+    "id": 13115590609,
+    "bytes": 574421,
+    "sha256": "256477beb09f97d00a6041882ed7e79d95c46e21f9db90681db035f2a2afd468",
+    "url": "https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/41386034547/artifacts/13115590609",
+    "localZipDownload": "403; stopped; ZIP/PNG/trace NOT_INSPECTED locally",
+    "expiresAt": "2026-11-09T04:02:36Z"
+  },
+  "jobLogRawSHA256": "58b6cb3f40a05dc7556f7fa932af93fba0ce5aa42104150f390000b630eca540",
+  "jobLogRawBytes": 177312
+}

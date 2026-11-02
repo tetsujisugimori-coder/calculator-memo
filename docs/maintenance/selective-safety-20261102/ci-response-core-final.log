@@ -1,0 +1,22 @@
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/selective-restore-safety.test.ts tests/selective-safety-ui.test.ts tests/selective-storage-simulator.test.ts
+
+
+ RUN  v3.2.4 /workspace/calculator-memo-stage3a
+
+ ✓ tests/selective-storage-simulator.test.ts (15 tests) 9ms
+ ✓ tests/selective-restore-safety.test.ts (67 tests) 136ms
+ ✓ tests/selective-safety-ui.test.ts (10 tests) 1113ms
+   ✓ application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection  688ms
+
+ Test Files  3 passed (3)
+      Tests  92 passed (92)
+   Start at  04:06:35
+   Duration  3.03s (transform 1.28s, setup 0ms, collect 3.67s, tests 1.26s, environment 379ms, prepare 217ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

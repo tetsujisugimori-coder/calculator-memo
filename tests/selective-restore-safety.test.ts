@@ -157,3 +157,7 @@ it('formula replacement with unselected dependents is UNKNOWN rather than bypass
  const data={...common,formulaLibrary:{...common.formulaLibrary,entries:[{...formula(),title:'changed'}]}};
  const c=setup(data,JSON.stringify(common),['formulas:0']).candidate();expect(c.status).toBe('UNKNOWN');expect(c.raw).toBeNull();
 });
+it('retains the actual application protection reason and invalidates any changed condition',()=>{
+ const f=setup();const blocked=generateSafetyCandidate({...f.context,blockedReason:'現在の保存状態が未確認または保存保護中'},f.plan);
+ expect(blocked.status).toBe('BLOCKED');expect(blocked.reasons).toContain('現在の保存状態が未確認または保存保護中');expect(revalidateSafety(f.candidate(),()=>({...f.context,blockedReason:'保護'})).status).toBe('STALE');
+});

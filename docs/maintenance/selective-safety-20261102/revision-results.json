@@ -1,0 +1,76 @@
+[
+  {
+    "stage": "unit",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-11-02T04:07:35.109912+00:00",
+    "finishedAt": "2026-11-02T04:08:36.457596+00:00"
+  },
+  {
+    "stage": "contracts",
+    "command": [
+      "node",
+      "--test",
+      "e2e/backup-ci.node-test.mjs",
+      "e2e/ci-contract.node-test.mjs",
+      "e2e/diagnostic-supervisor.node-test.mjs",
+      "e2e/recovery-ci.node-test.mjs",
+      "e2e/restore-ci.node-test.mjs",
+      "e2e/selection-preview-ci.node-test.mjs",
+      "e2e/selective-restore-plan-ci.node-test.mjs",
+      "e2e/selective-safety-ci.node-test.mjs",
+      "e2e/webkit-diagnostic.node-test.mjs",
+      "e2e/webkit-frame-pair.node-test.mjs"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-11-02T04:08:36.457876+00:00",
+    "finishedAt": "2026-11-02T04:08:40.111404+00:00"
+  },
+  {
+    "stage": "lint",
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-11-02T04:08:40.111702+00:00",
+    "finishedAt": "2026-11-02T04:08:54.829839+00:00"
+  },
+  {
+    "stage": "types",
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-11-02T04:08:54.830173+00:00",
+    "finishedAt": "2026-11-02T04:08:58.799630+00:00"
+  },
+  {
+    "stage": "build",
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-11-02T04:08:58.799966+00:00",
+    "finishedAt": "2026-11-02T04:09:10.374581+00:00"
+  },
+  {
+    "stage": "pages",
+    "command": [
+      "npm",
+      "run",
+      "build:pages"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-11-02T04:09:10.374897+00:00",
+    "finishedAt": "2026-11-02T04:09:12.027564+00:00"
+  }
+]
