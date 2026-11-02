@@ -4,6 +4,7 @@ import {spawn,execFileSync} from 'node:child_process';
 import {readFileSync,mkdirSync,writeFileSync,readdirSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {classifySpace,createJournal,createProgressCodec,decodeProgress,analyzeProgress,requireArtifacts} from './pr117-diagnostic-core.mjs';
+import {runIncompleteSubject,assertIntentionalSigkill} from './pr117-process-proof.mjs';
 const out=resolve(process.env.PR117_FAULT_OUT||('pr117-faults-'+Date.now()));mkdirSync(out,{recursive:false});
 const before={target:{identity:1,pressed:'false'}},after={target:{identity:1,pressed:'false'},original:{isConnected:true}};
 test('classifier requires sufficient evidence and never identifies product/browser cause',()=>{
@@ -29,12 +30,18 @@ test('compact stream preserves metadata, outcomes, partial tails and missing-dic
   assert.deepEqual(decodeProgress(encode(ordinary).join('')).records,[{condition:'fixed',...ordinary}]);
 });
 for(const [name,expected,expectedExit]of faults)test('raw fault subject: '+name,async()=>{
-  const directory=resolve(out,name),child=spawn(process.execPath,['e2e/pr117-fault-subject.mjs',name,directory],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';
-  child.stdout.on('data',chunk=>{stdout+=chunk;if(name==='incomplete'&&stdout.includes('READY_TO_KILL'))child.kill('SIGKILL');});child.stderr.on('data',chunk=>{stderr+=chunk;});
-  const timeout=setTimeout(()=>child.kill('SIGKILL'),30000);const result=await new Promise(resolve=>child.once('close',(code,signal)=>resolve({code,signal})));clearTimeout(timeout);
-  writeFileSync(directory+'/stdout.log',stdout);writeFileSync(directory+'/stderr.log',stderr);
+  const directory=resolve(out,name);let stdout,stderr,result,termination;
+  if(name==='incomplete'){
+    const capture=await runIncompleteSubject(directory);({stdout,stderr,result}=capture);termination=capture.proof;
+  }else{
+    const child=spawn(process.execPath,['e2e/pr117-fault-subject.mjs',name,directory],{stdio:['ignore','pipe','pipe']}),output=[],errors=[];
+    child.stdout.on('data',chunk=>output.push(Buffer.from(chunk)));child.stderr.on('data',chunk=>errors.push(Buffer.from(chunk)));
+    const timeout=setTimeout(()=>child.kill('SIGKILL'),30000);result=await new Promise(resolve=>child.once('close',(code,signal)=>resolve({code,signal})));clearTimeout(timeout);
+    const rawOut=Buffer.concat(output),rawErr=Buffer.concat(errors);stdout=rawOut.toString('utf8');stderr=rawErr.toString('utf8');
+    writeFileSync(directory+'/stdout.log',rawOut);writeFileSync(directory+'/stderr.log',rawErr);
+  }
   writeFileSync(directory+'/exit.json',JSON.stringify({...result,expectedExit,expected}));
-  if(expectedExit===0)assert.equal(result.code,0,stderr);else assert.ok(result.code!==0||result.signal,JSON.stringify(result));
+  if(name==='incomplete')assertIntentionalSigkill(termination);else if(expectedExit===0)assert.equal(result.code,0,stderr);else assert.ok(result.code!==0||result.signal,JSON.stringify(result));
   if(expected){const r=JSON.parse(readFileSync(directory+'/result.json'));assert.equal(r.classifications[0].category,expected);assert.deepEqual(r.pageerrors,[]);assert.deepEqual(r.final?.writes||[],[]);
     if(name==='prevent-default')assert.ok(r.final.snapshot.events.some(e=>e.defaultPrevented===true&&e.position.endsWith(':bubble')));
     if(name==='replace')assert.equal(r.final.snapshot.original.isConnected,false);

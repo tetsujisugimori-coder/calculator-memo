@@ -8,8 +8,11 @@ const [name,out]=process.argv.slice(2);assert.ok(name&&out);mkdirSync(out,{recur
 if(name==='incomplete'){
   const journal=createJournal(out+'/operations.jsonl',{condition:'synthetic-incomplete'},{compact:true});
   await journal.run({kind:'browser-or-harness-operation',operation:'completed-control',waitingFor:'resolved'},async()=>42);
-  journal.start({kind:'check-or-wait',operation:'synthetic-never-completes',waitingFor:'external termination'});
-  console.log('READY_TO_KILL');await new Promise(()=>{});
+  const operation=journal.start({kind:'check-or-wait',operation:'synthetic-never-completes',waitingFor:'external termination'});
+  const keepAlive=setInterval(()=>{},1000);
+  process.on('disconnect',()=>{clearInterval(keepAlive);process.exitCode=2;});
+  console.log('READY_TO_KILL');process.send?.({kind:'ready-to-kill',pid:process.pid,operationId:operation.id});
+  await new Promise(()=>{});
 }else if(name==='write-failure'){
   let count=0;const journal=createJournal(out+'/unused.jsonl',{}, {compact:true,write:line=>{if(++count>2)throw Error('injected mid-output EIO');writeFileSync(out+'/partial.jsonl',line,{flag:'a'});}});
   try{await journal.run({kind:'check-or-wait',operation:'original-operation'},async()=>{throw Error('ORIGINAL_FAILURE');});}catch(error){assert.equal(error.message,'ORIGINAL_FAILURE');}

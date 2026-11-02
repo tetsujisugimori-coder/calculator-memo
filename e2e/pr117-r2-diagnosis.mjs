@@ -41,14 +41,18 @@ async function generate(file){
   const target='e2e/pr117-r2-'+file.replace(/\.mjs$/,'.generated.mjs');await writeFile(target,copy,{flag:'wx'});
   manifest.push({source:file,target,originalSha256:hash(source),generatedSha256:hash(copy)});
 }
-if(process.argv[1]?.endsWith('pr117-r2-diagnosis.mjs')){
-  await generate('scenario.mjs');
-  const source=await readFile('e2e/smoke.mjs','utf8');assert.equal(source.split("['e2e/scenario.mjs']").length,2);
+export function buildObservedCoordinator(source){
+  assert.equal(source.split("['e2e/scenario.mjs']").length,2);
   let copy=source.replace("['e2e/scenario.mjs']","['e2e/pr117-r2-scenario.generated.mjs']");
   // Preserve ordinary worker logs and mirror diagnostic lines live into Actions logs.
-  copy=copy.replace("child.stdout.pipe(log, { end: false });",`child.stdout.pipe(log, { end: false });
-    let progressBuffer='';child.stdout.on('data',chunk=>{progressBuffer+=chunk.toString();let newline;while((newline=progressBuffer.indexOf('\\n'))>=0){const line=progressBuffer.slice(0,newline);progressBuffer=progressBuffer.slice(newline+1);if(line.startsWith('DIAG_PROGRESS '))console.log(line);}});`);
-  copy=instrument(copy,'smoke.mjs');
+  assert.equal(copy.split('child.stdout.pipe(log, { end: false });').length,2);
+  copy=copy.replace('child.stdout.pipe(log, { end: false });',`child.stdout.pipe(log, { end: false });
+    __pr117Mirror(child.stdout,line=>console.log(line),error=>{streamError='diagnostic mirror: '+String(error);});`);
+  return "import {mirrorProgressLines as __pr117Mirror} from './pr117-progress-mirror.mjs';\n"+instrument(copy,'smoke.mjs');
+}
+if(process.argv[1]?.endsWith('pr117-r2-diagnosis.mjs')){
+  await generate('scenario.mjs');
+  const source=await readFile('e2e/smoke.mjs','utf8'),copy=buildObservedCoordinator(source);
   await writeFile('e2e/pr117-r2-smoke.generated.mjs',copy,{flag:'wx'});
   manifest.push({source:'smoke.mjs',originalSha256:hash(source),generatedSha256:hash(copy)});
   await writeFile('pr117-r2-manifest.json',JSON.stringify({sha,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,node:process.version,manifest},null,2),{flag:'wx'});
