@@ -11,10 +11,10 @@ defaults:
   run:
     shell: bash
 jobs:
-  gui:
-    name: Checks and Chromium GUI
+  checks:
+    name: Checks and build contracts
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 20
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
       PR_BRANCH: ${{ github.head_ref }}
@@ -43,6 +43,9 @@ jobs:
       - name: CI failure and coverage contracts
         id: ci_contract
         run: node e2e/run-stage.mjs ci-contract node --test e2e/ci-contract.node-test.mjs
+      - name: Six independent GUI jobs and aggregator negative controls
+        id: split_contract
+        run: node e2e/run-stage.mjs split-contract node --test e2e/formal-split.node-test.mjs
       - name: Existing unit tests
         id: unit
         run: node e2e/run-stage.mjs unit npm test
@@ -58,21 +61,6 @@ jobs:
       - name: Pages static build
         id: pages_build
         run: node e2e/run-stage.mjs pages-build npm run build:pages
-      - name: Install locked isolated GUI dependencies
-        id: gui_install
-        run: node e2e/run-stage.mjs gui-install npm ci --prefix e2e --ignore-scripts
-      - name: Configure bounded official Ubuntu package acquisition
-        id: apt_config
-        run: node e2e/run-stage.mjs apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
-      - name: Install matching browser system libraries (five-minute budget)
-        id: os_install
-        run: node e2e/run-stage.mjs os-install sudo timeout --verbose --signal=TERM --kill-after=10s 300s "$(command -v node)" e2e/node_modules/playwright/cli.js install-deps chromium webkit
-      - name: Install matching Chromium and WebKit (three-minute budget)
-        id: browser_install
-        run: node e2e/run-stage.mjs browser-install timeout --verbose --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install chromium webkit
-      - name: Desktop Chromium and mobile Chromium/WebKit touch regression
-        id: gui
-        run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/smoke.mjs
       - name: Preserve outcomes even when setup or tests fail
         if: always()
         env:
@@ -110,7 +98,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: pr-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          name: pr-checks-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
           path: gui-evidence/
           retention-days: 7
           compression-level: 0
@@ -120,6 +108,122 @@ jobs:
         env:
           ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
         run: printf '\n[Download GUI screenshots, traces and diagnostics](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+
+
+
+  formal_scenario:
+    name: Formal GUI (${{ matrix.scenario }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - chromium-desktop-1365px
+          - chromium-narrow-390px
+          - chromium-mobile-390px
+          - chromium-mobile-375px
+          - webkit-mobile-390px
+          - webkit-mobile-375px
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BRANCH: ${{ github.head_ref }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      E2E_SCENARIO: ${{ matrix.scenario }}
+      CI: "true"
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Install locked application and isolated GUI dependencies
+        id: gui_install
+        run: |
+          node e2e/run-stage.mjs app-install npm ci --ignore-scripts
+          node e2e/run-stage.mjs pages-build npm run build:pages
+          node e2e/run-stage.mjs gui-install npm ci --prefix e2e --ignore-scripts
+      - name: Configure bounded official Ubuntu package acquisition
+        id: apt_config
+        run: node e2e/run-stage.mjs apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+      - name: Install matching browser system libraries (five-minute budget)
+        id: os_install
+        run: node e2e/run-stage.mjs os-install sudo timeout --verbose --signal=TERM --kill-after=10s 300s "$(command -v node)" e2e/node_modules/playwright/cli.js install-deps chromium webkit
+      - name: Install matching Chromium and WebKit (three-minute budget)
+        id: browser_install
+        run: node e2e/run-stage.mjs browser-install timeout --verbose --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install chromium webkit
+      - name: Execute exactly one full historical GUI scenario
+        id: gui
+        run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/run-formal-scenario.mjs
+      - name: Preserve single-job outcomes even on error
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node <<'NODE'
+          const fs = require('node:fs');
+          fs.writeFileSync('gui-evidence/ci-outcomes.json', JSON.stringify({
+            scenario: process.env.E2E_SCENARIO, sha: process.env.EXPECTED_SHA,
+            run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT,
+            recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES),
+            runnerImage: process.env.ImageOS, runnerVersion: process.env.ImageVersion,
+          }, null, 2) + '\n');
+          NODE
+          if test -f e2e/evidence-inventory.mjs; then node e2e/evidence-inventory.mjs; fi
+      - name: Upload independent scenario evidence
+        id: formal_artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: formal-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}-${{ matrix.scenario }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+
+  formal_aggregate:
+    name: Formal GUI gate (all six required)
+    needs: [checks, formal_scenario]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      CHECKS_JOB_RESULT: ${{ needs.checks.result }}
+      MATRIX_JOB_RESULT: ${{ needs.formal_scenario.result }}
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Download all six independently verified artifacts
+        id: download
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: formal-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}-*
+          path: formal-evidence
+          merge-multiple: false
+      - name: Reject incomplete or mixed six-job coverage
+        id: gate
+        if: always()
+        run: node e2e/aggregate-formal-gui.mjs formal-evidence
+      - name: Upload formal aggregate decision
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: formal-gui-aggregate-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: gui-aggregate/
+          retention-days: 7
+          if-no-files-found: error
 
 
   backup:
