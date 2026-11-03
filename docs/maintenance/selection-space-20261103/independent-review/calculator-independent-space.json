@@ -1,0 +1,254 @@
+[
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "tap twice then 4 Space",
+    "calls": 6,
+    "expected": 6
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "repeat Space down",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "blur then refocus cancels",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "Enter",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "shift Space",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "Control Space",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "mouseup click",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "DOM replacement release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": false,
+    "label": "disabled during release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "tap twice then 4 Space",
+    "calls": 6,
+    "expected": 6
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "repeat Space down",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "blur then refocus cancels",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "Enter",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "shift Space",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "Control Space",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "mouseup click",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "DOM replacement release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "chromium",
+    "mobile": true,
+    "label": "disabled during release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "tap twice then 4 Space",
+    "calls": 6,
+    "expected": 6
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "repeat Space down",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "blur then refocus cancels",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "Enter",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "shift Space",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "Control Space",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "mouseup click",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "DOM replacement release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": false,
+    "label": "disabled during release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "tap twice then 4 Space",
+    "calls": 6,
+    "expected": 6
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "repeat Space down",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "blur then refocus cancels",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "Enter",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "shift Space",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "Control Space",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "mouseup click",
+    "calls": 1,
+    "expected": 1
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "DOM replacement release",
+    "calls": 0,
+    "expected": 0
+  },
+  {
+    "name": "webkit",
+    "mobile": true,
+    "label": "disabled during release",
+    "calls": 0,
+    "expected": 0
+  }
+]

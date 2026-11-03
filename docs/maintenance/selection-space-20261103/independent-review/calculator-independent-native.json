@@ -1,0 +1,710 @@
+[
+  {
+    "mixed": false,
+    "trial": 0,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 72.89999999850988
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 90.19999999925494
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 90.39999999850988
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 91.80000000074506
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 107.89999999850988
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 107.89999999850988
+      }
+    ]
+  },
+  {
+    "mixed": false,
+    "trial": 1,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 58.899999998509884
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 76.39999999850988
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 76.80000000074506
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 78.19999999925494
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 95.39999999850988
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 95.5
+      }
+    ]
+  },
+  {
+    "mixed": false,
+    "trial": 2,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 46.600000001490116
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 63.70000000298023
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 63.900000002235174
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 65.10000000149012
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 82.40000000223517
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 82.40000000223517
+      }
+    ]
+  },
+  {
+    "mixed": false,
+    "trial": 3,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 52.399999998509884
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 69.5
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 69.69999999925494
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 71
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 88
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 88
+      }
+    ]
+  },
+  {
+    "mixed": false,
+    "trial": 4,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 50.80000000074506
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 67.89999999850988
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 68.30000000074506
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 69.59999999776483
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 86.80000000074506
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 86.80000000074506
+      }
+    ]
+  },
+  {
+    "mixed": false,
+    "trial": 5,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 48.899999998509884
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 65.69999999925494
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 66
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 66.89999999850988
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 83.79999999701977
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 83.89999999850988
+      }
+    ]
+  },
+  {
+    "mixed": true,
+    "trial": 0,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 137.39999999850988
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 154.30000000074506
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 154.30000000074506
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 155.19999999925494
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 171.80000000074506
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 171.89999999850988
+      }
+    ]
+  },
+  {
+    "mixed": true,
+    "trial": 1,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 137.69999999925494
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 154.59999999776483
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 154.59999999776483
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 155.39999999850988
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 172.19999999925494
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 172.19999999925494
+      }
+    ]
+  },
+  {
+    "mixed": true,
+    "trial": 2,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 165.90000000223517
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 183.30000000074506
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 183.30000000074506
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 184.5
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 201.30000000074506
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 201.30000000074506
+      }
+    ]
+  },
+  {
+    "mixed": true,
+    "trial": 3,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 144.60000000149012
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 161.5
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 161.5
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 162.30000000074506
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 178
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 178.20000000298023
+      }
+    ]
+  },
+  {
+    "mixed": true,
+    "trial": 4,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 143.40000000223517
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 161.10000000149012
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 161.10000000149012
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 162.5
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 179.40000000223517
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 179.5
+      }
+    ]
+  },
+  {
+    "mixed": true,
+    "trial": 5,
+    "n": 2,
+    "events": [
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 151.80000000074506
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 168.70000000298023
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 168.70000000298023
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 169.70000000298023
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "trust": true,
+        "active": true,
+        "focus": true,
+        "connected": true,
+        "time": 186.5
+      },
+      {
+        "type": "click",
+        "trust": true,
+        "active": false,
+        "focus": true,
+        "connected": true,
+        "time": 186.60000000149012
+      }
+    ]
+  }
+]
