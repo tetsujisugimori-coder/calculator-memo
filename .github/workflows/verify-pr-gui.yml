@@ -448,7 +448,7 @@ jobs:
           node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
       - name: Selection preview workflow contracts
         id: selection-preview_contract
-        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs
+        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs
       - name: Eight selection-preview mobile cases (five-minute limit)
         id: selection-preview_gui
         run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs

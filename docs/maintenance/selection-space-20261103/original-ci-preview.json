@@ -1,0 +1,90 @@
+{
+  "expectedSha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+  "run": "41574499909",
+  "attempt": "1",
+  "expectedCases": 8,
+  "status": "failed",
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "light",
+      "font": "200%",
+      "status": "failed",
+      "startedAt": "2026-11-03T03:52:30.169Z",
+      "touches": 7,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": false,
+        "run": "41574499909",
+        "attempt": "1",
+        "job": "selection-preview",
+        "node": "v22.13.0",
+        "startedAt": "2026-11-03T03:52:29.407Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2648.0999999999767
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2648.6999999999825
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2648.7999999999884
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2655.1999999999825
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2656.399999999994
+        }
+      ],
+      "error": "TimeoutError: locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('dialog', { name: '選択復元プレビュー', exact: true }).locator('[data-preview-key]').filter({ hasText: 'note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-' }).getByRole('button', { name: '復元候補に選択', exact: true })\n",
+      "finishedAt": "2026-11-03T03:53:03.158Z"
+    }
+  ],
+  "error": "TimeoutError: locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('dialog', { name: '選択復元プレビュー', exact: true }).locator('[data-preview-key]').filter({ hasText: 'note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-' }).getByRole('button', { name: '復元候補に選択', exact: true })\n",
+  "finishedAt": "2026-11-03T03:53:03.315Z"
+}

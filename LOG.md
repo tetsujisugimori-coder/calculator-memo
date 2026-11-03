@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-11-03 (JST): PR #120 Space混在入力のactivation欠落を局所修正
+
+- [Issue #119](https://github.com/tetsujisugimori-coder/calculator-memo/issues/119)／[Draft PR #120](https://github.com/tetsujisugimori-coder/calculator-memo/pull/120)を継続。元HEAD24bd7dfと固定B2f95a1d、過去成功b577b58の原CI・artifactとコードを確認。
+- 確認済み機構は、Chromium141のtouch後に同じfocused/connectedボタンのactiveがSpace解放前に消失しnative clickが発生しないこと。Reactなしnative fixtureでも再現。内部のactive解除経路はUNKNOWN。CDP traceで150ms timer発火を認めず、その説は採用しない。旧R1は同じsignatureだが過去に未計測の内部原因まで同一と断定しない。
+- 製品の候補ボタンのみSpace押下・同一要素での解放を明示管理。defaultを止め、既存onClickへ1回だけapp-generated clickを送る。blur/置換/disabled/修飾/取消/keyup単独は拒否、repeatは1回、Enter/touchはnative。状態管理・保存/復元禁止・Stage3B HOLDと正式6job/集約器は保全。
+- 同一375px Chromium／16ms key-holdの有限比較：元120はkeyboard4/4・mixed0/4、Bと過去成功118はkeyboard4/4・mixed1/4、修正版keyboard4/4・mixed4/4。native対照keyboard4/4・mixed0/4。[調査・設計・原証拠・限界](docs/maintenance/selection-space-20261103/README.md)。sleep/timeout/retry/期待値緩和なし。
+- 自己検証：単体2666/2666（120files）、新規部品10件、Node契約serial103/103、新規oracle10件、Chromium/WebKit各375/390×light/dark計8ケースと追加mixed/取消/Enter成功。全Node並列初回では既存0.1秒synthetic-process起動検査1件がFAIL、条件不変serial成功と分離記録。lint0error/既存3warning、型・通常build・Pages build成功。local Node24とCI pinned22は区別。
+- 最終提出HEADの正式CI1128/592/132および独立レビューはPRの後続記録・Checks参照。このLOGのcommit自身の成功を先取りしない。マージ・公開なし、実機Safari/VoiceOver等NOT_TESTED、R2対象外。
+
 ## 2026-11-02 (JST): 選択復元 Stage 3A 原文保持・直前検証（実行禁止）
 
 - [Draft PR #117](https://github.com/tetsujisugimori-coder/calculator-memo/pull/117)へ通常git commit/pushで提出し、PR本文/Issue進捗の読戻し一致。初回固有GUIの別タブ競合後はrawを戻しても既存保存保護が継続するため、PASSという試験前提を訂正し、保護継続・明示reloadと新規計画を検査。初回job/artifact/ログは別保全。上流の保護理由を一律未保存文で隠さず表示する局所改善と統合2件を追加（固有92件）。最終SHAのCIはPR Checksで確認する。
