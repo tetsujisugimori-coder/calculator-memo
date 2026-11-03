@@ -12,7 +12,8 @@ test('restore has independent failure-propagating job and exact HEAD evidence', 
 });
 test('restore does not replace formal or backup contracts',()=>{
   const formal=workflow.split('\n  backup:\n')[0];
-  assert.match(formal,/timeout-minutes: 30/); assert.match(formal,/node e2e\/smoke.mjs/);
+  assert.match(formal,/timeout-minutes: 30/); assert.match(formal,/node e2e\/run-formal-scenario.mjs/);
+  assert.match(formal,/node e2e\/aggregate-formal-gui.mjs/); assert.match(formal,/needs: \[checks, formal_scenario\]/);
   assert.doesNotMatch(formal,/run-restore-gui/);
   assert.match(workflow,/300s node e2e\/run-backup-gui.mjs/);
   assert.doesNotMatch(workflow,/paths-ignore:|\[skip ci\]/);

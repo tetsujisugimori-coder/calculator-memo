@@ -1,0 +1,394 @@
+[
+  {
+    "delay": 16,
+    "trial": 0,
+    "trace": [
+      {
+        "name": "EventHandler::hoverTimerFired",
+        "ts": 30756039404,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756105737,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756105843,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756106116,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756106403,
+        "ph": "I"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756154456,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756154580,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756154808,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756154941,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keydown",
+        "ts": 30756161512,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keyup",
+        "ts": 30756178580,
+        "ph": "I"
+      }
+    ],
+    "pressed": "false",
+    "events": [
+      {
+        "type": "click",
+        "time": 109.80000000074506,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "click",
+        "time": 158.19999999925494,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "true"
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "time": 164.90000000223517,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "time": 181.90000000223517,
+        "trusted": true,
+        "prevented": false,
+        "active": false,
+        "pressed": "false"
+      }
+    ]
+  },
+  {
+    "delay": 16,
+    "trial": 1,
+    "trace": [
+      {
+        "name": "EventHandler::hoverTimerFired",
+        "ts": 30756248662,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756307518,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756307744,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756308118,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756308559,
+        "ph": "I"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756354620,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756354676,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756354876,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756355008,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keydown",
+        "ts": 30756361899,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keyup",
+        "ts": 30756386229,
+        "ph": "I"
+      }
+    ],
+    "pressed": "false",
+    "events": [
+      {
+        "type": "click",
+        "time": 89.70000000298023,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "click",
+        "time": 136.10000000149012,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "true"
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "time": 143,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "time": 167.40000000223517,
+        "trusted": true,
+        "prevented": false,
+        "active": false,
+        "pressed": "false"
+      }
+    ]
+  },
+  {
+    "delay": 50,
+    "trial": 0,
+    "trace": [
+      {
+        "name": "EventHandler::hoverTimerFired",
+        "ts": 30756454806,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756523554,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756523578,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756523907,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756524382,
+        "ph": "I"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756571045,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756571107,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756571386,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756571538,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keydown",
+        "ts": 30756578107,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keyup",
+        "ts": 30756629533,
+        "ph": "I"
+      }
+    ],
+    "pressed": "false",
+    "events": [
+      {
+        "type": "click",
+        "time": 101.69999999925494,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "click",
+        "time": 148.69999999925494,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "true"
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "time": 155.39999999850988,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "time": 206.80000000074506,
+        "trusted": true,
+        "prevented": false,
+        "active": false,
+        "pressed": "false"
+      }
+    ]
+  },
+  {
+    "delay": 50,
+    "trial": 1,
+    "trace": [
+      {
+        "name": "EventHandler::hoverTimerFired",
+        "ts": 30756695893,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756754842,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756754877,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756755101,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756755450,
+        "ph": "I"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756804507,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756804596,
+        "ph": "X"
+      },
+      {
+        "name": "EventHandler::targetGestureEvent",
+        "ts": 30756804841,
+        "ph": "X"
+      },
+      {
+        "name": "fixture-click",
+        "ts": 30756804962,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keydown",
+        "ts": 30756811956,
+        "ph": "I"
+      },
+      {
+        "name": "fixture-keyup",
+        "ts": 30756863325,
+        "ph": "I"
+      }
+    ],
+    "pressed": "false",
+    "events": [
+      {
+        "type": "click",
+        "time": 90.60000000149012,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "click",
+        "time": 140.10000000149012,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "true"
+      },
+      {
+        "type": "keydown",
+        "key": " ",
+        "time": 147.10000000149012,
+        "trusted": true,
+        "prevented": false,
+        "active": true,
+        "pressed": "false"
+      },
+      {
+        "type": "keyup",
+        "key": " ",
+        "time": 198.5,
+        "trusted": true,
+        "prevented": false,
+        "active": false,
+        "pressed": "false"
+      }
+    ]
+  }
+]

@@ -1,0 +1,1464 @@
+{
+  "target": "application",
+  "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+  "browser": "141.0.7390.37",
+  "node": "v24.22.1",
+  "cases": [
+    {
+      "mode": "keyboard",
+      "trial": 0,
+      "steps": [
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 810,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 810.1000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 827.6000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 827.7000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 828.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 830.7000000029802,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 843.7000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 843.8000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 861.6000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 861.7000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 861.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 862.9000000022352,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        }
+      ]
+    },
+    {
+      "mode": "keyboard",
+      "trial": 1,
+      "steps": [
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 542.8000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 543.1000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 564,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 564,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 564.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 565.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 583.1999999992549,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 583.3999999985099,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 607.6999999992549,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 607.8000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 607.8999999985099,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 608.8999999985099,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        }
+      ]
+    },
+    {
+      "mode": "keyboard",
+      "trial": 2,
+      "steps": [
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 507.69999999925494,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 508,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 526.5,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 526.6000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 526.6999999992549,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 528.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 547.8000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 547.9000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 576,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 576.1000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 576.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 577.1999999992549,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        }
+      ]
+    },
+    {
+      "mode": "keyboard",
+      "trial": 3,
+      "steps": [
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 445.80000000074506,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 446,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 465.5999999977648,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 465.5999999977648,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 465.80000000074506,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 467.19999999925494,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 493.5,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 493.5999999977648,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 511.3999999985099,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 511.5,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 511.5999999977648,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 512.6999999992549,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        }
+      ]
+    },
+    {
+      "mode": "touch-then-keyboard",
+      "trial": 0,
+      "steps": [
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 580.5,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 582,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 626.8999999985099,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 627.7999999970198,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 635.0999999977648,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 635.1999999992549,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 654.0999999977648,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 654.1999999992549,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 664.0999999977648,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 664.1999999992549,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 680.8999999985099,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 681,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 681,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 681.8999999985099,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        }
+      ]
+    },
+    {
+      "mode": "touch-then-keyboard",
+      "trial": 1,
+      "steps": [
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 524,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 525.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 586.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 587.1999999992549,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 592.8000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 592.9000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 609.8000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 609.9000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 615.6999999992549,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 615.9000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 633,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 633,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 633.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 634.1999999992549,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        }
+      ]
+    },
+    {
+      "mode": "touch-then-keyboard",
+      "trial": 2,
+      "steps": [
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 479.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 480.9000000022352,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 526,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 526.9000000022352,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 532.9000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 533,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 550.2000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 550.3000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 559.1000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 559.2000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 576.3000000007451,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 576.4000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 576.5,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 577.5,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        }
+      ]
+    },
+    {
+      "mode": "touch-then-keyboard",
+      "trial": 3,
+      "steps": [
+        {
+          "pressed": "false",
+          "same": true,
+          "focus": true
+        },
+        {
+          "pressed": "true",
+          "same": true,
+          "focus": true
+        }
+      ],
+      "events": [
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 521.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 523.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 578,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "true"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 579.1000000014901,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 586.2000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 586.4000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 603.5,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 603.6000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "capture",
+          "time": 611.2000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keydown",
+          "phase": "bubble",
+          "time": 611.4000000022352,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "capture",
+          "time": 628.6000000014901,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "keyup",
+          "phase": "bubble",
+          "time": 628.7000000029802,
+          "key": " ",
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": true,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "capture",
+          "time": 628.8000000007451,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "false"
+        },
+        {
+          "type": "click",
+          "phase": "bubble",
+          "time": 629.7000000029802,
+          "trusted": true,
+          "prevented": false,
+          "same": true,
+          "focus": true,
+          "connected": true,
+          "active": false,
+          "pressed": "true"
+        }
+      ]
+    }
+  ]
+}

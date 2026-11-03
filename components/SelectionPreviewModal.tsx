@@ -5,6 +5,7 @@ import { MAX_RESTORE_FILE_BYTES } from "../lib/restore-validation";
 import { STORAGE_KEY } from "../lib/storage";
 import { RECOVERY_CHANGED_EVENT } from "../lib/recovery-manager";
 import { Modal } from "./Modal";
+import { SelectionCandidateButton } from "./SelectionCandidateButton";
 import { generateRestorePlan, PLAN_RULE_VERSION, type RestorePlan } from "../lib/selective-restore-plan";
 import { generateSafetyCandidate, revalidateSafety, SAFETY_RULE_VERSION, type SafetyCandidate, type SafetyContext, type PreflightResult } from '../lib/selective-restore-safety';
 import { RestoreSafetyPanel } from './RestoreSafetyPanel';
@@ -202,7 +203,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
       {filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(item => <article key={item.key} data-preview-key={item.key}>
         <h3>{item.title}</h3><p>識別子: {item.id ?? "UNKNOWN（ID なし）"}</p><p>種別: {backup.categories.find(entry => entry.category === item.category)?.label ?? item.category} / 検証: {item.validation === "valid" ? "対応範囲で検証済み" : "UNKNOWN"}</p>
         <p>作成: {item.createdAt ?? "UNKNOWN"} / 更新: {item.updatedAt ?? "UNKNOWN"}</p><p data-comparison={compare(item).status}>{compare(item).message}</p>
-        <div className="recovery-actions"><button type="button" className="button-secondary" onClick={() => { if (activeBackup.current !== backup) return; verify(); setDetail(item); setDetailPage(0); }}>個別詳細</button><button type="button" className="button-secondary" aria-pressed={selected.has(item.key)} onClick={() => toggle(item.key)}>{selected.has(item.key) ? "候補から解除" : "復元候補に選択"}</button></div>
+        <div className="recovery-actions"><button type="button" className="button-secondary" onClick={() => { if (activeBackup.current !== backup) return; verify(); setDetail(item); setDetailPage(0); }}>個別詳細</button><SelectionCandidateButton selected={selected.has(item.key)} onToggle={() => toggle(item.key)} /></div>
       </article>)}
       {!filtered.length && <p>この分類の項目はありません。</p>}
       <nav className="recovery-actions" aria-label="一覧ページ"><button type="button" disabled={page === 0} onClick={() => setPage(value => value - 1)}>前の一覧</button><button type="button" disabled={(page + 1) * PAGE_SIZE >= filtered.length} onClick={() => setPage(value => value + 1)}>次の一覧</button></nav>

@@ -10,7 +10,8 @@ test('selection-preview acceptance is independent, exact HEAD, bounded, and fail
  assert.match(preview,/300s node e2e\/run-selection-preview-gui.mjs/);assert.match(preview,/name: pr-selection-preview-/);assert.match(preview,/if-no-files-found: error/);
 });
 test('all preceding formal, backup and restore acceptance remain independent',()=>{
- const formal=workflow.split('\n  backup:\n')[0];assert.match(formal,/timeout-minutes: 30/);assert.match(formal,/node e2e\/smoke.mjs/);assert.doesNotMatch(formal,/run-selection-preview-gui/);
+ const formal=workflow.split('\n  backup:\n')[0];assert.match(formal,/timeout-minutes: 30/);assert.match(formal,/node e2e\/run-formal-scenario.mjs/);assert.doesNotMatch(formal,/run-selection-preview-gui/);
+  assert.match(formal,/node e2e\/aggregate-formal-gui.mjs/); assert.match(formal,/needs: \[checks, formal_scenario\]/);
  for(const name of ['backup','restore'])assert.match(workflow,new RegExp(`300s node e2e/run-${name}-gui.mjs`));
  assert.doesNotMatch(workflow,/paths-ignore:|\[skip ci\]/);
 });

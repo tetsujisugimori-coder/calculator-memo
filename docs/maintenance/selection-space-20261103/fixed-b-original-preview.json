@@ -1,0 +1,288 @@
+{
+  "expectedSha": "2f95a1d965df47aed76a399ef13729f1b2b412aa",
+  "run": "41386901845",
+  "attempt": "1",
+  "expectedCases": 8,
+  "status": "failed",
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "light",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-02T04:12:27.578Z",
+      "touches": 14,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "2f95a1d965df47aed76a399ef13729f1b2b412aa",
+        "dirty": false,
+        "run": "41386901845",
+        "attempt": "1",
+        "job": "selection-preview",
+        "node": "v22.13.0",
+        "startedAt": "2026-11-02T04:12:26.411Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2700.9000000000233
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2701.5
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2701.5
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2708.7000000000116
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2709.8000000000175
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2709.8000000000175
+        }
+      ],
+      "unknown": {
+        "viewport": 375,
+        "page": 375
+      },
+      "observedTouchStarts": 14,
+      "finishedAt": "2026-11-02T04:12:33.204Z"
+    },
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "dark",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-02T04:12:33.208Z",
+      "touches": 14,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "2f95a1d965df47aed76a399ef13729f1b2b412aa",
+        "dirty": false,
+        "run": "41386901845",
+        "attempt": "1",
+        "job": "selection-preview",
+        "node": "v22.13.0",
+        "startedAt": "2026-11-02T04:12:26.411Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2697.7000000000116
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2698.2000000000116
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2698.2000000000116
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2704.2999999999884
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2704.600000000006
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2704.600000000006
+        }
+      ],
+      "unknown": {
+        "viewport": 375,
+        "page": 375
+      },
+      "observedTouchStarts": 14,
+      "finishedAt": "2026-11-02T04:12:38.238Z"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "theme": "light",
+      "font": "200%",
+      "status": "failed",
+      "startedAt": "2026-11-02T04:12:38.241Z",
+      "touches": 7,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged"
+      ],
+      "provenance": {
+        "sha": "2f95a1d965df47aed76a399ef13729f1b2b412aa",
+        "dirty": false,
+        "run": "41386901845",
+        "attempt": "1",
+        "job": "selection-preview",
+        "node": "v22.13.0",
+        "startedAt": "2026-11-02T04:12:26.411Z"
+      },
+      "initial": {
+        "viewport": 390,
+        "page": 390
+      },
+      "detail": {
+        "viewport": 390,
+        "page": 390
+      },
+      "selected": {
+        "viewport": 390,
+        "page": 390
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2611.2999999999884
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2611.7999999999884
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2611.7999999999884
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2617.899999999994
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2619.1999999999825
+        }
+      ],
+      "error": "TimeoutError: locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('dialog', { name: '選択復元プレビュー', exact: true }).locator('[data-preview-key]').filter({ hasText: 'note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-' }).getByRole('button', { name: '復元候補に選択', exact: true })\n",
+      "finishedAt": "2026-11-02T04:13:11.152Z"
+    }
+  ],
+  "error": "TimeoutError: locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('dialog', { name: '選択復元プレビュー', exact: true }).locator('[data-preview-key]').filter({ hasText: 'note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-note-long-識別子-' }).getByRole('button', { name: '復元候補に選択', exact: true })\n",
+  "finishedAt": "2026-11-02T04:13:11.351Z"
+}

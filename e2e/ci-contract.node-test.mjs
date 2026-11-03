@@ -61,7 +61,7 @@ for (const [id, binary] of [['unit', 'npm'], ['normal_build', 'npm'], ['pages_bu
 }
 
 test('workflow retains strict failure, exact HEAD, timeout and artifact contracts', () => {
-  assert.match(workflow, /name: Checks and Chromium GUI/);
+  assert.match(workflow, /name: Checks and build contracts/);
   assert.match(workflow, /timeout-minutes: 30/);
   assert.match(workflow, /ref: \$\{\{ github.event.pull_request.head.sha \}\}/);
   assert.match(workflow, /persist-credentials: false/);
