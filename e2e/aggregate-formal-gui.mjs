@@ -67,13 +67,13 @@ if (invokedDirectly) {
   } finally {
     await writeFile('gui-aggregate/result.json', JSON.stringify(result, null, 2) + '\n');
     if (process.env.GITHUB_STEP_SUMMARY) {
-      const summary = '## Formal GUI: six independent jobs\\n\\n' +
-        'Result: **' + result.status + '**\\n\\n' +
-        'SHA: \\x60' + (result.sha || 'unknown') + '\\x60\\n\\n' +
+      const summary = '## Formal GUI: six independent jobs\n\n' +
+        'Result: **' + result.status + '**\n\n' +
+        'SHA: `' + (result.sha || 'unknown') + '`\n\n' +
         'Completed: ' + (result.coverage?.contexts ?? 'UNKNOWN') + '/6; checks ' + (result.coverage?.checks ?? 'UNKNOWN') +
         '/1128; geometry ' + (result.coverage?.horizontalCheckpoints ?? 'UNKNOWN') +
-        '/592; PNG ' + (result.pngs ?? 'UNKNOWN') + '/132.\\n\\n' +
-        'Historical fixed-B 5/6 evidence is not modified. Failure, cancellation and missing artifacts remain unverified.\\n';
+        '/592; PNG ' + (result.pngs ?? 'UNKNOWN') + '/132.\n\n' +
+        'Historical fixed-B 5/6 evidence is not modified. Failure, cancellation and missing artifacts remain unverified.\n';
       await writeFile(process.env.GITHUB_STEP_SUMMARY, summary, { flag: 'a' });
     }
   }
