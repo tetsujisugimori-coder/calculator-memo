@@ -117,9 +117,12 @@ export class StorageSafetyCoordinator {
   private async run(id: string, kind: RecordEntry['kind'], original: string | null, raw: string, validate: (afterWrite?: boolean) => void, recoveryOf?: string): Promise<Result> {
     if (this.busy || this.poisoned) return this.refused('same-tab writer busy or journal uncertainty HOLD');
     this.busy = true;
+    let active = true;
+    const assertActive = () => { if (!active) throw Error('lock ownership no longer confirmed'); };
     let record: RecordEntry | undefined;
     let ledger: RecordEntry[] = [];
     const persist = () => {
+      assertActive();
       if (!record) throw Error('missing record');
       const records = [...ledger.filter(r => r.id !== id), record];
       const serialized = JSON.stringify({ version: 1, records });
@@ -128,11 +131,14 @@ export class StorageSafetyCoordinator {
       ledger = clone(records);
     };
     const step = async (phase: Phase) => {
+      assertActive();
       record = transition(record!, phase); persist(); await this.checkpoint(phase);
+      assertActive();
     };
     try {
       return await this.exclusive(async () => {
         try {
+          assertActive();
           ledger = readLedger(this.store);
           if (!id || ledger.some(r => r.id === id)) return this.refused('operation ID already used');
           if (ledger.some(r => (r.phase === 'UNKNOWN' || !terminal(r.phase)) && r.id !== recoveryOf)) return this.refused('unresolved operation HOLD');
@@ -168,13 +174,14 @@ export class StorageSafetyCoordinator {
           // A completed terminal record cannot be advanced. Failure to persist its
           // result is a new uncertainty, retaining any original failure.
           if (record.phase === 'OBSERVED_MATCH') record = { ...record, phase: 'READING', history: record.history.slice(0,-1) };
-          record = transition(record, record.attempted ? 'UNKNOWN' : 'REFUSED', String(e));
+          if (!terminal(record.phase)) record = transition(record, record.attempted ? 'UNKNOWN' : 'REFUSED', String(e));
           try { persist(); } catch { this.poisoned = true; }
           return { phase: record.phase, record: clone(record), executionAllowed: false, assurance: 'UNKNOWN' };
         }
       });
     } catch (e) {
       // Lock failure after work ran cannot erase the already-attempted outcome.
+      active = false;
       this.poisoned = !!record;
       if (record) {
         const reason = `lock lifecycle failure: ${String(e)}`;
@@ -186,7 +193,7 @@ export class StorageSafetyCoordinator {
         return { phase: record.phase, record: clone(record), reason, executionAllowed: false, assurance: 'UNKNOWN' };
       }
       return this.refused(String(e));
-    } finally { this.busy = false; }
+    } finally { active = false; this.busy = false; }
   }
 }
 

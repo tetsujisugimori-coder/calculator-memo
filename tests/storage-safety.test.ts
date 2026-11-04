@@ -119,6 +119,22 @@ describe('real adapter writes and preserved bytes', () => {
 });
 
 describe('cooperation and limits are distinct observations', () => {
+  it.each(['PRESERVED','WRITING'] as Phase[])('known lock loss during %s fences a delayed writer before any primary IO', async phase => {
+    let release!: () => void, lost!: (e: Error) => void, ready!: () => void;
+    let background: Promise<unknown> | undefined;
+    const held = new Promise<void>(r=>ready=r);
+    const f=fixture(async p=>{if(p===phase){ready();await new Promise<void>(r=>release=r);}},new FaultStore(),async work=>{
+      background=work();
+      return await Promise.race([background,new Promise<never>((_,reject)=>lost=reject)]) as Awaited<ReturnType<typeof work>>;
+    });
+    const pending=f.run();await held;lost(Error('lock ownership revoked'));
+    const result=await pending;
+    expect(result.phase).toBe(phase==='WRITING'?'UNKNOWN':'REFUSED');
+    release();await background;
+    expect(writes(f.store)).toHaveLength(0);
+    expect(f.store.getItem(STORAGE_KEY)).toBe(f.original);
+    expect((await f.c.ordinary('new',f.original,f.original)).phase).toBe('REFUSED');
+  });
   it('ordinary synthetic writer uses preservation, single write and readback after selection completes', async () => {
     const f=fixture(); expect((await f.run()).phase).toBe('OBSERVED_MATCH');
     const r=await f.c.ordinary('ordinary-after',f.candidate.raw!,f.original);

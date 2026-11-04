@@ -1,0 +1,23 @@
+✔ all two-engine exact cases accepted (1.1443ms)
+✔ reject missing-engine (0.19ms)
+✔ reject duplicate-engine (0.1261ms)
+✔ reject missing-case (0.0638ms)
+✔ reject duplicate-case (0.1009ms)
+✔ reject phase (0.0745ms)
+✔ reject pageerror (0.0777ms)
+✔ reject version (0.0786ms)
+✔ reject no-events (0.5144ms)
+✔ reject restart-success (0.1416ms)
+✔ reject failed (0.0592ms)
+✔ reject exception (0.056ms)
+✔ reject late-primary (0.0748ms)
+✔ test-only implementation is absent from product import paths (21.6615ms)
+✔ isolated workflow fails normally and retains evidence without changing formal GUI counts (0.6245ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.431

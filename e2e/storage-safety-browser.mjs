@@ -67,6 +67,24 @@ try {
       const cross=await page.evaluate(async()=>{await window.pending;return {phase:window.outcome.phase,events:window.events};});
       assert.equal(cross.phase,'REFUSED');assert.ok(cross.events>0);
       result.cases.push({name:'cross-page-web-lock-and-storage-event',...cross});
+      // A real Web Locks steal rejects the outer request while its async callback
+      // is still paused. Once that loss is known, a late resume must do no IO.
+      await page.evaluate(ns=>{
+        window.held=false;window.resumed=false;window.lostOutcome=undefined;window.primaryCalls=0;
+        window.f=window.api.makeBrowserFixture(ns,async phase=>{
+          if(phase==='WRITING'){window.held=true;await new Promise(r=>window.release=r);window.resumed=true;}
+        },s=>({getItem:k=>s.getItem(k),setItem:(k,v)=>{if(k===window.api.STORAGE_KEY)window.primaryCalls++;s.setItem(k,v);}}));
+        window.primaryCalls=0;
+        window.pending=window.f.c.selection('stolen',window.f.candidate,window.f.read).then(r=>window.lostOutcome=r);
+      },namespace+'stolen:');
+      await page.waitForFunction(()=>window.held);
+      await second.evaluate(()=>navigator.locks.request(window.api.LOCK_NAME,{steal:true},()=>{}));
+      await page.waitForFunction(()=>!!window.lostOutcome);
+      const lossPhase=await page.evaluate(()=>window.lostOutcome.phase);assert.equal(lossPhase,'UNKNOWN');
+      await page.evaluate(()=>window.release());await page.waitForFunction(()=>window.resumed);
+      const fenced=await page.evaluate(()=>({phase:window.lostOutcome.phase,primaryCalls:window.primaryCalls,originalStillPresent:window.f.store.getItem(window.api.STORAGE_KEY)===window.f.original}));
+      assert.deepEqual(fenced,{phase:'UNKNOWN',primaryCalls:0,originalStillPresent:true});
+      result.cases.push({name:'actual-web-lock-steal-fences-suspended-writer',...fenced});
       // Close the actual producer page while suspended AFTER persisted write
       // intent. No catch/finally or synthetic exception is allowed to finalize it.
       const crash=namespace+'crash:';
@@ -90,7 +108,7 @@ try {
       result.cases.push({name:'actual-page-close-after-intent',...restarted});
       assert.deepEqual(errors,[]);result.pageerrors=errors;result.status='PASS';
       await context.close();
-    }catch(e){result.error=String(e.stack||e);process.exitCode=1;}
+    }catch(e){result.status='FAILED';result.error=String(e.stack||e);process.exitCode=1;}
     finally{await browser?.close();await writeFile(`${out}/${name}.json`,JSON.stringify(result,null,2)+'\n',{flag:'wx'});}
   }
   const errors=validateStorageResults(results,names);

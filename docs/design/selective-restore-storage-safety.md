@@ -37,6 +37,8 @@ terminal IDは再利用不可。不正遷移、保全なしwrite、readbackな�
 
 合成例外中断と、実ブラウザでintent後にproducer pageをcloseしfinallyが走らない中断を分離する。ブラウザ全体kill/OS終了/電源断/physical flushはNOT_TESTED。ledger/保全/primaryは別キーで一体commitではない。同時喪失や永続化順序は証明できず、marker自体が失われたら検知不能になり得る。製品writeを許可しない。
 
+ロック要求のrejectを観測したらprocessをHOLDとし、遅れて再開するcallbackもcheckpoint後とpersist前のactive guardで停止する。所有権喪失後はledgerにも書かない。そのため喪失理由の詳細は結果メモリだけに残る場合があり、再起動時は最後に確認済みのnonterminal intentからUNKNOWNとする。すでに保存済みOBSERVED_MATCH後のlock解放例外では、過去の読戻し事実は保存されても解放成功の証明はない。喪失通知自体が届く前の非協調競合まで防げるとはしない。
+
 ## 競合の保証境界
 
 | 経路 | 今回の対処 | 限界 |

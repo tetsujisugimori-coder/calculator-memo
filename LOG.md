@@ -2,6 +2,8 @@
 
 ## 2026-11-05 (JST): Stage 3B-1 保存安全性の隔離検証基盤
 
+- 追加点検でknown lock loss後の遅延callbackがterminal二重遷移する反例2件を検出。active fenceと初回failure保持で同条件GREEN、全固有49件。実Web Locks stealでもChromium/WebKitの遅延primary0を確認し、隔離受入は各15/計30へ追加。初回2799686のCI成功は後続SHAと別記録。原RED/初回CI/旧28件を保存し、製品実保存許可へ昇格しない。
+
 - [Issue #122](https://github.com/tetsujisugimori-coder/calculator-memo/issues/122)を作成し[#121](https://github.com/tetsujisugimori-coder/calculator-memo/issues/121)へ相互参照。最新main a37eb9b/tree26c09e8から専用branchで開始。既存checkout・証拠は保持。
 - 従来はStage3Aのpure準備と小さな合成故障モデル。保存順序・中断・通常writerとの整合を検査するため、4方式を比較し、製品と分離した試験専用共通coordinatorを採用。[設計比較・状態・保証限界・人手復旧](docs/design/selective-restore-storage-safety.md)。既存保全形式/8slot/容量/厳密読戻しを共有、同タブgateと同名Web Locks、単一write、intent/結果ledger、UNKNOWN HOLDと別復旧recordを実装。製品保存形式・実write経路は変更しない。
 - 自己検証の初回固有44/45（容量fault前提の誤り）→serialized容量を実測した対照で45/45。型の二重Promiseを修正しtsc成功。ローカルbrowser初回はengine不在、取得時TLS検証失敗。全単体/回帰/CI/実browser/独立レビューは[台帳](docs/maintenance/storage-safety-20261105/verification.md)とPR後続記録へ実測を追記する。文書commit自身のCI成功は先取りしない。

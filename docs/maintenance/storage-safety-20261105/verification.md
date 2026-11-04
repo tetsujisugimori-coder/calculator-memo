@@ -46,3 +46,10 @@ AGENTS.md、docs/agent/github-workflow.md/verification-policy.md、e2e/README.md
 - 初回lintは新browser生成bundle.jsまで走査してvendor由来48errors、その後browser cacheの生成JSでも1error。bundleの保存拡張子をtxtにし生成物の同一性はSHA256で記録。ローカルsource lintは`npm run lint -- --ignore-pattern gui-evidence`でexit0/既存3warnings。これは新生成証拠/cacheを除外したローカルcommandであり、CIの既存npm lintは変更せず別clean jobで実行する。
 - 通常build・Pages buildはexit0。既存bundle size等のwarningは保持。ブラウザ取得はOS CAを使う`--use-system-ca`でTLS検証を維持し成功。default sandboxのcache移動はAccess deniedで完了せず、実試験は固定既存cacheで実行。証拠の削除はしていない。
 - [保存したローカル原ログ/JSON](local/)を参照。全体回帰・CI・独立レビューはPRの後続記録とChecksへ追記する。
+
+## ロック所有権喪失の有界追加点検
+
+- 初回提出2799686の隔離CI [41934177983](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/41934177983)は成功。既存単体/lint/typesもそのHEADでは成功。これを後続HEADの検証に流用しない。
+- async callback待機中のlock request rejectを2条件（PRESERVED/WRITING）で注入すると、外側の停止後にcallbackがterminalへ再遷移し例外になる反例を検出。旧版がprimaryを上書きしたと断定しない（RED理由はterminal二重遷移の例外）。同じ2入力へ明示active fenceとterminal初回failure保持を追加してGREEN、全49/49・skip0。REDの`-t`指定で他47件は未実行、最終の49成功は別の全固有実行である。製品の歴史的欠陥ではなく今回試験基盤の修正。
+- 実ブラウザの別pageからWeb Locks stealを実行し、両engineでUNKNOWN＋遅延primaryCalls0＋original保持。既存各14から**各15、計30ケース**へ追加。過去28結果はそのまま保存。新集約もlate-primary、例外付きPASS等を拒否する（最終新契約15件）。
+- 初回CIと今回の修正理由/RED/GREENを残して再pushする。終盤の文書だけのpushで実行中GUIを繰返し取消す運用はしない。最終HEADのCI/正式GUIと独立レビューは後続報告に分離する。
