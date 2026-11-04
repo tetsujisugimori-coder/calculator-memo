@@ -1,5 +1,27 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-11-03 (JST): PR #120 Space混在入力のactivation欠落を局所修正
+
+- [Issue #119](https://github.com/tetsujisugimori-coder/calculator-memo/issues/119)／[Draft PR #120](https://github.com/tetsujisugimori-coder/calculator-memo/pull/120)を継続。元HEAD24bd7dfと固定B2f95a1d、過去成功b577b58の原CI・artifactとコードを確認。
+- 確認済み機構は、Chromium141のtouch後に同じfocused/connectedボタンのactiveがSpace解放前に消失しnative clickが発生しないこと。Reactなしnative fixtureでも再現。内部のactive解除経路はUNKNOWN。CDP traceで150ms timer発火を認めず、その説は採用しない。旧R1は同じsignatureだが過去に未計測の内部原因まで同一と断定しない。
+- 製品の候補ボタンのみSpace押下・同一要素での解放を明示管理。defaultを止め、既存onClickへ1回だけapp-generated clickを送る。blur/置換/disabled/修飾/取消/keyup単独は拒否、repeatは1回、Enter/touchはnative。状態管理・保存/復元禁止・Stage3B HOLDと正式6job/集約器は保全。
+- 同一375px Chromium／16ms key-holdの有限比較：元120はkeyboard4/4・mixed0/4、Bと過去成功118はkeyboard4/4・mixed1/4、修正版keyboard4/4・mixed4/4。native対照keyboard4/4・mixed0/4。[調査・設計・原証拠・限界](docs/maintenance/selection-space-20261103/README.md)。sleep/timeout/retry/期待値緩和なし。
+- 自己検証：単体2666/2666（120files）、新規部品10件、Node契約serial103/103、新規oracle10件、Chromium/WebKit各375/390×light/dark計8ケースと追加mixed/取消/Enter成功。全Node並列初回では既存0.1秒synthetic-process起動検査1件がFAIL、条件不変serial成功と分離記録。lint0error/既存3warning、型・通常build・Pages build成功。local Node24とCI pinned22は区別。
+- 最終提出HEADの正式CI1128/592/132および独立レビューはPRの後続記録・Checks参照。このLOGのcommit自身の成功を先取りしない。マージ・公開なし、実機Safari/VoiceOver等NOT_TESTED、R2対象外。
+
+## 2026-11-02 (JST): 選択復元 Stage 3A 原文保持・直前検証（実行禁止）
+
+- [Draft PR #117](https://github.com/tetsujisugimori-coder/calculator-memo/pull/117)へ通常git commit/pushで提出し、PR本文/Issue進捗の読戻し一致。初回固有GUIの別タブ競合後はrawを戻しても既存保存保護が継続するため、PASSという試験前提を訂正し、保護継続・明示reloadと新規計画を検査。初回job/artifact/ログは別保全。上流の保護理由を一律未保存文で隠さず表示する局所改善と統合2件を追加（固有92件）。最終SHAのCIはPR Checksで確認する。
+
+- 最新main `9a62ade53f1743d5728051dc52a17bb12bbefe44` / tree `36a0080c11caf4c28e5497de86daa9ad7039aa26`、clean、既存Issue/PR/Actionsを確認して隔離checkoutと専用branchで開始。[Issue #116](https://github.com/tetsujisugimori-coder/calculator-memo/issues/116)へ本人依頼全文を掲載し、読戻し完全一致。PR #115のPARTIALと正式GUI欠測を継続する。
+- [実装前設計・受入とStage 3B引継ぎ](docs/design/selective-restore-execution-safety.md)。既存厳格JSON scannerに任意のUTF-16構文位置取得を追加し、元原文sliceだけを挿入/置換。全非変更区間を厳密比較し、候補を再解析・厳格構造/参照計画へ照合。既存libraryの追加や別parser、全体JSON再生成、欠落collection生成を見送った。未知値/参照は補完しない。
+- 既存配列の親5種ADD/REPLACE/UNCHANGEDのみ。親子は親1操作、子単独/設定/未知/参照不明は拒否。バックアップ全文/識別情報・現在全文・選択集合・世代/規則/epoch・候補・未保存編集を二読/再生成で再検証。読み取り専用UIを追加し、Stage 2は変更せずexecutionAllowed=falseを維持。
+- [自己検証と初回失敗の証拠](docs/maintenance/selective-safety-20261102/verification.md)。固有90件、全単体119files/2654件、全node契約82件、lint（既存warning2）/型/両buildは最終差分でexit0。隔離故障対照は二読省略で63成功/3失敗exit1→同一66試験すべて成功。元mainの既存欠陥REDとは称しない。
+- 初回UI7失敗は表示撤回後の要素なしを文字列assertした試験誤り、型検査ではit.each配列展開の誤りを検出し、例外内容も厳格化。追加formula置換1失敗は既存参照の内容差をUNKNOWNにする正しい拒否であり、独立式の対応と参照付き拒否を別試験化。初回契約79中1失敗は0.1秒故障プロセスのメッセージ未出力（並列実行中）、無改変の診断49件と最終全82件を別記録。
+- ローカルbrowser cacheは既定path作成不能、作業領域へ変更後は配布hostが403 Domain forbiddenで取得不可。ローカルGUIは起動0条件/exit1で誤成功しない。回避せずActionsの独立8条件へ。Draft PRは作成後にIssueと相互参照し、最終SHAのCI/GUI/正式GUIはPR本文・Checksに追記する。旧SHA成功の継承や先取りなし。
+- 製品保存経路/全体復元/保全manager/他機能と正式GUI契約不変。試験用adapterはtests内だけ。実書込、実行ボタン、形式変更、自動rollback/retryなし。CASなし/非協調writer/通知なしABA/確認後競合が残り、Stage 3Bの実保存は未許可。実機Safari/VoiceOver/OS文字拡大/softkeyboardはNOT_TESTED。独立レビュー前のマージ推奨NO、Draftで停止する。
+
 ## 2026-11-02 (JST): PR #115 子の診断を選択親へ伝える局所修正
 
 - [独立再レビュー](https://github.com/tetsujisugimori-coder/calculator-memo/pull/115#issuecomment-6564937628)で、R1/R2の直接条件は独立PASSだが、未明示選択の確認履歴UNKNOWNが親行/件数へ伝わらない項目別P2を確認。全体の偽PASSや保存欠陥とは扱わない。基準76f6535/treed404cd3、local/remote/PR一致・clean、main/base528a6a0a不変。

@@ -1,0 +1,9 @@
+{
+  "kind": "test-only deliberate fault, NOT baseline-main behavioral defect",
+  "base": "9a62ade53f1743d5728051dc52a17bb12bbefe44",
+  "startedAt": "2026-11-02T03:52:43.831534+00:00",
+  "mutation": "omit preflight second read",
+  "exitCode": 1,
+  "testSHA256": "e4bf0ef6e005db187e0f150d09a71438a8f97ed0266a3b1cf0303f676c38b262",
+  "unchangedTest": true
+}

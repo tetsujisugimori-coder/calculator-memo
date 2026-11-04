@@ -11,7 +11,16 @@ const date = (v: unknown): v is string => typeof v === "string" && Number.isFini
 
 /** Syntax scan adds duplicate decoded-key rejection, including opaque future fields.
  * No parsed value is ever used to reconstruct the source being restored. */
-export function parseStrictJson(text: string): unknown {
+export type JsonSourceNode = { start: number; end: number; kind: 'object' | 'array' | 'value'; children: JsonSourceNode[]; key?: string };
+
+export function parseStrictJson(text: string): unknown { return scanStrictJson(text, false).value; }
+
+/** Same strict scanner, with optional UTF-16 syntax locations. No re-encoding. */
+export function parseStrictJsonSource(text: string): { value: unknown; root: JsonSourceNode } {
+  const scanned = scanStrictJson(text, true);
+  return { value: scanned.value, root: scanned.root! };
+}
+function scanStrictJson(text: string, locations: boolean): { value: unknown; root: JsonSourceNode | undefined } {
   if (text.length > MAX_RESTORE_FILE_BYTES) throw Error("JSONが読込上限を超えています。");
   let i = 0;
   const whitespace = () => { while (i < text.length && /[\x20\t\r\n]/.test(text[i])) i++; };
@@ -25,36 +34,42 @@ export function parseStrictJson(text: string): unknown {
     }
     throw Error("JSON文字列が閉じていません。");
   };
-  const value = (depth: number): void => {
+  const value = (depth: number): JsonSourceNode | undefined => {
     if (depth > MAX_JSON_DEPTH) throw Error("JSONの階層が深すぎるため検証できません。");
     whitespace();
-    if (text[i] === '"') { string(); return; }
+    const node: JsonSourceNode | undefined = locations ? { start: i, end: i, kind: text[i] === '{' ? 'object' : text[i] === '[' ? 'array' : 'value', children: [] } : undefined;
+    const finish = () => { if (node) node.end = i; return node; };
+    if (text[i] === '"') { string(); return finish(); }
     if (text[i] === "{" || text[i] === "[") {
       const object = text[i++] === "{";
       const end = object ? "}" : "]";
       const keys = new Set<string>();
       whitespace();
-      if (text[i] === end) { i++; return; }
+      if (text[i] === end) { i++; return finish(); }
       for (;;) {
         whitespace();
+        let key: string | undefined;
         if (object) {
-          const key = string();
+          key = string();
           if (keys.has(key)) throw Error("JSONに重複フィールドがあります。");
           keys.add(key); whitespace();
           if (text[i++] !== ":") throw Error("JSONの区切りが不正です。");
         }
-        value(depth + 1); whitespace();
-        if (text[i] === end) { i++; return; }
+        const child = value(depth + 1);
+        if (node && child) { child.key = key; node.children.push(child); }
+        whitespace();
+        if (text[i] === end) { i++; return finish(); }
         if (text[i++] !== ",") throw Error("JSONの区切りが不正です。");
       }
     }
     const match = /^(?:true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)/.exec(text.slice(i));
     if (!match) throw Error("JSON値が不正です。");
     i += match[0].length;
+    return finish();
   };
-  value(0); whitespace();
+  const root = value(0); whitespace();
   if (i !== text.length) throw Error("JSON末尾が不正です。");
-  return JSON.parse(text) as unknown;
+  return { value: JSON.parse(text) as unknown, root };
 }
 
 /** Compare structure, not serialized order. Preserves unknown values and -0. */

@@ -1,0 +1,3546 @@
+{
+  "expectedSha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+  "run": "local",
+  "attempt": "local",
+  "expectedCases": 8,
+  "status": "passed",
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "light",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:07:33.714Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2975.699999999255
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2976.699999999255
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 2976.800000000745
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2993.10000000149
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2993.5
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 2993.60000000149
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3125.300000000745
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3125.300000000745
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3125.900000002235
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3126
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3126.10000000149
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3126.60000000149
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3139
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3139.10000000149
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3140
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3140.10000000149
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3140.10000000149
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3140.60000000149
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3153.300000000745
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3153.400000002235
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3153.699999999255
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3153.800000000745
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3153.900000002235
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3154.699999999255
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3165.60000000149
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3165.699999999255
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3166.400000002235
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3166.5
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3166.5
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3167.10000000149
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 375,
+        "page": 375
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:07:39.449Z"
+    },
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "dark",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:07:39.454Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 3210.5
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 3211.599999997765
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 3211.7999999970198
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 3224.2999999970198
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 3224.7999999970198
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 3224.89999999851
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3346.89999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3346.89999999851
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3347.699999999255
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3347.7999999970198
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3347.89999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3348.699999999255
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3360.39999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3360.599999997765
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3361.2999999970198
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3361.39999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3361.39999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3362.199999999255
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3372
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3372.099999997765
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3373.199999999255
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3373.2999999970198
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3373.5
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3374
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3383.099999997765
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3383.2999999970198
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3383.699999999255
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3383.7999999970198
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3383.89999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3384.5
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 375,
+        "page": 375
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:07:45.998Z"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "theme": "light",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:07:46.002Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 390,
+        "page": 390
+      },
+      "detail": {
+        "viewport": 390,
+        "page": 390
+      },
+      "selected": {
+        "viewport": 390,
+        "page": 390
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 3289.300000000745
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 3290.10000000149
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 3290.300000000745
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 3299.10000000149
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 3299.5
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 3299.60000000149
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3419.699999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3419.89999999851
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 3422
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3422
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3422.199999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3422.699999999255
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3432.5
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3432.60000000149
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3433
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3433.199999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3433.199999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3433.699999999255
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3440.5
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3440.60000000149
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3440.89999999851
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3441.10000000149
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3441.10000000149
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3441.699999999255
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3451.39999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3451.5
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3451.89999999851
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3452
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 3452
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 3454.89999999851
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 390,
+        "page": 390
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:07:52.434Z"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "theme": "dark",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:07:52.439Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 390,
+        "page": 390
+      },
+      "detail": {
+        "viewport": 390,
+        "page": 390
+      },
+      "selected": {
+        "viewport": 390,
+        "page": 390
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 4316.5
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 4318.099999997765
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 4318.5
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 4343.199999999255
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 4344
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 4344.099999997765
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 4473.699999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 4473.79999999702
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": true,
+                "time": 4474.29999999702
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4474.39999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4474.5
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4475
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4487.699999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4487.79999999702
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4488.099999997765
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4488.29999999702
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4488.39999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4489
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4500.599999997765
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4500.699999999255
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4501.099999997765
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4501.199999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4501.29999999702
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4501.89999999851
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4520.199999999255
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4520.29999999702
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4520.89999999851
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4520.89999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 4520.89999999851
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 4521.699999999255
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 390,
+        "page": 390
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:07:59.962Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "theme": "light",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:08:00.346Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 10980
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 10982.000000000002
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 10982.000000000002
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 10997
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 10998.000000000002
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 10998.000000000002
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11356
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11357.000000000002
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11357.000000000002
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11357.000000000002
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11357.000000000002
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11358
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11374
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11374
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11374
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11374
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11374
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11376
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11390
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11390
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11390
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11390
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11390
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11391
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11404
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11405
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11405
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11405
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11406
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11407
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 375,
+        "page": 375
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:08:18.408Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "theme": "dark",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:08:18.411Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 375,
+        "page": 375
+      },
+      "detail": {
+        "viewport": 375,
+        "page": 375
+      },
+      "selected": {
+        "viewport": 375,
+        "page": 375
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 11441
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 11442
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 11442
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 11463.000000000002
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 11464
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 11464
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11889.000000000002
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11889.000000000002
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11890
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11890
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11890
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11891
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11907
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11907
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11909
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11909
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11909
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11911
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11923
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11924
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11927
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11927
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11927
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11928
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11940
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11940
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11941
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11941
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 11941
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 11942
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 375,
+        "page": 375
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:08:38.539Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "theme": "light",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:08:38.544Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 390,
+        "page": 390
+      },
+      "detail": {
+        "viewport": 390,
+        "page": 390
+      },
+      "selected": {
+        "viewport": 390,
+        "page": 390
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 14217
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 14219
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 14219
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 14235
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 14236
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 14236
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14748.000000000002
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14749
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14749
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14749
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14749
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14751
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14765
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14766
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14767
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14767
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14768
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14770
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14785
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14785
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14786
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14786
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14786
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14787
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14808
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14808
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14809.000000000002
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14809.000000000002
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 14809.000000000002
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 14810
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 390,
+        "page": 390
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:09:07.690Z"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "theme": "dark",
+      "font": "200%",
+      "status": "passed",
+      "startedAt": "2026-11-03T10:09:07.711Z",
+      "touches": 16,
+      "verified": [
+        "strict valid synthetic backup list and bounded item UI",
+        "same identity/content, changed identity/content and absent item distinguished",
+        "category switching and missing reference explicitly visible within backup namespace",
+        "literal escaped long detail, no expression/HTML execution, snapshot and all saved raw unchanged",
+        "touch and keyboard Space selection/removal are memory-only",
+        "matched Space lifecycle, single routed click, same DOM/focus, blur cancellation, repeat and native Enter",
+        "storage notification invalidates even identical-value comparison",
+        "real second-tab update invalidates current comparison",
+        "same-tab raw update invalidates without silently reacquiring",
+        "replacement file invalidates previous selections",
+        "invalid JSON clears old preview rather than retaining successful results",
+        "unknown backup version rejected",
+        "current read failure is UNKNOWN, not absent or equal",
+        "zero application setItem/removeItem/clear throughout open/detail/compare/select/errors/close; recovery and unrelated keys unchanged; no restore action or page errors"
+      ],
+      "provenance": {
+        "sha": "24bd7dfd56a7bed4b0850cb092c0114d87705be6",
+        "dirty": true,
+        "run": "local",
+        "attempt": "local",
+        "job": "selection-preview",
+        "node": "v24.22.1",
+        "startedAt": "2026-11-03T10:07:32.802Z"
+      },
+      "initial": {
+        "viewport": 390,
+        "page": 390
+      },
+      "detail": {
+        "viewport": 390,
+        "page": 390
+      },
+      "selected": {
+        "viewport": 390,
+        "page": 390
+      },
+      "keyboardEvents": [
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 33538.00000000001
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 33555
+        },
+        {
+          "event": "click",
+          "text": "復元候補に選択",
+          "pressed": "false",
+          "active": "復元候補に選択",
+          "time": 33555
+        },
+        {
+          "event": "keydown",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 33578
+        },
+        {
+          "event": "keyup",
+          "key": " ",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 33579
+        },
+        {
+          "event": "click",
+          "text": "候補から解除",
+          "pressed": "true",
+          "active": "候補から解除",
+          "time": 33579
+        }
+      ],
+      "spaceContract": {
+        "status": "passed",
+        "transitions": [
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34612
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34612
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34613
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34613
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34613
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34614
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34670
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34671
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34672.00000000001
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34672.00000000001
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34672.00000000001
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34673
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34716
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34716
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34717
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34717
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34717
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34718
+              }
+            ],
+            "pressed": "true",
+            "name": "候補から解除",
+            "same": true,
+            "focus": true
+          },
+          {
+            "events": [
+              {
+                "phase": "capture",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34734
+              },
+              {
+                "phase": "bubble",
+                "type": "keydown",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34734
+              },
+              {
+                "phase": "capture",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34738
+              },
+              {
+                "phase": "capture",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34738
+              },
+              {
+                "phase": "bubble",
+                "type": "click",
+                "trusted": false,
+                "prevented": false,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "true",
+                "active": false,
+                "time": 34738
+              },
+              {
+                "phase": "bubble",
+                "type": "keyup",
+                "key": " ",
+                "trusted": true,
+                "prevented": true,
+                "same": true,
+                "connected": true,
+                "focus": true,
+                "pressed": "false",
+                "active": false,
+                "time": 34740
+              }
+            ],
+            "pressed": "false",
+            "name": "復元候補に選択",
+            "same": true,
+            "focus": true
+          }
+        ],
+        "cancellation": "blur, unmatched release, repeat, Enter verified"
+      },
+      "unknown": {
+        "viewport": 390,
+        "page": 390
+      },
+      "observedTouchStarts": 16,
+      "finishedAt": "2026-11-03T10:09:52.589Z"
+    }
+  ],
+  "finishedAt": "2026-11-03T10:09:52.864Z"
+}

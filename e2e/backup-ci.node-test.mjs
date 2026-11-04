@@ -15,8 +15,9 @@ test('backup job has no dependency on the formal job and retains failure propaga
 });
 test('formal contract and backup evidence remain separate', () => {
   const formal = workflow.split('\n  backup:\n')[0];
-  assert.match(formal, /timeout-minutes: 30/); assert.match(formal, /node e2e\/smoke.mjs/);
+  assert.match(formal, /timeout-minutes: 30/); assert.match(formal, /node e2e\/run-formal-scenario.mjs/);
+  assert.match(formal,/node e2e\/aggregate-formal-gui.mjs/); assert.match(formal,/needs: \[checks, formal_scenario\]/);
   assert.doesNotMatch(formal, /e2e\/backup-mobile.mjs|e2e\/run-backup-gui.mjs/);
-  assert.match(formal, /name: pr-gui-/); assert.match(backup, /name: pr-backup-/);
+  assert.match(formal, /name: formal-gui-/); assert.match(backup, /name: pr-backup-/);
   assert.doesNotMatch(workflow, /paths-ignore:|\[skip ci\]/);
 });

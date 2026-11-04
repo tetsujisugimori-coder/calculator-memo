@@ -1,0 +1,86 @@
+[
+  {
+    "path": "lib/selective-restore-plan.ts",
+    "baseBlob": "eaed56dc2a896a5817f9946b3f11819d05844dc1",
+    "workingBlob": "eaed56dc2a896a5817f9946b3f11819d05844dc1",
+    "unchanged": true
+  },
+  {
+    "path": "lib/selection-preview.ts",
+    "baseBlob": "ca24988819347efba1bd6adce06bc5ec89604842",
+    "workingBlob": "ca24988819347efba1bd6adce06bc5ec89604842",
+    "unchanged": true
+  },
+  {
+    "path": "lib/restore-storage.ts",
+    "baseBlob": "aed45e6857edb9e7900a7e22f1ae96031333b0a2",
+    "workingBlob": "aed45e6857edb9e7900a7e22f1ae96031333b0a2",
+    "unchanged": true
+  },
+  {
+    "path": "lib/storage.ts",
+    "baseBlob": "1029b1967d908530062ef7920f96069b10573d96",
+    "workingBlob": "1029b1967d908530062ef7920f96069b10573d96",
+    "unchanged": true
+  },
+  {
+    "path": "lib/recovery-manager.ts",
+    "baseBlob": "d188bfe8d90384aec2b2a621f6ebd40456b0be63",
+    "workingBlob": "d188bfe8d90384aec2b2a621f6ebd40456b0be63",
+    "unchanged": true
+  },
+  {
+    "path": "lib/backup.ts",
+    "baseBlob": "a7437b5e447a2549f5c0e67adab28e5a57f8b25b",
+    "workingBlob": "a7437b5e447a2549f5c0e67adab28e5a57f8b25b",
+    "unchanged": true
+  },
+  {
+    "path": "components/CalculatorApp.tsx",
+    "baseBlob": "a8c03cd39f237fb6dc804bb3208205d4c5bc6465",
+    "workingBlob": "a8c03cd39f237fb6dc804bb3208205d4c5bc6465",
+    "unchanged": true
+  },
+  {
+    "path": "components/RestoreModal.tsx",
+    "baseBlob": "d048f6cbe6b31dd31110a7093405a532ab79610f",
+    "workingBlob": "d048f6cbe6b31dd31110a7093405a532ab79610f",
+    "unchanged": true
+  },
+  {
+    "path": "e2e/scenario.mjs",
+    "baseBlob": "0b2c22d80a2b0e9b218e2f020a32bf1d063ae3b9",
+    "workingBlob": "0b2c22d80a2b0e9b218e2f020a32bf1d063ae3b9",
+    "unchanged": true
+  },
+  {
+    "path": "e2e/ci-contract.mjs",
+    "baseBlob": "b0a15c7238e5a968b24d14182d2f9297070dc255",
+    "workingBlob": "b0a15c7238e5a968b24d14182d2f9297070dc255",
+    "unchanged": true
+  },
+  {
+    "path": ".github/workflows/verify-pr-gui.yml",
+    "baseBlob": "dc43cebef521179d4853fc69c011c50c23b2fa4b",
+    "workingBlob": "dc43cebef521179d4853fc69c011c50c23b2fa4b",
+    "unchanged": true
+  },
+  {
+    "path": ".github/workflows/selective-restore-plan.yml",
+    "baseBlob": "45a01c9d0760f79d03c118370a57b6c94f044201",
+    "workingBlob": "45a01c9d0760f79d03c118370a57b6c94f044201",
+    "unchanged": true
+  },
+  {
+    "path": "package.json",
+    "baseBlob": "7dcb95f79b37e9daff49ce00e33605ed3126953b",
+    "workingBlob": "7dcb95f79b37e9daff49ce00e33605ed3126953b",
+    "unchanged": true
+  },
+  {
+    "path": "package-lock.json",
+    "baseBlob": "2e1c820fc6ed06d135b1b3219f3e3c3761dae63e",
+    "workingBlob": "2e1c820fc6ed06d135b1b3219f3e3c3761dae63e",
+    "unchanged": true
+  }
+]

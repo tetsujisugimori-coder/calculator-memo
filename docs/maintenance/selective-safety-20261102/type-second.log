@@ -1,0 +1,12 @@
+tests/selective-restore-safety.test.ts(33,70): error TS2345: Argument of type '(edits: { start: number; end: number; expected: string; replacement: string; keys: never[]; } | { start: number; end: number; expected: string; replacement: string; keys: never[]; }) => void' is not assignable to parameter of type '(...args: [{ start: number; end: number; expected: string; replacement: string; keys: never[]; }] | [{ start: number; end: number; expected: string; replacement: string; keys: never[]; }, { start: number; end: number; expected: string; replacement: string; keys: never[]; }]) => Awaitable<...>'.
+  Types of parameters 'edits' and 'args' are incompatible.
+    Type '[{ start: number; end: number; expected: string; replacement: string; keys: never[]; }] | [{ start: number; end: number; expected: string; replacement: string; keys: never[]; }, { start: number; end: number; expected: string; replacement: string; keys: never[]; }]' is not assignable to type '[edits: { start: number; end: number; expected: string; replacement: string; keys: never[]; } | { start: number; end: number; expected: string; replacement: string; keys: never[]; }]'.
+      Type '[{ start: number; end: number; expected: string; replacement: string; keys: never[]; }, { start: number; end: number; expected: string; replacement: string; keys: never[]; }]' is not assignable to type '[edits: { start: number; end: number; expected: string; replacement: string; keys: never[]; } | { start: number; end: number; expected: string; replacement: string; keys: never[]; }]'.
+        Source has 2 element(s) but target allows only 1.
+tests/selective-restore-safety.test.ts(33,114): error TS2345: Argument of type '{ start: number; end: number; expected: string; replacement: string; keys: never[]; } | { start: number; end: number; expected: string; replacement: string; keys: never[]; }' is not assignable to parameter of type 'readonly SourceEdit[]'.
+  Type '{ start: number; end: number; expected: string; replacement: string; keys: never[]; }' is missing the following properties from type 'readonly SourceEdit[]': length, concat, join, slice, and 25 more.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

@@ -5,7 +5,10 @@ import { MAX_RESTORE_FILE_BYTES } from "../lib/restore-validation";
 import { STORAGE_KEY } from "../lib/storage";
 import { RECOVERY_CHANGED_EVENT } from "../lib/recovery-manager";
 import { Modal } from "./Modal";
+import { SelectionCandidateButton } from "./SelectionCandidateButton";
 import { generateRestorePlan, PLAN_RULE_VERSION, type RestorePlan } from "../lib/selective-restore-plan";
+import { generateSafetyCandidate, revalidateSafety, SAFETY_RULE_VERSION, type SafetyCandidate, type SafetyContext, type PreflightResult } from '../lib/selective-restore-safety';
+import { RestoreSafetyPanel } from './RestoreSafetyPanel';
 import { RestorePlanPanel } from "./RestorePlanPanel";
 
 const PAGE_SIZE = 20;
@@ -37,6 +40,9 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selectionMessage, setSelectionMessage] = useState("");
   const [plan, setPlan] = useState<{ result: RestorePlan; backup: PreviewDocument; snapshot: Snapshot; selectionState: Set<string>; condition: string; rules: number; invalidated: boolean } | null>(null);
+  const [safety, setSafety] = useState<{ candidate: SafetyCandidate; sourcePlan: typeof plan; preflight: PreflightResult | null } | null>(null);
+  const backupText = useRef('');
+  const safetyEpoch = useRef(0);
   const selectionRevision = useRef(0);
   const selectedRef = useRef(new Set<string>());
   const conditionRef = useRef(blockedReason);
@@ -49,6 +55,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
   useLayoutEffect(() => { getGenerationRef.current = getGeneration; }, [getGeneration]);
 
   const invalidate = (state: "stale" | "read-error") => {
+    safetyEpoch.current++;
     snapshot.current = null; setReadIssue(state === "read-error" ? "読取失敗（UNKNOWN）: 保存領域を取得できません。" : "");
     setCurrent(null); setAvailability(state); setSelectionMessage("");
   };
@@ -82,6 +89,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
 
   const chooseFile = async (file: File | undefined) => {
     const request = ++fileRequest.current;
+    backupText.current = ''; safetyEpoch.current++; setSafety(null);
     activeBackup.current = null;
     setBackup(null); selectedRef.current = new Set(); selectionRevision.current++; setSelected(new Set()); setPlan(null); setDetail(null); setCategory("all"); setPage(0); setError(""); setSelectionMessage("");
     snapshot.current = null; setReadIssue(""); setCurrent(null); setAvailability("unacquired");
@@ -93,7 +101,7 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
       const text = await file.text();
       if (!alive.current || request !== fileRequest.current) return;
       const result = parseSelectionBackup(text, file.size);
-      if (result.ok) { activeBackup.current = result.preview; setBackup(result.preview); } else setError(result.message);
+      if (result.ok) { backupText.current = text; activeBackup.current = result.preview; setBackup(result.preview); } else setError(result.message);
     } catch { if (alive.current && request === fileRequest.current) setError("ファイルを読み取れません。UNKNOWN。旧ファイルの選択は失効しました。"); }
     finally { if (alive.current && request === fileRequest.current) setLoading(false); }
   };
@@ -138,9 +146,31 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
     const revision = selectionRevision.current; const request = fileRequest.current; const condition = conditionRef.current;
     const result = generateRestorePlan({ backup, current: captured.document, selectedKeys: [...selectedRef.current], availability: "ready", blockedReason: condition });
     if (!verify() || snapshot.current !== captured || activeBackup.current !== backup || fileRequest.current !== request || selectionRevision.current !== revision || conditionRef.current !== condition) return;
+    setSafety(null);
     setPlan({ result, backup, snapshot: captured, selectionState: selectedRef.current, condition, rules: PLAN_RULE_VERSION, invalidated: false });
   };
   const planStale = plan && (plan.invalidated || plan.backup !== backup || plan.snapshot !== current || effectiveAvailability !== "ready" || plan.selectionState !== selected || plan.condition !== blockedReason || plan.rules !== PLAN_RULE_VERSION) ? "ファイル・選択・比較・保存状態・検証条件が変更されました。" : "";
+  const safetyContext = (): SafetyContext => ({
+    backupText: backupText.current, backupIdentity: `${fileRequest.current}:${fileName}`,
+    currentRaw: window.localStorage.getItem(STORAGE_KEY), selectedKeys: [...selectedRef.current],
+    generation: getGenerationRef.current(), epoch: safetyEpoch.current + selectionRevision.current,
+    planRuleVersion: PLAN_RULE_VERSION, safetyRuleVersion: SAFETY_RULE_VERSION, unsaved: !!conditionRef.current, blockedReason: conditionRef.current,
+  });
+  const prepareSafety = () => {
+    if (!plan || planStale || !verify()) return;
+    try {
+      const context = safetyContext();
+      const candidate = generateSafetyCandidate(context, plan.result);
+      if (!verify()) return;
+      setSafety({ candidate, sourcePlan: plan, preflight: null });
+    } catch { invalidate('read-error'); }
+  };
+  const checkSafety = () => {
+    if (!safety || planStale || safety.sourcePlan !== plan) return;
+    const result = revalidateSafety(safety.candidate, safetyContext);
+    setSafety({ ...safety, preflight: result });
+    if (result.status === 'STALE' || result.status === 'UNKNOWN') verify();
+  };
   const currentDetail = detail && current && effectiveAvailability === "ready" && detail.identity !== null && ["same", "different"].includes(compare(detail).status) ? current.document.items.filter(item => item.identity === detail.identity && item.category === detail.category && item.scope === detail.scope) : [];
   const detailText = useMemo(() => detail ? JSON.stringify(detail.value, null, 2) ?? "UNKNOWN" : "", [detail]);
   const availabilityText = { ready: "取得時点の比較（継続的な同一性保証ではありません）", stale: "比較失効: 現在データの変更を検知しました。明示的に再取得してください。", invalid: readIssue || "現在原文は検証不能（UNKNOWN）です。", "read-error": readIssue || "現在データ: UNKNOWN。比較の成功表示を取り消しました。", unacquired: "現在データは未取得（UNKNOWN）" };
@@ -165,12 +195,15 @@ export function SelectionPreviewModal({ onClose, generation, getGeneration, bloc
         {selectionMessage && <p role="status">{selectionMessage}</p>}
       </section>
       <RestorePlanPanel plan={plan?.result ?? null} stale={planStale} onGenerate={generatePlan} disabled={loading || !current || effectiveAvailability !== "ready" || chosen.length === 0} />
+      <RestoreSafetyPanel candidate={safety?.candidate ?? null} preflight={safety?.preflight ?? null}
+        stale={!!safety && (!!planStale || safety.sourcePlan !== plan)}
+        disabled={!plan || !!planStale || loading} onPrepare={prepareSafety} onCheck={checkSafety} />
       <label className="preview-filter">データ分類<select aria-label="データ分類" value={category} onChange={event => { setCategory(event.target.value); setPage(0); }}>{[{ category: "all", label: "すべて", count: backup.items.length }, ...backup.categories].map(entry => <option key={entry.category} value={entry.category}>{entry.label}（{entry.count === null ? "UNKNOWN" : `${entry.count}件`}）</option>)}</select></label>
       <p>{filtered.length}件中 {filtered.length ? page * PAGE_SIZE + 1 : 0}〜{Math.min(filtered.length, (page + 1) * PAGE_SIZE)}件を表示</p>
       {filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map(item => <article key={item.key} data-preview-key={item.key}>
         <h3>{item.title}</h3><p>識別子: {item.id ?? "UNKNOWN（ID なし）"}</p><p>種別: {backup.categories.find(entry => entry.category === item.category)?.label ?? item.category} / 検証: {item.validation === "valid" ? "対応範囲で検証済み" : "UNKNOWN"}</p>
         <p>作成: {item.createdAt ?? "UNKNOWN"} / 更新: {item.updatedAt ?? "UNKNOWN"}</p><p data-comparison={compare(item).status}>{compare(item).message}</p>
-        <div className="recovery-actions"><button type="button" className="button-secondary" onClick={() => { if (activeBackup.current !== backup) return; verify(); setDetail(item); setDetailPage(0); }}>個別詳細</button><button type="button" className="button-secondary" aria-pressed={selected.has(item.key)} onClick={() => toggle(item.key)}>{selected.has(item.key) ? "候補から解除" : "復元候補に選択"}</button></div>
+        <div className="recovery-actions"><button type="button" className="button-secondary" onClick={() => { if (activeBackup.current !== backup) return; verify(); setDetail(item); setDetailPage(0); }}>個別詳細</button><SelectionCandidateButton selected={selected.has(item.key)} onToggle={() => toggle(item.key)} /></div>
       </article>)}
       {!filtered.length && <p>この分類の項目はありません。</p>}
       <nav className="recovery-actions" aria-label="一覧ページ"><button type="button" disabled={page === 0} onClick={() => setPage(value => value - 1)}>前の一覧</button><button type="button" disabled={(page + 1) * PAGE_SIZE >= filtered.length} onClick={() => setPage(value => value + 1)}>次の一覧</button></nav>
