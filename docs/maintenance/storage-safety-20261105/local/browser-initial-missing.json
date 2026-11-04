@@ -1,0 +1,28 @@
+{
+  "provenance": {
+    "sha": "a37eb9b231f724440c727f130a9fd4913833ecb0",
+    "tree": "26c09e8e1cfe1896aedbfc9d0c9e146f5c93f408",
+    "dirty": true,
+    "node": "v24.20.0",
+    "platform": "win32",
+    "run": "local",
+    "attempt": "local",
+    "bundleSha256": "510a536e127fe32fdd1e993b7621721d7e555732391dfb0b0cdbb17a98d18fac"
+  },
+  "results": [
+    {
+      "engine": "chromium",
+      "status": "FAILED",
+      "cases": [],
+      "error": "browserType.launch: Executable doesn't exist at C:\\Users\\tetsu\\AppData\\Local\\Packages\\sandbox.{1ec59b7b-d776-4561-bac7-618aee010dcc}\\AC\\ms-playwright\\chromium_headless_shell-1194\\chrome-win\\headless_shell.exe\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝\n    at C:\\Users\\tetsu\\Documents\\Codex\\2026-11-05\\task-6\\calculator-memo\\e2e\\storage-safety-browser.mjs:36:47"
+    },
+    {
+      "engine": "webkit",
+      "status": "FAILED",
+      "cases": [],
+      "error": "browserType.launch: Executable doesn't exist at C:\\Users\\tetsu\\AppData\\Local\\Packages\\sandbox.{1ec59b7b-d776-4561-bac7-618aee010dcc}\\AC\\ms-playwright\\webkit-2215\\Playwright.exe\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝\n    at C:\\Users\\tetsu\\Documents\\Codex\\2026-11-05\\task-6\\calculator-memo\\e2e\\storage-safety-browser.mjs:36:47"
+    }
+  ],
+  "status": "FAIL",
+  "scope": "isolated synthetic origin; observation only; executionAllowed=false"
+}

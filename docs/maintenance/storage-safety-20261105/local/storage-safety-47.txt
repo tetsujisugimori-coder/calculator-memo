@@ -1,0 +1,14 @@
+
+> calculation-memo@0.1.0 test
+> vitest run tests/storage-safety.test.ts
+
+
+ RUN  v3.2.4 C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo
+
+ ✓ tests/storage-safety.test.ts (47 tests) 121ms
+
+ Test Files  1 passed (1)
+      Tests  47 passed (47)
+   Start at  08:25:46
+   Duration  2.15s (transform 238ms, setup 0ms, collect 1.38s, tests 121ms, environment 0ms, prepare 110ms)
+

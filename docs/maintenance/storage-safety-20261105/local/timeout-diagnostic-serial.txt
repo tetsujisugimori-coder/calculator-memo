@@ -1,0 +1,75 @@
+
+> calculation-memo@0.1.0 test
+> vitest run --maxWorkers=1 tests/audit-body-item-navigation-app.test.ts tests/audit-roundtrip.integration.test.ts tests/dependency-svg.test.ts tests/formula-report-audit-comparison-insertion-ui.test.ts tests/formula-report-source-navigation-app.test.ts tests/saved-evidence-ui.test.ts
+
+
+ RUN  v3.2.4 C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo
+
+ ✓ tests/formula-report-audit-comparison-insertion-ui.test.ts (45 tests) 21059ms
+   ✓ real app previews the exact existing export bytes and cancels without reading/writing data  1006ms
+   ✓ real app start insertion keeps selected/full old body and exact dedicated undo  679ms
+   ✓ real app selection insertion keeps selected/full old body and exact dedicated undo  556ms
+   ✓ real app end insertion keeps selected/full old body and exact dedicated undo  523ms
+   ✓ CRLF source, Unicode, duplicate prose and untouched original records survive insertion and undo  491ms
+   ✓ changedfalse body rejects dedicated undo even if old bytes are restored  508ms
+   ✓ changedtrue body rejects dedicated undo even if old bytes are restored  562ms
+   ✓ real CalculatorApp storage changed invalidates prepared material and preserves held body/history  584ms
+   ✓ real CalculatorApp storage deleted invalidates prepared material and preserves held body/history  616ms
+   ✓ real CalculatorApp storage unrelated invalidates prepared material and preserves held body/history  618ms
+   ✓ storage changed after insertion rejects undo rather than deleting by text search  540ms
+   ✓ storage deleted after insertion rejects undo rather than deleting by text search  515ms
+   ✓ storage unrelated after insertion rejects undo rather than deleting by text search  512ms
+   ✓ select invalidates insertion preview and detached confirm does nothing  357ms
+   ✓ swap invalidates insertion preview and detached confirm does nothing  356ms
+   ✓ recompare invalidates insertion preview and detached confirm does nothing  382ms
+   ✓ refresh invalidates insertion preview and detached confirm does nothing  397ms
+   ✓ close invalidates insertion preview and detached confirm does nothing  356ms
+   ✓ same-turn notification rejects an old live confirm before React redraw  450ms
+   ✓ selection movement away and back invalidates preview, while unrelated focus movement does not  470ms
+   ✓ unreported position change is caught at confirm and preserves body  409ms
+   ✓ unexecuted comparison and same-record comparison cannot start insertion  319ms
+   ✓ match state is retained in inserted material without independent classification  376ms
+   ✓ changed state is retained in inserted material without independent classification  416ms
+   ✓ empty state is retained in inserted material without independent classification  342ms
+   ✓ added state is retained in inserted material without independent classification  382ms
+   ✓ removed state is retained in inserted material without independent classification  364ms
+   ✓ reverse direction keeps exact B-to-A identifiers in wrapper and visible Markdown  360ms
+   ✓ inside a fixed record is refused, at its exact boundary remains allowed  493ms
+   ✓ body-capacity refusal is whole-output non-destructive and not a partial insert  404ms
+   ✓ StrictMode app remains usable and explicit save/reload retains material but not new roots/history  1445ms
+   ✓ late clipboard resolution after fixed insertion cannot revive success or old insertion controls  450ms
+   ✓ body edit invalidates prepared material and stale confirm preserves every new character  428ms
+   ✓ CRLF editor offsets map to the correct raw-body line boundary without rewriting old ranges on save  652ms
+   ✓ unavailable comparison limitations survive material insertion without upgrading to matched  353ms
+   ✓ invalid comparison limitations survive material insertion without upgrading to matched  358ms
+   ✓ unrecorded comparison limitations survive material insertion without upgrading to matched  333ms
+   ✓ incomplete comparison limitations survive material insertion without upgrading to matched  367ms
+   ✓ stale comparison limitations survive material insertion without upgrading to matched  352ms
+   ✓ held aggregate report capacity rejects the full material without trimming another body or confirmation history  512ms
+   ✓ same-turn storage event refuses the live undo before redraw without removing material  499ms
+ ✓ tests/audit-roundtrip.integration.test.ts (19 tests) 7816ms
+   ✓ storage deleted preserves held draft but refuses revisit and does not revive old detail  313ms
+   ✓ delayed navigation is cancelled by 点検へ戻る  530ms
+   ✓ delayed navigation is cancelled by 往復ナビゲーションを終了  554ms
+   ✓ delayed navigation is cancelled by レポートを閉じる  537ms
+   ✓ explicit ending and fresh reopening do not inherit comparison detail or return target  760ms
+   ✓ changing body then restoring bytes still cancels old deferred navigation while explicit revisit revalidates  731ms
+   ✓ body edit and exact restore returns to revalidated origin, not a silently lost selection  681ms
+   ✓ separate quote occurrences sharing one source restore their own focus and filter without body changes  914ms
+   ✓ first audit export remains unverified after title editing before audit was ever opened  439ms
+   ✓ first audit export remains unverified after body editing before audit was ever opened  434ms
+   ✓ first audit export remains unverified after storage-and-title editing before audit was ever opened  553ms
+   ✓ an already acquired active session stays invalid after body edit while returning without implicit refresh  717ms
+ ✓ tests/saved-evidence-ui.test.ts (33 tests) 638ms
+ ✓ tests/dependency-svg.test.ts (13 tests) 644ms
+   ✓ parses the display projection of actual exported node/edge syntax  617ms
+ ✓ tests/audit-body-item-navigation-app.test.ts (6 tests) 657ms
+   ✓ real CalculatorApp synchronizes sequential body ranges and returns to latest item without reads or writes  341ms
+ ✓ tests/formula-report-source-navigation-app.test.ts (11 tests) 1233ms
+   ✓ a changed native selection is respected before its select event has been delivered  324ms
+
+ Test Files  6 passed (6)
+      Tests  127 passed (127)
+   Start at  08:26:48
+   Duration  49.25s (transform 3.54s, setup 0ms, collect 12.37s, tests 32.05s, environment 3.06s, prepare 522ms)
+

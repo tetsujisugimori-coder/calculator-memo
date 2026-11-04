@@ -1,0 +1,75 @@
+
+> calculation-memo@0.1.0 build
+> vinext build
+
+
+  vinext build  (Vite 8.0.13)
+
+[1/5] analyze client references...
+[2K
+transforming...✓ 134 modules transformed.
+rendering chunks...
+✓ built in 732ms
+[2/5] analyze server references...
+[2K
+transforming...✓ 2918 modules transformed.
+rendering chunks...
+[PLUGIN_TIMINGS] Your build spent significant time in plugins. Here is a breakdown:
+  - vinext:react-canary (25%)
+  - rsc:virtual-client-package (16%)
+  - rsc:scan-strip (6%)
+  - vinext:rsc-client-reference-loaders (5%)
+  - rsc:scan-strip (5%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 9.48s
+[3/5] build rsc environment...
+[2K
+transforming...✓ 140 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 2.38s
+[4/5] build client environment...
+[2K
+transforming...✓ 4861 modules transformed.
+rendering chunks...
+computing gzip size...
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[PLUGIN_TIMINGS] Your build spent significant time in plugins. Here is a breakdown:
+  - vinext:react-canary (27%)
+  - rsc:virtual-client-package (15%)
+  - rsc:rsc-css-export-transform (5%)
+  - vinext:rsc-client-reference-loaders (5%)
+  - rsc:scan-strip (5%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 15.47s
+[5/5] build ssr environment...
+[2K
+transforming...✓ 2939 modules transformed.
+rendering chunks...
+computing gzip size...
+[PLUGIN_TIMINGS] Your build spent significant time in plugins. Here is a breakdown:
+  - vinext:react-canary (29%)
+  - rsc:virtual-client-package (15%)
+  - vinext:rsc-client-reference-loaders (5%)
+  - rsc:scan-strip (5%)
+  - rsc:rsc-css-export-transform (4%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 10.54s
+[0m
+  Route (app)
+  ─ ? /
+
+  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+  Build complete. Run `vinext start` to start the production server.
+

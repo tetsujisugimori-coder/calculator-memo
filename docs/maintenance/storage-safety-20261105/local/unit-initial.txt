@@ -1,0 +1,1488 @@
+
+> calculation-memo@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo
+
+ ❯ tests/markdown-report.test.ts (46 tests | 1 failed) 746ms
+   × saved Markdown reports > reproduces the published example exactly without changing its signed fixture 261ms
+     → expected '# 計算過程の記録例\n\n## 基本情報\n\n- メモID: exam…' to be '# 計算過程の記録例\r\n\r\n## 基本情報\r\n\r\n- メモ…' // Object.is equality
+   ✓ saved Markdown reports > preserves mixed block order, source expressions and LaTeX, not cached content 23ms
+   ✓ saved Markdown reports > never evaluates, mutates frozen input or accesses persistence 18ms
+   ✓ saved Markdown reports > only confirms signed current results and propagates stale dependencies 214ms
+   ✓ saved Markdown reports > does not certify consumers of contradictory failed transaction records 24ms
+   ✓ saved Markdown reports > does not trust current without a matching signature 2ms
+   ✓ saved Markdown reports > distinguishes saved states 0 5ms
+   ✓ saved Markdown reports > distinguishes saved states 1 1ms
+   ✓ saved Markdown reports > distinguishes saved states 2 11ms
+   ✓ saved Markdown reports > distinguishes saved states 3 1ms
+   ✓ saved Markdown reports > reports missing references and source IDs 7ms
+   ✓ saved Markdown reports > retains cyclic graph and diagnostic 0 3ms
+   ✓ saved Markdown reports > retains cyclic graph and diagnostic 1 3ms
+   ✓ saved Markdown reports > keeps legacy variable binding uncertain 6ms
+   ✓ saved Markdown reports > retains invalid expressions and downstream diagnostic 4ms
+   ✓ saved Markdown reports > preserves empty notes without an empty graph 1ms
+   ✓ saved Markdown reports > supports content-only old notes without normalization or calculation 1ms
+   ✓ saved Markdown reports > retains raw expression with multiline and closing fences safely 6ms
+   ✓ saved Markdown reports > escapes title and IDs, preserves Markdown and neutralizes raw HTML 6ms
+   ✓ saved Markdown reports > closes unmatched body delimiters without modifying original: ```js
+hello 2ms
+   ✓ saved Markdown reports > closes unmatched body delimiters without modifying original: ~~~~
+hello 1ms
+   ✓ saved Markdown reports > closes unmatched body delimiters without modifying original: $$
+x 2ms
+   ✓ saved Markdown reports > does not treat backticks inside display math as a Markdown fence 1ms
+   ✓ saved Markdown reports > preserves alignment ampersands in Markdown math and literalizes HTML-bearing math 1ms
+   ✓ saved Markdown reports > does not modify code fence contents including HTML 6ms
+   ✓ saved Markdown reports > falls back to literal LaTeX for structural delimiters x
+$$
+# escape 1ms
+   ✓ saved Markdown reports > falls back to literal LaTeX for structural delimiters <tag> 1ms
+   ✓ saved Markdown reports > falls back to literal LaTeX for structural delimiters x
+```
+y 1ms
+   ✓ saved Markdown reports > falls back to literal LaTeX for structural delimiters x
+~~~
+y 1ms
+   ✓ saved Markdown reports > reports graph analysis failure without losing text or saved values 2ms
+   ✓ saved Markdown reports > reports Mermaid failure and keeps dependency references 6ms
+   ✓ saved Markdown reports > retains all blocks when graph limit is exceeded 14ms
+   ✓ saved Markdown reports > refuses unsupported structures rather than silently omitting 0 6ms
+   ✓ saved Markdown reports > refuses unsupported structures rather than silently omitting 1 1ms
+   ✓ saved Markdown reports > refuses unsupported structures rather than silently omitting 2 1ms
+   ✓ saved Markdown reports > refuses unsupported structures rather than silently omitting 3 7ms
+   ✓ saved Markdown reports > keeps opaque extras unchanged and explicitly limits report completeness 1ms
+   ✓ saved Markdown reports > refuses over-limit text without silent truncation 25ms
+   ✓ saved Markdown reports > handles long text and many small backtick runs without argument overflow 47ms
+   ✓ saved Markdown reports > keeps negative zero internal representation 2ms
+   ✓ saved Markdown reports > creates a bounded basename  4ms
+   ✓ saved Markdown reports > creates a bounded basename . 1ms
+   ✓ saved Markdown reports > creates a bounded basename .. 3ms
+   ✓ saved Markdown reports > creates a bounded basename CON 1ms
+   ✓ saved Markdown reports > creates a bounded basename a/b\c:*?"<>| 4ms
+   ✓ saved Markdown reports > creates a bounded basename 😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀 1ms
+ ✓ tests/formula-reports.test.ts (30 tests) 363ms
+ ✓ tests/block-references.test.ts (38 tests) 1050ms
+   ✓ manual block reference foundation > forward/backward ID reference (reverse=false)  305ms
+   ✓ manual block reference foundation > graph limit and long expression safety are bounded  360ms
+ ✓ tests/calculation-status.test.ts (36 tests) 960ms
+ ✓ tests/formula-report-evidence.test.ts (50 tests) 695ms
+ ✓ tests/percent-integration.test.ts (10 tests) 584ms
+ ✓ tests/formula-report-quotes.test.ts (64 tests) 248ms
+ ✓ tests/formula-report-audit.test.ts (30 tests) 462ms
+ ✓ tests/dependency-analysis.test.ts (28 tests) 424ms
+ ✓ tests/storage.test.ts (42 tests) 277ms
+stderr | tests/restore-validation.test.ts > rejects coercible but non-string known settings
+ローカル保存領域へアクセスできませんでした TypeError: Cannot convert object to primitive value
+    at String (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:134:56)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at envelope (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\restore-validation.test.ts:5:59)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\restore-validation.test.ts:70:31
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+
+ ✓ tests/restore-validation.test.ts (50 tests) 25ms
+ ✓ tests/evidence-comparison.test.ts (41 tests) 772ms
+   ✓ comparison Markdown > stops actual generation when escaping exceeds output capacity without truncating  377ms
+ ✓ tests/formula-report-diff.test.ts (32 tests) 662ms
+ ✓ tests/calculation-evidence.test.ts (20 tests) 417ms
+ ✓ tests/selection-preview.test.ts (35 tests) 1827ms
+   ✓ preview fail-closed limits and reference scope > rejects excessive item and node budgets without truncating  1185ms
+ ✓ tests/formula-report-audit-comparison-export.test.ts (33 tests) 520ms
+ ✓ tests/formula-report-audit-roundtrip.test.ts (25 tests) 4464ms
+   ✓ temporary read-only audit occurrence witness > roundtrips all four structural target types using raw "\n" offsets  1665ms
+   ✓ temporary read-only audit occurrence witness > roundtrips all four structural target types using raw "\r\n" offsets  1259ms
+   ✓ temporary read-only audit occurrence witness > roundtrips all four structural target types using raw "\r" offsets  852ms
+ ✓ tests/calculation-evidence-report.test.ts (15 tests) 311ms
+ ✓ tests/evidence-impact.test.ts (39 tests) 808ms
+   ✓ saved impact incomplete and invalid evidence > does not impose the current-memo 128-node limit on valid stored records  382ms
+ ✓ tests/evidence-impact-graph.test.ts (20 tests) 565ms
+ ✓ tests/selective-restore-safety.test.ts (67 tests) 1305ms
+ ✓ tests/markdown-report-provenance.test.ts (22 tests) 1546ms
+   ✓ report provenance > shows immediate source positions and values, not transitive source substitution  377ms
+   ✓ report provenance > bounds expanded identifiers without silently falling back to an incomplete report  613ms
+ ✓ tests/selective-restore-plan.test.ts (68 tests) 1057ms
+ ✓ tests/formula-report-diff-tracking.test.ts (38 tests) 515ms
+ ✓ tests/formula-report-audit-export.test.ts (33 tests) 374ms
+ ✓ tests/execution-plan.test.ts (34 tests) 368ms
+ ✓ tests/formula-report-audit-comparison.test.ts (64 tests) 265ms
+ ✓ tests/calculation-trial.test.ts (24 tests) 336ms
+ ✓ tests/formula-report-audit-comparison-record.test.ts (45 tests) 829ms
+ ✓ tests/formula-report-audit-comparison-navigation.test.ts (45 tests) 140ms
+ ✓ tests/reference-phase-boundary.test.ts (9 tests) 220ms
+ ✓ tests/source-evidence-gui-contract.test.ts (13 tests) 68ms
+ ✓ tests/formula-report-audit-record.test.ts (27 tests) 337ms
+ ✓ tests/formula-execution.test.ts (39 tests) 1689ms
+   ✓ registered formula execution > matches an independently computed 500-case arithmetic corpus  1460ms
+ ✓ tests/storage-safety.test.ts (45 tests) 1664ms
+ ✓ tests/memo-blocks.test.ts (6 tests) 228ms
+ ✓ tests/formula-audit-empty-independent.test.ts (17 tests) 90ms
+ ✓ tests/identification.test.ts (20 tests) 6ms
+ ✓ tests/formula-report-audit-comparison-envelope.test.ts (11 tests) 177ms
+ ✓ tests/body-navigation-independent.test.ts (2 tests) 272ms
+ ✓ tests/url-expression.test.ts (6 tests) 4ms
+ ✓ tests/evidence-impact-markdown.test.ts (6 tests) 103ms
+ ✓ tests/format-copy.test.ts (6 tests) 12ms
+ ✓ tests/confirmation-remarks-component.test.ts (2 tests) 6ms
+ ✓ tests/formula-report-audit-record-review.test.ts (2 tests) 111ms
+ ✓ tests/storage-export.test.ts (5 tests) 6ms
+ ✓ tests/memo-labels.test.ts (2 tests) 2ms
+ ✓ tests/evidence-storage.test.ts (7 tests) 127ms
+stderr | tests/backup.test.ts > backup source protection > distinguishes missing, corrupt and inaccessible data
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\backup.test.ts:43:20
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+
+ ✓ tests/backup.test.ts (6 tests) 151ms
+ ✓ tests/ast-evaluation.test.ts (18 tests) 408ms
+ ✓ tests/selective-storage-simulator.test.ts (15 tests) 94ms
+ ✓ tests/formula-library.test.ts (31 tests) 286ms
+ ✓ tests/calculator.test.ts (54 tests) 380ms
+ ✓ tests/percent-parser.test.ts (64 tests) 473ms
+ ✓ tests/variables.test.ts (39 tests) 628ms
+ ✓ tests/formula-report-timeline.test.ts (12 tests) 249ms
+ ✓ tests/formula-audit-comparison-export-independent.test.ts (9 tests) 281ms
+ ✓ tests/calculator-input.test.ts (50 tests) 435ms
+ ✓ tests/math-functions.test.ts (96 tests) 568ms
+ ✓ tests/restore-storage.test.ts (16 tests) 552ms
+   ✓ bounds cumulative recovery JSON allocation without deleting prior source copies  389ms
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 376ms
+ ✓ tests/memo-block-preservation.test.ts (20 tests) 183ms
+ ✓ tests/evidence-independent-review.test.ts (25 tests) 1753ms
+   ✓ independent evidence adversarial review > replays 1001 successfully captured legacy blocks within the byte limit  1242ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > identifies valid outer with protected inner broken
+保存データのJSONが壊れています SyntaxError: Unexpected token 'b', "broken" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:14:233
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+
+ ✓ tests/formula-quote-comparison.test.ts (16 tests) 233ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > full and oversized regions do not report capacity available
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:179
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\recovery-manager.test.ts:21:326
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+
+ ✓ tests/dependency-comparison.test.ts (13 tests) 536ms
+ ✓ tests/recovery-manager.test.ts (25 tests) 394ms
+ ✓ tests/formula-report-difference-boundaries.test.ts (74 tests) 3037ms
+ ✓ tests/markdown-headings.test.ts (31 tests) 955ms
+   ✓ MarkdownContent heading navigation agreement > renders exactly the extracted headings with optional unique IDs and focus targets  549ms
+ ✓ tests/formula-report-ui.test.ts (28 tests) 11364ms
+   ✓ opens safe preview without executing HTML, writing, or auto-confirming  1219ms
+   ✓ sends explicit confirmation with frozen full report and expression expectations  753ms
+   ✓ ordinary save does not implicitly confirm and failure retains edited body  708ms
+   ✓ blocks close and duplicate save until async readback resolves  484ms
+   ✓ dirty close offers explicit discard and keeps source immutable  750ms
+   ✓ formula changes during editing stop confirmation rather than rebase  369ms
+   ✓ report changes during editing stop save  375ms
+   ✓ name-only changes preserve expression confirmation and orphan cannot confirm  416ms
+   ✓ exports exact raw Markdown without writing or inventing explanations  396ms
+   ✓ rejects overlong input without silent truncation  326ms
+   ✓ library exposes orphan rescue independently of same-name formula and retains report on delete  328ms
+   ✓ dirty draft requests navigation warning and explicit discard restores opener focus  432ms
+   ✓ successful saved record supplies exact timestamps and next-save signature, not draft guesses  697ms
+   ✓ confirmed draft loses confirmed label while text is edited and blocks excess export  400ms
+   ✓ oversized pasted body remains intact but is not parsed by preview  489ms
+   ✓ selection is a draft, explicit save carries stable IDs and acquired signatures  660ms
+   ✓ refresh of a missing record retains its identity and removes previous values instead of selecting another record  417ms
+   ✓ keeps remarks through normal save, failure, cancel and clears only confirmed success  460ms
+ ✓ tests/formula-report-diff-tracking-ui.test.ts (34 tests) 14792ms
+   ✓ shows both record identities and their observed dates without pretending preparation is confirmation  813ms
+   ✓ historical and current comparisons require separate explicit actions and show internal negative zero  1076ms
+   ✓ same-ID changed sources never replace either frozen record or historical comparison  809ms
+   ✓ missing before source blocks current comparison but keeps historical evidence usable  349ms
+   ✓ missing after source blocks current comparison but keeps historical evidence usable  339ms
+   ✓ edited visible prose is separated from valid source states and frozen comparison  400ms
+   ✓ multiple differences are selected by structural identity and switching clears previous views  447ms
+   ✓ body changes close old tracking and comparison rather than mixing contexts  310ms
+   ✓ notes changes invalidate an open current comparison immediately  353ms
+   ✓ time changes invalidate an open current comparison immediately  310ms
+   ✓ stale changes invalidate an open current comparison immediately  308ms
+   ✓ error changes invalidate an open current comparison immediately  301ms
+   ✓ explicit refresh discards current view and invokes only acquisition  330ms
+   ✓ detail and comparison Escape return focus to the corresponding trigger  866ms
+   ✓ new insertion carries both frozen records through explicit save and reload  2318ms
+   ✓ storage update and failed refresh preserve unsaved editor body, raw data, and history  789ms
+   ✓ failed save keeps source metadata and draft; copying and exporting do not reserialize it  758ms
+   ✓ same-formula report identity change closes the previous report source and comparison dialogs  404ms
+   ✓ explicit refresh identifies invalid JSON as invalid data, not an absent record or access failure  524ms
+   ✓ explicit refresh identifies unsupported version as invalid data, not an absent record or access failure  542ms
+   ✓ explicit refresh identifies invalid required data as invalid data, not an absent record or access failure  449ms
+   ✓ storage access throwing on refresh is a fetch failure rather than invalid data, with both frozen records intact  436ms
+ ✓ tests/formula-report-quotes-ui.test.ts (24 tests) 14218ms
+   ✓ previews the selected saved block with actual internal inputs, without draft evaluation or writes  1951ms
+   ✓ inserts before a selected range without erasing selected text and offers exact undo  1666ms
+   ✓ canceling an insertion preview leaves body and saved history unchanged  1014ms
+   ✓ ignores unsaved report-prop links when the stored report has none  599ms
+   ✓ a new report cannot cite an unrelated saved record without a persisted association  404ms
+   ✓ failed save retains inserted quote for recovery and never mutates source/history  1107ms
+   ✓ rejects same-tab raw changes between preview and insertion without changing the draft  672ms
+   ✓ storage update makes existing quotes unverified until explicit successful refresh  541ms
+   ✓ failed explicit refresh preserves quote and distinguishes retrieval failure, then recovers  539ms
+   ✓ manual quote text edits are not silently called matched and invalidate insertion undo  999ms
+   ✓ copy and Markdown export preserve all tracking bytes without implicit saving  566ms
+   ✓ ordinary save and readback keep quotes without adding confirmation history  688ms
+   ✓ repeated citation of the same block creates independent snapshots and undo removes only the last  726ms
+   ✓ storage event during prepared preview disables insertion without losing the existing draft  334ms
+   ✓ delayed quote insertion caret never overrides newer body-edit intent  390ms
+   ✓ delayed quote insertion caret never overrides newer selection intent  408ms
+   ✓ delayed quote insertion caret never overrides newer picker intent  410ms
+ ✓ tests/formula-report-audit-storage-app.test.ts (8 tests) 8786ms
+   ✓ real storage changed retains body without describing it as current saved, even after source recheck and reopen  3693ms
+   ✓ real storage deleted retains body without describing it as current saved, even after source recheck and reopen  1132ms
+   ✓ unrelated stored changes produce an unknown equality warning, not a target report change/deletion claim  544ms
+   ✓ local edited body and external storage equality uncertainty remain separate through source recheck  823ms
+   ✓ external storage update prevents delayed clipboard resolve from restoring old success or manual text  575ms
+   ✓ external storage update prevents delayed clipboard reject from restoring old success or manual text  505ms
+   ✓ copy and file export share body uncertainty without reading/writing originals or changing the held editor  625ms
+   ✓ same-turn storage notification and export cannot mix old saved-body wording with an invalidated source generation  886ms
+ ✓ tests/formula-quote-comparison-ui.test.ts (17 tests) 6869ms
+   ✓ starts with no automatic selection and displays signed internal-only differences after choice  980ms
+   ✓ announces edited quote text while still using the frozen saved snapshot  376ms
+   ✓ can compare when original source is missing  384ms
+   ✓ can compare when original source is changed  363ms
+   ✓ invalidates old differences and disables selection for unavailable source {"error":"read denied"}  411ms
+   ✓ invalidates old differences and disables selection for unavailable source {"stale":true}  305ms
+   ✓ invalidates selected target immediately when notes changes  474ms
+   ✓ invalidates selected target immediately when timestamp changes  577ms
+   ✓ invalidates selected target immediately when body changes  544ms
+   ✓ clears a selected comparison before requesting explicit refresh even if callback has not returned new data  317ms
+   ✓ switching quote identity clears the old target even in the same multi-quote body  308ms
+   ✓ editor comparison and refresh leave draft, raw storage and confirmation history unchanged  1110ms
+stderr | tests/recovery-manager-ui.test.ts > recovery copy manager UI protection > corrupt inner raw is distinct from corrupt record and no counts are invented
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at collectBackup (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\backup.ts:22:21)
+    at inspect (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:43:23)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:55:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\recovery-manager.ts:54:31)
+    at Timeout.read [as _onTimeout] (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\RecoveryManagerModal.tsx:51:18)
+    at listOnTimeout (node:internal/timers:685:17)
+    at processTimers (node:internal/timers:618:7)
+
+ ✓ tests/recovery-manager-ui.test.ts (15 tests) 10986ms
+   ✓ recovery copy manager UI protection > distinguishes no copies, with no write caused by opening or details  1330ms
+   ✓ recovery copy manager UI protection > requires separate approval and cancel preserves all original data  925ms
+   ✓ recovery copy manager UI protection > deletes only the approved copy once, recomputes capacity, and never writes primary data  1107ms
+   ✓ recovery copy manager UI protection > Enter at body or final button cannot delete or calculate  773ms
+   ✓ recovery copy manager UI protection > same-turn equal-value storage notification synchronously invalidates approval  690ms
+   ✓ recovery copy manager UI protection > same-tab changed record is not removed and must be reacquired  931ms
+   ✓ recovery copy manager UI protection > corrupt and unknown outer versions remain visible and cannot be deleted  569ms
+   ✓ recovery copy manager UI protection > download keeps exact source and subsequent invalidation clears the old success  1048ms
+   ✓ recovery copy manager UI protection > UNKNOWN after remove blocks repeat deletion and freezes later autosave  817ms
+   ✓ recovery copy manager UI protection > open unsaved editor blocks delete without saving or discarding it  450ms
+   ✓ recovery copy manager UI protection > same-tab notification revokes approval even for equal bytes  597ms
+   ✓ recovery copy manager UI protection > same-turn app generation change revokes final delete before render effects  676ms
+   ✓ recovery copy manager UI protection > without Web Locks still lists and permits export but disables deletion  378ms
+   ✓ recovery copy manager UI protection > corrupt inner raw is distinct from corrupt record and no counts are invented  480ms
+ ✓ tests/selection-preview-ui.test.ts (29 tests) 20909ms
+   ✓ read-only selection preview UI > contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=false)  3094ms
+   ✓ read-only selection preview UI > contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=true)  973ms
+   ✓ read-only selection preview UI > R1 shows the same single unsupported confirmation reference in preview, details and plan  488ms
+   ✓ read-only selection preview UI > R2 keeps formula/report UNKNOWN across blocked-child removal, invalidates on raw and selection changes  711ms
+   ✓ read-only selection preview UI > shows opaque settings references as UNKNOWN instead of a zero-unknown PASS  400ms
+   ✓ read-only selection preview UI > bounds a full 200-item plan to 20 rendered items and preserves the last page  1814ms
+   ✓ read-only selection preview UI > generates a no-op preflight PASS, expires on selection and requires explicit regeneration  787ms
+   ✓ read-only selection preview UI > expires a successful plan on storage without automatic refresh  457ms
+   ✓ read-only selection preview UI > expires a successful plan on same-tab without automatic refresh  369ms
+   ✓ read-only selection preview UI > expires a successful plan on read-error without automatic refresh  352ms
+   ✓ read-only selection preview UI > expires a successful plan on generation without automatic refresh  433ms
+   ✓ read-only selection preview UI > shows structured ADD but lexical BLOCKED and preserves every storage key  706ms
+   ✓ read-only selection preview UI > same-turn stale file actions cannot reuse the former plan  774ms
+   ✓ read-only selection preview UI > changed unsaved-editing condition immediately revokes PASS and blocks explicit revalidation  594ms
+   ✓ read-only selection preview UI > opens, reads, compares, inspects, selects and closes without any storage mutations  1108ms
+   ✓ read-only selection preview UI > opening and closing revokes already queued autosave without flushing unsaved data  744ms
+   ✓ read-only selection preview UI > rejects malformed files and clears old candidates at file change  791ms
+   ✓ read-only selection preview UI > revokes stale item actions synchronously on file replacement  833ms
+   ✓ read-only selection preview UI > checks size before reading file text  496ms
+   ✓ read-only selection preview UI > does not let an older asynchronous file replace the newer file  461ms
+   ✓ read-only selection preview UI > storage notification invalidates even equal bytes without automatic reacquisition  750ms
+   ✓ read-only selection preview UI > same-tab raw change is caught before an item action  664ms
+   ✓ read-only selection preview UI > read failure clears prior success and reports UNKNOWN  608ms
+   ✓ read-only selection preview UI > distinguishes acquired but invalid current JSON from read failure  571ms
+   ✓ read-only selection preview UI > details escape HTML and never evaluate expressions  476ms
+   ✓ read-only selection preview UI > unmount clears transient selection and does not expose a restore execution control  740ms
+ ❯ tests/saved-evidence-ui.test.ts (33 tests | 1 failed) 30966ms
+   ✓ lists immutable saved records and compares A/B/C actual inputs without current values or evaluation/writes  1375ms
+   ✓ chooses append order despite clock inversion and supports swapping  405ms
+   ✓ requires distinct selections, and leaves detail viewing available 280ms
+   ✓ explains absent old-data history without inventing prior values 69ms
+   ✓ shows empty history as non-comparable 84ms
+   ✓ one record provides detail only, without comparing it to itself 138ms
+   ✓ does not substitute current storage for a frozen opened snapshot until refresh  688ms
+   ✓ clears vanished selected records on refresh without silently replacing by latest pair  383ms
+   ✓ failed refresh removes export rather than mixing new damaged data with old selection  314ms
+   ✓ missing saved memo does not fall back to a draft 97ms
+   ✓ fails closed for unknown-version without altering protected bytes 56ms
+   ✓ fails closed for invalid-result without altering protected bytes 69ms
+   ✓ unknown extra fields remain in original bytes and are explicitly not compared  474ms
+   ✓ same-content distinct records are unchanged and can be expanded by request  396ms
+   ✓ reports clipboard rejection without claiming success  397ms
+   ✓ reports download rejection without claiming OS save completion 294ms
+   ✓ keeps selection and snapshot fixed while asynchronous copy is pending  362ms
+   ✓ output limit failures retain readable comparison and do not offer truncated export 239ms
+   ✓ renders hostile strings as inert text and preserves stored source  332ms
+   ✓ traps keyboard focus at modal boundaries and restores entry focus on unmount 256ms
+   × lazily mounts per-block details for a capacity-valid large history 10965ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ uses compact unique append-order options while preserving complete IDs and metadata  2974ms
+   ✓ retains record identity when explicit refresh changes append-index labels  350ms
+   ✓ shares frozen impact paths and independent labels with exported Markdown  417ms
+   ✓ flags structurally valid inconsistent saved inputs without rewriting or repairing them 203ms
+   ✓ keeps existing comparison and blocks incomplete export if analysis alone fails 214ms
+   ✓ historical graph selects frozen C paths and actual values without writes or Markdown filtering  1613ms
+   ✓ graph uses keyboard selection, retains ID on absent side, and never substitutes another block  1279ms
+   ✓ graph resets selection and pending renderer on pair swap and same-ID explicit refresh  1696ms
+   ✓ renderer failure preserves historical details and complete export; no analysis failure claim  585ms
+   ✓ oversized valid historical drawing does not mark records invalid and list/export remain available  2911ms
+   ✓ late historical renderer completion cannot replace a newer side  437ms
+   ✓ late redraw does not steal focus after the user tabs to another control  597ms
+ ✓ tests/formula-report-app-save.test.ts (12 tests) 6286ms
+   ✓ persists exact text before publishing, does not auto-confirm, and retains all unrelated data  1502ms
+   ✓ quota failure keeps report out of React and autosave, allowing a safe explicit retry  487ms
+   ✓ refuses external expression replacement without a storage event  407ms
+   ✓ refuses external report replacement without a storage event  641ms
+   ✓ refuses external invalid replacement without a storage event  379ms
+   ✓ does not expose confirmed state while queued behind a lock, then checks changed destination  336ms
+   ✓ readback uncertainty stops retry and never publishes confirmation in React  332ms
+   ✓ a rejected lock leaves storage and report display unchanged  322ms
+   ✓ a local state change during lock wait invalidates the candidate instead of merging stale confirmation  467ms
+   ✓ checks persisted evidence again inside the lock and never confirms a same-ID replacement  730ms
+   ✓ failed confirmation writes never publish appended confirmation history  339ms
+   ✓ unsupported evidence protects the loaded original and blocks all ordinary writes  334ms
+ ✓ tests/dependency-mermaid.test.ts (11 tests) 1189ms
+   ✓ dependency Mermaid export > parses directed multi-source, multistage, fork and join edges in Mermaid itself  525ms
+ ✓ tests/formula-detail-ui.test.ts (24 tests) 5756ms
+   ✓ renders persisted formula, safe Markdown, and unconfirmed state without writes or calculation  890ms
+   ✓ exports exact saved raw Markdown without changing the source  422ms
+   ✓ invalidates current correspondence after another-tab change and requires explicit refresh  395ms
+   ✓ library selection is local and remains available when persistence is protected  505ms
+   ✓ shows all 20 retained confirmation IDs without mutating or truncating history  833ms
+   ✓ timeline suppresses comparisons while stale and displays shared acquisition time without writes  362ms
+ ✓ tests/formula-report-diff-ui.test.ts (34 tests) 35531ms
+   ✓ requires preview and explicit insertion, showing identities without writing body or storage  2820ms
+   ✓ inserts at the selection start, preserves selected text and every quote byte, and supports exact undo  2009ms
+   ✓ manual editing invalidates dedicated undo without deleting any subsequent changes  1696ms
+   ✓ a new insertion replaces only the dedicated undo baseline  2138ms
+   ✓ successful explicit save invalidates undo, while confirmation remains an explicit separate request  1509ms
+   ✓ failed save preserves the inserted draft and original storage/confirmation history  697ms
+   ✓ invalidates prepared content after selection changes  522ms
+   ✓ invalidates prepared content after refresh changes  538ms
+   ✓ invalidates prepared content after body changes  405ms
+   ✓ invalidates prepared content after report changes  391ms
+   ✓ storage events invalidate preview and require fresh explicit target selection  548ms
+   ✓ rechecks raw storage at insertion and rejects an unnotified changed source  452ms
+   ✓ rechecks raw storage at insertion and rejects an unnotified broken source  386ms
+   ✓ failed explicit refresh keeps draft intact and does not reuse an earlier preview after recovery  464ms
+   ✓ copy and Markdown download contain the exact inserted draft, preserving fixed quote metadata  578ms
+   ✓ uses the frozen snapshot despite the original saved record being changed  907ms
+   ✓ refuses an insertion position inside code without altering the original draft  620ms
+   ✓ refuses an insertion position inside math without altering the original draft  768ms
+   ✓ refuses an insertion position inside quote-gap without altering the original draft  684ms
+   ✓ rejects character-limit overflow before insertion without truncating the draft  843ms
+   ✓ rejects aggregate report capacity overflow without trimming another report or history  1008ms
+   ✓ Escape dismisses only the preview and restores its trigger before comparison closes  1070ms
+   ✓ protected editing disables the insertion action without changing original data  423ms
+   ✓ switching to another report invalidates the previous insertion undo  2037ms
+   ✓ a template operation replaces its own undo without retaining stale difference undo  1653ms
+   ✓ insertion restores focus to the editor without replacing the original selection text  1179ms
+   ✓ rejects quote insertion after an unknown intermediate fence without changing draft, selection or saved evidence  1086ms
+   ✓ rejects difference insertion after an unknown intermediate fence without changing draft, selection or saved evidence  923ms
+   ✓ delayed difference insertion caret never overrides newer body-edit intent  1427ms
+   ✓ delayed difference insertion caret never overrides newer selection intent  1355ms
+   ✓ delayed difference insertion caret never overrides newer picker intent  1465ms
+   ✓ current difference insertion frame still places the caret after the inserted block  1267ms
+   ✓ delayed insertion caret cannot steal focus from discard confirmation opened by the modal header  1396ms
+ ✓ tests/formula-report-audit-export-ui.test.ts (16 tests) 10153ms
+   ✓ exports the exact all-item assessment despite an empty review filter without reading or writing originals  1289ms
+   ✓ copy and file export use the same full generator and distinguish output from original observation time  633ms
+   ✓ unverified and stale exports never reuse successful source judgments or old observation timestamps  715ms
+   ✓ synchronous storage invalidation before the React render also downgrades a click  463ms
+   ✓ failed clipboard export offers inert complete manual text and never reports success  420ms
+   ✓ failed download export offers inert complete manual text and never reports success  313ms
+   ✓ late clipboard success or failure cannot restore a notice or manual text after close  495ms
+   ✓ late clipboard success or failure cannot restore a notice or manual text after refresh  378ms
+   ✓ late clipboard success or failure cannot restore a notice or manual text after storage  419ms
+   ✓ late clipboard success or failure cannot restore a notice or manual text after switch  440ms
+   ✓ repeated copy clicks while pending do not queue another write  362ms
+   ✓ report identity/title edits remount the audit and invalidate pending completion without saving  1254ms
+   ✓ independent regression: exports the frozen opened body with a saved-context warning after the same report is changed  1177ms
+   ✓ independent regression: exports the frozen opened body with a saved-context warning after the same report is deleted  985ms
+   ✓ parent protection without a storage event invalidates delayed clipboard resolve  400ms
+   ✓ parent protection without a storage event invalidates delayed clipboard reject  398ms
+ ✓ tests/audit-item-navigation.integration.test.ts (13 tests) 10519ms
+   ✓ zero items and unselected lists never fabricate a current position  1257ms
+   ✓ one item has accessible non-operating boundaries without native focus loss  456ms
+   ✓ steps existing body order across quote/difference/edited items, retains the button at endpoints, and has no persistence/acquisition effects  1543ms
+   ✓ filter retention uses occurrence key not old index; exclusion clears details with a reason and never selects a neighbor  1406ms
+   ✓ does not skip duplicate occurrences just because body jump is unsafe  363ms
+   ✓ does not skip incomplete occurrences just because body jump is unsafe  301ms
+   ✓ storage changed invalidation stops old stepping and refresh requires explicit selection  902ms
+   ✓ storage same-value invalidation stops old stepping and refresh requires explicit selection  962ms
+   ✓ body ABA and report identity changes never revive old count/position/selection  1232ms
+   ✓ closing and reopening clears navigation and does not silently restore selected occurrence  891ms
+   ✓ selected unsafe item rejects body navigation without dropping selection or breaking next/previous  470ms
+   ✓ saving disables sequential operations and body jump without changing the current selection  447ms
+stderr | tests/formula-report-audit-ui.test.ts > unverified links are not presented as absent in difference detail (failure)
+ローカル保存領域へアクセスできませんでした Error: blocked
+    at Proxy.<anonymous> (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\formula-report-audit-ui.test.ts:104:101)
+    at Proxy.mockCall (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:94:18)
+    at refresh (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\FormulaReportAudit.tsx:123:20)
+    at executeDispatch (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19166:19)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:3255:40)
+
+ ✓ tests/report-template-navigation.test.ts (20 tests) 9054ms
+   ✓ inserts into an empty existing report only on explicit activation and does not save  1137ms
+   ✓ appends without replacing existing text and immediate explicit undo restores the exact draft  465ms
+   ✓ ends template undo after subsequent body edits rather than discarding user text  522ms
+   ✓ retires template undo after a successful explicit save rather than reverting persisted content  737ms
+   ✓ rejects an overflowing template insertion while retaining every existing character  598ms
+   ✓ navigates a read-only report without modifying storage, draft, or save state  1168ms
+   ✓ selects the exact duplicate heading line in the editor without editing or saving  485ms
+   ✓ selects headings correctly after textarea normalization of "\r\n" line endings  512ms
+   ✓ selects headings correctly after textarea normalization of "\r" line endings  509ms
+   ✓ rebuilds chapter order, labels, and targets after arbitrary edits, deletion and reordering  530ms
+   ✓ navigation alone leaves an ordinary explicit save payload unchanged and unconfirmed  561ms
+   ✓ disables insertion, undo and heading navigation while save/readback is pending  450ms
+   ✓ preserves draft remarks and past confirmation history through insertion and undo  791ms
+ ✓ tests/formula-detail-refresh.test.ts (20 tests) 11264ms
+   ✓ same-tab formula edit/save/return refreshes without a storage event: 名称だけ変更  1724ms
+   ✓ same-tab formula edit/save/return refreshes without a storage event: 式の変更  731ms
+   ✓ same-tab formula edit/save/return refreshes without a storage event: 変数の変更  775ms
+   ✓ same-tab ordinary report save/close reloads the new saved body but never promotes old history  1122ms
+   ✓ same-tab explicit confirmation/save/close refreshes confirmation only after checked persistence  1107ms
+   ✓ formula edit cancel preserves raw JSON, confirmation history and detail state  419ms
+   ✓ report edit discard preserves raw JSON/history and reloads the original detail body  839ms
+   ✓ library detail invalidates cross-tab state before refresh and cannot approve an altered source  328ms
+   ✓ ordinary report edits preserve supported unknown metadata rather than silently stripping it  787ms
+   ✓ ordinary formula edits preserve unknown fields and never elevate their assessment  521ms
+   ✓ failed explicit report save does not publish the new body or confirmation history  910ms
+ ✓ tests/evidence-app-save.test.ts (12 tests) 12153ms
+   ✓ successful explicit save persists a record before closing and keeps unknown original fields  2102ms
+   ✓ quota failure does not publish new evidence through React state or later autosave  965ms
+   ✓ foreign update before explicit save is not overwritten and draft remains open  1072ms
+   ✓ foreign storage event freezes autosave rather than replacing new history  848ms
+   ✓ while waiting for the shared write lock, input and all modal close routes are disabled  908ms
+   ✓ a write followed by readback failure is reported as uncertain and never blindly appended again  1085ms
+   ✓ a rejected browser write lock stops autosave with a visible notice and no write  804ms
+   ✓ a corrupted replacement enters non-destructive recovery rather than generic conflict: autosave  980ms
+   ✓ a corrupted replacement enters non-destructive recovery rather than generic conflict: storage event  690ms
+   ✓ a corrupted replacement enters non-destructive recovery rather than generic conflict: explicit save  828ms
+   ✓ continuous formula draft inputs wait for the lock, skip stale callbacks, and clear unload protection only after the latest readback  1283ms
+   ✓ initial pretty-printed data is not reported as unsaved user changes while its first lock is pending  587ms
+ ✓ tests/trial-independent-review.test.ts (16 tests) 1923ms
+   ✓ independent trial safety review > records successful later legacy old-scope use without partially committing  453ms
+   ✓ independent trial safety review > keeps source revision round trips visibly invalid, not just apply-rejected  355ms
+   ✓ independent trial safety review > restores keyboard focus to a surviving control after explicit application  828ms
+ ✓ tests/formula-report-audit-ui.test.ts (19 tests) 12824ms
+   ✓ starts unverified without reading storage; explicit checking reads exactly one original and never writes  1255ms
+   ✓ reads edited body only and separates edited text from matching source and unchanged frozen values  460ms
+   ✓ keeps both source states and association loss independent  751ms
+   ✓ failed refresh invalid replaces old success without changing original  493ms
+   ✓ failed refresh failure replaces old success without changing original  509ms
+   ✓ storage change expires results/details without automatic re-read and explicit refresh recovers  699ms
+   ✓ identity generation change destroys prior detail, filter and results  776ms
+   ✓ filters per occurrence without changing body, and close returns focus  388ms
+   ✓ invalid tracking has no exposed snapshot or enabled guessed jump  383ms
+   ✓ report jump selects exact UTF16 span after preview and preserves raw "\n"  1856ms
+   ✓ report jump selects exact UTF16 span after preview and preserves raw "\r\n"  969ms
+   ✓ same-tab original generation, edited links, and report identity invalidate report-level audit  1055ms
+   ✓ unverified links are not presented as absent in difference detail (initial)  304ms
+   ✓ unverified links are not presented as absent in difference detail (failure)  534ms
+   ✓ unverified links are not presented as absent in difference detail (stale)  310ms
+   ✓ does not navigate using old offsets after generation change before animation frame  919ms
+   ✓ does not navigate using old offsets after other-tab event before animation frame, including repeated invalidation  760ms
+ ✓ tests/deleted-calculation-graph.test.ts (5 tests) 5028ms
+   ✓ A: opens historical nodes and edge after deleting every calculation without calculating or saving  2348ms
+   ✓ B: keeps both historical edges and only navigates to still-present IDs after partial deletion  1031ms
+   ✓ D: distinguishes new stable IDs from deleted historical nodes after adding again  600ms
+   ✓ E: never revives an unapplied trial through all-delete graph toggling or selection  918ms
+ ✓ tests/formula-snapshot-ordering.test.ts (10 tests) 3952ms
+   ✓ pending save preserves invalidation until explicit refresh: separate commits  1520ms
+   ✓ pending save preserves invalidation until explicit refresh: event then completion in one batch  412ms
+   ✓ pending save preserves invalidation until explicit refresh: completion then event in one batch  307ms
+   ✓ failed read recovers only on manual retry with shared state and unchanged history: 保存済み詳細を再取得  306ms
+stderr | tests/audit-body-item-navigation.integration.test.ts > source acquisition failure does not skip structurally complete entries or fabricate source agreement
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at refresh (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\FormulaReportAudit.tsx:123:20)
+    at executeDispatch (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19166:19)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:3255:40)
+    at dispatchEventForPluginEventSystem (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19320:7)
+    at dispatchEvent (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:23585:11)
+
+ ✓ tests/calculation-trial-component.test.ts (16 tests) 6298ms
+   ✓ preview never calls onChange, apply calls once and returns focus to trial control  1472ms
+   ✓ invalidates preview on expression without calling onChange  412ms
+   ✓ invalidates preview on reorder without calling onChange  340ms
+   ✓ invalidates preview on remove without calling onChange  370ms
+   ✓ invalidates preview on add without calling onChange  380ms
+   ✓ invalidates preview on source without calling onChange  353ms
+   ✓ does not persist trial or apply until the existing Save button is used  447ms
+   ✓ failed preview is diagnostic only and cannot be applied  328ms
+   ✓ late async result cannot replace a newer preview after an input change  399ms
+   ✓ saving an unapplied preview retains old results, not trial values  313ms
+ ✓ tests/audit-body-item-navigation.integration.test.ts (17 tests) 17351ms
+   ✓ commits name, position, selection and complete highlight together only after arrival across different item kinds  2401ms
+   ✓ retains non-cycling endpoint focus and returns the current detail rather than the departure item  1676ms
+   ✓ one item disables both directions without cycling  623ms
+   ✓ empty and unselected audits do not create a body navigation position  439ms
+   ✓ a direct list body move establishes the actual reached item, not a stale detail selection  960ms
+   ✓ refuses adjacent duplicate occurrence without silently skipping or changing current state  984ms
+   ✓ refuses adjacent unknown occurrence without silently skipping or changing current state  913ms
+   ✓ refuses adjacent incomplete occurrence without silently skipping or changing current state  861ms
+   ✓ uses filtered occurrence order and keeps the filter when returning  1166ms
+   ✓ storage same-value invalidates an outstanding step and never commits its later callback  946ms
+   ✓ storage changed invalidates an outstanding step and never commits its later callback  1127ms
+   ✓ body ABA and report change reject pending callbacks and never revive old positions  966ms
+   ✓ saving blocks body stepping; ending and reopening discards pending callbacks and selection  804ms
+   ✓ parent rejection keeps the original item and clears pending state for a later explicit retry  835ms
+   ✓ return during a pending body step cancels it and a late arrival cannot replace the restored detail  642ms
+   ✓ body stepping follows a proper filtered subset and returns the matching list selection without old-index reuse  1047ms
+   ✓ source acquisition failure does not skip structurally complete entries or fabricate source agreement  948ms
+ ✓ tests/formula-report-audit-record-ui.test.ts (16 tests) 9479ms
+   ✓ previews shared full record and inserts without persistence, checked=false  1973ms
+   ✓ previews shared full record and inserts without persistence, checked=true  823ms
+   ✓ cancel preview preserves exact draft and storage  577ms
+   ✓ intervening draft edits refuse undo and retain unrelated text  808ms
+   ✓ moving selection after preview rejects insertion without replacing selected text  545ms
+   ✓ storage changed invalidates preview, fresh preview retains uncertainty after explicit source check  594ms
+   ✓ storage deleted invalidates preview, fresh preview retains uncertainty after explicit source check  621ms
+   ✓ same-turn storage notification rejects old insert callback before React redraw  453ms
+   ✓ pending digest cannot restore preview after storage changes  308ms
+   ✓ edited source body is frozen separately from saved-body agreement  490ms
+   ✓ preview body hash identifies exact pre-insertion body rather than generated result  370ms
+   ✓ body changed and then restored still refuses old undo by edit generation  688ms
+   ✓ async preview Escape restores its trigger focus without disabled-button blur  473ms
+ ✓ tests/formula-status-list.test.ts (25 tests) 12373ms
+   ✓ shows every saved assessment, distinguishing absent reports from edited/unconfirmed reports  1163ms
+   ✓ filters all categories without writing, reordering, selecting or changing the original data  1017ms
+   ✓ same-name rows navigate and execute by stable ID, including their separate report and history  697ms
+   ✓ keeps pending formula edits separate, then refreshes list and detail from successful storage  764ms
+   ✓ new unsaved formulas are unverified rather than claiming a saved report exists  462ms
+   ✓ storage updates invalidate both views until explicit shared refresh: 保存済み一覧を再取得  705ms
+   ✓ storage updates invalidate both views until explicit shared refresh: 保存済み詳細を再取得  586ms
+   ✓ formula edit cancellation leaves list, raw JSON and confirmation history unchanged  328ms
+   ✓ report edit cancellation leaves list, raw JSON and confirmation history unchanged  637ms
+   ✓ report body save demotes prior history, and explicit confirmation promotes only after saving  1239ms
+   ✓ protected unknown report version survives list refresh and filters byte-for-byte, with checked writes blocked  337ms
+   ✓ protected duplicate formula IDs survives list refresh and filters byte-for-byte, with checked writes blocked  351ms
+   ✓ protected duplicate report IDs survives list refresh and filters byte-for-byte, with checked writes blocked  303ms
+   ✓ protected unknown confirmation definition survives list refresh and filters byte-for-byte, with checked writes blocked  304ms
+   ✓ protected unknown confirmation history field survives list refresh and filters byte-for-byte, with checked writes blocked  313ms
+   ✓ protected null definition survives list refresh and filters byte-for-byte, with checked writes blocked  334ms
+   ✓ failed confirmation save does not publish draft content or new history to either saved view  851ms
+stderr | tests/formula-comparison-insertion-independent.test.ts > independent negative: failed collection acquisition refuses fixed insertion, but historical comparison remains exportable
+ローカル保存領域へアクセスできませんでした Error: storage unavailable
+    at Proxy.<anonymous> (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\formula-comparison-insertion-independent.test.ts:51:87)
+    at Proxy.mockCall (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:94:18)
+    at acquireEvidence (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\FormulaReportModal.tsx:35:18)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\FormulaReportModal.tsx:132:50
+    at mountStateImpl (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:8268:24)
+    at mountState (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:8289:22)
+    at Object.useState (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react\cjs\react.development.js:1263:34)
+
+ ✓ tests/formula-comparison-insertion-independent.test.ts (12 tests) 4234ms
+   ✓ independent negative: failed collection acquisition refuses fixed insertion, but historical comparison remains exportable  2005ms
+   ✓ independent negative: split-start cannot create malformed Unicode or use an invalid position  782ms
+   ✓ independent negative: split-end cannot create malformed Unicode or use an invalid position  605ms
+   ✓ independent negative: unpaired-body cannot create malformed Unicode or use an invalid position  586ms
+ ✓ tests/selection-candidate-button.test.ts (10 tests) 37ms
+ ✓ tests/backup-ui.test.ts (8 tests) 2519ms
+   ✓ backup modal > exports exact saved source only without writes and distinguishes request from saved file  1349ms
+ ✓ tests/calculation-evidence-verification-ui.test.ts (7 tests) 2028ms
+   ✓ only evaluates saved evidence after the explicit verification button, not opening or copying/downloading  1240ms
+stderr | tests/formula-report-audit-comparison-export-ui.test.ts > failed explicit retrieval and unsaved editor edits both invalidate output without changing fixed bytes
+ローカル保存領域へアクセスできませんでした Error: synthetic acquisition failure
+    at Proxy.<anonymous> (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\formula-report-audit-comparison-export-ui.test.ts:134:88)
+    at Proxy.mockCall (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:94:18)
+    at refresh (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\FormulaReportAudit.tsx:123:20)
+    at executeDispatch (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19166:19)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-comparison-export-ui.test.ts (16 tests) 25241ms
+   ✓ real app previews, copies and downloads identical bytes without reading or modifying original data/history  4194ms
+   ✓ copy failure retains full preview for manual copy and permits retry; download failure is not success  1789ms
+   ✓ real app storage changed invalidates output and late clipboard completion, keeps held-body constraint after recompare  1879ms
+   ✓ real app storage deleted invalidates output and late clipboard completion, keeps held-body constraint after recompare  1751ms
+   ✓ real app storage unrelated invalidates output and late clipboard completion, keeps held-body constraint after recompare  1294ms
+   ✓ same-turn storage event prevents stale download action before React commits  1133ms
+   ✓ select invalidates old preview and pending copy rejection cannot restore manual field  1067ms
+   ✓ swap invalidates old preview and pending copy rejection cannot restore manual field  1126ms
+   ✓ recompare invalidates old preview and pending copy rejection cannot restore manual field  1115ms
+   ✓ refresh invalidates old preview and pending copy rejection cannot restore manual field  1302ms
+   ✓ close invalidates old preview and pending copy rejection cannot restore manual field  1641ms
+   ✓ StrictMode replays remain usable and body/target/generation changes invalidate  1243ms
+   ✓ same selected record does not expose export despite displaying its comparison refusal  1171ms
+   ✓ both empty acquired records export the existing incomparable reason rather than upgrading to match  1178ms
+   ✓ failed explicit retrieval and unsaved editor edits both invalidate output without changing fixed bytes  2182ms
+   ✓ same-turn reselection cannot export an old preview before the next render  1162ms
+ ✓ tests/restore-ui.test.ts (11 tests) 10059ms
+   ✓ safe restore app boundary > does not normalize already clean raw on load  847ms
+   ✓ safe restore app boundary > preview is read-only, approval is distinct and double execution cannot repeat the write  2198ms
+   ✓ safe restore app boundary > same-turn same-value notification revokes approval before final click  778ms
+   ✓ safe restore app boundary > same-tab raw change fails closed and keeps newer raw, without automatic rollback  797ms
+   ✓ safe restore app boundary > recovery quota failure cannot be bypassed by approval  616ms
+   ✓ safe restore app boundary > invalid or replaced file loses prior authority; cancelled selection is not a restore  841ms
+   ✓ safe restore app boundary > Enter at body or final button cannot calculate or implicitly restore  747ms
+   ✓ safe restore app boundary > unknown write outcome stops later app autosave and keeps recovery  891ms
+   ✓ safe restore app boundary > does not discard or save an open memo editor  465ms
+   ✓ safe restore app boundary > exposes original recovery JSON after remount without modifying current raw  1618ms
+stderr | tests/formula-audit-record-comparison-app.test.ts > failed explicit source acquisition clears old comparison without rewriting fixed records
+ローカル保存領域へアクセスできませんでした Error: synthetic unavailable
+    at Proxy.<anonymous> (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\tests\formula-audit-record-comparison-app.test.ts:108:88)
+    at Proxy.mockCall (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:94:18)
+    at refresh (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\FormulaReportAudit.tsx:123:20)
+    at executeDispatch (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19166:19)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-audit-comparison-independent.test.ts (5 tests) 1108ms
+   ✓ independent: StrictMode effect replay does not invalidate every subsequent explicit selection  735ms
+ ✓ tests/formula-report-audit-record-review-ui.test.ts (4 tests) 3207ms
+   ✓ review: parent storage protection without browser notification invalidates held preview  1495ms
+   ✓ review: changing target and returning cannot revive pending preview  621ms
+   ✓ review: canceled and restarted digest cannot replace newer preview  599ms
+   ✓ review: preparing stays focusable but repeated activation cannot start another digest  479ms
+ ✓ tests/identification-ui.test.ts (1 test) 295ms
+ ✓ tests/markdown-report-download.test.ts (3 tests) 303ms
+ ✓ tests/backup-app.test.ts (2 tests) 2893ms
+   ✓ backs up saved bytes while unsaved calculation state remains in the app  2234ms
+   ✓ does not calculate or save when Enter originates outside an open backup dialog  655ms
+stderr | tests/markdown-report-component.test.ts > refuses unreadable or absent persisted source {broken without fallback
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\lib\storage.ts:99:21)
+    at readReport (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\MarkdownReportModal.tsx:14:20)
+    at C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\MarkdownReportModal.tsx:25:56
+    at mountStateImpl (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:8268:24)
+    at mountState (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:8289:22)
+    at Object.useState (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react\cjs\react.development.js:1263:34)
+    at MarkdownReportModal (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\components\MarkdownReportModal.tsx:25:41)
+    at Object.react_stack_bottom_frame (C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+
+ ✓ tests/markdown-report-component.test.ts (12 tests) 1605ms
+   ✓ captures persisted original only, with a readonly source preview and no storage writes  735ms
+ ❯ tests/dependency-svg.test.ts (13 tests | 1 failed) 20437ms
+   ✓ read-only dependency SVG boundary > maps duplicate labels using exact encoded IDs, preserving dimensions 197ms
+   ✓ read-only dependency SVG boundary > reconstructs only SVG geometry/text and safe local markers, stripping active content 87ms
+   ✓ read-only dependency SVG boundary > rejects unmapped, duplicate, absent or malformed nodes 24ms
+   ✓ read-only dependency SVG boundary > rejects unmapped, duplicate, absent or malformed nodes 16ms
+   ✓ read-only dependency SVG boundary > rejects unmapped, duplicate, absent or malformed nodes 17ms
+   ✓ read-only dependency SVG boundary > rejects unmapped, duplicate, absent or malformed nodes 19ms
+   ✓ read-only dependency SVG boundary > rejects unbounded geometry and external resource attributes 47ms
+   ✓ read-only dependency SVG boundary > bounds nodes, edges and source before invoking renderer 1ms
+   ✓ layout/text separation > keeps untrusted labels out of Mermaid grammar and restores literal SVG text 36ms
+   ✓ layout/text separation > bounds displayed expression but preserves state suffix and full export input 17ms
+   × parses the display projection of actual exported node/edge syntax 19877ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ retains delta and uncertain-change labels in the safe display projection 8ms
+   ✓ keeps historical actual-use labels distinct from current uncertain variable candidates 71ms
+ ✓ tests/formula-difference-source-layout.test.ts (3 tests) 637ms
+   ✓ preserves the complete identity text as one wrapping text node (quote-formula)  502ms
+ ✓ tests/body-navigation-list-return-independent.test.ts (1 test) 1263ms
+   ✓ independent regression: direct list roundtrip preserves unselected list and originating focus until a body step succeeds  1252ms
+ ✓ tests/evidence-pending-component.test.ts (7 tests) 8773ms
+   ✓ preview does not queue a confirmation; explicit successful apply queues unsaved evidence  1911ms
+   ✓ repeated explicit recalculation queues distinct calculations but ordinary block edits discard pending evidence  669ms
+   ✓ changed original revision invalidates pending evidence without modifying draft values  462ms
+   ✓ failed save keeps draft and pending evidence visible and never labels them persisted  381ms
+   ✓ pending count overflow refuses recalculation and trial application without dropping the 100 queued records  4905ms
+ ✓ tests/formula-audit-record-comparison-app.test.ts (16 tests) 20500ms
+   ✓ real app requires explicit A/B and compares changed expression even with equal results without persistence  2609ms
+   ✓ selection changes and swap clear old result; same record is not certified as a match  1729ms
+   ✓ real retained-data storage changed invalidates and preserves uncertainty through refresh and reopen  2437ms
+   ✓ real retained-data storage deleted invalidates and preserves uncertainty through refresh and reopen  2603ms
+   ✓ real retained-data storage unrelated invalidates and preserves uncertainty through refresh and reopen  2231ms
+   ✓ editor changes remove a record and cannot resurrect a previous comparison  1455ms
+   ✓ failed explicit source acquisition clears old comparison without rewriting fixed records  1553ms
+   ✓ same-turn storage followed by stale compare cannot reinstate old result  1566ms
+   ✓ direct context generation, target and body changes discard selected result synchronously  746ms
+   ✓ actual editor keeps unsaved edits and fixed bytes while external change only adds uncertainty  1728ms
+   ✓ details distinguish each historical frozen source and acquired original with explicit internal/display fields  967ms
+   ✓ real app keeps successfully acquired empty records incomparable without saving or changing fixed history  484ms
+ ❯ tests/audit-body-item-navigation-app.test.ts (6 tests | 1 failed) 18230ms
+   × real CalculatorApp synchronizes sequential body ranges and returns to latest item without reads or writes 5394ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ real CalculatorApp repeated activation before frame commits at most the adjacent occurrence  3772ms
+   ✓ real CalculatorApp discards outstanding step after ABA without changing the returned text or persisted snapshots  4153ms
+   ✓ real CalculatorApp rejects outstanding step on identical storage notification and after session end  2706ms
+   ✓ real CalculatorApp rejects an interrupted cursor move and allows a fresh body step without committing the rejected item  1633ms
+   ✓ real report modal rejects a queued body step when an explicit save starts before its frame  551ms
+ ✓ tests/formula-audit-comparison-sources-ui.test.ts (12 tests) 1347ms
+   ✓ readonly inspection preserves full fixed bytes and raw source ranges ("\n")  419ms
+ ❯ tests/formula-report-audit-comparison-insertion-ui.test.ts (45 tests | 1 failed) 64345ms
+   ✓ real app previews the exact existing export bytes and cancels without reading/writing data  3067ms
+   ✓ real app start insertion keeps selected/full old body and exact dedicated undo  1185ms
+   ✓ real app selection insertion keeps selected/full old body and exact dedicated undo  848ms
+   ✓ real app end insertion keeps selected/full old body and exact dedicated undo  925ms
+   ✓ CRLF source, Unicode, duplicate prose and untouched original records survive insertion and undo  742ms
+   ✓ changedfalse body rejects dedicated undo even if old bytes are restored  756ms
+   ✓ changedtrue body rejects dedicated undo even if old bytes are restored  1491ms
+   ✓ real CalculatorApp storage changed invalidates prepared material and preserves held body/history  2114ms
+   ✓ real CalculatorApp storage deleted invalidates prepared material and preserves held body/history  2674ms
+   ✓ real CalculatorApp storage unrelated invalidates prepared material and preserves held body/history  3056ms
+   ✓ storage changed after insertion rejects undo rather than deleting by text search  2074ms
+   ✓ storage deleted after insertion rejects undo rather than deleting by text search  1920ms
+   ✓ storage unrelated after insertion rejects undo rather than deleting by text search  2089ms
+   ✓ select invalidates insertion preview and detached confirm does nothing  1626ms
+   ✓ swap invalidates insertion preview and detached confirm does nothing  1594ms
+   ✓ recompare invalidates insertion preview and detached confirm does nothing  1711ms
+   ✓ refresh invalidates insertion preview and detached confirm does nothing  1588ms
+   ✓ close invalidates insertion preview and detached confirm does nothing  1481ms
+   ✓ same-turn notification rejects an old live confirm before React redraw  1799ms
+   ✓ selection movement away and back invalidates preview, while unrelated focus movement does not  1382ms
+   ✓ unreported position change is caught at confirm and preserves body  1141ms
+   ✓ unexecuted comparison and same-record comparison cannot start insertion  1090ms
+   ✓ match state is retained in inserted material without independent classification  1301ms
+   ✓ changed state is retained in inserted material without independent classification  1380ms
+   ✓ empty state is retained in inserted material without independent classification  1365ms
+   ✓ added state is retained in inserted material without independent classification  1587ms
+   ✓ removed state is retained in inserted material without independent classification  1435ms
+   ✓ reverse direction keeps exact B-to-A identifiers in wrapper and visible Markdown  1486ms
+   ✓ inside a fixed record is refused, at its exact boundary remains allowed  1940ms
+   ✓ body-capacity refusal is whole-output non-destructive and not a partial insert  1662ms
+   × StrictMode app remains usable and explicit save/reload retains material but not new roots/history 5315ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ parent target change invalidates old preview without waiting for storage notification  745ms
+   ✓ parent protected change invalidates old preview without waiting for storage notification  712ms
+   ✓ late clipboard resolution after fixed insertion cannot revive success or old insertion controls  1026ms
+   ✓ old v1 record without comparison metadata stays ineligible instead of reconstructing evidence  408ms
+   ✓ body edit invalidates prepared material and stale confirm preserves every new character  523ms
+   ✓ CRLF editor offsets map to the correct raw-body line boundary without rewriting old ranges on save  859ms
+   ✓ uncertain saved-body flag alone remains distinct from writable protection and is retained in fixed material  331ms
+   ✓ unavailable comparison limitations survive material insertion without upgrading to matched  746ms
+   ✓ invalid comparison limitations survive material insertion without upgrading to matched  781ms
+   ✓ unrecorded comparison limitations survive material insertion without upgrading to matched  786ms
+   ✓ incomplete comparison limitations survive material insertion without upgrading to matched  744ms
+   ✓ stale comparison limitations survive material insertion without upgrading to matched  761ms
+   ✓ held aggregate report capacity rejects the full material without trimming another body or confirmation history  1019ms
+   ✓ same-turn storage event refuses the live undo before redraw without removing material  1057ms
+ ✓ tests/formula-comparison-boundary-ui.test.ts (3 tests) 477ms
+   ✓ keeps outer A eligible but never promotes B between duplicate same-ID ends "\n"  343ms
+ ✓ tests/independent-roundtrip-review.test.ts (2 tests) 3490ms
+   ✓ independent: close after normal return restores focus to audit opener  2157ms
+   ✓ independent: a storage notification cannot revive roundtrip even with same raw value  1329ms
+ ❯ tests/formula-report-source-navigation-app.test.ts (11 tests | 1 failed) 17206ms
+   × real app navigates exact A/B/material ranges without writes or acquiring originals ("\n") 5287ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r\n")  2687ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r")  1293ms
+   ✓ preview navigation opens editor and focuses selected source without changing the saved report  662ms
+   ✓ real CalculatorApp changed storage preserves held draft/history and rejects queued navigation  906ms
+   ✓ real CalculatorApp deleted storage preserves held draft/history and rejects queued navigation  1306ms
+   ✓ body editing invalidates queued source position, including edit then exact restore  1246ms
+   ✓ selection intent invalidates queued navigation without deleting the selected text  958ms
+   ✓ newer navigation wins even when old callback runs last  1223ms
+   ✓ closing the report cancels old navigation without touching another focused control  904ms
+   ✓ a changed native selection is respected before its select event has been delivered  721ms
+ ✓ tests/audit-item-navigation-independent.test.ts (6 tests) 2376ms
+   ✓ independent: quote → difference → quote retains the exact next button and refuses endpoint activation  883ms
+   ✓ independent: saving guard stops both directions without losing selected position  402ms
+   ✓ independent: a matching-value storage event clears old detail and cannot be undone by a normal rerender  406ms
+ ✓ tests/selective-safety-ui.test.ts (10 tests) 6063ms
+   ✓ shows Stage 3A PASS separately from Stage 2 BLOCKED and never writes  1039ms
+   ✓ withdraws old success on selection  391ms
+   ✓ withdraws old success on storage  351ms
+   ✓ withdraws old success on same-tab  375ms
+   ✓ withdraws old success on read-error  339ms
+   ✓ withdraws old success on file  305ms
+   ✓ withdraws old success on unsaved  368ms
+   ✓ application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection  2378ms
+ ✓ tests/dependency-graph-component.test.ts (5 tests) 795ms
+ ❯ tests/audit-roundtrip.integration.test.ts (19 tests | 1 failed) 32860ms
+   × repeated real-app roundtrips preserve detail, filter, list scroll and focus without reads or writes 5268ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ editing outside target permits structural relocation, then returns to current material without original acquisition  3586ms
+   ✓ refuses deleted target after edit without moving selection or restoring stale detail  2789ms
+   ✓ refuses changed target after edit without moving selection or restoring stale detail  2653ms
+   ✓ refuses duplicate target after edit without moving selection or restoring stale detail  2908ms
+   ✓ refuses incomplete target after edit without moving selection or restoring stale detail  2251ms
+   ✓ storage changed preserves held draft but refuses revisit and does not revive old detail  1194ms
+   ✓ storage deleted preserves held draft but refuses revisit and does not revive old detail  1013ms
+   ✓ delayed navigation is cancelled by 点検へ戻る  1074ms
+   ✓ delayed navigation is cancelled by 往復ナビゲーションを終了  1106ms
+   ✓ delayed navigation is cancelled by レポートを閉じる  1115ms
+   ✓ explicit ending and fresh reopening do not inherit comparison detail or return target  1605ms
+   ✓ changing body then restoring bytes still cancels old deferred navigation while explicit revisit revalidates  1557ms
+   ✓ body edit and exact restore returns to revalidated origin, not a silently lost selection  991ms
+   ✓ separate quote occurrences sharing one source restore their own focus and filter without body changes  1292ms
+   ✓ first audit export remains unverified after title editing before audit was ever opened  504ms
+   ✓ first audit export remains unverified after body editing before audit was ever opened  477ms
+   ✓ first audit export remains unverified after storage-and-title editing before audit was ever opened  616ms
+   ✓ an already acquired active session stays invalid after body edit while returning without implicit refresh  851ms
+ ✓ tests/audit-item-navigation-app.test.ts (3 tests) 4030ms
+   ✓ real CalculatorApp steps to each occurrence and repeatedly returns to its detail, focus, filter and scroll without reads or writes  2235ms
+   ✓ body ABA while away leaves sequential navigation invalid after return; recheck requires choosing anew  1014ms
+   ✓ same-value storage while body navigation is pending discards old callback and detail navigation  778ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/audit-body-item-navigation-app.test.ts > real CalculatorApp synchronizes sequential body ranges and returns to latest item without reads or writes
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/audit-body-item-navigation-app.test.ts:37:1
+     35| afterEach(async () => { await act(async () => root.unmount()); host.re…
+     36| 
+     37| it('real CalculatorApp synchronizes sequential body ranges and returns…
+       | ^
+     38|   await open(); const select = host.querySelector<HTMLSelectElement>('…
+     39|   await act(async () => { select.value = 'review'; select.dispatchEven…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/audit-roundtrip.integration.test.ts > repeated real-app roundtrips preserve detail, filter, list scroll and focus without reads or writes
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/audit-roundtrip.integration.test.ts:57:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/dependency-svg.test.ts > parses the display projection of actual exported node/edge syntax
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/dependency-svg.test.ts:62:1
+     60| });
+     61| 
+     62| it('parses the display projection of actual exported node/edge syntax'…
+       | ^
+     63|   const { default: mermaid } = await import('mermaid');
+     64|   const { toMermaid } = await import('../lib/dependency-mermaid');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/formula-report-audit-comparison-insertion-ui.test.ts > StrictMode app remains usable and explicit save/reload retains material but not new roots/history
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/formula-report-audit-comparison-insertion-ui.test.ts:159:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/formula-report-source-navigation-app.test.ts > real app navigates exact A/B/material ranges without writes or acquiring originals ("\n")
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/formula-report-source-navigation-app.test.ts:48:29
+     46| afterEach(async () => { await act(async () => root.unmount()); host.re…
+     47| 
+     48| it.each(['\n', '\r\n', '\r'])('real app navigates exact A/B/material r…
+       |                             ^
+     49|   const text = body.replace(/\n/g, newline); fixture.formulaReports!.e…
+     50|   const records = scanAuditRecordEnvelopes(text), comparison = scanAud…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/markdown-report.test.ts > saved Markdown reports > reproduces the published example exactly without changing its signed fixture
+AssertionError: expected '# 計算過程の記録例\n\n## 基本情報\n\n- メモID: exam…' to be '# 計算過程の記録例\r\n\r\n## 基本情報\r\n\r\n- メモ…' // Object.is equality
+
+- Expected
++ Received
+
+- # 計算過程の記録例
+- 
++ # 計算過程の記録例
++
+- ## 基本情報
+- 
++ ## 基本情報
++
+- - メモID: example\-note
++ - メモID: example\-note
+- - 作成日時（保存記録）: 2026\-10\-21T00:00:00Z
++ - 作成日時（保存記録）: 2026\-10\-21T00:00:00Z
+- - 更新日時（保存記録）: 2026\-10\-21T00:00:00Z
+- 
++ - 更新日時（保存記録）: 2026\-10\-21T00:00:00Z
++
+- 保存済み原本の読み取り専用レポートです。再計算はしていません。未保存の編集・未反映の試算は含みません。表示値と内部数値を区別し、数値の存在だけで正しさを保証しません。
+- 
++ 保存済み原本の読み取り専用レポートです。再計算はしていません。未保存の編集・未反映の試算は含みません。表示値と内部数値を区別し、数値の存在だけで正しさを保証しません。
++
+- ## 本文・計算過程
+- 
++ ## 本文・計算過程
++
+- ### ブロック 1（文章）
+- 
++ ### ブロック 1（文章）
++
+- ブロックID: intro
+- 
++ ブロックID: intro
++
+- **前提**: 基本金額100に50を加え、その2倍を比較します。
+- 
++ **前提**: 基本金額100に50を加え、その2倍を比較します。
++
+- ### ブロック 2（計算）
+- 
++ ### ブロック 2（計算）
++
+- ブロックID: A
+- 
++ ブロックID: A
++
+- 入力式:
+- 
++ 入力式:
++
+- ```text
++ ```text
+- 100
++ 100
+- ```
+- 
++ ```
++
+- 状態: 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
+- 
++ 状態: 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
++
+- 保存表示値（丸め・整形済み）:
+- 
++ 保存表示値（丸め・整形済み）:
++
+- ```text
++ ```text
+- 100
++ 100
+- ```
+- 
++ ```
++
+- 保存内部数値: 100
+- 
++ 保存内部数値: 100
++
+- 評価方式: legacy（旧方式）
+- 
++ 評価方式: legacy（旧方式）
++
+- 直接参照と根拠情報:
+- 
++ 直接参照と根拠情報:
++
+- 計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。
+- 
++ 計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。
++
+- 直接ブロック参照・旧変数参照: なし（通常式の解析結果）
+- 
+- 
++ 直接ブロック参照・旧変数参照: なし（通常式の解析結果）
++
++
+- ### ブロック 3（計算）
+- 
++ ### ブロック 3（計算）
++
+- ブロックID: B
+- 
++ ブロックID: B
++
+- 入力式:
+- 
++ 入力式:
++
+- ```text
++ ```text
+- @{1}+50
++ @{1}+50
+- ```
+- 
++ ```
++
+- 状態: 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
+- 
++ 状態: 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
++
+- 保存表示値（丸め・整形済み）:
+- 
++ 保存表示値（丸め・整形済み）:
++
+- ```text
++ ```text
+- 150
++ 150
+- ```
+- 
++ ```
++
+- 保存内部数値: 150
+- 
++ 保存内部数値: 150
++
+- 評価方式: block\-references
+- 
++ 評価方式: block\-references
++
+- 直接参照と根拠情報:
+- 
++ 直接参照と根拠情報:
++
+- 計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。
+- 
++ 計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。
++
+- - ID参照 @{1} → A（参照先あり）
+- 
++ - ID参照 @{1} → A（参照先あり）
++
+- 参照元: ブロック 2 / ID: A
+- 
++ 参照元: ブロック 2 / ID: A
++
+- 参照元の現在の保存内部数値: 100
+- 
++ 参照元の現在の保存内部数値: 100
++
+- 参照元の結果状態 = 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
+- 
++ 参照元の結果状態 = 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
++
+- 参照元の現在の保存式:
+- 
++ 参照元の現在の保存式:
++
+- ```text
++ ```text
+- 100
++ 100
+- ```
+- 
++ ```
++
+- 参照元の現在の保存表示値（丸め・整形済み）:
+- 
++ 参照元の現在の保存表示値（丸め・整形済み）:
++
+- ```text
++ ```text
+- 100
++ 100
+- ```
+- 
+- 
++ ```
++
++
+- ### ブロック 4（計算）
+- 
++ ### ブロック 4（計算）
++
+- ブロックID: C
+- 
++ ブロックID: C
++
+- 入力式:
+- 
++ 入力式:
++
+- ```text
++ ```text
+- @{1}*2
++ @{1}*2
+- ```
+- 
++ ```
++
+- 状態: 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
+- 
++ 状態: 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
++
+- 保存表示値（丸め・整形済み）:
+- 
++ 保存表示値（丸め・整形済み）:
++
+- ```text
++ ```text
+- 300
++ 300
+- ```
+- 
++ ```
++
+- 保存内部数値: 300
+- 
++ 保存内部数値: 300
++
+- 評価方式: block\-references
+- 
++ 評価方式: block\-references
++
+- 直接参照と根拠情報:
+- 
++ 直接参照と根拠情報:
++
+- 計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。
+- 
++ 計算時の使用値は確認不能（使用値の履歴は保存されていません。以下の現在の保存値で代用しません）。
++
+- - ID参照 @{1} → B（参照先あり）
+- 
++ - ID参照 @{1} → B（参照先あり）
++
+- 参照元: ブロック 3 / ID: B
+- 
++ 参照元: ブロック 3 / ID: B
++
+- 参照元の現在の保存内部数値: 150
+- 
++ 参照元の現在の保存内部数値: 150
++
+- 参照元の結果状態 = 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
+- 
++ 参照元の結果状態 = 確定済みの結果（保存署名と依存状態を照合。再計算は未実行）
++
+- 参照元の現在の保存式:
+- 
++ 参照元の現在の保存式:
++
+- ```text
++ ```text
+- @{1}+50
++ @{1}+50
+- ```
+- 
++ ```
++
+- 参照元の現在の保存表示値（丸め・整形済み）:
+- 
++ 参照元の現在の保存表示値（丸め・整形済み）:
++
+- ```text
++ ```text
+- 150
++ 150
+- ```
+- 
+- 
++ ```
++
++
+- ### ブロック 5（表示専用数式）
+- 
++ ### ブロック 5（表示専用数式）
++
+- ブロックID: formula
+- 
++ ブロックID: formula
++
+- $$
++ $$
+- y = 2(x + 50)
++ y = 2(x + 50)
+- $$
+- 
++ $$
++
+- ## 依存関係図
+- 
++ ## 依存関係図
++
+- 保存済み状態の図です。実線はID参照の確定依存、破線は旧変数の不確定候補です。辺は数値変化や計算成功を保証しません。依存関係図は計算履歴の証明ではありません。Mermaid非対応の環境ではコードとして表示されます。
+- 
++ 保存済み状態の図です。実線はID参照の確定依存、破線は旧変数の不確定候補です。辺は数値変化や計算成功を保証しません。依存関係図は計算履歴の証明ではありません。Mermaid非対応の環境ではコードとして表示されます。
++
+- ```mermaid
++ ```mermaid
+- flowchart TD
++ flowchart TD
+-   block_0041["#49;#48;#48;#32;#91;#30906;#23450;#28168;#12415;#12398;#32080;#26524;#65288;#20445;#23384;#32626;#21517;#12392;#20381;#23384;#29366;#24907;#12434;#29031;#21512;#12290;#20877;#35336;#31639;#12399;#26410;#23455;#34892;#65289;#93;"]
++   block_0041["#49;#48;#48;#32;#91;#30906;#23450;#28168;#12415;#12398;#32080;#26524;#65288;#20445;#23384;#32626;#21517;#12392;#20381;#23384;#29366;#24907;#12434;#29031;#21512;#12290;#20877;#35336;#31639;#12399;#26410;#23455;#34892;#65289;#93;"]
+-   class block_0041 normal;
++   class block_0041 normal;
+-   block_0042["#64;#123;#49;#125;#43;#53;#48;#32;#91;#30906;#23450;#28168;#12415;#12398;#32080;#26524;#65288;#20445;#23384;#32626;#21517;#12392;#20381;#23384;#29366;#24907;#12434;#29031;#21512;#12290;#20877;#35336;#31639;#12399;#26410;#23455;#34892;#65289;#93;"]
++   block_0042["#64;#123;#49;#125;#43;#53;#48;#32;#91;#30906;#23450;#28168;#12415;#12398;#32080;#26524;#65288;#20445;#23384;#32626;#21517;#12392;#20381;#23384;#29366;#24907;#12434;#29031;#21512;#12290;#20877;#35336;#31639;#12399;#26410;#23455;#34892;#65289;#93;"]
+-   class block_0042 normal;
++   class block_0042 normal;
+-   block_0043["#64;#123;#49;#125;#42;#50;#32;#91;#30906;#23450;#28168;#12415;#12398;#32080;#26524;#65288;#20445;#23384;#32626;#21517;#12392;#20381;#23384;#29366;#24907;#12434;#29031;#21512;#12290;#20877;#35336;#31639;#12399;#26410;#23455;#34892;#65289;#93;"]
++   block_0043["#64;#123;#49;#125;#42;#50;#32;#91;#30906;#23450;#28168;#12415;#12398;#32080;#26524;#65288;#20445;#23384;#32626;#21517;#12392;#20381;#23384;#29366;#24907;#12434;#29031;#21512;#12290;#20877;#35336;#31639;#12399;#26410;#23455;#34892;#65289;#93;"]
+-   class block_0043 normal;
++   class block_0043 normal;
+-   block_0041 -->|"#73;#68;#21442;#29031;"| block_0042
++   block_0041 -->|"#73;#68;#21442;#29031;"| block_0042
+-   block_0042 -->|"#73;#68;#21442;#29031;"| block_0043
++   block_0042 -->|"#73;#68;#21442;#29031;"| block_0043
+-   classDef normal fill:#f8fafc,stroke:#475569,color:#0f172a;
++   classDef normal fill:#f8fafc,stroke:#475569,color:#0f172a;
+-   classDef changed fill:#fef3c7,stroke:#92400e,color:#451a03,stroke-width:3px;
++   classDef changed fill:#fef3c7,stroke:#92400e,color:#451a03,stroke-width:3px;
+-   classDef affected fill:#ede9fe,stroke:#6d28d9,color:#2e1065;
++   classDef affected fill:#ede9fe,stroke:#6d28d9,color:#2e1065;
+-   classDef pending stroke:#b45309,stroke-dasharray:5 3;
++   classDef pending stroke:#b45309,stroke-dasharray:5 3;
+-   classDef uncertain stroke:#7c3aed,stroke-dasharray:2 3;
++   classDef uncertain stroke:#7c3aed,stroke-dasharray:2 3;
+-   classDef error fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:3px;
++   classDef error fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:3px;
+-   classDef unknown fill:#f1f5f9,stroke:#64748b,color:#0f172a,stroke-dasharray:3 3;
++   classDef unknown fill:#f1f5f9,stroke:#64748b,color:#0f172a,stroke-dasharray:3 3;
+-   classDef blocked fill:#ffedd5,stroke:#c2410c,color:#431407;
+- 
++   classDef blocked fill:#ffedd5,stroke:#c2410c,color:#431407;
++
+- ```
+- 
++ ```
++
+- ## 計算状態と注意事項
+- 
++ ## 計算状態と注意事項
++
+- これは保存時の記録と静的な構造確認です。計算の成立と数学的な証明の成立は別です。旧方式など署名のない結果は状態不明としています。Markdownは原本JSONの代替バックアップではなく、未知の付随フィールドは解釈・掲載していません。
+- 
+- 
++ これは保存時の記録と静的な構造確認です。計算の成立と数学的な証明の成立は別です。旧方式など署名のない結果は状態不明としています。Markdownは原本JSONの代替バックアップではなく、未知の付随フィールドは解釈・掲載していません。
++
++
+- ## 解説・根拠の追記欄
+- 
++ ## 解説・根拠の追記欄
++
+- 未記入: 数式の証明・導出過程、使用条件と前提、由緒・歴史、参考文献・出典を必要に応じて追記してください。このレポートはそれらを自動生成・検証していません。
++ 未記入: 数式の証明・導出過程、使用条件と前提、由緒・歴史、参考文献・出典を必要に応じて追記してください。このレポートはそれらを自動生成・検証していません。
+
+
+ ❯ tests/markdown-report.test.ts:17:51
+     15|     const raw = readFileSync(new URL('../docs/examples/markdown-report…
+     16|     const fixture = JSON.parse(raw) as PlainCalculationNote; const bef…
+     17|     expect(buildMarkdownReport(fixture).markdown).toBe(readFileSync(ne…
+       |                                                   ^
+     18|     expect(JSON.stringify(fixture)).toBe(before); expect(fixture.block…
+     19|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/saved-evidence-ui.test.ts > lazily mounts per-block details for a capacity-valid large history
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/saved-evidence-ui.test.ts:108:1
+    106| });
+    107| 
+    108| it('lazily mounts per-block details for a capacity-valid large history…
+       | ^
+    109|   const a = record('large-before'), b = record('large-after');
+    110|   a.blocks = Array.from({ length: 1500 }, (_, i) => ({ blockId: `b${i}…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  7 failed | 114 passed (121)
+      Tests  7 failed | 2704 passed (2711)
+   Start at  08:20:07
+   Duration  171.47s (transform 72.10s, setup 0ms, collect 2770.03s, tests 586.39s, environment 85.33s, prepare 29.47s)
+
