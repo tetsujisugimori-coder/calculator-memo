@@ -1,0 +1,31 @@
+✔ complete evidence accepted (1.4665ms)
+✔ reject missing engine (0.1193ms)
+✔ reject duplicate engine (0.0672ms)
+✔ reject failed engine (0.073ms)
+✔ reject missing case (0.0937ms)
+✔ reject duplicate case (0.0762ms)
+✔ reject wrong sha (0.0607ms)
+✔ reject page error (0.0767ms)
+✔ reject missing observation (0.0998ms)
+✔ reject missing version (0.1179ms)
+✔ reject write enabled (0.0769ms)
+✔ reject HOLD released (0.0549ms)
+✔ reject missing source identity (0.0601ms)
+✔ localStorage equal generation permits lost update after validation (retained counterexample) (1.4406ms)
+✔ uncooperative ABA and missing notifications cannot be detected by raw comparison (0.0799ms)
+✔ every split localStorage persistence prefix is an explicit mixed state (0.1574ms)
+✔ serial atomic model rejects second same-token writer and late recovery (0.3303ms)
+✔ generation plus incarnation plus operation rejects cooperative ABA and stale namespace (0.1567ms)
+✔ missing or corrupt generation/history/copy/structure forces UNKNOWN (0.2542ms)
+✔ all evidence deletion is indistinguishable from virgin store (retained limit) (0.0662ms)
+✔ restart commit receipt is separate from delivery and disk durability (0.1593ms)
+✔ overflow, stale token, reused ID and absent writer cannot silently restart generation (0.1373ms)
+✔ ordinary/restore/recovery use same transition, preserve exact raw and immutable old state (0.2214ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 142.7819

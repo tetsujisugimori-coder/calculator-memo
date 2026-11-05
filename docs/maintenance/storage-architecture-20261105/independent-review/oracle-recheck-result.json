@@ -1,0 +1,1217 @@
+{
+  "reviewedHead": "1df6f24a1641dca7bff189f68099a4501c79fe60",
+  "node": "v24.20.0",
+  "platform": "win32",
+  "evidence": {
+    "sha": "525c383efbb0251fe097431ca68c6674f1c70224",
+    "tree": "d66ebb3aa3c7a25df8e360b81dbe7807399f46ca",
+    "run": "41999033337",
+    "attempt": "1",
+    "sha256": "ac2f9ab646b23e588c6ad65b427d85581967ae829ec91b8f9861cd97026dbbd7",
+    "engines": [
+      {
+        "engine": "chromium",
+        "version": "141.0.7390.37",
+        "cases": 15
+      },
+      {
+        "engine": "webkit",
+        "version": "26.0",
+        "cases": 15
+      }
+    ]
+  },
+  "contractSha256": "d2eb6c7ebbce3914f1ea5d683ac3406620101879585fc62d0c9a7d5458cd1189",
+  "actualEvidencePositive": "PASS",
+  "sameInputOld": "INCORRECTLY_ACCEPTED",
+  "sameInputNew": [
+    "chromium oracle same-generation-two-tabs"
+  ],
+  "mutationsRejected": 192,
+  "rejected": [
+    {
+      "label": "0/same-generation-two-tabs/empty-observation",
+      "errors": [
+        "chromium oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "0/same-generation-two-tabs/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "0/same-generation-two-tabs/outcomes.0.status/null",
+      "errors": [
+        "chromium oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "0/same-generation-two-tabs/outcomes.1.status/null",
+      "errors": [
+        "chromium oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "0/same-generation-two-tabs/outcomes.1.reason/null",
+      "errors": [
+        "chromium oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "0/same-generation-two-tabs/generation/null",
+      "errors": [
+        "chromium oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "0/stale-validation-and-recovery/empty-observation",
+      "errors": [
+        "chromium oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "0/stale-validation-and-recovery/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "0/stale-validation-and-recovery/status/null",
+      "errors": [
+        "chromium oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "0/stale-validation-and-recovery/reason/null",
+      "errors": [
+        "chromium oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "0/cooperative-aba-token/empty-observation",
+      "errors": [
+        "chromium oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "0/cooperative-aba-token/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "0/cooperative-aba-token/status/null",
+      "errors": [
+        "chromium oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "0/cooperative-aba-token/reason/null",
+      "errors": [
+        "chromium oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "0/web-lock-ignored-by-old-tab/empty-observation",
+      "errors": [
+        "chromium oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "0/web-lock-ignored-by-old-tab/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "0/web-lock-ignored-by-old-tab/lockHeldDuringBypass/null",
+      "errors": [
+        "chromium oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "0/web-lock-ignored-by-old-tab/raw/null",
+      "errors": [
+        "chromium oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "0/web-lock-ignored-by-old-tab/safety/null",
+      "errors": [
+        "chromium oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "0/unobserved-notification-aba/empty-observation",
+      "errors": [
+        "chromium oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "0/unobserved-notification-aba/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "0/unobserved-notification-aba/rawComparisonAccepts/null",
+      "errors": [
+        "chromium oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "0/unobserved-notification-aba/safety/null",
+      "errors": [
+        "chromium oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "0/unobserved-notification-aba/notification/null",
+      "errors": [
+        "chromium oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "0/final-check-set-gap/empty-observation",
+      "errors": [
+        "chromium oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "0/final-check-set-gap/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "0/final-check-set-gap/lost/null",
+      "errors": [
+        "chromium oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "0/final-check-set-gap/final/null",
+      "errors": [
+        "chromium oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "0/final-check-set-gap/safety/null",
+      "errors": [
+        "chromium oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "0/final-check-set-gap/scheduling/null",
+      "errors": [
+        "chromium oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/empty-observation",
+      "errors": [
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/status/null",
+      "errors": [
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/reason/null",
+      "errors": [
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/generation/null",
+      "errors": [
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/history/null",
+      "errors": [
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/transaction-abort-preserves-all/copies/null",
+      "errors": [
+        "chromium oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/empty-observation",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/status/null",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/generation/null",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/acknowledgement/null",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/durability/null",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/interruption/null",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/commit-before-page-close-ack/browserKill/null",
+      "errors": [
+        "chromium oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/empty-observation",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/status/null",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/originalFailure/null",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/receipt.status/null",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/receipt.generation/null",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/receipt.acknowledgement/null",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/exception-after-commit/receipt.durability/null",
+      "errors": [
+        "chromium oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/empty-observation",
+      "errors": [
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/integrity/null",
+      "errors": [
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/receipt.status/null",
+      "errors": [
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/receipt.generation/null",
+      "errors": [
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/receipt.acknowledgement/null",
+      "errors": [
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/normal-reopen-new-instance/receipt.durability/null",
+      "errors": [
+        "chromium oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/empty-observation",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/0.fault/null",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/0.status/null",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/1.fault/null",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/1.status/null",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/2.fault/null",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/missing-corrupt-history-generation-copy/2.status/null",
+      "errors": [
+        "chromium oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "0/entire-store-loss-no-auto-bootstrap/empty-observation",
+      "errors": [
+        "chromium oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "0/entire-store-loss-no-auto-bootstrap/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "0/entire-store-loss-no-auto-bootstrap/status/null",
+      "errors": [
+        "chromium oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "0/entire-store-loss-no-auto-bootstrap/automaticBootstrap/null",
+      "errors": [
+        "chromium oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "0/entire-store-loss-no-auto-bootstrap/virginVsEvicted/null",
+      "errors": [
+        "chromium oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "0/idb-authority-legacy-fork/empty-observation",
+      "errors": [
+        "chromium oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "0/idb-authority-legacy-fork/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "0/idb-authority-legacy-fork/idb/null",
+      "errors": [
+        "chromium oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "0/idb-authority-legacy-fork/legacy/null",
+      "errors": [
+        "chromium oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "0/idb-authority-legacy-fork/safety/null",
+      "errors": [
+        "chromium oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "0/dedicated-workers-not-single-authority/empty-observation",
+      "errors": [
+        "chromium oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "0/dedicated-workers-not-single-authority/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "0/dedicated-workers-not-single-authority/perTabSequence.0/null",
+      "errors": [
+        "chromium oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "0/dedicated-workers-not-single-authority/perTabSequence.1/null",
+      "errors": [
+        "chromium oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "0/dedicated-workers-not-single-authority/restartedSequence/null",
+      "errors": [
+        "chromium oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "0/dedicated-workers-not-single-authority/safety/null",
+      "errors": [
+        "chromium oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "0/restore-and-ordinary-share-transaction/empty-observation",
+      "errors": [
+        "chromium oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "0/restore-and-ordinary-share-transaction/missing-observation",
+      "errors": [
+        "chromium incomplete cases",
+        "chromium oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "0/restore-and-ordinary-share-transaction/0.status/null",
+      "errors": [
+        "chromium oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "0/restore-and-ordinary-share-transaction/1.status/null",
+      "errors": [
+        "chromium oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "0/restore-and-ordinary-share-transaction/1.reason/null",
+      "errors": [
+        "chromium oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "1/same-generation-two-tabs/empty-observation",
+      "errors": [
+        "webkit oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "1/same-generation-two-tabs/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "1/same-generation-two-tabs/outcomes.0.status/null",
+      "errors": [
+        "webkit oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "1/same-generation-two-tabs/outcomes.1.status/null",
+      "errors": [
+        "webkit oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "1/same-generation-two-tabs/outcomes.1.reason/null",
+      "errors": [
+        "webkit oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "1/same-generation-two-tabs/generation/null",
+      "errors": [
+        "webkit oracle same-generation-two-tabs"
+      ]
+    },
+    {
+      "label": "1/stale-validation-and-recovery/empty-observation",
+      "errors": [
+        "webkit oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "1/stale-validation-and-recovery/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "1/stale-validation-and-recovery/status/null",
+      "errors": [
+        "webkit oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "1/stale-validation-and-recovery/reason/null",
+      "errors": [
+        "webkit oracle stale-validation-and-recovery"
+      ]
+    },
+    {
+      "label": "1/cooperative-aba-token/empty-observation",
+      "errors": [
+        "webkit oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "1/cooperative-aba-token/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "1/cooperative-aba-token/status/null",
+      "errors": [
+        "webkit oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "1/cooperative-aba-token/reason/null",
+      "errors": [
+        "webkit oracle cooperative-aba-token"
+      ]
+    },
+    {
+      "label": "1/web-lock-ignored-by-old-tab/empty-observation",
+      "errors": [
+        "webkit oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "1/web-lock-ignored-by-old-tab/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "1/web-lock-ignored-by-old-tab/lockHeldDuringBypass/null",
+      "errors": [
+        "webkit oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "1/web-lock-ignored-by-old-tab/raw/null",
+      "errors": [
+        "webkit oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "1/web-lock-ignored-by-old-tab/safety/null",
+      "errors": [
+        "webkit oracle web-lock-ignored-by-old-tab"
+      ]
+    },
+    {
+      "label": "1/unobserved-notification-aba/empty-observation",
+      "errors": [
+        "webkit oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "1/unobserved-notification-aba/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "1/unobserved-notification-aba/rawComparisonAccepts/null",
+      "errors": [
+        "webkit oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "1/unobserved-notification-aba/safety/null",
+      "errors": [
+        "webkit oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "1/unobserved-notification-aba/notification/null",
+      "errors": [
+        "webkit oracle unobserved-notification-aba"
+      ]
+    },
+    {
+      "label": "1/final-check-set-gap/empty-observation",
+      "errors": [
+        "webkit oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "1/final-check-set-gap/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "1/final-check-set-gap/lost/null",
+      "errors": [
+        "webkit oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "1/final-check-set-gap/final/null",
+      "errors": [
+        "webkit oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "1/final-check-set-gap/safety/null",
+      "errors": [
+        "webkit oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "1/final-check-set-gap/scheduling/null",
+      "errors": [
+        "webkit oracle final-check-set-gap"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/empty-observation",
+      "errors": [
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/status/null",
+      "errors": [
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/reason/null",
+      "errors": [
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/generation/null",
+      "errors": [
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/history/null",
+      "errors": [
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/transaction-abort-preserves-all/copies/null",
+      "errors": [
+        "webkit oracle transaction-abort-preserves-all"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/empty-observation",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/status/null",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/generation/null",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/acknowledgement/null",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/durability/null",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/interruption/null",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/commit-before-page-close-ack/browserKill/null",
+      "errors": [
+        "webkit oracle commit-before-page-close-ack"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/empty-observation",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/status/null",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/originalFailure/null",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/receipt.status/null",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/receipt.generation/null",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/receipt.acknowledgement/null",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/exception-after-commit/receipt.durability/null",
+      "errors": [
+        "webkit oracle exception-after-commit"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/empty-observation",
+      "errors": [
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/integrity/null",
+      "errors": [
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/receipt.status/null",
+      "errors": [
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/receipt.generation/null",
+      "errors": [
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/receipt.acknowledgement/null",
+      "errors": [
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/normal-reopen-new-instance/receipt.durability/null",
+      "errors": [
+        "webkit oracle normal-reopen-new-instance"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/empty-observation",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/0.fault/null",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/0.status/null",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/1.fault/null",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/1.status/null",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/2.fault/null",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/missing-corrupt-history-generation-copy/2.status/null",
+      "errors": [
+        "webkit oracle missing-corrupt-history-generation-copy"
+      ]
+    },
+    {
+      "label": "1/entire-store-loss-no-auto-bootstrap/empty-observation",
+      "errors": [
+        "webkit oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "1/entire-store-loss-no-auto-bootstrap/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "1/entire-store-loss-no-auto-bootstrap/status/null",
+      "errors": [
+        "webkit oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "1/entire-store-loss-no-auto-bootstrap/automaticBootstrap/null",
+      "errors": [
+        "webkit oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "1/entire-store-loss-no-auto-bootstrap/virginVsEvicted/null",
+      "errors": [
+        "webkit oracle entire-store-loss-no-auto-bootstrap"
+      ]
+    },
+    {
+      "label": "1/idb-authority-legacy-fork/empty-observation",
+      "errors": [
+        "webkit oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "1/idb-authority-legacy-fork/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "1/idb-authority-legacy-fork/idb/null",
+      "errors": [
+        "webkit oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "1/idb-authority-legacy-fork/legacy/null",
+      "errors": [
+        "webkit oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "1/idb-authority-legacy-fork/safety/null",
+      "errors": [
+        "webkit oracle idb-authority-legacy-fork"
+      ]
+    },
+    {
+      "label": "1/dedicated-workers-not-single-authority/empty-observation",
+      "errors": [
+        "webkit oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "1/dedicated-workers-not-single-authority/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "1/dedicated-workers-not-single-authority/perTabSequence.0/null",
+      "errors": [
+        "webkit oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "1/dedicated-workers-not-single-authority/perTabSequence.1/null",
+      "errors": [
+        "webkit oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "1/dedicated-workers-not-single-authority/restartedSequence/null",
+      "errors": [
+        "webkit oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "1/dedicated-workers-not-single-authority/safety/null",
+      "errors": [
+        "webkit oracle dedicated-workers-not-single-authority"
+      ]
+    },
+    {
+      "label": "1/restore-and-ordinary-share-transaction/empty-observation",
+      "errors": [
+        "webkit oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "1/restore-and-ordinary-share-transaction/missing-observation",
+      "errors": [
+        "webkit incomplete cases",
+        "webkit oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "1/restore-and-ordinary-share-transaction/0.status/null",
+      "errors": [
+        "webkit oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "1/restore-and-ordinary-share-transaction/1.status/null",
+      "errors": [
+        "webkit oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "1/restore-and-ordinary-share-transaction/1.reason/null",
+      "errors": [
+        "webkit oracle restore-and-ordinary-share-transaction"
+      ]
+    },
+    {
+      "label": "provenance/sha",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/tree",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/sourceSha256",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/dirty",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/node",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/platform",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/run",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "provenance/attempt",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "dirty=true",
+      "errors": [
+        "provenance"
+      ]
+    },
+    {
+      "label": "wrong-summary-status",
+      "errors": [
+        "failed summary"
+      ]
+    },
+    {
+      "label": "engine-error-contradicts-PASS",
+      "errors": [
+        "chromium failed/errors"
+      ]
+    },
+    {
+      "label": "duplicate-engine",
+      "errors": [
+        "chromium missing/duplicate",
+        "webkit missing/duplicate"
+      ]
+    },
+    {
+      "label": "write-enabled",
+      "errors": [
+        "safety boundary"
+      ]
+    },
+    {
+      "label": "HOLD-released",
+      "errors": [
+        "safety boundary"
+      ]
+    }
+  ],
+  "status": "PASS"
+}

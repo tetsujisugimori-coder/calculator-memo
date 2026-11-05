@@ -1,0 +1,26 @@
+{
+  "sha": "1df6f24a1641dca7bff189f68099a4501c79fe60",
+  "tree": "b6a0ee9242eb17ebde41c914db97d23cd437b07d",
+  "run": "41999757708",
+  "attempt": "1",
+  "summarySha256": "54784517007f5d4bfc511311a53016dfdcb516dc69c79aebf39ed8aebfef16af",
+  "sourceSha256": "2af26f08a44b58abdaec992df89593b82300eb35b60cb81fdc37da12b889f231",
+  "scope": "independent artifact readback; browser execution was performed by CI, not locally by reviewer",
+  "engines": [
+    {
+      "engine": "chromium",
+      "version": "141.0.7390.37",
+      "status": "PASS",
+      "cases": 15,
+      "pageerrors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.0",
+      "status": "PASS",
+      "cases": 15,
+      "pageerrors": []
+    }
+  ],
+  "status": "PASS"
+}

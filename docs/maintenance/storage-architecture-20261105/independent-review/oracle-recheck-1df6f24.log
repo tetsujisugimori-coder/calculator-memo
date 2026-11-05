@@ -1,0 +1,32 @@
+{
+  "reviewedHead": "1df6f24a1641dca7bff189f68099a4501c79fe60",
+  "node": "v24.20.0",
+  "platform": "win32",
+  "evidence": {
+    "sha": "525c383efbb0251fe097431ca68c6674f1c70224",
+    "tree": "d66ebb3aa3c7a25df8e360b81dbe7807399f46ca",
+    "run": "41999033337",
+    "attempt": "1",
+    "sha256": "ac2f9ab646b23e588c6ad65b427d85581967ae829ec91b8f9861cd97026dbbd7",
+    "engines": [
+      {
+        "engine": "chromium",
+        "version": "141.0.7390.37",
+        "cases": 15
+      },
+      {
+        "engine": "webkit",
+        "version": "26.0",
+        "cases": 15
+      }
+    ]
+  },
+  "contractSha256": "d2eb6c7ebbce3914f1ea5d683ac3406620101879585fc62d0c9a7d5458cd1189",
+  "actualEvidencePositive": "PASS",
+  "sameInputOld": "INCORRECTLY_ACCEPTED",
+  "sameInputNew": [
+    "chromium oracle same-generation-two-tabs"
+  ],
+  "mutationsRejected": 192,
+  "status": "PASS"
+}

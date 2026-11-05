@@ -1,0 +1,40 @@
+✔ independent: deleting every mandatory root field prevents mutation (0.9517ms)
+✔ independent: deleting every receipt/copy field prevents mutation (0.3446ms)
+✔ independent: every three-writer order accepts only one original token (0.5925ms)
+✔ independent: repeated identical raw still consumes generation, old recovery refused (0.1442ms)
+✔ independent: receipt presence does not manufacture acknowledgement/durability (0.1511ms)
+✔ independent: coherent old snapshot rollback remains a retained limitation (0.0859ms)
+✔ independent: put preparation alone cannot resolve commit before complete (0.2563ms)
+✔ independent: request success followed by transaction abort is UNKNOWN (0.1426ms)
+✔ independent: explicit abort after put and lost root do not silently create authority (0.1677ms)
+✔ independent: bootstrap requires approval and empty destination (0.4676ms)
+✔ independent: generation token property order causes conservative refusal only (0.0956ms)
+✖ independent negative oracle: same-generation two commits must not validate (1.0123ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 140.4425
+
+✖ failing tests:
+
+test at docs\maintenance\storage-architecture-20261105\independent-review\independent.node-test.mjs:101:1
+✖ independent negative oracle: same-generation two commits must not validate (1.0123ms)
+  AssertionError [ERR_ASSERTION]: contradictory native observation accepted as PASS
+      at TestContext.<anonymous> (file:///C:/Users/tetsu/Documents/Codex/2026-11-05/task-15/calculator-memo/docs/maintenance/storage-architecture-20261105/independent-review/independent.node-test.mjs:106:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
