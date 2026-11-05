@@ -1,5 +1,18 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-05 (JST): Stage 3B-1 保存安全性の隔離検証基盤
+
+- 独立レビューR-1/P2を受入阻害として確認。従来はcallback内の永続OBSERVED_MATCHを信頼し、後の解放例外がメモリUNKNOWNだけとなって再構築後にwriterを許可した。旧「過去の一致」説明では安全性を満たさなかった。保存は非終端READBACK_MATCHまでとし、lock正常終了は当該インスタンスのvolatile結果へ分離。正常終了済みでも新インスタンスはUNKNOWN/HOLD。外側handlerの専用追記診断も失敗した場合はfirstFailure詳細を取得不能と明示し、成功やwriter許可へ昇格しない。製品形式・実保存経路は不変更。
+- 独立原本は読取り専用・raw非公開。出力先だけを作業領域へ変更した同じ反例を自己再実行し、旧UNKNOWN→再構築OBSERVED_MATCH/追加write（2回）を再現、新版は再構築UNKNOWN/追加拒否（1回）、初回障害保持。独立再レビュー自体は別担当待ち。[R-1記録](docs/maintenance/storage-safety-20261105/r1-correction.md)。旧失敗とCIを保持し、新しい最終SHAの回帰/CIはPR Checksと後続報告で確認する。
+
+- 追加点検でknown lock loss後の遅延callbackがterminal二重遷移する反例2件を検出。active fenceと初回failure保持で同条件GREEN、全固有49件。実Web Locks stealでもChromium/WebKitの遅延primary0を確認し、隔離受入は各15/計30へ追加。初回2799686のCI成功は後続SHAと別記録。原RED/初回CI/旧28件を保存し、製品実保存許可へ昇格しない。
+
+- [Issue #122](https://github.com/tetsujisugimori-coder/calculator-memo/issues/122)を作成し[#121](https://github.com/tetsujisugimori-coder/calculator-memo/issues/121)へ相互参照。最新main a37eb9b/tree26c09e8から専用branchで開始。既存checkout・証拠は保持。
+- 従来はStage3Aのpure準備と小さな合成故障モデル。保存順序・中断・通常writerとの整合を検査するため、4方式を比較し、製品と分離した試験専用共通coordinatorを採用。[設計比較・状態・保証限界・人手復旧](docs/design/selective-restore-storage-safety.md)。既存保全形式/8slot/容量/厳密読戻しを共有、同タブgateと同名Web Locks、単一write、intent/結果ledger、UNKNOWN HOLDと別復旧recordを実装。製品保存形式・実write経路は変更しない。
+- 自己検証の初回固有44/45（容量fault前提の誤り）→serialized容量を実測した対照で45/45。型の二重Promiseを修正しtsc成功。ローカルbrowser初回はengine不在、取得時TLS検証失敗。全単体/回帰/CI/実browser/独立レビューは[台帳](docs/maintenance/storage-safety-20261105/verification.md)とPR後続記録へ実測を追記する。文書commit自身のCI成功は先取りしない。
+- helper単独ではcaller通知ABAを見ない反例を新coordinatorが拒否。既存製品UIの欠陥とは断定しない。通知なしABA・非協調final gapでは上書きされ得る反例も保持し、OBSERVED_MATCHを安全性SUCCESSにしない。
+- 実保存P1はCASなし/非協調/保全slot race/非原子的永続化/製品writer未統合。executionAllowed=false、Stage3B実保存HOLD。実データ・自動rollback/retry・公開・mergeなし。独立レビューは別担当。正式6job/fail-closed/1128/592/132を不変更。実機Safari/VoiceOver/OS拡大等NOT_TESTED、R1/R2根因UNKNOWN継続。
+
 
 ## 2026-11-03 (JST): PR #120 Space混在入力のactivation欠落を局所修正
 

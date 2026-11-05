@@ -1,5 +1,9 @@
 # Calculation Memo
 
+選択復元のStage 3B-1は、合成データ・隔離ストレージ専用の[保存安全性検証基盤](docs/design/selective-restore-storage-safety.md)です。保全の厳密読戻し、協調writerの排他、書込みintentとUNKNOWN停止、人手復旧を検査します。読戻し一致は観測時点のみで、非協調writer・通知なしABA・永続化は未保証です。**製品の選択復元は引き続き実行禁止（executionAllowed=false）**。[検証・証拠台帳](docs/maintenance/storage-safety-20261105/verification.md)、[Issue #122](https://github.com/tetsujisugimori-coder/calculator-memo/issues/122)を参照してください。
+
+保存済みの読戻し記録から、再起動後の成功や通常writer再開を推定しません。試験基盤では正常終了済みでも新しいcoordinatorはHOLDとし、明示的な人手照合を必要とします。初回障害の診断保存も失敗した場合は、詳細未確認のUNKNOWNを維持します。この制約を製品の保存経路へ導入したものではありません。
+
 卓上電卓のような操作感で計算し、式と結果を履歴や「計算メモ」として残せるWebアプリです。データは現在、利用しているブラウザ内だけに保存されます。
 
 ## データのバックアップ

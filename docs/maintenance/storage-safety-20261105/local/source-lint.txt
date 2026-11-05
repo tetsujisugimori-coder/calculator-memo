@@ -1,0 +1,14 @@
+
+> calculation-memo@0.1.0 lint
+> eslint . --ignore-pattern dist --ignore-pattern dist-pages --ignore-pattern .next --ignore-pattern gui-evidence
+
+
+C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\e2e\formal-split.node-test.mjs
+  4:36  warning  'readdir' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\tetsu\Documents\Codex\2026-11-05\task-6\calculator-memo\e2e\webkit-diagnostic-observer.mjs
+  74:17  warning  'stop' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  74:23  warning  'raf' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+✖ 3 problems (0 errors, 3 warnings)
+

@@ -1,0 +1,150 @@
+{
+  "provenance": {
+    "sha": "a37eb9b231f724440c727f130a9fd4913833ecb0",
+    "tree": "26c09e8e1cfe1896aedbfc9d0c9e146f5c93f408",
+    "dirty": true,
+    "node": "v24.20.0",
+    "platform": "win32",
+    "run": "local",
+    "attempt": "local",
+    "bundleSha256": "510a536e127fe32fdd1e993b7621721d7e555732391dfb0b0cdbb17a98d18fac"
+  },
+  "results": [
+    {
+      "engine": "chromium",
+      "status": "PASS",
+      "cases": [
+        {
+          "name": "normal-preserve-write-readback",
+          "phase": "OBSERVED_MATCH"
+        },
+        {
+          "name": "write-fault-before",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "write-fault-after",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "write-fault-read",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "write-fault-mismatch",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "quota",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "copy-read",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "copy-mismatch",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "same-tab-coordinator",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "notified-ABA",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "unnotified-ABA-limit",
+          "phase": "OBSERVED_MATCH"
+        },
+        {
+          "name": "manual-recovery-first-failure-retained",
+          "phase": "OBSERVED_MATCH"
+        },
+        {
+          "name": "cross-page-web-lock-and-storage-event",
+          "phase": "REFUSED",
+          "events": 1
+        },
+        {
+          "name": "actual-page-close-after-intent",
+          "phase": "UNKNOWN",
+          "next": "REFUSED",
+          "originalStillPresent": true
+        }
+      ],
+      "version": "141.0.7390.37",
+      "pageerrors": []
+    },
+    {
+      "engine": "webkit",
+      "status": "PASS",
+      "cases": [
+        {
+          "name": "normal-preserve-write-readback",
+          "phase": "OBSERVED_MATCH"
+        },
+        {
+          "name": "write-fault-before",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "write-fault-after",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "write-fault-read",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "write-fault-mismatch",
+          "phase": "UNKNOWN"
+        },
+        {
+          "name": "quota",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "copy-read",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "copy-mismatch",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "same-tab-coordinator",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "notified-ABA",
+          "phase": "REFUSED"
+        },
+        {
+          "name": "unnotified-ABA-limit",
+          "phase": "OBSERVED_MATCH"
+        },
+        {
+          "name": "manual-recovery-first-failure-retained",
+          "phase": "OBSERVED_MATCH"
+        },
+        {
+          "name": "cross-page-web-lock-and-storage-event",
+          "phase": "REFUSED",
+          "events": 1
+        },
+        {
+          "name": "actual-page-close-after-intent",
+          "phase": "UNKNOWN",
+          "next": "REFUSED",
+          "originalStillPresent": true
+        }
+      ],
+      "version": "26.0",
+      "pageerrors": []
+    }
+  ],
+  "status": "PASS",
+  "scope": "isolated synthetic origin; observation only; executionAllowed=false"
+}
