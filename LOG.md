@@ -2,6 +2,7 @@
 
 ## 2026-11-05 (JST): Stage 3B-2 全writer・旧タブ・世代管理設計と隔離PoC
 
+- [Draft PR #125](https://github.com/tetsujisugimori-coder/calculator-memo/pull/125)。初回525c383のnative CIは成功したが、独立R2-1/P2で証拠validatorが同token2writerの二重commitを受理する誤PASSを検出。各15caseの観測oracleと負対照を追加し作者45/45成功。R2-2/P2の「削除後通知発火」誤記も現行呼出0へ訂正。原FAIL/初回run/別担当レビューを保全し、修正後固定HEADの独立再レビュー・全CIを別に確認する。製品差分0/実保存NOを維持。
 - [Issue #124](https://github.com/tetsujisugimori-coder/calculator-memo/issues/124)。最新main `120a265f539c0e6762f9eae6eedb52d8b922fbf6`、cleanな専用cloneから`test/stage3b2-storage-architecture`を作成。既存Issue/PRに同一成果なし。Draft PRは作成前、最終SHA CI/独立レビューは確認待ち。
 - [全writer表/呼出図](docs/design/storage-writers-stage3b2.md)を現行ソースから作成。通常/復元/保全は既に共通名Web Lockへ参加するが、API不在fallback・公開helper・旧タブ・永続世代/履歴未統合が残る。起動empty初期保存、登録式input自動保存、explicit memo/report、保全remove、opt-in D1例も区分。
 - 従来のStage3B-1試験coordinatorを製品へ適用したものではない。今回の比較により、同IDB transactionへcurrent/token/copy/receiptを結合するBと、旧LSを自動再importしない明示的片方向移行Dを**条件付き推奨**。[方式比較/10判断/次工程](docs/design/storage-architecture-stage3b2.md)。旧タブの完全排除、移行中ABA/旧編集分岐、全消失・媒体永続化は未解決。Workerの名前だけで単一writerとは判断しない。

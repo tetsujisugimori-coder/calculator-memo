@@ -63,6 +63,8 @@ CI artifactの保持期間は7日。raw browser JSONとstage logが根拠であ�
 | 最初のworkflow参照名 | `verify-storage-safety.yml`不存在 | git ls-filesの実在名`storage-safety.yml`を参照し直した |
 | gh auth status | sandbox内はinvalid、同一readのescalated環境では既存認証成功 | 認証を書換えていない。秘密値を収集/保存しない |
 | 棚卸し草稿 | recovery-sessionのprefix/未対応時挙動を不正確に記載 | 現行recovery-manager:8/17を再読。`${STORAGE_KEY}:recovery-session`、全体復元fallback ready=true、削除のみ非対応拒否へ訂正。製品コード変更なし |
+| 独立R2-1/P2 | 初回525c383のvalidatorが「同token2writerともcommit」の矛盾観測を受理。独自12test中1FAIL | 各15caseの観測値oracle/clean provenanceを追加。二重commit/部分abort/ack捏造/欠fault/自動bootstrap/全case空観測を負対照化。作者再検証45/45。独立再レビューは別記録 |
+| 独立R2-2/P2 | W16で削除結果後の同タブ通知を発火済みと誤記 | `notifyRecoveryChanged`は定義のみ・製品呼出0と訂正。製品writerを修正したとはしない |
 
 前段#123のR-1、#121のR1/R2失敗履歴/原因UNKNOWNは本stageの結果で遡及的に成功化しない。
 
@@ -72,4 +74,5 @@ P1: 非協調旧タブ排除不能、移行中の旧側編集分岐、全writer�
 P2: 操作記録とUI ackの分離UX、履歴保持/容量/compaction/保全削除、JSON互換adapter、人手照合。
 P3 NOT_TESTED: iPhone Safari/VoiceOver/private mode/OS拡大/soft keyboard/長期背景化・eviction/電源断、SharedWorkerの実運用単一性。
 実装担当自身の再確認を独立レビューとは呼ばない。別担当へ固定HEAD・ソース・設計・反例・未保証事項を渡し、独自反例と実行結果を記録する。実施前はNOT_TESTED/マージ推奨NO。
+初回独立記録は[REVIEW.md](independent-review/REVIEW.md)、原独自FAILとrunnerを保存。初回native CI [41999033337](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/41999033337)は成功だが、独立指摘を解消した意味ではなく、修正後HEADの結果で再判定する。
 総合PARTIAL、Draft維持、実保存許可NO。最終HEADの全CIと独立レビュー結果で、試験・設計差分だけの限定マージ推奨を改めて判断する。

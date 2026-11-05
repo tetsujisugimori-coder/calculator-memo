@@ -1,0 +1,25 @@
+components/BackupModal.tsx:26:        if (window.localStorage.getItem(STORAGE_KEY) === result.backup.entries[0].raw) return true;
+components/CalculationStatusDetails.tsx:78:      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+components/CalculationStatusDetails.tsx:79:      await navigator.clipboard.writeText(text);
+components/CalculatorApp.tsx:233:    try { await navigator.clipboard.writeText(text); showToast(`${label}をコピーしました`); }
+components/FormulaAuditRecordComparison.tsx:157:      else await navigator.clipboard.writeText(preview.output.markdown);
+components/FormulaDetailView.tsx:37:      else await navigator.clipboard.writeText(report.body);
+components/FormulaReportAudit.tsx:164:      else await navigator.clipboard.writeText(output.markdown);
+components/FormulaReportModal.tsx:283:      else await navigator.clipboard.writeText(body);
+components/MarkdownReportModal.tsx:42:      await navigator.clipboard.writeText(report.markdown);
+components/RestoreModal.tsx:68:      const raw = localStorage.getItem(STORAGE_KEY);
+components/RestoreModal.tsx:71:      if (now.status === 'unavailable' || now.status === 'changed' || now.status === 'too-large' || localStorage.getItem(STORAGE_KEY) !== raw) throw Error('現在の保存原文を安定して読み取れません。復元を停止しました。');
+components/SavedEvidenceModal.tsx:90:    try { await navigator.clipboard.writeText(report.markdown); setNotice({ text: "選択した2記録の比較Markdown全文をコピーしました。", failed: false }); }
+components/SelectionPreviewModal.tsx:66:      if (getGenerationRef.current() !== prior.generation || window.localStorage.getItem(STORAGE_KEY) !== prior.raw) { invalidate("stale"); return false; }
+components/SelectionPreviewModal.tsx:113:      const raw = window.localStorage.getItem(STORAGE_KEY);
+components/SelectionPreviewModal.tsx:116:      if (getGenerationRef.current() !== before || window.localStorage.getItem(STORAGE_KEY) !== raw) { invalidate("stale"); return; }
+components/SelectionPreviewModal.tsx:155:    currentRaw: window.localStorage.getItem(STORAGE_KEY), selectedKeys: [...selectedRef.current],
+lib/recovery-manager.ts:105:        storage.removeItem(key);
+lib/restore-storage.ts:53:    storage.setItem(key, serialized);
+lib/restore-storage.ts:76:    storage.setItem(STORAGE_KEY, raw);
+lib/storage.ts:168:    target.setItem(STORAGE_KEY, raw);
+lib/storage.ts:183:    target.setItem(STORAGE_KEY, JSON.stringify(cloneDefaultData()));
+lib/storage.ts:203:    if (raw !== expectedRaw) { target.setItem(STORAGE_KEY, raw); written = true; }
+scripts/benchmark-ast.mjs:4:import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+scripts/benchmark-ast.mjs:21:    writeFileSync(join(directory, `${name}.mjs`), transpile(source));
+scripts/benchmark-ast.mjs:81:  writeFileSync(join(directory, 'counted.mjs'), transpile(afterSource.replace(boundary, `${boundary}\nglobalThis.${key}++;`)));

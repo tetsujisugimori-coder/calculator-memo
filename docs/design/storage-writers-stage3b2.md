@@ -50,7 +50,7 @@ effectはReact更新後に非同期で走るため、ボタン表示/状態変�
 | W13 `CalculatorApp:365 resetStorage` | P、破損時の確認付き初期化 | async L→S3。成功後baseline/React更新、通常effectは同内容でwrite回避 |
 | W14 `RestoreModal:76 preserve` | R、検証済file/current snapshot、session/valid/非busy | async L→S4、copyを確認表示、承認失効。file.textはwrite前async、tokenで旧結果を破棄 |
 | W15 `RestoreModal:89 execute` | P、上記copy+明示承認+canApply/session/非terminal | async L→S5。verified後onApplied→`CalculatorApp:424 applyRestored`がbaseline更新。unknown/後続UI例外はonUncertainで停止。copyとP別操作 |
-| W16 `RecoveryManagerModal:93 remove` | R、snapshot/key個別承認 | async S6。結果後RECOVERY_CHANGED_EVENT、UNKNOWN→`CalculatorApp:419 protectUncertainRecovery`。同タブ変更通知はStorage API自動通知とは別 |
+| W16 `RecoveryManagerModal:93 remove` | R、snapshot/key個別承認 | async S6。UNKNOWN→`CalculatorApp:419 protectUncertainRecovery`。RECOVERY_CHANGED_EVENTは定義/購読のみで、notifyRecoveryChangedの現行呼出元なし。削除後に同タブ通知が必ず発火するとは言えない |
 
 全writerはP全体を扱うため、履歴/メモ/設定だけの操作でも兄弟領域を古いsnapshotで上書きし得る。共通raw比較は協調更新の競合を拒否するが非協調最終gapは閉じない。
 現行UIの揮発generationは上記全setDataで増える。refresh/reload/別タブをまたぐ共有generationではない。startup/queue/storage通知/beforeunloadを横断して読んだ。
