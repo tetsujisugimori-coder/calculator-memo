@@ -1,0 +1,111 @@
+
+> calculation-memo@0.1.0 test
+> vitest run tests/storage-safety.test.ts
+
+
+ RUN  v3.2.4 C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo
+
+ ❯ tests/storage-safety.test.ts (50 tests | 2 failed) 127ms
+   ✓ Stage 3B-1 model: no inferred or terminal success > rejects skipping preservation, readback and terminal transitions 2ms
+   ✓ Stage 3B-1 model: no inferred or terminal success > cannot classify an attempted write as pre-write refusal 0ms
+   × real adapter writes and preserved bytes > preserves exact source, single primary write, records all transitions, remains product-disabled 16ms
+     → expected [ 'NEW', 'CHECKING', …(7) ] to deeply equal [ 'NEW', 'CHECKING', …(6) ]
+   ✓ real adapter writes and preserved bytes > reuses only strictly read-back matching copies without modifying any occupied slot 3ms
+   ✓ real adapter writes and preserved bytes > refuses changed generation before preservation 1ms
+   ✓ real adapter writes and preserved bytes > refuses changed backup before preservation 1ms
+   ✓ real adapter writes and preserved bytes > refuses changed selection before preservation 0ms
+   ✓ real adapter writes and preserved bytes > refuses changed unsaved before preservation 0ms
+   ✓ real adapter writes and preserved bytes > refuses changed reference before preservation 1ms
+   ✓ real adapter writes and preserved bytes > refuses changed current before preservation 1ms
+   ✓ real adapter writes and preserved bytes > refuses changed version before preservation 0ms
+   ✓ real adapter writes and preserved bytes > refuses changed candidate before preservation 1ms
+   ✓ real adapter writes and preserved bytes > refuses preservation full and retains old copies 1ms
+   ✓ real adapter writes and preserved bytes > refuses preservation capacity and retains old copies 16ms
+   ✓ real adapter writes and preserved bytes > refuses preservation corrupt and retains old copies 1ms
+   ✓ real adapter writes and preserved bytes > preservation quota cannot reach primary write 2ms
+   ✓ real adapter writes and preserved bytes > preservation throw-after cannot reach primary write 1ms
+   ✓ real adapter writes and preserved bytes > preservation drop cannot reach primary write 1ms
+   ✓ real adapter writes and preserved bytes > preservation mismatch cannot reach primary write 1ms
+   ✓ real adapter writes and preserved bytes > preservation read-exception cannot reach primary write 1ms
+   ✓ real adapter writes and preserved bytes > primary before failure is UNKNOWN, never rollback/retry 3ms
+   ✓ real adapter writes and preserved bytes > primary after failure is UNKNOWN, never rollback/retry 3ms
+   ✓ real adapter writes and preserved bytes > primary mismatch failure is UNKNOWN, never rollback/retry 3ms
+   ✓ real adapter writes and preserved bytes > primary read-error failure is UNKNOWN, never rollback/retry 3ms
+   ✓ real adapter writes and preserved bytes > ledger write failure refuses before current IO; no assumed durable intent 1ms
+   × real adapter writes and preserved bytes > result journal failure after matching bytes remains UNKNOWN 5ms
+     → expected 'OBSERVED_MATCH' to be 'UNKNOWN' // Object.is equality
+   ✓ cooperation and limits are distinct observations > returned lock lifecycle UNKNOWN survives reconstruction and blocks ordinary and selection writers 3ms
+   ✓ cooperation and limits are distinct observations > known lock loss during PRESERVED fences a delayed writer before any primary IO 2ms
+   ✓ cooperation and limits are distinct observations > known lock loss during WRITING fences a delayed writer before any primary IO 2ms
+   ✓ cooperation and limits are distinct observations > ordinary synthetic writer uses preservation, single write and readback after selection completes 3ms
+   ✓ cooperation and limits are distinct observations > lock lifecycle rejection after work is UNKNOWN with matching outer/record states and local HOLD 3ms
+   ✓ cooperation and limits are distinct observations > same-tab and shared-lock other-tab ordinary writers cannot run during restore 4ms
+   ✓ cooperation and limits are distinct observations > lock acquisition exception cannot preserve or write 0ms
+   ✓ cooperation and limits are distinct observations > rejects observed same-tab changes after preservation 2ms
+   ✓ cooperation and limits are distinct observations > rejects observed other-tab changes after preservation 1ms
+   ✓ cooperation and limits are distinct observations > rejects observed notified-ABA changes after preservation 1ms
+   ✓ cooperation and limits are distinct observations > detects change after intent before write as UNKNOWN with zero primary invocations 2ms
+   ✓ cooperation and limits are distinct observations > unnotified ABA is not detectable: matching observation does NOT certify absence of conflict 3ms
+   ✓ cooperation and limits are distinct observations > noncooperative write inside final read/set gap can be overwritten: explicit guarantee failure counterexample 3ms
+   ✓ cooperation and limits are distinct observations > later change does not mutate historical readback into future/durability assurance 2ms
+   ✓ cooperation and limits are distinct observations > actual existing full-restore helper misses observed ABA, new coordinator rejects identical notified ABA 2ms
+   ✓ interruption, restart and explicitly separate recovery > interruption at PRESERVED never inferred successful on restart 4ms
+   ✓ interruption, restart and explicitly separate recovery > interruption at WRITING never inferred successful on restart 2ms
+   ✓ interruption, restart and explicitly separate recovery > interruption at READING never inferred successful on restart 2ms
+   ✓ interruption, restart and explicitly separate recovery > a persisted nonterminal intent remains UNKNOWN even when candidate bytes are already present 3ms
+   ✓ interruption, restart and explicitly separate recovery > manual recovery approval retains first failure and separate result 3ms
+   ✓ interruption, restart and explicitly separate recovery > manual recovery copy-changed retains first failure and separate result 3ms
+   ✓ interruption, restart and explicitly separate recovery > manual recovery recovery-write-fails retains first failure and separate result 3ms
+   ✓ interruption, restart and explicitly separate recovery > manual recovery ok retains first failure and separate result 3ms
+   ✓ interruption, restart and explicitly separate recovery > corrupt or forged SUCCESS ledger cannot unlock writers 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-safety.test.ts > real adapter writes and preserved bytes > preserves exact source, single primary write, records all transitions, remains product-disabled
+AssertionError: expected [ 'NEW', 'CHECKING', …(7) ] to deeply equal [ 'NEW', 'CHECKING', …(6) ]
+
+- Expected
++ Received
+
+@@ -4,7 +4,8 @@
+    "PRESERVING",
+    "PRESERVED",
+    "PREPARING",
+    "WRITING",
+    "READING",
++   "READBACK_MATCH",
+    "OBSERVED_MATCH",
+  ]
+
+ ❯ tests/storage-safety.test.ts:44:31
+     42|     expect(r.record!.copy!.raw).toBe(f.original);
+     43|     expect(f.store.getItem(r.record!.copy!.key)).toBe(r.record!.copy!.…
+     44|     expect(r.record!.history).toEqual(['NEW','CHECKING','PRESERVING','…
+       |                               ^
+     45|     expect(f.store.getItem('unrelated')).toBe('retained');
+     46|     expect(f.c.inspect()[0].phase).toBe('OBSERVED_MATCH');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/storage-safety.test.ts > real adapter writes and preserved bytes > result journal failure after matching bytes remains UNKNOWN
+AssertionError: expected 'OBSERVED_MATCH' to be 'UNKNOWN' // Object.is equality
+
+Expected: "UNKNOWN"
+Received: "OBSERVED_MATCH"
+
+ ❯ tests/storage-safety.test.ts:116:35
+    114|   it('result journal failure after matching bytes remains UNKNOWN', as…
+    115|     const f=fixture(); const fault=f.store.inject(isLedgerPhase('OBSER…
+    116|     expect((await f.run()).phase).toBe('UNKNOWN'); expect(fault.fired)…
+       |                                   ^
+    117|     expect(f.store.getItem(STORAGE_KEY)).toBe(f.candidate.raw); expect…
+    118|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 48 passed (50)
+   Start at  09:18:21
+   Duration  2.24s (transform 232ms, setup 0ms, collect 1.39s, tests 127ms, environment 0ms, prepare 163ms)
+

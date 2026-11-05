@@ -1,0 +1,27 @@
+✔ all two-engine exact cases accepted (1.0652ms)
+✔ reject missing-engine (0.1483ms)
+✔ reject duplicate-engine (0.1384ms)
+✔ reject missing-case (0.0884ms)
+✔ reject duplicate-case (0.0973ms)
+✔ reject phase (0.513ms)
+✔ reject pageerror (0.1038ms)
+✔ reject version (0.0818ms)
+✔ reject no-events (0.0917ms)
+✔ reject restart-success (0.1208ms)
+✔ reject failed (0.0646ms)
+✔ reject exception (0.0717ms)
+✔ reject late-primary (0.0723ms)
+✔ reject release-promoted (0.0707ms)
+✔ reject diagnostic-not-fired (0.0797ms)
+✔ reject invented-first-failure (0.0823ms)
+✔ reject normal-restart-unlocked (0.0684ms)
+✔ test-only implementation is absent from product import paths (19.8352ms)
+✔ isolated workflow fails normally and retains evidence without changing formal GUI counts (2.0693ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 155.5646

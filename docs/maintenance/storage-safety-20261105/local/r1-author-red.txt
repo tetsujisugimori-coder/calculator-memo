@@ -1,0 +1,84 @@
+
+> calculation-memo@0.1.0 test
+> vitest run tests/storage-safety.test.ts -t returned lock lifecycle UNKNOWN survives reconstruction
+
+
+ RUN  v3.2.4 C:/Users/tetsu/Documents/Codex/2026-11-05/task-6/calculator-memo
+
+ ❯ tests/storage-safety.test.ts (50 tests | 1 failed | 49 skipped) 17ms
+   ↓ Stage 3B-1 model: no inferred or terminal success > rejects skipping preservation, readback and terminal transitions
+   ↓ Stage 3B-1 model: no inferred or terminal success > cannot classify an attempted write as pre-write refusal
+   ↓ real adapter writes and preserved bytes > preserves exact source, single primary write, records all transitions, remains product-disabled
+   ↓ real adapter writes and preserved bytes > reuses only strictly read-back matching copies without modifying any occupied slot
+   ↓ real adapter writes and preserved bytes > refuses changed generation before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed backup before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed selection before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed unsaved before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed reference before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed current before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed version before preservation
+   ↓ real adapter writes and preserved bytes > refuses changed candidate before preservation
+   ↓ real adapter writes and preserved bytes > refuses preservation full and retains old copies
+   ↓ real adapter writes and preserved bytes > refuses preservation capacity and retains old copies
+   ↓ real adapter writes and preserved bytes > refuses preservation corrupt and retains old copies
+   ↓ real adapter writes and preserved bytes > preservation quota cannot reach primary write
+   ↓ real adapter writes and preserved bytes > preservation throw-after cannot reach primary write
+   ↓ real adapter writes and preserved bytes > preservation drop cannot reach primary write
+   ↓ real adapter writes and preserved bytes > preservation mismatch cannot reach primary write
+   ↓ real adapter writes and preserved bytes > preservation read-exception cannot reach primary write
+   ↓ real adapter writes and preserved bytes > primary before failure is UNKNOWN, never rollback/retry
+   ↓ real adapter writes and preserved bytes > primary after failure is UNKNOWN, never rollback/retry
+   ↓ real adapter writes and preserved bytes > primary mismatch failure is UNKNOWN, never rollback/retry
+   ↓ real adapter writes and preserved bytes > primary read-error failure is UNKNOWN, never rollback/retry
+   ↓ real adapter writes and preserved bytes > ledger write failure refuses before current IO; no assumed durable intent
+   ↓ real adapter writes and preserved bytes > result journal failure after matching bytes remains UNKNOWN
+   × cooperation and limits are distinct observations > returned lock lifecycle UNKNOWN survives reconstruction and blocks ordinary and selection writers 17ms
+     → expected 'OBSERVED_MATCH' to be 'UNKNOWN' // Object.is equality
+   ↓ cooperation and limits are distinct observations > known lock loss during PRESERVED fences a delayed writer before any primary IO
+   ↓ cooperation and limits are distinct observations > known lock loss during WRITING fences a delayed writer before any primary IO
+   ↓ cooperation and limits are distinct observations > ordinary synthetic writer uses preservation, single write and readback after selection completes
+   ↓ cooperation and limits are distinct observations > lock lifecycle rejection after work is UNKNOWN with matching outer/record states and local HOLD
+   ↓ cooperation and limits are distinct observations > same-tab and shared-lock other-tab ordinary writers cannot run during restore
+   ↓ cooperation and limits are distinct observations > lock acquisition exception cannot preserve or write
+   ↓ cooperation and limits are distinct observations > rejects observed same-tab changes after preservation
+   ↓ cooperation and limits are distinct observations > rejects observed other-tab changes after preservation
+   ↓ cooperation and limits are distinct observations > rejects observed notified-ABA changes after preservation
+   ↓ cooperation and limits are distinct observations > detects change after intent before write as UNKNOWN with zero primary invocations
+   ↓ cooperation and limits are distinct observations > unnotified ABA is not detectable: matching observation does NOT certify absence of conflict
+   ↓ cooperation and limits are distinct observations > noncooperative write inside final read/set gap can be overwritten: explicit guarantee failure counterexample
+   ↓ cooperation and limits are distinct observations > later change does not mutate historical readback into future/durability assurance
+   ↓ cooperation and limits are distinct observations > actual existing full-restore helper misses observed ABA, new coordinator rejects identical notified ABA
+   ↓ interruption, restart and explicitly separate recovery > interruption at PRESERVED never inferred successful on restart
+   ↓ interruption, restart and explicitly separate recovery > interruption at WRITING never inferred successful on restart
+   ↓ interruption, restart and explicitly separate recovery > interruption at READING never inferred successful on restart
+   ↓ interruption, restart and explicitly separate recovery > a persisted nonterminal intent remains UNKNOWN even when candidate bytes are already present
+   ↓ interruption, restart and explicitly separate recovery > manual recovery approval retains first failure and separate result
+   ↓ interruption, restart and explicitly separate recovery > manual recovery copy-changed retains first failure and separate result
+   ↓ interruption, restart and explicitly separate recovery > manual recovery recovery-write-fails retains first failure and separate result
+   ↓ interruption, restart and explicitly separate recovery > manual recovery ok retains first failure and separate result
+   ↓ interruption, restart and explicitly separate recovery > corrupt or forged SUCCESS ledger cannot unlock writers
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-safety.test.ts > cooperation and limits are distinct observations > returned lock lifecycle UNKNOWN survives reconstruction and blocks ordinary and selection writers
+AssertionError: expected 'OBSERVED_MATCH' to be 'UNKNOWN' // Object.is equality
+
+Expected: "UNKNOWN"
+Received: "OBSERVED_MATCH"
+
+ ❯ tests/storage-safety.test.ts:129:29
+    127|     const next=await restarted.ordinary('after-restart',f.candidate.ra…
+    128|     expect(returned.phase).toBe('UNKNOWN');
+    129|     expect(inspected.phase).toBe('UNKNOWN');
+       |                             ^
+    130|     expect(inspected.firstFailure?.reason).toContain('independent-rele…
+    131|     expect(next.phase).toBe('REFUSED');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 49 skipped (50)
+   Start at  09:17:02
+   Duration  2.38s (transform 268ms, setup 0ms, collect 1.54s, tests 17ms, environment 0ms, prepare 290ms)
+

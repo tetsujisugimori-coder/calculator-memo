@@ -42,7 +42,7 @@ try {
       await Promise.all([page.waitForFunction(()=>!!window.api),second.waitForFunction(()=>!!window.api)]);
       const namespace='stage3b-test-'+randomUUID()+'-';
       result.cases=await page.evaluate(ns=>window.api.suite(ns),namespace);
-      assert.equal(result.cases.length,12);
+      assert.equal(result.cases.length,16);
       // Two actual pages sharing a Web Lock, followed by a real storage event.
       const shared=namespace+'cross:';
       await page.evaluate(ns=>{

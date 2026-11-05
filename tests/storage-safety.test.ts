@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { StorageSafetyCoordinator, LEDGER_KEY, STORAGE_KEY, RECOVERY_KEYS, transition, type Phase, type RecordEntry } from './storage-safety/coordinator';
+import { StorageSafetyCoordinator, LEDGER_KEY, STORAGE_KEY, RECOVERY_KEYS, FAILURE_PREFIX, failureKey, transition, type Phase, type RecordEntry } from './storage-safety/coordinator';
 import { FaultStore, isLedgerPhase, memoryExclusive } from './storage-safety/adapter';
 import { setup, base, history } from './helpers/selective-safety-fixture';
 import { preserveRestoreSource, restoreRaw } from '../lib/restore-storage';
@@ -41,7 +41,8 @@ describe('real adapter writes and preserved bytes', () => {
     expect(f.store.getItem(STORAGE_KEY)).toBe(f.candidate.raw);
     expect(r.record!.copy!.raw).toBe(f.original);
     expect(f.store.getItem(r.record!.copy!.key)).toBe(r.record!.copy!.serialized);
-    expect(r.record!.history).toEqual(['NEW','CHECKING','PRESERVING','PRESERVED','PREPARING','WRITING','READING','OBSERVED_MATCH']);
+    expect(r.record!.history).toEqual(['NEW','CHECKING','PRESERVING','PRESERVED','PREPARING','WRITING','READING','READBACK_MATCH','OBSERVED_MATCH']);
+    expect(JSON.parse(f.store.getItem(LEDGER_KEY)!).records[0].phase).toBe('READBACK_MATCH');
     expect(f.store.getItem('unrelated')).toBe('retained');
     expect(f.c.inspect()[0].phase).toBe('OBSERVED_MATCH');
     expect((await f.run()).phase).toBe('REFUSED'); expect(writes(f.store)).toHaveLength(1);
@@ -112,13 +113,95 @@ describe('real adapter writes and preserved bytes', () => {
     expect((await f.run()).phase).toBe('REFUSED'); expect(fault.fired).toBe(1); expect(writes(f.store)).toHaveLength(0);
   });
   it('result journal failure after matching bytes remains UNKNOWN', async () => {
-    const f=fixture(); const fault=f.store.inject(isLedgerPhase('OBSERVED_MATCH'),()=>{throw Error('result journal failed');});
+    const f=fixture(); const fault=f.store.inject(isLedgerPhase('READBACK_MATCH'),()=>{throw Error('result journal failed');});
     expect((await f.run()).phase).toBe('UNKNOWN'); expect(fault.fired).toBe(1);
     expect(f.store.getItem(STORAGE_KEY)).toBe(f.candidate.raw); expect(writes(f.store)).toHaveLength(1);
   });
 });
 
 describe('cooperation and limits are distinct observations', () => {
+  it('returned lock lifecycle UNKNOWN survives reconstruction and blocks ordinary and selection writers', async () => {
+    const f=fixture(()=>{},new FaultStore(),async work=>{await work();throw Error('independent-release-failure');});
+    const returned=await f.run();
+    const restarted=new StorageSafetyCoordinator(f.store,memoryExclusive());
+    const inspected=restarted.inspect()[0];
+    const next=await restarted.ordinary('after-restart',f.candidate.raw!,f.original);
+    expect(returned.phase).toBe('UNKNOWN');
+    expect(inspected.phase).toBe('UNKNOWN');
+    expect(inspected.firstFailure?.reason).toContain('independent-release-failure');
+    expect(next.phase).toBe('REFUSED');
+    expect((await restarted.selection('new-selection',f.candidate,f.read)).phase).toBe('REFUSED');
+    expect(writes(f.store)).toHaveLength(1);
+  });
+  it.each(['get-before','set-before','set-after','readback','drop','corrupt'])('release failure plus diagnostic %s never reopens the restart gate', async mode => {
+    const f=fixture(()=>{},new FaultStore(),async work=>{await work();throw Error('first-release-failure');});
+    const key=failureKey('op-1');
+    let readbackFault: ReturnType<FaultStore['inject']> | undefined;
+    const fault=f.store.inject(a=>a.key===key&&(
+      mode==='get-before' ? a.op==='get'&&a.at==='before' : a.op==='set'&&a.at===(mode==='set-before'?'before':'after')
+    ),s=>{
+      if(mode==='get-before'||mode==='set-before'||mode==='set-after')throw Error('second-diagnostic-failure');
+      if(mode==='drop')s.values.delete(key);
+      if(mode==='corrupt')s.values.set(key,'not a verified diagnostic');
+      if(mode==='readback')readbackFault=s.inject(x=>x.key===key&&x.op==='get',()=>{throw Error('second-readback-failure');});
+    });
+    const r=await f.run();expect(r.phase).toBe('UNKNOWN');expect(fault.fired).toBe(1);
+    if(readbackFault)expect(readbackFault.fired).toBe(1);
+    expect(r.record!.firstFailure!.reason).toContain('first-release-failure');
+    expect(r.record!.firstFailure!.reason).not.toContain('second-');
+    const restarted=new StorageSafetyCoordinator(f.store,memoryExclusive());
+    const observed=restarted.inspect()[0];expect(observed.phase).toBe('UNKNOWN');
+    if(['set-after','readback'].includes(mode))expect(observed.firstFailure!.reason).toContain('first-release-failure');
+    else {expect(observed.firstFailure).toBeUndefined();expect(observed.failureEvidence).toBe('UNAVAILABLE');}
+    expect((await restarted.ordinary('new',f.candidate.raw!,f.original)).phase).toBe('REFUSED');
+    expect((await restarted.selection('new-selection',f.candidate,f.read)).phase).toBe('REFUSED');
+    expect(writes(f.store)).toHaveLength(1);
+  });
+  it('permanently unavailable failure storage cannot turn a returned UNKNOWN into restart permission', async () => {
+    const f=fixture();let diagnosticAttempts=0;
+    const store={
+      getItem:(k:string)=>{if(k.startsWith(FAILURE_PREFIX)){diagnosticAttempts++;throw Error('persistent diagnostic outage');}return f.store.getItem(k);},
+      setItem:(k:string,v:string)=>{if(k.startsWith(FAILURE_PREFIX)){diagnosticAttempts++;throw Error('persistent diagnostic outage');}f.store.setItem(k,v);},
+    };
+    const c=new StorageSafetyCoordinator(store,async work=>{await work();throw Error('release-first-cause');});
+    const r=await c.ordinary('outage',f.original,f.candidate.raw!);expect(r.phase).toBe('UNKNOWN');
+    expect(r.record!.firstFailure!.reason).toContain('release-first-cause');
+    const restarted=new StorageSafetyCoordinator(store,memoryExclusive());
+    const inspect=restarted.inspect()[0];expect(inspect.phase).toBe('UNKNOWN');
+    expect(inspect.firstFailure).toBeUndefined();expect(inspect.failureEvidence).toBe('UNAVAILABLE');
+    expect((await restarted.ordinary('new',f.candidate.raw!,f.original)).phase).toBe('REFUSED');
+    expect(diagnosticAttempts).toBeGreaterThan(1);expect(writes(f.store)).toHaveLength(1);
+  });
+  it('a normal live acknowledgement permits live writers but never acts as a persistent restart-unlock receipt', async () => {
+    const f=fixture();expect((await f.run()).phase).toBe('OBSERVED_MATCH');
+    expect(f.c.inspect()[0].phase).toBe('OBSERVED_MATCH');
+    const restarted=new StorageSafetyCoordinator(f.store,memoryExclusive());
+    expect(restarted.inspect()[0].phase).toBe('UNKNOWN');
+    expect(restarted.inspect()[0].failureEvidence).toBe('UNAVAILABLE');
+    expect((await restarted.ordinary('new',f.candidate.raw!,f.original)).phase).toBe('REFUSED');
+    expect(writes(f.store)).toHaveLength(1);
+  });
+  it('legacy persisted OBSERVED_MATCH is historical evidence, never a restart permission', async () => {
+    const f=fixture();await f.run();const data=JSON.parse(f.store.getItem(LEDGER_KEY)!);
+    const record=data.records[0];record.phase='OBSERVED_MATCH';
+    record.history=record.history.filter((p:Phase)=>p!=='READBACK_MATCH').concat('OBSERVED_MATCH');
+    f.store.values.set(LEDGER_KEY,JSON.stringify(data));
+    const restarted=new StorageSafetyCoordinator(f.store,memoryExclusive());
+    expect(restarted.inspect()[0].phase).toBe('UNKNOWN');
+    expect((await restarted.ordinary('new',f.candidate.raw!,f.original)).phase).toBe('REFUSED');
+  });
+  it('an earlier primary failure survives release failure and a separately failed recovery after reconstruction', async () => {
+    const f=fixture();f.store.inject(a=>a.key===STORAGE_KEY&&a.op==='set'&&a.at==='after',()=>{throw Error('original-primary-first');});
+    const c=new StorageSafetyCoordinator(f.store,async work=>{await work();throw Error('later-release-failure');});
+    const r=await c.selection('first',f.candidate,f.read);expect(r.phase).toBe('UNKNOWN');
+    const restarted=new StorageSafetyCoordinator(f.store,memoryExclusive());
+    const original=JSON.stringify(restarted.inspect()[0]);expect(original).toContain('original-primary-first');
+    const recovery=new StorageSafetyCoordinator(f.store,memoryExclusive(),p=>{if(p==='WRITING')throw Error('third-recovery-failure');});
+    expect((await recovery.recover('recover','first',f.candidate.raw!,true)).phase).toBe('UNKNOWN');
+    expect(JSON.stringify(restarted.inspect().find(r=>r.id==='first'))).toBe(original);
+    expect(writes(f.store)).toHaveLength(1);
+    expect(r.record!.firstFailure!.reason).not.toContain('later-release');
+  });
   it.each(['PRESERVED','WRITING'] as Phase[])('known lock loss during %s fences a delayed writer before any primary IO', async phase => {
     let release!: () => void, lost!: (e: Error) => void, ready!: () => void;
     let background: Promise<unknown> | undefined;
@@ -127,10 +210,15 @@ describe('cooperation and limits are distinct observations', () => {
       background=work();
       return await Promise.race([background,new Promise<never>((_,reject)=>lost=reject)]) as Awaited<ReturnType<typeof work>>;
     });
-    const pending=f.run();await held;lost(Error('lock ownership revoked'));
+    const pending=f.run();await held;const lossBoundary=f.store.trace.length;lost(Error('lock ownership revoked'));
     const result=await pending;
     expect(result.phase).toBe(phase==='WRITING'?'UNKNOWN':'REFUSED');
+    // Only the outer failure handler may append its own immutable diagnostic;
+    // the lost callback cannot access the shared ledger or primary key.
+    expect(f.store.trace.slice(lossBoundary).every(a=>a.key.startsWith(FAILURE_PREFIX))).toBe(true);
+    const afterLoss=JSON.stringify(f.store.trace);
     release();await background;
+    expect(JSON.stringify(f.store.trace)).toBe(afterLoss);
     expect(writes(f.store)).toHaveLength(0);
     expect(f.store.getItem(STORAGE_KEY)).toBe(f.original);
     expect((await f.c.ordinary('new',f.original,f.original)).phase).toBe('REFUSED');

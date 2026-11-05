@@ -1,0 +1,56 @@
+{
+  "description": "Implementer self-rerun of unchanged counterexample logic; import/output paths remapped; no raw independent evidence published",
+  "independentOriginalsUnchanged": true,
+  "results": {
+    "red": {
+      "returned": "UNKNOWN",
+      "reconstructed": "OBSERVED_MATCH",
+      "next": "OBSERVED_MATCH",
+      "primaryCalls": 2,
+      "firstFailureRetained": false,
+      "runnerChecks": [
+        {
+          "status": "PASS"
+        },
+        {
+          "status": "PASS",
+          "observations": 78
+        },
+        {
+          "status": "FAIL"
+        },
+        {
+          "status": "PASS"
+        },
+        {
+          "status": "PASS"
+        }
+      ]
+    },
+    "green": {
+      "returned": "UNKNOWN",
+      "reconstructed": "UNKNOWN",
+      "next": "REFUSED",
+      "primaryCalls": 1,
+      "firstFailureRetained": true,
+      "runnerChecks": [
+        {
+          "status": "PASS"
+        },
+        {
+          "status": "PASS",
+          "observations": 78
+        },
+        {
+          "status": "PASS"
+        },
+        {
+          "status": "PASS"
+        },
+        {
+          "status": "PASS"
+        }
+      ]
+    }
+  }
+}

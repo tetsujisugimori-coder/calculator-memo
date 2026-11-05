@@ -17,7 +17,7 @@
 
 ## 状態と成功条件
 
-`NEW → CHECKING → PRESERVING → PRESERVED → PREPARING → WRITING → READING → OBSERVED_MATCH`。
+`NEW → CHECKING → PRESERVING → PRESERVED → PREPARING → WRITING → READING → READBACK_MATCH`を保存し、lock要求の正常終了後だけ、同じ生存インスタンス内で`OBSERVED_MATCH`を返す。**永続化された成功・再開許可のreceiptは作らない。**
 
 - CHECKING: caller-owned candidateをdeep copyし、lock後にStage3Aの再生成・二読検証。current/backup全文・file識別・選択集合・規則/generation/epoch・未保存/blocked・候補/保持区間を照合。
 - PRESERVING: 既存`preserveRestoreSource`を共有。v1 record、8slot、各2Mi UTF-16、合計4Mi record長、current厳密一致、occupied slot非上書き、copy再利用を維持。破損/容量/quota/set/read例外/不一致は拒否。失敗後に新copyが残っても自動削除しない。
@@ -25,7 +25,8 @@
 - PREPARING: Stage3A/current/copyを再照合。試験ordinaryも同じgate/lockへ入る。
 - WRITING: 不確定intentをledgerへset/getしてから、再検証・copy/current最終読取り・単一primary setItem。最終確認とset間にawaitはないが他agentを防ぐ証明にはしない。`attempted=true`は**試行intentの保守的marker**。実setItem回数とは別（traceで数える）。intent後失敗はwrite0でもUNKNOWN。
 - READING: 実currentと候補全文の一致を確認し、backup/selection/rules等も再照合する。その再生成時だけcurrentを元plan原文へ置き換えるが、その前に実current==candidateを独立確認する。copy全文も再確認。
-- OBSERVED_MATCH: primary読戻し一致とresult ledger保存/読戻し完了の**観測事実**。SUCCESSとしない。assurance=COOPERATIVE_OBSERVATION_ONLY、executionAllowed=false。disk flush/電源断/将来writer/非協調競合なしを保証しない。
+- READBACK_MATCH: primary読戻し一致と観測record保存/読戻し完了の非終端状態。lock要求全体の終了はまだ確定していない。
+- OBSERVED_MATCH: 上の観測に加え、lock要求のPromiseが正常終了したことを同じ生存インスタンスで確認した結果。永続化しない。共有ledgerのrecord全文と一致するvolatileな結果だけを当該インスタンスが再利用する。SUCCESSやdisk flush/電源断/将来writer/非協調競合なしの保証にはしない。assurance=COOPERATIVE_OBSERVATION_ONLY、executionAllowed=false。
 - REFUSED: intent前拒否。保全済未writeはhistoryで区別。保全副作用なしとは限らない。
 - UNKNOWN: intent以後の例外・中断・不一致/読戻し不能・result保存不能。初回failureのphase/reasonを保持、再実行と通常writerを停止。UNKNOWN→成功の遷移はない。
 
@@ -33,11 +34,17 @@ terminal IDは再利用不可。不正遷移、保全なしwrite、readbackな�
 
 ## 中断と記録失敗
 
-各checkpoint前にledgerをset/get厳密照合。intent未確認ならprimaryへ進まない。同processのledger不確実性はpoison/HOLD。再起動時の非terminal recordはUNKNOWNと提示し、current==candidateでも成功と推定しない。新選択/ordinaryは未解決recordを見て拒否。過去OBSERVED_MATCHは起動時の現在状態ではない。
+各checkpoint前にledgerをset/get厳密照合。intent未確認ならprimaryへ進まない。同processのledger不確実性はpoison/HOLD。再構築したcoordinatorは、現在原文が候補と一致しても保存されたREADBACK_MATCHをUNKNOWNとする。旧版の永続OBSERVED_MATCHもUNKNOWNに扱い直す。**正常終了した操作でも、別インスタンス・再起動後はHOLD**。同じ生存インスタンスだけがlock正常終了のvolatile結果を持つ。保存recordの全文が変わればその結果も使用しない。共有ledgerに永続的な成功receiptやHOLD解除markerを作らないため、最後のmarker書込み後に応答が失われる穴を再導入しない。REFUSEDが正しく保存され、write intentへ入っていない操作は区別する。
 
 合成例外中断と、実ブラウザでintent後にproducer pageをcloseしfinallyが走らない中断を分離する。ブラウザ全体kill/OS終了/電源断/physical flushはNOT_TESTED。ledger/保全/primaryは別キーで一体commitではない。同時喪失や永続化順序は証明できず、marker自体が失われたら検知不能になり得る。製品writeを許可しない。
 
-ロック要求のrejectを観測したらprocessをHOLDとし、遅れて再開するcallbackもcheckpoint後とpersist前のactive guardで停止する。所有権喪失後はledgerにも書かない。そのため喪失理由の詳細は結果メモリだけに残る場合があり、再起動時は最後に確認済みのnonterminal intentからUNKNOWNとする。すでに保存済みOBSERVED_MATCH後のlock解放例外では、過去の読戻し事実は保存されても解放成功の証明はない。喪失通知自体が届く前の非協調競合まで防げるとはしない。
+ロック要求のrejectを観測したらprocessをHOLDとし、遅れて再開するcallbackはcheckpoint後とpersist前のactive guardで停止する。旧callbackはその後storage IOをしない。外側の障害handlerも共有ledger/primary/保全slotを書き換えない。
+
+具体的な初回障害を再起動後にも残すため、外側handlerはoperation IDをUTF-16で単射に符号化した専用`stage3b-test:failure:v1:*`へ、最初のfailureだけを追記・読戻しする。この診断slotは当該操作だけの所有物で、他操作と共有せず、既存値を上書き/削除せず、成功やwriter許可を表す値を持たない。実書込み制御を解除するためのmarkerではない。元障害がある場合、後のlock/診断保存/復旧障害で置換しない。
+
+診断set前/後例外、読戻し不能、drop、破損、全診断IO不能でも、保存された非終端recordによる再起動HOLDは変わらない。診断が読めれば初回phase/reasonを保持する。**全保存が失敗したときに具体的な例外文字列を永続化できる保証はない**。その場合、返却結果メモリには初回障害を残すが、再構築結果では`failureEvidence=UNAVAILABLE`、`firstFailure`未取得と明示し、理由を推測生成しない。それでもUNKNOWNとwriter拒否を維持する。診断キー自体の喪失/非協調改竄/物理永続化の保証はない。
+
+旧d8416dcではOBSERVED_MATCHをlock callback内で保存していたため、その後の解放例外がメモリUNKNOWNだけとなり、新インスタンスがwriterを許可した。独立レビューR-1/P2で発見された受入阻害であり、「過去の観測だけ」とする旧説明は不十分だった。今回の順序変更と保守的再起動判断で訂正する。native Web Locksが同じ解放例外を実際に発生したとの実証ではなく、許容したExclusiveLock adapterの故障である。
 
 ## 競合の保証境界
 

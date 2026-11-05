@@ -1,5 +1,5 @@
 import { setup } from '../helpers/selective-safety-fixture';
-import { StorageSafetyCoordinator, STORAGE_KEY, RECOVERY_KEYS, webExclusive, type Phase, type Store } from './coordinator';
+import { StorageSafetyCoordinator, STORAGE_KEY, RECOVERY_KEYS, FAILURE_PREFIX, webExclusive, type Phase, type Store } from './coordinator';
 import { isolatedStore } from './adapter';
 
 export function makeBrowserFixture(namespace: string, checkpoint: (p: Phase) => void | Promise<void> = () => {}, wrap: (s: Store) => Store = s => s) {
@@ -12,9 +12,11 @@ export function makeBrowserFixture(namespace: string, checkpoint: (p: Phase) => 
 }
 
 export async function suite(namespace: string) {
-  const results: { name: string; phase: string }[] = [];
+  const results: { name: string; phase: string; [key: string]: unknown }[] = [];
   function check(value: unknown, message: string) { if(!value)throw Error(message); }
-  async function test(name: string, work: () => Promise<string>) { results.push({ name, phase: await work() }); }
+  async function test(name: string, work: () => Promise<string | { phase: string; [key: string]: unknown }>) {
+    const value=await work();results.push(typeof value==='string'?{name,phase:value}:{name,...value});
+  }
   await test('normal-preserve-write-readback', async () => {
     const f=makeBrowserFixture(namespace+'normal:'); const r=await f.c.selection('normal',f.candidate,f.read);
     check(r.phase==='OBSERVED_MATCH' && !r.executionAllowed,'normal result');
@@ -81,7 +83,36 @@ export async function suite(namespace: string) {
     check(recovered.phase==='OBSERVED_MATCH'&&f.store.getItem(STORAGE_KEY)===f.original,'manual recovery');
     check(JSON.stringify(f.c.inspect().find(r=>r.id==='first'))===before,'first failure must survive');return recovered.phase;
   });
-  check(results.length===12,'all browser cases executed');
+  for (const mode of ['recorded','marker-before','marker-after'] as const) await test('release-restart-'+mode,async()=>{
+    let primaryCalls=0,markerFired=0;
+    const f=makeBrowserFixture(namespace+mode+':',()=>{},s=>({getItem:k=>s.getItem(k),setItem:(k,v)=>{
+      if(k===STORAGE_KEY)primaryCalls++;
+      if(k.startsWith(FAILURE_PREFIX)){markerFired++;if(mode==='marker-before')throw Error('diagnostic set before');}
+      s.setItem(k,v);
+      if(k.startsWith(FAILURE_PREFIX)&&mode==='marker-after')throw Error('diagnostic set after');
+    }}));
+    primaryCalls=0;
+    const c=new StorageSafetyCoordinator(f.store,async work=>{await work();throw Error('browser-release-failure');});
+    const returned=await c.ordinary('release',f.original,f.candidate.raw!);
+    check(returned.phase==='UNKNOWN'&&returned.record?.firstFailure?.reason.includes('browser-release-failure'),'release UNKNOWN retains first cause');
+    const restarted=new StorageSafetyCoordinator(f.store,webExclusive(navigator.locks));
+    const inspected=restarted.inspect()[0];
+    const next=await restarted.ordinary('after-restart',f.candidate.raw!,f.original);
+    check(inspected.phase==='UNKNOWN'&&next.phase==='REFUSED'&&primaryCalls===1&&markerFired===1,'restart HOLD and actual diagnostic injection');
+    const failureRetained=!!inspected.firstFailure?.reason.includes('browser-release-failure');
+    check(mode==='marker-before'?!failureRetained:failureRetained,'missing diagnostics must not be invented');
+    return {phase:inspected.phase,next:next.phase,primaryCalls,markerFired,failureRetained,failureEvidence:inspected.failureEvidence};
+  });
+  await test('normal-acknowledgement-restart-hold',async()=>{
+    const f=makeBrowserFixture(namespace+'normal-restart:');
+    const returned=await f.c.selection('normal',f.candidate,f.read);
+    check(returned.phase==='OBSERVED_MATCH'&&f.c.inspect()[0].phase==='OBSERVED_MATCH','normal live positive');
+    const restarted=new StorageSafetyCoordinator(f.store,webExclusive(navigator.locks));
+    const inspected=restarted.inspect()[0];const next=await restarted.ordinary('restart',f.candidate.raw!,f.original);
+    check(inspected.phase==='UNKNOWN'&&next.phase==='REFUSED'&&f.store.getItem(STORAGE_KEY)===f.candidate.raw,'normal acknowledgement cannot be inferred after restart');
+    return {phase:inspected.phase,next:next.phase,candidateStillPresent:true};
+  });
+  check(results.length===16,'all browser cases executed');
   return results;
 }
 export { StorageSafetyCoordinator, LEDGER_KEY, STORAGE_KEY, LOCK_NAME, webExclusive } from './coordinator';

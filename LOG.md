@@ -2,6 +2,9 @@
 
 ## 2026-11-05 (JST): Stage 3B-1 保存安全性の隔離検証基盤
 
+- 独立レビューR-1/P2を受入阻害として確認。従来はcallback内の永続OBSERVED_MATCHを信頼し、後の解放例外がメモリUNKNOWNだけとなって再構築後にwriterを許可した。旧「過去の一致」説明では安全性を満たさなかった。保存は非終端READBACK_MATCHまでとし、lock正常終了は当該インスタンスのvolatile結果へ分離。正常終了済みでも新インスタンスはUNKNOWN/HOLD。外側handlerの専用追記診断も失敗した場合はfirstFailure詳細を取得不能と明示し、成功やwriter許可へ昇格しない。製品形式・実保存経路は不変更。
+- 独立原本は読取り専用・raw非公開。出力先だけを作業領域へ変更した同じ反例を自己再実行し、旧UNKNOWN→再構築OBSERVED_MATCH/追加write（2回）を再現、新版は再構築UNKNOWN/追加拒否（1回）、初回障害保持。独立再レビュー自体は別担当待ち。[R-1記録](docs/maintenance/storage-safety-20261105/r1-correction.md)。旧失敗とCIを保持し、新しい最終SHAの回帰/CIはPR Checksと後続報告で確認する。
+
 - 追加点検でknown lock loss後の遅延callbackがterminal二重遷移する反例2件を検出。active fenceと初回failure保持で同条件GREEN、全固有49件。実Web Locks stealでもChromium/WebKitの遅延primary0を確認し、隔離受入は各15/計30へ追加。初回2799686のCI成功は後続SHAと別記録。原RED/初回CI/旧28件を保存し、製品実保存許可へ昇格しない。
 
 - [Issue #122](https://github.com/tetsujisugimori-coder/calculator-memo/issues/122)を作成し[#121](https://github.com/tetsujisugimori-coder/calculator-memo/issues/121)へ相互参照。最新main a37eb9b/tree26c09e8から専用branchで開始。既存checkout・証拠は保持。

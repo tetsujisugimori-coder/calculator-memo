@@ -5,14 +5,16 @@ import { parseStrictJson, validateRestoreRaw } from '../../lib/restore-validatio
 import { revalidateSafety, type SafetyCandidate, type SafetyContext } from '../../lib/selective-restore-safety';
 
 export const LEDGER_KEY = 'stage3b-test:operations:v1';
+export const FAILURE_PREFIX = 'stage3b-test:failure:v1:';
 export const LOCK_NAME = 'stage3b-test:storage-writer:v1';
 export type Store = Pick<Storage, 'getItem' | 'setItem'>;
-export type Phase = 'NEW' | 'CHECKING' | 'PRESERVING' | 'PRESERVED' | 'PREPARING' | 'WRITING' | 'READING' | 'OBSERVED_MATCH' | 'REFUSED' | 'UNKNOWN';
+export type Phase = 'NEW' | 'CHECKING' | 'PRESERVING' | 'PRESERVED' | 'PREPARING' | 'WRITING' | 'READING' | 'READBACK_MATCH' | 'OBSERVED_MATCH' | 'REFUSED' | 'UNKNOWN';
 export type Failure = { phase: Phase; reason: string };
 export type RecordEntry = {
   id: string; kind: 'selection' | 'ordinary' | 'recovery'; recoveryOf?: string;
   phase: Phase; history: Phase[]; attempted: boolean; copy?: RecoveryCopy;
   original: string | null; candidate: string; firstFailure?: Failure;
+  observedPhase?: Phase; unresolvedReason?: string; failureEvidence?: 'RECORDED' | 'UNAVAILABLE';
   // This flag describes product permission, not the synthetic experiment.
   executionAllowed: false;
 };
@@ -20,8 +22,10 @@ export type Result = { phase: Phase; record?: RecordEntry; reason?: string; exec
 export type ExclusiveLock = <T>(work: () => Promise<T>) => Promise<T>;
 export type Checkpoint = (phase: Phase) => void | Promise<void>;
 const terminal = (p: Phase) => ['REFUSED', 'UNKNOWN', 'OBSERVED_MATCH'].includes(p);
-const path: Phase[] = ['NEW', 'CHECKING', 'PRESERVING', 'PRESERVED', 'PREPARING', 'WRITING', 'READING', 'OBSERVED_MATCH'];
+const path: Phase[] = ['NEW', 'CHECKING', 'PRESERVING', 'PRESERVED', 'PREPARING', 'WRITING', 'READING', 'READBACK_MATCH', 'OBSERVED_MATCH'];
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
+// Injective UTF-16 encoding, including unpaired surrogates. No product key.
+export const failureKey = (id: string) => FAILURE_PREFIX + id.split('').map(c => c.charCodeAt(0).toString(16).padStart(4, '0')).join('');
 
 /** Pure transition guard, also used to validate persisted histories on restart. */
 export function transition(record: RecordEntry, next: Phase, reason?: string): RecordEntry {
@@ -31,7 +35,7 @@ export function transition(record: RecordEntry, next: Phase, reason?: string): R
   if (next === 'REFUSED' && !reason) throw Error('refusal requires a reason');
   if (!['REFUSED', 'UNKNOWN'].includes(next) && path[path.indexOf(record.phase) + 1] !== next) throw Error('illegal transition');
   if (next === 'WRITING' && !record.copy) throw Error('preservation must be verified before intent');
-  if (next === 'OBSERVED_MATCH' && (!record.attempted || !record.copy || record.firstFailure)) throw Error('cannot infer success');
+  if (['READBACK_MATCH','OBSERVED_MATCH'].includes(next) && (!record.attempted || !record.copy || record.firstFailure)) throw Error('cannot infer success');
   return { ...record, phase: next, history: [...record.history, next], attempted: record.attempted || next === 'WRITING',
     ...((next === 'REFUSED' || next === 'UNKNOWN') && !record.firstFailure ? { firstFailure: { phase: record.phase, reason: reason! } } : {}) };
 }
@@ -48,7 +52,12 @@ function readLedger(store: Store): RecordEntry[] {
       || !Array.isArray(r.history) || r.history[0] !== 'NEW' || r.history.at(-1) !== r.phase) throw Error('invalid ledger record');
     ids.add(r.id);
     let replay: RecordEntry = { ...r, phase: 'NEW', history: ['NEW'], attempted: false, firstFailure: undefined };
-    for (const phase of r.history.slice(1)) replay = transition(replay, phase, r.firstFailure?.reason);
+    for (const phase of r.history.slice(1)) {
+      // Old test-ledger v1 observations remain readable as historical evidence,
+      // but are never a restart permission. No product storage format changes.
+      if (phase === 'OBSERVED_MATCH' && replay.phase === 'READING') replay = transition(replay, 'READBACK_MATCH');
+      replay = transition(replay, phase, r.firstFailure?.reason);
+    }
     if (replay.attempted !== r.attempted || JSON.stringify(replay.firstFailure) !== JSON.stringify(r.firstFailure)) throw Error('ledger history contradiction');
   }
   return data.records;
@@ -66,13 +75,52 @@ export function webExclusive(locks: LockManager): ExclusiveLock {
 export class StorageSafetyCoordinator {
   private busy = false;
   private poisoned = false; // journal failure in this process: no automatic continuation
+  private readonly liveOutcomes = new Map<string, { persisted: string; result: RecordEntry }>();
   constructor(private readonly store: Store, private readonly exclusive: ExclusiveLock, private readonly checkpoint: Checkpoint = () => {}) {}
 
   inspect(): RecordEntry[] {
-    // Nonterminal persisted intent is UNKNOWN even if current bytes equal candidate.
-    return readLedger(this.store).map(r => terminal(r.phase) ? clone(r) : {
-      ...clone(r), phase: 'UNKNOWN', firstFailure: r.firstFailure ?? { phase: r.phase, reason: 'interrupted; no result inference on restart' },
+    return this.project(readLedger(this.store));
+  }
+
+  private project(records: RecordEntry[]): RecordEntry[] {
+    return records.map(r => {
+      const live = this.liveOutcomes.get(r.id);
+      if (live?.persisted === JSON.stringify(r)) return clone(live.result);
+      if (r.phase === 'REFUSED' && !r.attempted || r.phase === 'UNKNOWN') return clone(r);
+      // No persistent success receipt can prove that the last acknowledgement
+      // reached its caller. Reconstruction is deliberately conservative, even
+      // for a normally completed earlier operation or legacy OBSERVED_MATCH.
+      let firstFailure = r.firstFailure;
+      if (!firstFailure) {
+        try {
+          const raw = this.store.getItem(failureKey(r.id));
+          if (raw !== null) {
+            const diagnostic = parseStrictJson(raw) as { format: string; version: number; id: string; firstFailure: Failure };
+            const f = diagnostic?.firstFailure;
+            if (diagnostic.format !== 'stage3b-test-failure' || diagnostic.version !== 1 || diagnostic.id !== r.id
+              || !f || !path.concat(['REFUSED','UNKNOWN']).includes(f.phase) || typeof f.reason !== 'string' || !f.reason) throw Error('unconfirmed failure diagnostic');
+            firstFailure = clone(f);
+          }
+        } catch { /* missing/unreadable diagnostics never unblock a writer */ }
+      }
+      return { ...clone(r), phase: 'UNKNOWN', observedPhase: r.phase, firstFailure,
+        failureEvidence: firstFailure ? 'RECORDED' : 'UNAVAILABLE',
+        unresolvedReason: 'restart/lifecycle outcome unconfirmed; no automatic writer or success inference' };
     });
+  }
+
+  /** A separate, operation-owned, append-only diagnostic slot. It never updates
+   * the shared ledger, primary bytes, another operation, or a success receipt.
+   * Failure to write/read it cannot weaken the durable restart HOLD policy. */
+  private recordFailureDiagnostic(record: RecordEntry): void {
+    if (!record.firstFailure) return;
+    try {
+      const key = failureKey(record.id);
+      const serialized = JSON.stringify({ format: 'stage3b-test-failure', version: 1, id: record.id, firstFailure: record.firstFailure });
+      const existing = this.store.getItem(key);
+      if (existing === null) this.store.setItem(key, serialized);
+      if (this.store.getItem(key) !== serialized) throw Error('failure diagnostic not confirmed');
+    } catch { this.poisoned = true; /* first cause stays in memory; restart stays UNKNOWN */ }
   }
 
   async selection(id: string, candidate: SafetyCandidate, read: () => SafetyContext): Promise<Result> {
@@ -121,6 +169,13 @@ export class StorageSafetyCoordinator {
     const assertActive = () => { if (!active) throw Error('lock ownership no longer confirmed'); };
     let record: RecordEntry | undefined;
     let ledger: RecordEntry[] = [];
+    const remember = () => {
+      if (!record) return;
+      const persisted = ledger.find(r => r.id === id);
+      if (persisted) this.liveOutcomes.set(id, { persisted: JSON.stringify(persisted), result: clone(record) });
+    };
+    const outcome = (): Result => ({ phase: record!.phase, record: clone(record!), executionAllowed: false,
+      assurance: record!.phase === 'OBSERVED_MATCH' ? 'COOPERATIVE_OBSERVATION_ONLY' : 'UNKNOWN' });
     const persist = () => {
       assertActive();
       if (!record) throw Error('missing record');
@@ -136,13 +191,14 @@ export class StorageSafetyCoordinator {
       assertActive();
     };
     try {
-      return await this.exclusive(async () => {
+      const callbackResult = await this.exclusive(async () => {
         try {
           assertActive();
           ledger = readLedger(this.store);
+          const effective = this.project(ledger);
           if (!id || ledger.some(r => r.id === id)) return this.refused('operation ID already used');
-          if (ledger.some(r => (r.phase === 'UNKNOWN' || !terminal(r.phase)) && r.id !== recoveryOf)) return this.refused('unresolved operation HOLD');
-          if (recoveryOf && !ledger.some(r => r.id === recoveryOf && (r.phase === 'UNKNOWN' || !terminal(r.phase)))) return this.refused('recovery target no longer UNKNOWN');
+          if (effective.some(r => (r.phase === 'UNKNOWN' || !terminal(r.phase)) && r.id !== recoveryOf)) return this.refused('unresolved operation HOLD');
+          if (recoveryOf && !effective.some(r => r.id === recoveryOf && (r.phase === 'UNKNOWN' || !terminal(r.phase)))) return this.refused('recovery target no longer UNKNOWN');
           record = { id, kind, recoveryOf, original, candidate: raw, phase: 'NEW', history: ['NEW'], attempted: false, executionAllowed: false };
           persist();
           await step('CHECKING');
@@ -166,30 +222,39 @@ export class StorageSafetyCoordinator {
           await step('READING');
           validate(true);
           if (this.store.getItem(STORAGE_KEY) !== raw || this.store.getItem(copy.copy.key) !== copy.copy.serialized) throw Error('post-write readback/copy mismatch');
-          record = transition(record, 'OBSERVED_MATCH');
-          persist(); // failure here is UNKNOWN, despite matched primary bytes
-          return { phase: record.phase, record: clone(record), executionAllowed: false, assurance: 'COOPERATIVE_OBSERVATION_ONLY' };
+          record = transition(record, 'READBACK_MATCH');
+          persist(); // This is an observation, NOT lifecycle completion.
+          return outcome();
         } catch (e) {
           if (!record) return this.refused(String(e));
           // A completed terminal record cannot be advanced. Failure to persist its
           // result is a new uncertainty, retaining any original failure.
-          if (record.phase === 'OBSERVED_MATCH') record = { ...record, phase: 'READING', history: record.history.slice(0,-1) };
           if (!terminal(record.phase)) record = transition(record, record.attempted ? 'UNKNOWN' : 'REFUSED', String(e));
-          try { persist(); } catch { this.poisoned = true; }
-          return { phase: record.phase, record: clone(record), executionAllowed: false, assurance: 'UNKNOWN' };
+          try { persist(); } catch { this.poisoned = true; if (active) this.recordFailureDiagnostic(record); }
+          return outcome();
         }
       });
+      // The request must resolve before any live completed result is exposed.
+      // Never persist a success/unlock receipt: a failure after that write could
+      // again lose its acknowledgement. New instances reconcile conservatively.
+      if (record?.phase === 'READBACK_MATCH') record = transition(record, 'OBSERVED_MATCH');
+      remember();
+      return record ? outcome() : callbackResult;
     } catch (e) {
       // Lock failure after work ran cannot erase the already-attempted outcome.
       active = false;
       this.poisoned = !!record;
       if (record) {
         const reason = `lock lifecycle failure: ${String(e)}`;
-        if (record.phase === 'OBSERVED_MATCH') record = { ...record, phase: 'READING', history: record.history.slice(0,-1) };
+        if (record.phase === 'OBSERVED_MATCH') {
+          this.liveOutcomes.delete(id);
+          record = { ...record, phase: 'READBACK_MATCH', history: record.history.slice(0,-1) };
+        }
         if (!terminal(record.phase)) record = transition(record, record.attempted ? 'UNKNOWN' : 'REFUSED', reason);
-        // Do not write the ledger after ownership was lost. A previously saved
-        // OBSERVED_MATCH is only the truthful earlier readback observation, never
-        // a restart-time permission or proof that lock release succeeded.
+        // The old callback is fenced. Only its own diagnostic slot may now be
+        // appended by this outer handler; no shared-ledger/primary IO follows.
+        this.recordFailureDiagnostic(record);
+        remember();
         return { phase: record.phase, record: clone(record), reason, executionAllowed: false, assurance: 'UNKNOWN' };
       }
       return this.refused(String(e));

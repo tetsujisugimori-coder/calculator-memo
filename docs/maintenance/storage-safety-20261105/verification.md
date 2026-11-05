@@ -2,6 +2,8 @@
 
 2026-11-05 JST、自己検証。独立レビューは別担当。Refs #122 / #121。最終commitのActionsはPR Checks/後続コメントで確認し、この文書commit自身の成功を先取りしない。
 
+**訂正：d8416dcの独立受入はR-1/P2によりFAIL。** 解放例外後のUNKNOWNが再構築でOBSERVED_MATCHになり、writerが再開した。旧自己検証の成功や「過去の読戻し事実」という説明では受入条件を満たしていなかった。[根因・順序変更・同条件RED→GREEN・複合障害](r1-correction.md)を優先する。以下の49/15/30等は旧版の時点記録で、修正SHAの受入を先取りしない。独立原本はraw非公開・読取り専用で保持。
+
 ## 調査
 
 AGENTS.md、docs/agent/github-workflow.md/verification-policy.md、e2e/README.md、README/LOG、json-backup/json-restore/recovery-copy-manager/selective-restore-preview/plan/execution-safety、lib/storage/restore-storage/selective-restore-safety、対応単体/GUI/workflowを確認。PR #107/#109/#111/#113/#115/#117/#118/#120とIssue #105/#116/#119/#121をGitHub取得。#117 merged、#118 closed/unmerged、#120は#117へmerged。開始時main a37eb9b/tree26c09e8。main commitのworkflow API取得0件を、#117受入HEADの再実行と呼ばない。6job fail-closed/1128 checks/592 geometry/132 PNG契約は不変更。
