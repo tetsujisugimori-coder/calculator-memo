@@ -94,6 +94,12 @@ Unknownは成功への自動遷移を持たない。再読取で一貫したcomm
 PoC `tests/storage-architecture/poc.mjs` はIDB `vault/root`の一つのenvelopeに全要素を入れる。複数storeへ分けても全storeを同じscopeに含める必要がある。
 全writer（通常保存/復元/削除/移行/修復）が守らないと条件は崩れる。PoCは製品schema検証器・履歴上限・承認UXを実装していない。
 
+**PoCはtransaction coreの比較用であり、UNKNOWN後のruntime HOLD controllerは未実装。** `executionAllowed=false` / `HOLD=true` のexportと証拠値は試験範囲の宣言で、commit関数を止めるruntime gateではない。
+abortは同transactionを戻すためUNKNOWN操作自体の永続intent/失敗recordは作られず、呼出元にUNKNOWNを返す。元tokenがまだ現行なら、別の明示commit呼出をこのcore単体は拒否しない。
+complete後に外側で発生した例外も元failureをreceiptへ永続化する実装ではなく、writer labelの非空検査もprotocol/capability gateではない。
+自動retryは実装していないが、UNKNOWNを覚えて通常writerも止めるcoordinator・別診断記録・protocol検証・UIは別途必要。上の状態図は完成済みPoCの全状態ではなく、推奨製品facadeの要求である。
+Stage3B-1の保守的HOLD coordinatorとこのIDB coreを統合・受入したという主張はしない。
+
 ### 再起動と欠落
 
 1. 起動時はread-only。chain/copy/current/structureを同時snapshotで読む。欠落・不整合はUNKNOWN/HOLD。
@@ -164,7 +170,7 @@ C=専用Worker/SharedWorker等への集約。D=LS v1 payload互換を残す段�
 | --- | --- | --- |
 | P1-1 | 全writer facade（通常/explicit memo/report/reset/full restore/copy delete）、writer台帳が入力 | 全呼出元が列挙manifestと一致。Storage直接書込をbuild/static契約で検出。製品有効化はまだ別 |
 | P1-2 | IDB adapter（P1-1）、tuple/current/copy/receipt一体、操作ID重複拒否 | 2ページ同token一方拒否、ABA/復旧競合、全put境界abort、request成功後abort、complete後通知喪失、再open。旧snapshot不変 |
-| P1-3 | authority reader・HOLD・移行前read-only比較（P1-2） | 欠落/未知版/chain破損/整合巻戻し限界、blocked/versionchange、全IO不可、診断不可でも書込拒否 |
+| P1-3 | authority reader・UNKNOWN runtime HOLD controller・protocol gate・移行前read-only比較（P1-2） | coreがUNKNOWNを返した後の通常/復元も停止。別診断保存不能/abortでintent不在でも自動再試行0。欠落/未知版/chain破損/整合巻戻し限界、blocked/versionchange、全IO不可でも書込拒否 |
 | P1-4 | 片方向の明示移行/旧側分岐救出（前3項と別承認） | 移行各境界停止、旧LS A→B→A、同時旧保存、新authority不変、両側個別export、人による選択、二重writeなし |
 | P2-1 | 容量/履歴保持/compaction/保全削除（P1-2） | bounded quota、chain prune anchorの原子性、満杯拒否、copy削除が現/過去receiptと矛盾しない。PoC無限配列は製品不可 |
 | P2-2 | 復旧UX・既存JSON互換（P1-3） | 旧backup corpusのbyte保存/strict validation、未知付加項目保持、元UNKNOWNと復旧別記、失敗後自動retry0 |

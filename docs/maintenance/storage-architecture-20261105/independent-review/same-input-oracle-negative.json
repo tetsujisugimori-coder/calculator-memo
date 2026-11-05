@@ -1,0 +1,374 @@
+{
+  "provenance": {
+    "sha": "525c383efbb0251fe097431ca68c6674f1c70224",
+    "tree": "d66ebb3aa3c7a25df8e360b81dbe7807399f46ca",
+    "dirty": false,
+    "node": "v22.13.0",
+    "platform": "linux",
+    "run": "41999033337",
+    "attempt": "1",
+    "sourceSha256": "2af26f08a44b58abdaec992df89593b82300eb35b60cb81fdc37da12b889f231"
+  },
+  "executionAllowed": false,
+  "HOLD": true,
+  "results": [
+    {
+      "engine": "chromium",
+      "status": "PASS",
+      "cases": [
+        {
+          "name": "same-generation-two-tabs",
+          "status": "PASS",
+          "observation": {
+            "outcomes": [
+              {
+                "status": "COMMITTED_OBSERVED"
+              },
+              {
+                "status": "COMMITTED_OBSERVED"
+              }
+            ],
+            "generation": 1
+          }
+        },
+        {
+          "name": "stale-validation-and-recovery",
+          "status": "PASS",
+          "observation": {
+            "status": "REFUSED",
+            "reason": "stale-token"
+          }
+        },
+        {
+          "name": "cooperative-aba-token",
+          "status": "PASS",
+          "observation": {
+            "status": "REFUSED",
+            "reason": "stale-token"
+          }
+        },
+        {
+          "name": "web-lock-ignored-by-old-tab",
+          "status": "PASS",
+          "observation": {
+            "lockHeldDuringBypass": true,
+            "raw": "B",
+            "safety": "COUNTEREXAMPLE"
+          }
+        },
+        {
+          "name": "unobserved-notification-aba",
+          "status": "PASS",
+          "observation": {
+            "rawComparisonAccepts": true,
+            "safety": "COUNTEREXAMPLE",
+            "notification": "subscriber-absent"
+          }
+        },
+        {
+          "name": "final-check-set-gap",
+          "status": "PASS",
+          "observation": {
+            "lost": "B",
+            "final": "C",
+            "safety": "COUNTEREXAMPLE",
+            "scheduling": "explicit-cross-page-boundaries"
+          }
+        },
+        {
+          "name": "transaction-abort-preserves-all",
+          "status": "PASS",
+          "observation": {
+            "status": "UNKNOWN",
+            "reason": "transaction-aborted",
+            "generation": 0,
+            "history": 1,
+            "copies": 0
+          }
+        },
+        {
+          "name": "commit-before-page-close-ack",
+          "status": "PASS",
+          "observation": {
+            "status": "COMMIT_RECORD_OBSERVED",
+            "generation": 1,
+            "acknowledgement": "UNKNOWN",
+            "durability": "NOT_PROVEN",
+            "interruption": "actual-page-close-after-tx-complete-before-ui-ack",
+            "browserKill": "NOT_TESTED"
+          }
+        },
+        {
+          "name": "exception-after-commit",
+          "status": "PASS",
+          "observation": {
+            "status": "UNKNOWN",
+            "originalFailure": "injected-after-complete",
+            "receipt": {
+              "status": "COMMIT_RECORD_OBSERVED",
+              "generation": 1,
+              "acknowledgement": "UNKNOWN",
+              "durability": "NOT_PROVEN"
+            }
+          }
+        },
+        {
+          "name": "normal-reopen-new-instance",
+          "status": "PASS",
+          "observation": {
+            "integrity": "CONSISTENT",
+            "receipt": {
+              "status": "COMMIT_RECORD_OBSERVED",
+              "generation": 1,
+              "acknowledgement": "UNKNOWN",
+              "durability": "NOT_PROVEN"
+            }
+          }
+        },
+        {
+          "name": "missing-corrupt-history-generation-copy",
+          "status": "PASS",
+          "observation": [
+            {
+              "fault": "generation",
+              "status": "UNKNOWN"
+            },
+            {
+              "fault": "history",
+              "status": "UNKNOWN"
+            },
+            {
+              "fault": "copy",
+              "status": "UNKNOWN"
+            }
+          ]
+        },
+        {
+          "name": "entire-store-loss-no-auto-bootstrap",
+          "status": "PASS",
+          "observation": {
+            "status": "UNKNOWN",
+            "automaticBootstrap": "REFUSED",
+            "virginVsEvicted": "INDISTINGUISHABLE"
+          }
+        },
+        {
+          "name": "idb-authority-legacy-fork",
+          "status": "PASS",
+          "observation": {
+            "idb": "NEW",
+            "legacy": "OLD-TAB",
+            "safety": "FORK-REQUIRES-MANUAL-RECONCILIATION"
+          }
+        },
+        {
+          "name": "dedicated-workers-not-single-authority",
+          "status": "PASS",
+          "observation": {
+            "perTabSequence": [
+              1,
+              1
+            ],
+            "restartedSequence": 1,
+            "safety": "COUNTEREXAMPLE"
+          }
+        },
+        {
+          "name": "restore-and-ordinary-share-transaction",
+          "status": "PASS",
+          "observation": [
+            {
+              "status": "COMMITTED_OBSERVED"
+            },
+            {
+              "status": "REFUSED",
+              "reason": "stale-token"
+            }
+          ]
+        }
+      ],
+      "pageerrors": [],
+      "version": "141.0.7390.37"
+    },
+    {
+      "engine": "webkit",
+      "status": "PASS",
+      "cases": [
+        {
+          "name": "same-generation-two-tabs",
+          "status": "PASS",
+          "observation": {
+            "outcomes": [
+              {
+                "status": "COMMITTED_OBSERVED"
+              },
+              {
+                "status": "REFUSED",
+                "reason": "stale-token"
+              }
+            ],
+            "generation": 1
+          }
+        },
+        {
+          "name": "stale-validation-and-recovery",
+          "status": "PASS",
+          "observation": {
+            "status": "REFUSED",
+            "reason": "stale-token"
+          }
+        },
+        {
+          "name": "cooperative-aba-token",
+          "status": "PASS",
+          "observation": {
+            "status": "REFUSED",
+            "reason": "stale-token"
+          }
+        },
+        {
+          "name": "web-lock-ignored-by-old-tab",
+          "status": "PASS",
+          "observation": {
+            "lockHeldDuringBypass": true,
+            "raw": "B",
+            "safety": "COUNTEREXAMPLE"
+          }
+        },
+        {
+          "name": "unobserved-notification-aba",
+          "status": "PASS",
+          "observation": {
+            "rawComparisonAccepts": true,
+            "safety": "COUNTEREXAMPLE",
+            "notification": "subscriber-absent"
+          }
+        },
+        {
+          "name": "final-check-set-gap",
+          "status": "PASS",
+          "observation": {
+            "lost": "B",
+            "final": "C",
+            "safety": "COUNTEREXAMPLE",
+            "scheduling": "explicit-cross-page-boundaries"
+          }
+        },
+        {
+          "name": "transaction-abort-preserves-all",
+          "status": "PASS",
+          "observation": {
+            "status": "UNKNOWN",
+            "reason": "transaction-aborted",
+            "generation": 0,
+            "history": 1,
+            "copies": 0
+          }
+        },
+        {
+          "name": "commit-before-page-close-ack",
+          "status": "PASS",
+          "observation": {
+            "status": "COMMIT_RECORD_OBSERVED",
+            "generation": 1,
+            "acknowledgement": "UNKNOWN",
+            "durability": "NOT_PROVEN",
+            "interruption": "actual-page-close-after-tx-complete-before-ui-ack",
+            "browserKill": "NOT_TESTED"
+          }
+        },
+        {
+          "name": "exception-after-commit",
+          "status": "PASS",
+          "observation": {
+            "status": "UNKNOWN",
+            "originalFailure": "injected-after-complete",
+            "receipt": {
+              "status": "COMMIT_RECORD_OBSERVED",
+              "generation": 1,
+              "acknowledgement": "UNKNOWN",
+              "durability": "NOT_PROVEN"
+            }
+          }
+        },
+        {
+          "name": "normal-reopen-new-instance",
+          "status": "PASS",
+          "observation": {
+            "integrity": "CONSISTENT",
+            "receipt": {
+              "status": "COMMIT_RECORD_OBSERVED",
+              "generation": 1,
+              "acknowledgement": "UNKNOWN",
+              "durability": "NOT_PROVEN"
+            }
+          }
+        },
+        {
+          "name": "missing-corrupt-history-generation-copy",
+          "status": "PASS",
+          "observation": [
+            {
+              "fault": "generation",
+              "status": "UNKNOWN"
+            },
+            {
+              "fault": "history",
+              "status": "UNKNOWN"
+            },
+            {
+              "fault": "copy",
+              "status": "UNKNOWN"
+            }
+          ]
+        },
+        {
+          "name": "entire-store-loss-no-auto-bootstrap",
+          "status": "PASS",
+          "observation": {
+            "status": "UNKNOWN",
+            "automaticBootstrap": "REFUSED",
+            "virginVsEvicted": "INDISTINGUISHABLE"
+          }
+        },
+        {
+          "name": "idb-authority-legacy-fork",
+          "status": "PASS",
+          "observation": {
+            "idb": "NEW",
+            "legacy": "OLD-TAB",
+            "safety": "FORK-REQUIRES-MANUAL-RECONCILIATION"
+          }
+        },
+        {
+          "name": "dedicated-workers-not-single-authority",
+          "status": "PASS",
+          "observation": {
+            "perTabSequence": [
+              1,
+              1
+            ],
+            "restartedSequence": 1,
+            "safety": "COUNTEREXAMPLE"
+          }
+        },
+        {
+          "name": "restore-and-ordinary-share-transaction",
+          "status": "PASS",
+          "observation": [
+            {
+              "status": "COMMITTED_OBSERVED"
+            },
+            {
+              "status": "REFUSED",
+              "reason": "stale-token"
+            }
+          ]
+        }
+      ],
+      "pageerrors": [],
+      "version": "26.0"
+    }
+  ],
+  "status": "PASS"
+}

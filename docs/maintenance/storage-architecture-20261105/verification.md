@@ -3,6 +3,17 @@
 2026-11-05 JST。Issue [#124](https://github.com/tetsujisugimori-coder/calculator-memo/issues/124)。基点main `120a265f539c0e6762f9eae6eedb52d8b922fbf6`、branch `test/stage3b2-storage-architecture`。
 [設計](../../design/storage-architecture-stage3b2.md)・[writer表/依存図](../../design/storage-writers-stage3b2.md)・[検索根拠](source-inventory.json)。
 
+## 最新判定（独立再受入後）
+
+**設計/試験範囲の独立受入PASS、総合PARTIAL、製品実保存NO。** [Draft PR #125](https://github.com/tetsujisugimori-coder/calculator-memo/pull/125)。
+独立R2-1/R2-2は解消。別担当の[最終限定レビュー](independent-review/REVIEW-final-limited.md)は、実CI summaryを使った厳密同入力RED→GREENと独自192変種拒否、作者45＋独自15=60試験を確認した。
+PoCのUNKNOWN停止controller/外側failure永続化/protocol gate未実装も独自反例で明示したうえでの受入である。
+修正固定HEAD `1df6f24a1641dca7bff189f68099a4501c79fe60` の[専用native CI 41999757708](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/41999757708)成功。
+Linux Node22.13.0、Chromium141.0.7390.37/WebKit26.0各15・pageerrors0、HEAD/tree/run/attempt/clean/source SHA256を実artifactから作者と独立担当が別照合。
+[原summary](native-1df6f24.json) SHA256 `54784517007f5d4bfc511311a53016dfdcb516dc69c79aebf39ed8aebfef16af`。
+これは後続の証拠commitのCI成功を先取りしない。**最後の文書・証拠更新後HEADの全CI終端と原artifact再照合はPR Checks/最終PR報告を正本とする。**
+マージ推奨はその確認を条件に設計/試験専用差分だけYES、Draftは維持。実保存許可は条件付きYESにしない。
+
 ## 開始時確認と変更境界
 
 - latest main/PR #123・Issue #121/#122をソース/connected GitHubで照合。Stage3B-2のIssue/PR重複なし、Issue #124を新規作成。
@@ -71,6 +82,7 @@ CI artifactの保持期間は7日。raw browser JSONとstage logが根拠であ�
 ## 未解決と独立レビュー
 
 P1: 非協調旧タブ排除不能、移行中の旧側編集分岐、全writerの製品統合、複数storage跨ぎ、全消失/整合巻戻し、媒体永続化。
+PoCの`HOLD=true`は宣言値でruntime controllerではない。abort時UNKNOWNのintent/失敗は同txに残らず、元tupleが現行ならcoreへの別commit呼出は可能。post-complete例外の元failure永続化、writer labelからprotocol/capabilityを検証するgateも未実装。自動retryはないが、UNKNOWN後に通常writerも止める製品coordinator/永続診断/protocol gateの統合はP1未実装。設計状態図とPoC実装範囲を分離する。
 P2: 操作記録とUI ackの分離UX、履歴保持/容量/compaction/保全削除、JSON互換adapter、人手照合。
 P3 NOT_TESTED: iPhone Safari/VoiceOver/private mode/OS拡大/soft keyboard/長期背景化・eviction/電源断、SharedWorkerの実運用単一性。
 実装担当自身の再確認を独立レビューとは呼ばない。別担当へ固定HEAD・ソース・設計・反例・未保証事項を渡し、独自反例と実行結果を記録する。実施前はNOT_TESTED/マージ推奨NO。
