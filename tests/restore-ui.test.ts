@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { freshStorageRuntime } from './helpers/fresh-storage-runtime';
 import { CalculatorApp } from '../components/CalculatorApp';
 import { collectBackup, serializeBackup } from '../lib/backup';
 import { STORAGE_KEY, defaultData } from '../lib/storage';
@@ -18,7 +19,7 @@ async function file(text=envelope()) { const input=host.querySelector('input[typ
 async function prepare(){await click('JSONから復元');await act(pause);await file();await click('現在データを保全する');}
 async function approve(){await act(async()=>host.querySelector<HTMLInputElement>('.restore-approval input')!.click());}
 describe('safe restore app boundary',()=>{
- beforeEach(()=>{Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});vi.stubGlobal('ResizeObserver',class{observe(){}disconnect(){}});localStorage.clear();localStorage.setItem(STORAGE_KEY,source);host=document.createElement('div');document.body.append(host);root=createRoot(host);});
+ beforeEach(()=>{Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});vi.stubGlobal('ResizeObserver',class{observe(){}disconnect(){}});freshStorageRuntime(); localStorage.clear();localStorage.setItem(STORAGE_KEY,source);host=document.createElement('div');document.body.append(host);root=createRoot(host);});
  afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
  it('does not normalize already clean raw on load',async()=>{const write=vi.spyOn(Storage.prototype,'setItem');await mount();expect(write).not.toHaveBeenCalled();expect(localStorage.getItem(STORAGE_KEY)).toBe(source);});
  it('preview is read-only, approval is distinct and double execution cannot repeat the write',async()=>{
@@ -70,6 +71,37 @@ describe('safe restore app boundary',()=>{
  });
  it('maintains missing-key initialization without treating it as a restored snapshot',async()=>{
   localStorage.removeItem(STORAGE_KEY);await mount();expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!)).toEqual(defaultData);
+ });
+
+ it.each(['throw-after', 'drop', 'lock-after'] as const)('reset %s remains UNKNOWN and never retries or publishes empty React state', async mode => {
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  localStorage.setItem(STORAGE_KEY, '{broken'); await mount();
+  const native = Storage.prototype.setItem;
+  const writes = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(this: Storage, key, raw) {
+    if (mode !== 'drop') native.call(this, key, raw);
+    if (mode === 'throw-after') throw Error('after reset');
+  });
+  if (mode === 'lock-after') vi.stubGlobal('navigator', { locks: { request: async (_name: string, callback: () => unknown) => { await callback(); throw Error('release'); } } });
+  await click('保存データを初期化'); await click('初期化する');
+  expect(host.textContent).toContain('UNKNOWN'); expect(host.querySelector('.storage-recovery')).not.toBeNull();
+  expect(host.querySelector('.toast')?.textContent).not.toBe('保存データを初期化しました');
+  await click('保存データを初期化'); await click('初期化する'); await act(pause);
+  expect(writes).toHaveBeenCalledTimes(1);
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(mode === 'drop' ? '{broken' : JSON.stringify(defaultData));
+ });
+ it.each(['throw-after', 'lock-after'] as const)('preservation %s makes the restore dialog terminal and stops automatic primary saving', async mode => {
+  await mount(); await click('JSONから復元'); await act(pause); await file();
+  const native = Storage.prototype.setItem;
+  const writes = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(this: Storage, key, raw) {
+    native.call(this, key, raw); if (mode === 'throw-after') throw Error('after preservation');
+  });
+  if (mode === 'lock-after') vi.stubGlobal('navigator', { locks: { request: async (_name: string, callback: () => unknown) => { await callback(); throw Error('release'); } } });
+  await click('現在データを保全する'); expect(host.textContent).toContain('UNKNOWN');
+  expect(button('現在データを保全する').disabled).toBe(true); expect(button('復元を実行する').disabled).toBe(true);
+  expect(host.querySelector<HTMLInputElement>('input[type=file]')?.disabled).toBe(true);
+  await click('現在データを保全する'); await click('閉じる'); await act(pause);
+  expect(writes).toHaveBeenCalledTimes(1); expect(localStorage.getItem(STORAGE_KEY)).toBe(source);
+  expect(JSON.parse(localStorage.getItem(RECOVERY_KEYS[0])!).raw).toBe(source);
  });
 
 });

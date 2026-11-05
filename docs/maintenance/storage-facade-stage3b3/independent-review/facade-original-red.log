@@ -1,0 +1,70 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/storage-facade-independent.test.ts
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b3
+
+ ❯ tests/storage-facade-independent.test.ts (15 tests | 1 failed) 40ms
+   ✓ independent facade adversarial controls > ordinary save retains unrelated domain and reads exact written raw back 6ms
+   ✓ independent facade adversarial controls > stale ordinary save and invalid destination cause zero writes 1ms
+   ✓ independent facade adversarial controls > preserves exact source lexemes and existing raw backup format through full restore 3ms
+   ✓ independent facade adversarial controls > keeps 8 distinct slots and refuses ninth without eviction or repair 3ms
+   ✓ independent facade adversarial controls > ordinary-save throw-after-write latches HOLD across wrappers 2ms
+   ✓ independent facade adversarial controls > reset throw-after-write latches HOLD across wrappers 1ms
+   ✓ independent facade adversarial controls > preserve throw-after-write latches HOLD across wrappers 1ms
+   ✓ independent facade adversarial controls > full-restore throw-after-write latches HOLD across wrappers 1ms
+   ✓ independent facade adversarial controls > sync facade and injected adapter cannot bypass exclusive deletion capability 2ms
+   ✓ independent facade adversarial controls > selective restore refuses even a forged runtime executionAllowed true 1ms
+   ✓ independent facade adversarial controls > write lock rejection does not fallback or honor a late callback 1ms
+   ✓ independent facade adversarial controls > write lock release exception overrides verified readback with UNKNOWN and HOLD 1ms
+   ✓ independent facade adversarial controls > sync wrapper mutation inside caller lock is fenced when release throws 2ms
+   ✓ independent facade adversarial controls > deletion remove-after-throw returns unknown and rejects a second attempt 2ms
+   × independent facade adversarial controls > revokes pending inner deletion when outer exclusive session request already rejected 11ms
+     → expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "calculation-memo:restore-recovery:v1:0",
+    ]
+
+
+Number of calls: 1
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-facade-independent.test.ts > independent facade adversarial controls > revokes pending inner deletion when outer exclusive session request already rejected
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times
+
+Received: 
+
+  1st spy call:
+
+    Array [
+      "calculation-memo:restore-recovery:v1:0",
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/storage-facade-independent.test.ts:101:30
+     99|     const observed=await runStorageOperation(request,s); expect(observ…
+    100|     expect(innerCallback).toBeDefined(); completeInner!(innerCallback!…
+    101|     expect(s.removeItem).not.toHaveBeenCalled(); expect(s.map.has(RECO…
+       |                              ^
+    102|   });
+    103| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  07:43:44
+   Duration  1.21s (transform 207ms, setup 0ms, collect 840ms, tests 40ms, environment 0ms, prepare 88ms)
+

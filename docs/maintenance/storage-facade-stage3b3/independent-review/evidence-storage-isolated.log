@@ -1,0 +1,40 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/evidence-storage.test.ts
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b3
+
+ ❯ tests/evidence-storage.test.ts (7 tests | 1 failed) 5023ms
+   ✓ evidence persistence boundary > checks original bytes before any write and reads back a successful write 4ms
+   ✓ evidence persistence boundary > refuses changed source rather than overwrite another tab 1ms
+   ✓ evidence persistence boundary > treats a thrown mutation as uncertain, not proof of no write 0ms
+   ✓ evidence persistence boundary > does not claim success when write is silently dropped 0ms
+   ✓ evidence persistence boundary > protects malformed and future evidence on load and save 2ms
+   ✓ evidence persistence boundary > preserves old no-history notes and opaque fields without fabricating evidence 1ms
+   × evidence persistence boundary > serializes same-client writers and recovers the queue after rejection 5013ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evidence-storage.test.ts > evidence persistence boundary > serializes same-client writers and recovers the queue after rejection
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/evidence-storage.test.ts:52:3
+     50|     expect(target.raw()).not.toContain('calculationEvidence');
+     51|   });
+     52|   it('serializes same-client writers and recovers the queue after reje…
+       |   ^
+     53|     const order: number[] = []; let release!: () => void;
+     54|     const pending = new Promise<void>(resolve => { release = resolve; …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  07:46:55
+   Duration  6.23s (transform 215ms, setup 0ms, collect 906ms, tests 5.02s, environment 0ms, prepare 109ms)
+

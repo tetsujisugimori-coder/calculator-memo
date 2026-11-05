@@ -1,0 +1,13 @@
+✔ additional facade CI checks exact PR head with pinned actions and read-only permissions (8.908483ms)
+✔ bounded runner preserves original outcome and failure artifacts in an exclusive directory (20.697474ms)
+✔ owned loopback build identifies source, bundle, and browser-observed asset bytes (4.7493ms)
+✔ all eight matrix cases require six completed fresh contexts; no partial or forced success (13.88726ms)
+✔ product operations use real UI, fixed raw expectations, and native fault observation without product hooks (5.029272ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 326.521109

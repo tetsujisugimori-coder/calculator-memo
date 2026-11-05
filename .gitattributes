@@ -1,0 +1,3 @@
+
+# Archived raw test logs intentionally retain the original whitespace.
+/docs/maintenance/storage-facade-stage3b3/**/*.log -whitespace

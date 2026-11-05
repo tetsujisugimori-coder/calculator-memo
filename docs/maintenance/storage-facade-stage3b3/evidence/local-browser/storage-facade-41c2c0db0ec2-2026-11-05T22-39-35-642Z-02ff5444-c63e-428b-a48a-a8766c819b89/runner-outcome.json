@@ -1,0 +1,17 @@
+{
+  "status": "failed",
+  "sha": "41c2c0db0ec2b7dde81ada15c98de5316ab690ce",
+  "out": "gui-evidence/storage-facade-41c2c0db0ec2-2026-11-05T22-39-35-642Z-02ff5444-c63e-428b-a48a-a8766c819b89",
+  "startedAt": "2026-11-05T22:39:35.643Z",
+  "build": {
+    "code": 0,
+    "signal": null
+  },
+  "browser": {
+    "code": 1,
+    "signal": null
+  },
+  "error": "AssertionError [ERR_ASSERTION]: browser failed: 1/null/\n    at run (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/run-storage-facade-gui.mjs:37:10)\n    at async file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/run-storage-facade-gui.mjs:95:3",
+  "stopReason": null,
+  "finishedAt": "2026-11-05T22:39:37.805Z"
+}

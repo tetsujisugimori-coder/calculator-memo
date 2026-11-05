@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { collectBackup, MAX_RAW_CODE_UNITS, type BackupResult } from '../lib/backup';
-import { STORAGE_KEY, withStorageWriteLock } from '../lib/storage';
+import { STORAGE_KEY, isStorageLockUncertain, withStorageWriteLock } from '../lib/storage';
 import { MAX_RESTORE_FILE_BYTES, validateRestoreBackup } from '../lib/restore-validation';
 import { preserveRestoreSource, readRecoveryCopies, restoreRaw, type RecoveryCopy } from '../lib/restore-storage';
 import { holdRecoverySession, exportRecoveryCopy, readRecoverySnapshot } from '../lib/recovery-manager';
@@ -80,10 +80,21 @@ export function RestoreModal({ onClose, blockedReason, generation, canApply, onA
     working.current = true; setBusy(true); setMessage(''); approval.current = false; setApproved(false);
     try {
       const result = await withStorageWriteLock(() => preserveRestoreSource(localStorage, p.currentRaw, () => valid(p)));
-      if (!result.ok) { invalidate(`保全できないため上書きしません。${result.message}`); return; }
+      if (!result.ok) {
+        if (result.uncertain) {
+          finished.current = true; setTerminal(true); approval.current = false; setApproved(false);
+          callbacks.current.onUncertain(); setProblem(`現在データは上書きしません。${result.message}`);
+        } else invalidate(`保全できないため上書きしません。${result.message}`);
+        return;
+      }
       if (!valid(p)) return;
       preserved.current = result.copy; setCopy(result.copy); setCopies(readRecoveryCopies(localStorage)); setProblem(''); setMessage('独立キーの復旧コピーを作成・読戻し照合しました。端末外の保管も推奨します。');
-    } catch { invalidate('保全用ロックまたは保存領域を利用できません。保存原文は置き換えていません。'); }
+    } catch (cause) {
+      if (isStorageLockUncertain(cause)) {
+        finished.current = true; setTerminal(true); callbacks.current.onUncertain();
+        setProblem('保全操作後のロック処理が確認不能（UNKNOWN）です。再試行と自動保存を停止しました。');
+      } else invalidate('保全用ロックまたは保存領域を利用できません。保存原文は置き換えていません。');
+    }
     finally { working.current = false; if (alive.current) setBusy(false); }
   };
   const execute = async () => {
@@ -100,8 +111,8 @@ export function RestoreModal({ onClose, blockedReason, generation, canApply, onA
         callbacks.current.onApplied(p.candidate.raw, p.candidate.data);
         setMessage('保存原文の書込みと読戻し一致を確認し、画面状態を更新しました。端末ディスクへの永続化や他タブとの完全な原子性は保証しません。');
       } catch { callbacks.current.onUncertain(); setProblem('保存原文は照合しましたが画面状態の更新を確認できません（UNKNOWN）。自動保存を停止しています。復旧コピーを保管し、明示的に再読み込みしてください。'); }
-    } catch {
-      if (writeOutcomeObserved) {
+    } catch (cause) {
+      if (writeOutcomeObserved || isStorageLockUncertain(cause)) {
         finished.current = true; setTerminal(true);
         try { callbacks.current.onUncertain(); } catch { /* keep terminal UI protection */ }
         setProblem('書込み後の画面状態を確認できません（UNKNOWN）。復旧コピーを保持し、自動再試行は行いません。');

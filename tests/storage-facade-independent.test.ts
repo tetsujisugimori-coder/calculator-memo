@@ -1,0 +1,103 @@
+/** Independent adversarial controls authored separately from the facade implementation. */
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { executeStorageOperation, executeWithAdapter, runStorageOperation, type StorageOperation } from '../lib/storage-facade';
+import { defaultData, saveDataChecked, STORAGE_KEY } from '../lib/storage';
+import { preserveRestoreSource, restoreRaw, RECOVERY_KEYS } from '../lib/restore-storage';
+import { deleteRecoveryCopy, readRecoverySnapshot } from '../lib/recovery-manager';
+import { RECOVERY_SESSION_LOCK, withStorageWriteLock } from '../lib/storage-lock';
+
+const raw = '{ "version":1,"history":[],"notes":[],"settings":{"theme":"light","activePanel":"history"},"future":900719925474099312345 }';
+const restored = '{ "version":1,"history":[],"notes":[],"settings":{"theme":"dark","activePanel":"history"},"future":1e+02 }';
+function fixture(source: string | null = raw) {
+  const map = new Map<string,string>([['unrelated-app', 'unchanged']]);
+  if (source !== null) map.set(STORAGE_KEY, source);
+  return { map, getItem: vi.fn((key:string) => map.get(key) ?? null), setItem: vi.fn((key:string,value:string) => { map.set(key,value); }), removeItem: vi.fn((key:string) => { map.delete(key); }) };
+}
+function locks() {
+  vi.stubGlobal('navigator', { locks: { request: async (_name:string, options: unknown, cb?: (lock:object) => unknown) => typeof options === 'function' ? options({}) : cb!({}) } });
+}
+function deletion(s: ReturnType<typeof fixture>): StorageOperation {
+  return { kind:'recovery-delete', writer:'independent', key:RECOVERY_KEYS[0], snapshot:readRecoverySnapshot(s), approvedAndCurrent:()=>true };
+}
+afterEach(() => vi.unstubAllGlobals());
+
+describe('independent facade adversarial controls', () => {
+  it('ordinary save retains unrelated domain and reads exact written raw back', () => {
+    const s=fixture(); const data={...defaultData,settings:{...defaultData.settings,theme:'dark' as const}};
+    expect(saveDataChecked(data,raw,s)).toEqual({ok:true,raw:JSON.stringify(data)});
+    expect(s.map.get('unrelated-app')).toBe('unchanged'); expect(s.setItem).toHaveBeenCalledTimes(1);
+  });
+  it('stale ordinary save and invalid destination cause zero writes', () => {
+    const s=fixture(); expect(saveDataChecked(defaultData,'stale',s)).toEqual({ok:false,reason:'conflict'});
+    s.map.set(STORAGE_KEY,'{"version":999}'); expect(saveDataChecked(defaultData,'{"version":999}',s)).toEqual({ok:false,reason:'invalid'});
+    expect(s.setItem).not.toHaveBeenCalled();
+  });
+  it('preserves exact source lexemes and existing raw backup format through full restore', () => {
+    const s=fixture(); const preserved=preserveRestoreSource(s,raw); expect(preserved.ok).toBe(true); if(!preserved.ok)throw Error('setup');
+    const record=JSON.parse(preserved.copy.serialized);
+    expect(Object.keys(record)).toEqual(['format','version','createdAt','sourceKey','raw','utf16CodeUnits']); expect(record.raw).toBe(raw);
+    expect(restoreRaw(s,restored,raw,preserved.copy,()=>true)).toEqual({status:'verified'});
+    expect(s.map.get(STORAGE_KEY)).toBe(restored); expect(s.map.get(preserved.copy.key)).toBe(preserved.copy.serialized);
+    expect(s.map.get('unrelated-app')).toBe('unchanged');
+  });
+  it('keeps 8 distinct slots and refuses ninth without eviction or repair', () => {
+    const s=fixture(); for(let i=0;i<8;i++){const source=raw+' '.repeat(i);s.map.set(STORAGE_KEY,source); expect(preserveRestoreSource(s,source).ok).toBe(true);}
+    const slots=RECOVERY_KEYS.map(key=>s.map.get(key)); s.map.set(STORAGE_KEY,raw+' '.repeat(8));
+    expect(preserveRestoreSource(s,raw+' '.repeat(8)).ok).toBe(false); expect(RECOVERY_KEYS.map(key=>s.map.get(key))).toEqual(slots); expect(s.setItem).toHaveBeenCalledTimes(8);
+  });
+  it.each(['ordinary-save','reset','preserve','full-restore'] as const)('%s throw-after-write latches HOLD across wrappers', kind => {
+    const s=fixture(); const p=preserveRestoreSource(s,raw); if(!p.ok)throw Error('setup'); s.setItem.mockClear();
+    if(kind==='preserve')s.map.set(STORAGE_KEY,raw+' ');
+    const expected=s.map.get(STORAGE_KEY)!;
+    s.setItem.mockImplementation((key,value)=>{s.map.set(key,value);throw Error('after write');});
+    const request: StorageOperation = kind==='ordinary-save' ? {kind,writer:'independent',data:defaultData,expectedRaw:expected} : kind==='reset' ? {kind,writer:'independent',expectedRaw:expected,approvedAndCurrent:()=>true} : kind==='preserve' ? {kind,writer:'independent',expectedRaw:expected} : {kind,writer:'independent',raw:restored,expectedRaw:expected,copy:p.copy,approvedAndCurrent:()=>true};
+    expect(executeStorageOperation(request,s)).toMatchObject({status:'UNKNOWN',diagnostic:{mutationAttempted:true,hold:true}});
+    expect(saveDataChecked(defaultData,s.map.get(STORAGE_KEY)??null,s)).toEqual({ok:false,reason:'uncertain'});
+    expect(s.setItem).toHaveBeenCalledTimes(1); expect(s.removeItem).not.toHaveBeenCalled();
+  });
+  it('sync facade and injected adapter cannot bypass exclusive deletion capability', () => {
+    const s=fixture(); preserveRestoreSource(s,raw); const request=deletion(s);
+    expect(executeStorageOperation(request,s).status).toBe('BLOCKED');
+    expect(executeWithAdapter(request,{identity:s,kind:'fake',canSet:true,canRemove:true,read:s.getItem,write:s.setItem,remove:s.removeItem}).status).toBe('BLOCKED');
+    expect(s.removeItem).not.toHaveBeenCalled();
+  });
+  it('selective restore refuses even a forged runtime executionAllowed true', async () => {
+    locks(); const s=fixture(); const request={kind:'selective-restore',writer:'independent',executionAllowed:true} as unknown as StorageOperation;
+    expect(executeStorageOperation(request,s).status).toBe('BLOCKED'); expect((await runStorageOperation(request,s)).status).toBe('BLOCKED');
+    expect(s.setItem).not.toHaveBeenCalled(); expect(s.removeItem).not.toHaveBeenCalled();
+  });
+  it('write lock rejection does not fallback or honor a late callback', async () => {
+    const s=fixture(); let late: (()=>unknown)|undefined;
+    vi.stubGlobal('navigator',{locks:{request:(_name:string,callback:()=>unknown)=>{late=callback;return Promise.reject(Error('acquire'));}}});
+    expect((await runStorageOperation({kind:'ordinary-save',writer:'independent',data:defaultData,expectedRaw:raw},s)).status).toBe('UNAVAILABLE');
+    await expect(Promise.resolve().then(()=>late!())).rejects.toThrow(); expect(s.setItem).not.toHaveBeenCalled();
+  });
+  it('write lock release exception overrides verified readback with UNKNOWN and HOLD', async () => {
+    const s=fixture(); vi.stubGlobal('navigator',{locks:{request:async(_name:string,callback:()=>unknown)=>{await callback();throw Error('release');}}});
+    expect(await runStorageOperation({kind:'ordinary-save',writer:'independent',data:defaultData,expectedRaw:raw},s)).toMatchObject({status:'UNKNOWN',diagnostic:{hold:true}});
+    expect(saveDataChecked(defaultData,s.map.get(STORAGE_KEY)??null,s)).toEqual({ok:false,reason:'uncertain'}); expect(s.setItem).toHaveBeenCalledTimes(1);
+  });
+  it('sync wrapper mutation inside caller lock is fenced when release throws', async () => {
+    const s=fixture(); vi.stubGlobal('navigator',{locks:{request:async(_name:string,callback:()=>unknown)=>{await callback();throw Error('release');}}});
+    await expect(withStorageWriteLock(()=>saveDataChecked(defaultData,raw,s))).rejects.toThrow(/UNKNOWN/);
+    expect(saveDataChecked(defaultData,s.map.get(STORAGE_KEY)??null,s)).toEqual({ok:false,reason:'uncertain'});
+  });
+  it('deletion remove-after-throw returns unknown and rejects a second attempt', async () => {
+    locks(); const s=fixture(); preserveRestoreSource(s,raw); const snap=readRecoverySnapshot(s);
+    s.removeItem.mockImplementation(key=>{s.map.delete(key);throw Error('after remove');});
+    expect((await deleteRecoveryCopy(s,snap,RECOVERY_KEYS[0],()=>true)).status).toBe('unknown');
+    expect((await deleteRecoveryCopy(s,snap,RECOVERY_KEYS[0],()=>true)).status).toBe('unknown');
+    expect(s.removeItem).toHaveBeenCalledTimes(1);
+  });
+  it('revokes pending inner deletion when outer exclusive session request already rejected', async () => {
+    const s=fixture(); preserveRestoreSource(s,raw); const request=deletion(s);
+    let innerCallback:(()=>unknown)|undefined, completeInner:((value:unknown)=>void)|undefined, outerCallbackTask:Promise<unknown>|undefined;
+    vi.stubGlobal('navigator',{locks:{request:(name:string,options:unknown,callback?:(lock:object)=>Promise<unknown>)=>{
+      if(name===RECOVERY_SESSION_LOCK){ outerCallbackTask=callback!({}); void outerCallbackTask.catch(()=>undefined); return Promise.reject(Error('session rejected after callback began')); }
+      innerCallback=options as ()=>unknown; return new Promise(resolve=>{completeInner=resolve;});
+    }}});
+    const observed=await runStorageOperation(request,s); expect(observed.status).toBe('UNAVAILABLE'); expect(s.removeItem).not.toHaveBeenCalled();
+    expect(innerCallback).toBeDefined(); completeInner!(innerCallback!()); await outerCallbackTask;
+    expect(s.removeItem).not.toHaveBeenCalled(); expect(s.map.has(RECOVERY_KEYS[0])).toBe(true);
+  });
+});

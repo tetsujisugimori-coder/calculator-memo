@@ -86,12 +86,15 @@ describe("read-only selection preview UI", () => {
  it("opens, reads, compares, inspects, selects and closes without any storage mutations", async () => { const write = vi.spyOn(Storage.prototype, "setItem"); const remove = vi.spyOn(Storage.prototype, "removeItem"); const clear = vi.spyOn(Storage.prototype, "clear"); await mount(); await upload(); expect(host.textContent).toContain("第1段階・読み取り専用"); await click(compareLabel); const article = host.querySelector("[data-preview-key]")!; expect(article.textContent).toContain("h1"); await click("個別詳細", article); expect(host.querySelector("pre")?.textContent).toContain("1+2"); await click("復元候補に選択", article); expect(host.textContent).toContain("復元候補 1件"); await click("候補から解除", article); await click("プレビューを閉じる"); await act(pause); expect(write).not.toHaveBeenCalled(); expect(remove).not.toHaveBeenCalled(); expect(clear).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(source); expect(localStorage.getItem(RECOVERY_KEYS[0])).toBe("synthetic protected recovery raw"); });
  it("opening and closing revokes already queued autosave without flushing unsaved data", async () => {
   const queued: (() => unknown)[] = [];
-  Object.defineProperty(navigator, "locks", { configurable: true, value: { request: vi.fn(async (_name: string, callback: () => unknown) => { queued.push(callback); }) } });
+  // Model a pending lock request, not a request already fulfilled before its
+  // callback runs. The facade now correctly fences callbacks after settlement.
+  Object.defineProperty(navigator, "locks", { configurable: true, value: { request: vi.fn((_name: string, callback: () => unknown) => new Promise(resolve => { queued.push(() => resolve(callback())); })) } });
   await act(async () => root.render(createElement(CalculatorApp))); await act(pause);
   const theme = host.querySelector<HTMLSelectElement>('select[aria-label="テーマ"]')!;
   await act(async () => { theme.value = "dark"; theme.dispatchEvent(new Event("change", { bubbles: true })); });
   const write = vi.spyOn(Storage.prototype, "setItem"); await click("選択復元プレビュー"); await click("プレビューを閉じる");
-  await act(async () => { for (const callback of queued) callback(); });
+  // Resolving the first queued request lets the next enter the same-tab queue.
+  for (let index = 0; index < queued.length; index++) await act(async () => { queued[index](); });
   expect(write).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(source);
  });
  it("rejects malformed files and clears old candidates at file change", async () => { await mount(); await upload(); await click("復元候補に選択", host.querySelector("[data-preview-key]")!); await upload("{broken"); expect(host.querySelector("[data-preview-key]")).toBeNull(); expect(host.textContent).not.toContain("復元候補 1件"); expect(host.querySelector('[role="alert"]')).toBeTruthy(); });

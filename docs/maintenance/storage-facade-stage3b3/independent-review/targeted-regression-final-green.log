@@ -1,0 +1,209 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/storage-facade-independent.test.ts tests/storage-facade.test.ts tests/storage.test.ts tests/restore-storage.test.ts tests/recovery-manager.test.ts tests/restore-ui.test.ts tests/evidence-app-save.test.ts tests/evidence-storage.test.ts tests/formula-report-app-save.test.ts tests/formula-reports.test.ts tests/storage-facade-gui-fixtures.test.ts tests/selection-preview-ui.test.ts
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b3
+
+ ✓ tests/storage.test.ts (42 tests) 42ms
+ ✓ tests/storage-facade-gui-fixtures.test.ts (3 tests) 20ms
+ ✓ tests/storage-facade-independent.test.ts (15 tests) 92ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > identifies valid outer with protected inner broken
+保存データのJSONが壊れています SyntaxError: Unexpected token 'b', "broken" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:14:233
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+
+ ✓ tests/restore-storage.test.ts (16 tests) 124ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > full and oversized regions do not report capacity available
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+
+ ✓ tests/recovery-manager.test.ts (25 tests) 133ms
+ ✓ tests/evidence-storage.test.ts (7 tests) 64ms
+ ✓ tests/formula-reports.test.ts (30 tests) 202ms
+ ✓ tests/storage-facade.test.ts (68 tests) 321ms
+ ✓ tests/formula-report-app-save.test.ts (13 tests) 768ms
+ ✓ tests/evidence-app-save.test.ts (14 tests) 1339ms
+ ✓ tests/restore-ui.test.ts (16 tests) 2045ms
+   ✓ safe restore app boundary > preview is read-only, approval is distinct and double execution cannot repeat the write  369ms
+ ✓ tests/selection-preview-ui.test.ts (29 tests) 2816ms
+   ✓ read-only selection preview UI > contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=false)  435ms
+   ✓ read-only selection preview UI > bounds a full 200-item plan to 20 rendered items and preserves the last page  519ms
+
+ Test Files  12 passed (12)
+      Tests  278 passed (278)
+   Start at  07:48:42
+   Duration  10.78s (transform 4.10s, setup 0ms, collect 31.33s, tests 7.97s, environment 4.21s, prepare 2.39s)
+

@@ -1,0 +1,34 @@
+{
+  "kind": "additional-storage-facade-gui-not-formal",
+  "sha": "41c2c0db0ec2b7dde81ada15c98de5316ab690ce",
+  "startedAt": "2026-11-05T22:42:53.300Z",
+  "status": "failed",
+  "expectedCases": 8,
+  "expectedContextsPerCase": 6,
+  "noRetryObservationMs": 1600,
+  "engineOutcomes": [
+    {
+      "engine": "chromium",
+      "status": "failed",
+      "executableOverride": "/usr/bin/chromium",
+      "error": "browserType.launch: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-Sc9tLN --remote-debugging-pipe --no-startup-window\n<launched> pid=81\n[pid=81][err] /usr/bin/chromium: 9: [: 5225709568: unexpected operator\n[pid=81][err] [81:81:1106/074253.375349:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)\n[pid=81][err] [1106/074253.375567:ERROR:third_party/crashpad/crashpad/util/linux/scoped_ptrace_attach.cc:27] ptrace: Operation not permitted (1)\nCall log:\n\u001b[2m  - <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-Sc9tLN --remote-debugging-pipe --no-startup-window\u001b[22m\n\u001b[2m  - <launched> pid=81\u001b[22m\n\u001b[2m  - [pid=81][err] /usr/bin/chromium: 9: [: 5225709568: unexpected operator\u001b[22m\n\u001b[2m  - [pid=81][err] [81:81:1106/074253.375349:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)\u001b[22m\n\u001b[2m  - [pid=81][err] [1106/074253.375567:ERROR:third_party/crashpad/crashpad/util/linux/scoped_ptrace_attach.cc:27] ptrace: Operation not permitted (1)\u001b[22m\n\u001b[2m  - [pid=81] <gracefully close start>\u001b[22m\n\u001b[2m  - [pid=81] <kill>\u001b[22m\n\u001b[2m  - [pid=81] <will force kill>\u001b[22m\n\u001b[2m  - [pid=81] <process did exit: exitCode=null, signal=SIGABRT>\u001b[22m\n\u001b[2m  - [pid=81] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=81] finished temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=81] <gracefully close end>\u001b[22m\n\n    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/storage-facade-browser.mjs:295:28",
+      "finishedAt": "2026-11-05T22:42:53.382Z"
+    },
+    {
+      "engine": "webkit",
+      "status": "failed",
+      "executableOverride": null,
+      "error": "browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libgtk-4.so.1                                    ║\n║     libgraphene-1.0.so.0                             ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libharfbuzz-icu.so.0                             ║\n║     libhyphen.so.0                                   ║\n║     libmanette-0.2.so.0                              ║\n║     libGLESv2.so.2                                   ║\n╚══════════════════════════════════════════════════════╝\n    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/storage-facade-browser.mjs:295:28",
+      "finishedAt": "2026-11-05T22:42:53.493Z"
+    }
+  ],
+  "limitations": [
+    "Not formal GUI success",
+    "No physical iPhone Safari, software keyboard or OS text scaling",
+    "Readback is not disk durability",
+    "Noncooperative old tabs, ABA and TOCTOU remain"
+  ],
+  "cases": [],
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 8\n\n    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/storage-facade-browser.mjs:313:10",
+  "finishedAt": "2026-11-05T22:42:53.494Z"
+}

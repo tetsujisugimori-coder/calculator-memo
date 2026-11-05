@@ -1,0 +1,4 @@
+{"node":"v24.22.1","mode":"async","nativeLocks":"function"}
+first 7
+caught intentional callback rejection
+after rejection 9

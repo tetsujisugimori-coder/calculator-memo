@@ -1,5 +1,7 @@
 # Calculation Memo
 
+Stage 3B-3は、既存の全writerを操作別の[Storage Facade](docs/design/storage-facade-stage3b3.md)へ統合します。通常保存・初期化・全体復元・保全管理の読戻しとUNKNOWNを共通化し、直接書込みを静的契約で検出します。保存先/JSON v1は変更せず、選択復元は `executionAllowed=false`／HOLDのままです。[検証と残る保証境界](docs/maintenance/storage-facade-stage3b3/verification.md)を確認してください。
+
 Stage 3B-2では、[全writer棚卸し](docs/design/storage-writers-stage3b2.md)と[旧タブ・世代管理・4方式比較](docs/design/storage-architecture-stage3b2.md)、隔離したIndexedDB transactionの試験PoCを追加しています。製品の保存経路は切り替えず、実選択復元は引き続き `executionAllowed=false`／HOLDです。[検証・保証限界](docs/maintenance/storage-architecture-20261105/verification.md)を参照してください。
 
 選択復元のStage 3B-1は、合成データ・隔離ストレージ専用の[保存安全性検証基盤](docs/design/selective-restore-storage-safety.md)です。保全の厳密読戻し、協調writerの排他、書込みintentとUNKNOWN停止、人手復旧を検査します。読戻し一致は観測時点のみで、非協調writer・通知なしABA・永続化は未保証です。**製品の選択復元は引き続き実行禁止（executionAllowed=false）**。[検証・証拠台帳](docs/maintenance/storage-safety-20261105/verification.md)、[Issue #122](https://github.com/tetsujisugimori-coder/calculator-memo/issues/122)を参照してください。

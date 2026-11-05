@@ -116,7 +116,7 @@ describe("formula report storage boundary", () => {
   });
   it("does not conflate failed persistence or cross-tab conflict with success", () => {
     const raw = JSON.stringify(defaultData), candidate = { ...defaultData, formulaReports: reports };
-    expect(saveDataChecked(candidate, raw, { getItem: () => raw, setItem: () => { throw Error("quota"); } })).toEqual({ ok: false, reason: "unavailable" });
+    expect(saveDataChecked(candidate, raw, { getItem: () => raw, setItem: () => { throw Error("quota"); } })).toEqual({ ok: false, reason: "uncertain" });
     const setItem = vi.fn(); expect(saveDataChecked(candidate, raw, { getItem: () => JSON.stringify({ ...defaultData, future: 1 }), setItem })).toEqual({ ok: false, reason: "conflict" }); expect(setItem).not.toHaveBeenCalled();
   });
 });

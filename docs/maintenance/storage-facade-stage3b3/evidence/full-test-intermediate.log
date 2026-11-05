@@ -1,0 +1,534 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b3
+
+ ✓ tests/formula-report-source-navigation-app.test.ts (11 tests) 1957ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\n")  460ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r\n")  306ms
+stderr | tests/formula-audit-record-comparison-app.test.ts > failed explicit source acquisition clears old comparison without rewriting fixed records
+ローカル保存領域へアクセスできませんでした Error: synthetic unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-audit-record-comparison-app.test.ts:108:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/audit-body-item-navigation-app.test.ts (6 tests) 2723ms
+   ✓ real CalculatorApp synchronizes sequential body ranges and returns to latest item without reads or writes  1231ms
+   ✓ real CalculatorApp repeated activation before frame commits at most the adjacent occurrence  499ms
+   ✓ real CalculatorApp rejects outstanding step on identical storage notification and after session end  324ms
+   ✓ real CalculatorApp rejects an interrupted cursor move and allows a fresh body step without committing the rejected item  301ms
+ ✓ tests/formula-audit-record-comparison-app.test.ts (16 tests) 2806ms
+   ✓ real app requires explicit A/B and compares changed expression even with equal results without persistence  381ms
+   ✓ real retained-data storage changed invalidates and preserves uncertainty through refresh and reopen  418ms
+stderr | tests/formula-report-audit-comparison-export-ui.test.ts > failed explicit retrieval and unsaved editor edits both invalidate output without changing fixed bytes
+ローカル保存領域へアクセスできませんでした Error: synthetic acquisition failure
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-report-audit-comparison-export-ui.test.ts:134:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-comparison-export-ui.test.ts (16 tests) 3103ms
+   ✓ real app previews, copies and downloads identical bytes without reading or modifying original data/history  497ms
+   ✓ real app storage deleted invalidates output and late clipboard completion, keeps held-body constraint after recompare  322ms
+ ✓ tests/formula-report-diff-ui.test.ts (34 tests) 3706ms
+ ❯ tests/selection-preview-ui.test.ts (29 tests | 1 failed) 3312ms
+   ✓ read-only selection preview UI > contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=false)  408ms
+   ✓ read-only selection preview UI > contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=true) 209ms
+   ✓ read-only selection preview UI > R1 shows the same single unsupported confirmation reference in preview, details and plan 140ms
+   ✓ read-only selection preview UI > R2 keeps formula/report UNKNOWN across blocked-child removal, invalidates on raw and selection changes 253ms
+   ✓ read-only selection preview UI > shows opaque settings references as UNKNOWN instead of a zero-unknown PASS 138ms
+   ✓ read-only selection preview UI > bounds a full 200-item plan to 20 rendered items and preserves the last page  410ms
+   ✓ read-only selection preview UI > returns focus to the preview launcher even when touch did not focus it 57ms
+   ✓ read-only selection preview UI > a raw change during generation rejects its candidate before publishing PASS 96ms
+   ✓ read-only selection preview UI > generates a no-op preflight PASS, expires on selection and requires explicit regeneration 143ms
+   ✓ read-only selection preview UI > expires a successful plan on storage without automatic refresh 45ms
+   ✓ read-only selection preview UI > expires a successful plan on same-tab without automatic refresh 45ms
+   ✓ read-only selection preview UI > expires a successful plan on read-error without automatic refresh 65ms
+   ✓ read-only selection preview UI > expires a successful plan on generation without automatic refresh 37ms
+   ✓ read-only selection preview UI > shows structured ADD but lexical BLOCKED and preserves every storage key 72ms
+   ✓ read-only selection preview UI > same-turn stale file actions cannot reuse the former plan 100ms
+   ✓ read-only selection preview UI > changed unsaved-editing condition immediately revokes PASS and blocks explicit revalidation 56ms
+   ✓ read-only selection preview UI > opens, reads, compares, inspects, selects and closes without any storage mutations 159ms
+   × read-only selection preview UI > opening and closing revokes already queued autosave without flushing unsaved data 81ms
+     → 保存ロック要求は失効しました。書込みは開始しません。
+   ✓ read-only selection preview UI > rejects malformed files and clears old candidates at file change 64ms
+   ✓ read-only selection preview UI > revokes stale item actions synchronously on file replacement 74ms
+   ✓ read-only selection preview UI > checks size before reading file text 58ms
+   ✓ read-only selection preview UI > does not let an older asynchronous file replace the newer file 58ms
+   ✓ read-only selection preview UI > storage notification invalidates even equal bytes without automatic reacquisition 82ms
+   ✓ read-only selection preview UI > same-tab raw change is caught before an item action 115ms
+   ✓ read-only selection preview UI > read failure clears prior success and reports UNKNOWN 102ms
+   ✓ read-only selection preview UI > distinguishes acquired but invalid current JSON from read failure 60ms
+   ✓ read-only selection preview UI > same-turn app generation change invalidates before selection 29ms
+   ✓ read-only selection preview UI > details escape HTML and never evaluate expressions 57ms
+   ✓ read-only selection preview UI > unmount clears transient selection and does not expose a restore execution control 95ms
+ ✓ tests/audit-roundtrip.integration.test.ts (19 tests) 4800ms
+   ✓ repeated real-app roundtrips preserve detail, filter, list scroll and focus without reads or writes  756ms
+   ✓ editing outside target permits structural relocation, then returns to current material without original acquisition  369ms
+   ✓ refuses deleted target after edit without moving selection or restoring stale detail  369ms
+   ✓ an already acquired active session stays invalid after body edit while returning without implicit refresh  309ms
+ ✓ tests/formula-report-quotes-ui.test.ts (24 tests) 1057ms
+ ✓ tests/saved-evidence-ui.test.ts (33 tests) 2065ms
+   ✓ lazily mounts per-block details for a capacity-valid large history  667ms
+ ✓ tests/formula-report-audit-storage-app.test.ts (8 tests) 1632ms
+   ✓ real storage changed retains body without describing it as current saved, even after source recheck and reopen  497ms
+stderr | tests/recovery-manager-ui.test.ts > recovery copy manager UI protection > corrupt inner raw is distinct from corrupt record and no counts are invented
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at Timeout.read [as _onTimeout] (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/RecoveryManagerModal.tsx:51:18)
+    at listOnTimeout (node:internal/timers:685:17)
+    at processTimers (node:internal/timers:618:7)
+
+ ✓ tests/recovery-manager-ui.test.ts (15 tests) 1722ms
+ ✓ tests/audit-item-navigation-app.test.ts (3 tests) 1215ms
+   ✓ real CalculatorApp steps to each occurrence and repeatedly returns to its detail, focus, filter and scroll without reads or writes  738ms
+stderr | tests/audit-body-item-navigation.integration.test.ts > source acquisition failure does not skip structurally complete entries or fabricate source agreement
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+    at dispatchEventForPluginEventSystem (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19320:7)
+    at dispatchEvent (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:23585:11)
+
+ ✓ tests/audit-body-item-navigation.integration.test.ts (17 tests) 1595ms
+stderr | tests/formula-report-audit-ui.test.ts > unverified links are not presented as absent in difference detail (failure)
+ローカル保存領域へアクセスできませんでした Error: blocked
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-report-audit-ui.test.ts:104:101)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-ui.test.ts (19 tests) 1221ms
+ ✓ tests/formula-report-audit-record-ui.test.ts (16 tests) 1219ms
+ ✓ tests/formula-status-list.test.ts (25 tests) 1348ms
+ ✓ tests/formula-report-audit-comparison-insertion-ui.test.ts (45 tests) 9595ms
+   ✓ real app previews the exact existing export bytes and cancels without reading/writing data  489ms
+   ✓ real app start insertion keeps selected/full old body and exact dedicated undo  396ms
+   ✓ real app selection insertion keeps selected/full old body and exact dedicated undo  341ms
+   ✓ real app end insertion keeps selected/full old body and exact dedicated undo  413ms
+   ✓ StrictMode app remains usable and explicit save/reload retains material but not new roots/history  577ms
+ ✓ tests/formula-report-ui.test.ts (28 tests) 1202ms
+ ✓ tests/selective-safety-ui.test.ts (10 tests) 1204ms
+   ✓ application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection  372ms
+ ✓ tests/restore-ui.test.ts (11 tests) 1419ms
+ ✓ tests/formula-report-diff-tracking-ui.test.ts (34 tests) 1786ms
+ ✓ tests/formula-detail-refresh.test.ts (20 tests) 1025ms
+ ✓ tests/formula-report-audit-export-ui.test.ts (16 tests) 1006ms
+ ✓ tests/calculation-trial-component.test.ts (16 tests) 643ms
+ ✓ tests/audit-item-navigation.integration.test.ts (13 tests) 1090ms
+ ✓ tests/evidence-pending-component.test.ts (7 tests) 957ms
+   ✓ pending count overflow refuses recalculation and trial application without dropping the 100 queued records  547ms
+ ✓ tests/deleted-calculation-graph.test.ts (5 tests) 555ms
+ ✓ tests/evidence-app-save.test.ts (14 tests) 1772ms
+ ✓ tests/independent-roundtrip-review.test.ts (2 tests) 806ms
+   ✓ independent: close after normal return restores focus to audit opener  477ms
+   ✓ independent: a storage notification cannot revive roundtrip even with same raw value  327ms
+ ✓ tests/dependency-svg.test.ts (13 tests) 732ms
+   ✓ parses the display projection of actual exported node/edge syntax  553ms
+ ✓ tests/formula-quote-comparison-ui.test.ts (17 tests) 499ms
+ ✓ tests/report-template-navigation.test.ts (20 tests) 779ms
+ ✓ tests/audit-item-navigation-independent.test.ts (6 tests) 461ms
+ ✓ tests/formula-detail-ui.test.ts (24 tests) 539ms
+ ✓ tests/backup-app.test.ts (2 tests) 464ms
+   ✓ backs up saved bytes while unsaved calculation state remains in the app  333ms
+ ✓ tests/formula-snapshot-ordering.test.ts (10 tests) 535ms
+ ✓ tests/formula-audit-comparison-sources-ui.test.ts (12 tests) 243ms
+ ✓ tests/formula-report-audit-record-review-ui.test.ts (4 tests) 437ms
+ ✓ tests/formula-report-app-save.test.ts (13 tests) 935ms
+stderr | tests/formula-comparison-insertion-independent.test.ts > independent negative: failed collection acquisition refuses fixed insertion, but historical comparison remains exportable
+ローカル保存領域へアクセスできませんでした Error: storage unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-comparison-insertion-independent.test.ts:51:87)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at acquireEvidence (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportModal.tsx:35:18)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportModal.tsx:132:50
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react/cjs/react.development.js:1263:34)
+
+ ✓ tests/backup-ui.test.ts (8 tests) 300ms
+ ✓ tests/formula-comparison-insertion-independent.test.ts (12 tests) 409ms
+ ✓ tests/body-navigation-list-return-independent.test.ts (1 test) 299ms
+ ✓ tests/selection-candidate-button.test.ts (10 tests) 163ms
+ ✓ tests/trial-independent-review.test.ts (16 tests) 278ms
+stderr | tests/markdown-report-component.test.ts > refuses unreadable or absent persisted source {broken without fallback
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at readReport (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/MarkdownReportModal.tsx:14:20)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/components/MarkdownReportModal.tsx:25:56
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react/cjs/react.development.js:1263:34)
+    at MarkdownReportModal (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/MarkdownReportModal.tsx:25:41)
+    at Object.react_stack_bottom_frame (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+
+ ✓ tests/dependency-graph-component.test.ts (5 tests) 485ms
+ ✓ tests/markdown-report-component.test.ts (12 tests) 263ms
+ ✓ tests/formula-comparison-boundary-ui.test.ts (3 tests) 95ms
+ ✓ tests/calculation-evidence-verification-ui.test.ts (7 tests) 252ms
+ ✓ tests/formula-audit-comparison-independent.test.ts (5 tests) 105ms
+ ✓ tests/markdown-headings.test.ts (31 tests) 155ms
+ ✓ tests/dependency-mermaid.test.ts (11 tests) 113ms
+ ✓ tests/formula-difference-source-layout.test.ts (3 tests) 89ms
+ ✓ tests/markdown-report-download.test.ts (3 tests) 53ms
+ ✓ tests/identification-ui.test.ts (1 test) 87ms
+ ✓ tests/formula-execution.test.ts (39 tests) 596ms
+   ✓ registered formula execution > matches an independently computed 500-case arithmetic corpus  443ms
+ ✓ tests/dependency-analysis.test.ts (28 tests) 101ms
+ ✓ tests/formula-report-audit-roundtrip.test.ts (25 tests) 408ms
+ ✓ tests/formula-report-difference-boundaries.test.ts (74 tests) 396ms
+ ✓ tests/storage-safety.test.ts (60 tests) 845ms
+ ✓ tests/formula-report-audit-comparison-record.test.ts (45 tests) 252ms
+ ✓ tests/selective-restore-safety.test.ts (67 tests) 193ms
+ ✓ tests/markdown-report-provenance.test.ts (22 tests) 338ms
+ ✓ tests/evidence-independent-review.test.ts (25 tests) 232ms
+ ✓ tests/selective-restore-plan.test.ts (68 tests) 228ms
+ ✓ tests/dependency-comparison.test.ts (13 tests) 111ms
+ ✓ tests/selection-preview.test.ts (35 tests) 295ms
+ ✓ tests/calculation-trial.test.ts (24 tests) 79ms
+ ✓ tests/markdown-report.test.ts (46 tests) 112ms
+ ✓ tests/formula-report-audit-export.test.ts (33 tests) 178ms
+ ✓ tests/calculation-evidence.test.ts (20 tests) 44ms
+ ✓ tests/formula-report-evidence.test.ts (50 tests) 223ms
+ ✓ tests/evidence-comparison.test.ts (41 tests) 176ms
+ ✓ tests/calculation-status.test.ts (36 tests) 188ms
+ ✓ tests/block-references.test.ts (38 tests) 114ms
+ ✓ tests/percent-parser.test.ts (64 tests) 77ms
+ ✓ tests/evidence-impact.test.ts (39 tests) 181ms
+ ✓ tests/formula-report-diff-tracking.test.ts (38 tests) 109ms
+ ✓ tests/source-evidence-gui-contract.test.ts (13 tests) 45ms
+ ✓ tests/percent-integration.test.ts (10 tests) 86ms
+ ✓ tests/evidence-impact-graph.test.ts (20 tests) 99ms
+ ✓ tests/formula-report-audit.test.ts (30 tests) 206ms
+ ✓ tests/formula-report-audit-record.test.ts (27 tests) 191ms
+ ✓ tests/execution-plan.test.ts (34 tests) 164ms
+ ✓ tests/formula-report-diff.test.ts (32 tests) 74ms
+ ✓ tests/formula-report-audit-comparison.test.ts (64 tests) 82ms
+ ✓ tests/reference-phase-boundary.test.ts (9 tests) 88ms
+ ✓ tests/math-functions.test.ts (96 tests) 103ms
+ ✓ tests/storage-facade.test.ts (68 tests) 227ms
+ ✓ tests/formula-quote-comparison.test.ts (16 tests) 43ms
+ ✓ tests/calculator-input.test.ts (50 tests) 68ms
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 54ms
+ ✓ tests/calculator.test.ts (54 tests) 77ms
+ ✓ tests/formula-report-audit-comparison-export.test.ts (33 tests) 92ms
+ ✓ tests/variables.test.ts (39 tests) 81ms
+ ✓ tests/restore-storage.test.ts (16 tests) 59ms
+ ✓ tests/format-copy.test.ts (6 tests) 35ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > identifies valid outer with protected inner broken
+保存データのJSONが壊れています SyntaxError: Unexpected token 'b', "broken" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:14:233
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > full and oversized regions do not report capacity available
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+
+ ✓ tests/recovery-manager.test.ts (25 tests) 68ms
+ ✓ tests/formula-reports.test.ts (30 tests) 67ms
+ ✓ tests/formula-report-quotes.test.ts (64 tests) 80ms
+ ✓ tests/formula-library.test.ts (31 tests) 37ms
+ ✓ tests/ast-evaluation.test.ts (18 tests) 184ms
+ ✓ tests/calculation-evidence-report.test.ts (15 tests) 29ms
+ ✓ tests/body-navigation-independent.test.ts (2 tests) 44ms
+stderr | tests/restore-validation.test.ts > rejects coercible but non-string known settings
+ローカル保存領域へアクセスできませんでした TypeError: Cannot convert object to primitive value
+    at String (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:134:56)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at envelope (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/restore-validation.test.ts:5:59)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/restore-validation.test.ts:70:31
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+
+ ✓ tests/restore-validation.test.ts (50 tests) 51ms
+ ✓ tests/memo-blocks.test.ts (6 tests) 37ms
+ ✓ tests/formula-report-audit-comparison-navigation.test.ts (45 tests) 102ms
+ ✓ tests/formula-report-audit-comparison-envelope.test.ts (11 tests) 14ms
+ ✓ tests/storage.test.ts (42 tests) 49ms
+ ✓ tests/storage-facade-independent.test.ts (15 tests) 29ms
+ ✓ tests/memo-block-preservation.test.ts (20 tests) 38ms
+ ✓ tests/formula-report-timeline.test.ts (12 tests) 20ms
+ ✓ tests/storage-export.test.ts (5 tests) 9ms
+stderr | tests/backup.test.ts > backup source protection > distinguishes missing, corrupt and inaccessible data
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/backup.test.ts:43:20
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+
+ ✓ tests/backup.test.ts (6 tests) 11ms
+ ✓ tests/confirmation-remarks-component.test.ts (2 tests) 11ms
+ ✓ tests/formula-audit-comparison-export-independent.test.ts (9 tests) 26ms
+ ✓ tests/evidence-impact-markdown.test.ts (6 tests) 19ms
+ ✓ tests/formula-audit-empty-independent.test.ts (17 tests) 28ms
+ ✓ tests/url-expression.test.ts (6 tests) 6ms
+ ✓ tests/identification.test.ts (20 tests) 19ms
+ ✓ tests/memo-labels.test.ts (2 tests) 3ms
+ ✓ tests/selective-storage-simulator.test.ts (15 tests) 11ms
+ ✓ tests/formula-report-audit-record-review.test.ts (2 tests) 9ms
+ ✓ tests/storage-facade-gui-fixtures.test.ts (3 tests) 10ms
+ ❯ tests/evidence-storage.test.ts (7 tests | 1 failed) 5045ms
+   ✓ evidence persistence boundary > checks original bytes before any write and reads back a successful write 24ms
+   ✓ evidence persistence boundary > refuses changed source rather than overwrite another tab 1ms
+   ✓ evidence persistence boundary > treats a thrown mutation as uncertain, not proof of no write 1ms
+   ✓ evidence persistence boundary > does not claim success when write is silently dropped 1ms
+   ✓ evidence persistence boundary > protects malformed and future evidence on load and save 6ms
+   ✓ evidence persistence boundary > preserves old no-history notes and opaque fields without fabricating evidence 1ms
+   × evidence persistence boundary > serializes same-client writers and recovers the queue after rejection 5010ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evidence-storage.test.ts > evidence persistence boundary > serializes same-client writers and recovers the queue after rejection
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/evidence-storage.test.ts:52:3
+     50|     expect(target.raw()).not.toContain('calculationEvidence');
+     51|   });
+     52|   it('serializes same-client writers and recovers the queue after reje…
+       |   ^
+     53|     const order: number[] = []; let release!: () => void;
+     54|     const pending = new Promise<void>(resolve => { release = resolve; …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/selection-preview-ui.test.ts > read-only selection preview UI > opening and closing revokes already queued autosave without flushing unsaved data
+Error: 保存ロック要求は失効しました。書込みは開始しません。
+ ❯ invoke lib/storage-lock.ts:22:24
+     20|     const invoke = () => {
+     21|       // Synthetic broken LockManager may call back after rejecting it…
+     22|       if (!live) throw Error('保存ロック要求は失効しました。書込みは開始しません。');
+       |                        ^
+     23|       const previous = synchronousScope;
+     24|       synchronousScope = scope;
+ ❯ tests/selection-preview-ui.test.ts:94:58
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ tests/selection-preview-ui.test.ts:94:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 122 passed (124)
+      Tests  2 failed | 2813 passed (2815)
+   Start at  07:45:10
+   Duration  43.73s (transform 5.94s, setup 0ms, collect 159.75s, tests 80.72s, environment 29.53s, prepare 15.41s)
+

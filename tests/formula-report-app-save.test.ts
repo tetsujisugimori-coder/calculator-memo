@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { freshStorageRuntime } from './helpers/fresh-storage-runtime';
 import { CalculatorApp } from '../components/CalculatorApp';
 import { defaultData, STORAGE_KEY } from '../lib/storage';
 import { formulaReportSignature, type FormulaReportSaveRequest } from '../lib/formula-reports';
@@ -21,7 +22,7 @@ async function open() { await act(async () => root.render(createElement(Calculat
 beforeEach(() => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
-  localStorage.clear(); localStorage.setItem(STORAGE_KEY, JSON.stringify(original));
+  freshStorageRuntime(); localStorage.clear(); localStorage.setItem(STORAGE_KEY, JSON.stringify(original));
   result = undefined; request = { id: 'r', formulaId: 'f', title: 'Explanation', body: 'User text', expectedReport: null, expectedExpression: 'a+1', confirm: false };
   host = document.createElement('div'); document.body.append(host); root = createRoot(host);
 });
@@ -35,10 +36,12 @@ it('persists exact text before publishing, does not auto-confirm, and retains al
   expect(stored().formulaReports.entries[0].confirmedExpression).toBe('a+1');
   expect(stored().formulaReports.entries[0].evidence.confirmations[0].remarks).toBe('保存・読戻し後の申告');
 });
-it('quota failure keeps report out of React and autosave, allowing a safe explicit retry', async () => {
+it('thrown mutation keeps report out of React and autosave and refuses retry until a fresh runtime', async () => {
   await open(); const raw = localStorage.getItem(STORAGE_KEY); const writes = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
-  await save(); expect(result).toContain('保存できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(host.querySelector('output')?.textContent).toBe('null'); expect(writes).toHaveBeenCalledTimes(1);
-  writes.mockRestore(); await save(); expect(stored().formulaReports.entries).toHaveLength(1);
+  await save(); expect(result).toContain('再試行を停止'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw); expect(host.querySelector('output')?.textContent).toBe('null'); expect(writes).toHaveBeenCalledTimes(1);
+  // Restoring the API is not authority to retry an UNKNOWN operation.
+  await save(); expect(result).toContain('保存保護中');
+  expect(stored().formulaReports).toBeUndefined(); expect(writes).toHaveBeenCalledTimes(1);
 });
 it.each(['expression', 'report', 'invalid'])('refuses external %s replacement without a storage event', async change => {
   await open(); const external = change === 'invalid' ? '{broken' : JSON.stringify({ ...original, ...(change === 'expression' ? { formulaLibrary: { ...original.formulaLibrary, entries: [{ ...formula, expression: 'a+2' }] } } : { formulaReports: { version: 1, entries: [{ id: 'remote', formulaId: 'f', title: 'Remote', body: 'other', createdAt: '2026-10-22', updatedAt: '2026-10-22', confirmedExpression: null }] } }) });
@@ -94,7 +97,7 @@ it('failed confirmation writes never publish appended confirmation history', asy
   await open(); request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立';
   const raw = localStorage.getItem(STORAGE_KEY);
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
-  await save(); expect(result).toContain('保存できません'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+  await save(); expect(result).toContain('再試行を停止'); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   expect(host.querySelector('output')?.textContent).toBe('null');
 });
 
@@ -112,4 +115,12 @@ it('unsupported evidence protects the loaded original and blocks all ordinary wr
   await act(async () => button('登録式ライブラリ').click());
   await save(); expect(result).toContain('保存保護中');
   expect(writes).not.toHaveBeenCalled(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
+});
+
+it('post-mutation lock failure never publishes a report or its confirmation to React', async () => {
+  await open(); request.confirm = true; const writes = vi.spyOn(Storage.prototype, 'setItem');
+  vi.stubGlobal('navigator', { locks: { request: async (_name: string, callback: () => unknown) => { await callback(); throw Error('release failure'); } } });
+  await save(); expect(result).toContain('UNKNOWN'); expect(host.querySelector('output')?.textContent).toBe('null');
+  expect(stored().formulaReports.entries).toHaveLength(1);
+  await save(); expect(result).toContain('保存保護中'); expect(writes).toHaveBeenCalledTimes(1);
 });

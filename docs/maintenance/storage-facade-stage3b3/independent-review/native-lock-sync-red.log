@@ -1,0 +1,4 @@
+{"node":"v24.22.1","mode":"sync","nativeLocks":"function"}
+first 7
+caught intentional callback rejection
+TIMEOUT: lock request after synchronous callback throw did not settle

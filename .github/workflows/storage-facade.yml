@@ -1,0 +1,75 @@
+name: Stage 3B-3 storage facade acceptance
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+concurrency:
+  group: storage-facade-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  storage-facade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      CI: 'true'
+    steps:
+      - name: Checkout exact PR head
+        id: checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Pinned Node
+        id: node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Locked dependencies
+        id: dependencies
+        run: |
+          npm ci --ignore-scripts
+          npm ci --prefix e2e --ignore-scripts
+      - name: Writer boundary and negative controls
+        id: boundary
+        run: |
+          node e2e/run-stage.mjs storage-facade-boundary node e2e/storage-writer-boundary.mjs
+          node e2e/run-stage.mjs storage-facade-boundary-controls node --test e2e/storage-writer-boundary.node-test.mjs
+          node e2e/run-stage.mjs storage-facade-independent-boundary node --test docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs docs/maintenance/storage-facade-stage3b3/independent-review/scanner-escape-independent.node-test.mjs
+          node e2e/run-stage.mjs storage-facade-ci-contract node --test e2e/storage-facade-ci.node-test.mjs
+      - name: Strict synthetic backup fixture contract
+        id: fixtures
+        run: node e2e/run-stage.mjs storage-facade-fixtures npm test -- tests/storage-facade-gui-fixtures.test.ts
+      - name: Fixed browser setup
+        id: browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs storage-facade-apt sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs storage-facade-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Additional real application writer and HOLD acceptance
+        id: acceptance
+        timeout-minutes: 11
+        run: node e2e/run-stage.mjs storage-facade-browser timeout --signal=TERM --kill-after=10s 620s node e2e/run-storage-facade-gui.mjs
+      - name: Preserve failures and outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          writeFileSync('gui-evidence/storage-facade-ci-outcomes.json', JSON.stringify({ sha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, steps: JSON.parse(process.env.STEP_OUTCOMES) }, null, 2));
+          NODE
+          node e2e/evidence-inventory.mjs
+      - name: Upload separate acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-storage-facade-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
