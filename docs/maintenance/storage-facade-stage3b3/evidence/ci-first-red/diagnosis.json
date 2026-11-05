@@ -1,0 +1,48 @@
+{
+  "workflowRun": 42126158616,
+  "job": 127590792564,
+  "artifactId": 13461504020,
+  "artifactSha256": "2dfe84e24f5a56c5dfeb60ce17c18965452484c4563de6cc7e4786ebbdb7be2e",
+  "provenance": {
+    "sha": "bec0c6b958dc75174f77096e958df091aa3739b3",
+    "tree": "14e7322bff42f530a1c57405d780ae29b5e11c3e",
+    "dirty": false,
+    "bundleSha256": "4eb4f1083d41f162c518478609410ed418701ebb79149436edf6d880d5e06b49",
+    "sourceSha256": "86b1ced895bfbfa9ee15d93df14f880b2a6b4c100d8666cb6e637002381c1e64"
+  },
+  "statuses": [
+    {
+      "kind": "happy",
+      "status": "failed",
+      "count": 8
+    },
+    {
+      "kind": "reset-success",
+      "status": "passed",
+      "count": 8
+    },
+    {
+      "kind": "autosave-unknown",
+      "status": "failed",
+      "count": 8
+    },
+    {
+      "kind": "preservation-unknown",
+      "status": "passed",
+      "count": 8
+    },
+    {
+      "kind": "delete-unknown",
+      "status": "passed",
+      "count": 8
+    },
+    {
+      "kind": "reset-unknown",
+      "status": "passed",
+      "count": 8
+    }
+  ],
+  "png": 40,
+  "trace": 16,
+  "failure": "Native expression-entry details is closed; textbox selector cannot match hidden input. Real summary activation was missing in harness."
+}

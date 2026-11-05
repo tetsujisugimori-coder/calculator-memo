@@ -2,13 +2,14 @@
 
 ## 2026-11-06 (JST): Stage 3B-3 全writerを共通Storage Facadeへ統合
 
-- [Issue #126](https://github.com/tetsujisugimori-coder/calculator-memo/issues/126)。PR #125 merge後のmain `41c2c0db0ec2b7dde81ada15c98de5316ab690ce`を新規checkout、重複PRなしを確認し `feat/stage3b3-storage-facade` で実装。main直接変更・マージ・公開なし。Draft PRと最終HEADのCIは作成/実測後に追記する。
+- [Issue #126](https://github.com/tetsujisugimori-coder/calculator-memo/issues/126)・[Draft PR #127](https://github.com/tetsujisugimori-coder/calculator-memo/pull/127)。PR #125 merge後のmain `41c2c0db0ec2b7dde81ada15c98de5316ab690ce`を新規checkout、重複PRなしを確認し `feat/stage3b3-storage-facade` で実装。main直接変更・マージ・デプロイなし。最終HEADのCIとartifact確認はPRのChecks/最終本文へ実測を追記する。
 - [設計・全writer追跡](docs/design/storage-facade-stage3b3.md)。6 sink / W1〜W16と未使用saveDataを共通Facadeへ接続。ordinary/reset/preserve/full-restore/recovery-deleteを区別し、read-only codec・既存queue/Web Locks・唯一のlocalStorage adapterへ分離。JSON v1/原文/保全8slot互換を保持。
 - 従来のset返却後attempt記録と保存後不一致CONFLICTを変更し、mutation呼出前attempt・例外/不一致UNKNOWN・同Storage identityのruntime HOLDへ。初期化と保全失敗にもUNKNOWNを伝播する。同期delete迂回とlock例外の反例を独立確認対象にした。永続世代/receipt/再起動HOLD/IDB本番切替は未実装。
 - [検証・原失敗・残件台帳](docs/maintenance/storage-facade-stage3b3/verification.md)。AST静的契約、隔離gitへ実writer追加のRED→GREEN、単体/故障注入、Chromium/WebKit追加8条件と既存正式6条件を別評価。局所結果を正式1128checks/592geometry/132PNGの代用にしない。
 - 初回ローカル全単体2726中2709成功/17失敗（runtime HOLDを同じjsdomで継承するfixture等）を保持し、原因修正と最終回帰を別記する。初回npm既定cache作成不能は許可済tmp cacheへ変更。ローカルChromium起動EPERMは同一試験の承認済escalationでも継続し、起動0を成功扱いしない。CIの隔離runnerで最終確認する。
 - 選択復元 executionAllowed=false / Stage 3B HOLD / 実書込み許可NO。旧タブ・非協調writer・ABA・TOCTOU、長期永続化は未解決。実機Safari等NOT_TESTED。独立レビュー・最終HEAD CI完了前のマージ推奨NO、Draftを維持する。
 - 提出前再検証は全124files/2820tests、型、lint（error0/既存warning3）、通常/Pages buildが成功。静的/独立scanner/新harness計63契約、既存formal失敗伝播57契約も成功。独立R1の6escape・R2の外側lease喪失後遅延削除・R3のNode24同期lock callback回帰を修正し元REDとGREENを保存。正式GUIと追加8条件は最終PR headのCI原artifactを正本として別確認し、ローカル成功へ混ぜない。
+- 初回CI `bec0c6b` の追加GUIは48context中32PASS/16FAIL。原artifact/hashを検証し、閉じたdetails内textboxを開かずfillしていたハーネス不備をtrace/製品sourceから特定。実summaryのclick/tapと可視ready待機を追加し、製品コード・保存oracle・timeoutは不変更。原REDを保存、独立再レビューと新6契約PASS。既存全体復元8条件/Stage3A8条件/Stage3B2隔離試験は同旧HEADで成功したが、新HEADの最終成功とは分離する。
 
 ## 2026-11-05 (JST): Stage 3B-2 全writer・旧タブ・世代管理設計と隔離PoC
 

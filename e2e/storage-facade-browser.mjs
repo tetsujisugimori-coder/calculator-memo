@@ -55,6 +55,13 @@ async function activate(locator, r) {
   if (r.touch) { await locator.tap(); r.touches++; } else { await locator.click(); r.clicks++; }
 }
 const button = (scope, name) => scope.getByRole('button', { name, exact: true });
+async function expressionInput(page, r) {
+  const input = page.getByRole('textbox', { name: '計算式を入力', exact: true });
+  // This editor is initially inside a closed native details element. Open it as a user would.
+  if (!await input.isVisible()) await activate(page.locator('.expression-entry > summary'), r);
+  await expect(input).toBeVisible();
+  return input;
+}
 async function openRestore(page, r) {
   await activate(button(page, 'JSONから復元'), r);
   const dialog = page.getByRole('dialog', { name: 'JSONバックアップから復元', exact: true });
@@ -102,7 +109,7 @@ async function happy(page, r) {
   await expect.poll(async () => (await stored(page))?.version).toBe(1);
   assert.ok((await writes(page)).some(w => w.method === 'setItem' && w.key === key), 'first launch empty data uses product writer');
   r.checks.push('first launch empty data persisted');
-  await page.getByRole('textbox', { name: '計算式を入力', exact: true }).fill('12+34');
+  await (await expressionInput(page, r)).fill('12+34');
   await activate(button(page, '計算する'), r);
   await expect.poll(async () => (await stored(page)).history[0]?.result).toBe(46);
   assert.equal((await stored(page)).history[0].expression, '12+34');
@@ -171,7 +178,7 @@ async function happy(page, r) {
   assert.deepEqual(afterDelete, expected, 'only the separately approved copy was removed');
   await geometry(page, r, 'copy-deleted');
   await page.screenshot({ path: join(out, `${r.id}-copy-deleted.png`) });
-  await page.reload(); await page.getByRole('textbox', { name: '計算式を入力', exact: true }).waitFor();
+  await page.reload(); await button(page, '計算する').waitFor();
   assert.equal(await raw(page), target); assert.equal((await snapshot(page))['other-app'], 'untouched');
   r.checks.push('individually approved copy deletion; exact target survives reload; unrelated storage unchanged');
 }
@@ -189,7 +196,7 @@ async function unknown(page, r, kind) {
   const before = await snapshot(page);
   if (kind === 'autosave-unknown') {
     await arm(page, 'setItem', key, 'throw-after');
-    await page.getByRole('textbox', { name: '計算式を入力', exact: true }).fill('8+9');
+    await (await expressionInput(page, r)).fill('8+9');
     await activate(button(page, '計算する'), r);
     await page.getByRole('alert').filter({ hasText: /再試行を停止|UNKNOWN/ }).waitFor();
     assert.equal((await stored(page)).history[0].result, 17, 'throw-after fault actually wrote before acknowledgement failed');

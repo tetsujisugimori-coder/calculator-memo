@@ -20,6 +20,14 @@
 
 新規 `.gitattributes` の例外は `/docs/maintenance/storage-facade-stage3b3/**/*.log -whitespace` に限定される。原ログのbyteは書き換えず、製品sourceや他領域のwhitespace検査は緩和しない。`git diff --cached --check` はexit0。末尾空行だけの変更に対する新たな動作試験は実施せず、前記最終実行の対象との内容同一性確認を根拠とする。詳細はmanifestの `stagingAmendment`。
 
+## 初回CIのharness修正に対する独立再確認
+
+2026-11-06 JST追記。旧HEAD `bec0c6b958dc75174f77096e958df091aa3739b3` の追加GUI [run 42126158616](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42126158616) 原resultsを再集計し、8 matrix ×6 contextは **32 PASS / 16 FAIL** と確認した。happy/autosave-unknown各8件は、初期closedのnative details内のtextboxへ直接fillしてtimeout。Chromium/WebKit375の原traceには先行summary操作がなく、snapshotのDETAILSにopen属性もなかった。製品の初期状態とも一致し、この失敗から製品不具合は確定していない。
+
+変更は `e2e/storage-facade-browser.mjs` と `e2e/storage-facade-ci.node-test.mjs` のみ。実click/tapでsummaryを開き入力の可視を確認してからfillし、reload後は閉じたtextboxでなく可視の計算buttonを待つ。計算値、raw一致、HOLD、retry回数、timeout、matrix/context数の期待は弱化していない。独立 `node --test e2e/storage-facade-ci.node-test.mjs` は **6/6 PASS**。これは修正後の実GUI成功ではなく、新HEADのCI再実行待ちである。原REDを保持し、旧32 PASSを新HEAD全体成功へ流用しない。
+
+製品hashは全て不変。manifestは該当2fileのみ更新し、新aggregateは `beb75a849e5001057d53d2fd37bdf62155e194f4e374d9a1b0f9ae3d64189f32`。旧commit/旧hashは `ciHarnessAmendments` に保持した。先行の「GUI未確認」という記述は当時の状態であり、本追記は旧HEADの一部実行結果を追加するもの。総合PARTIAL・マージ推奨NO・選択保存NOを維持。
+
 ## 発見事項とRED → GREEN
 
 ### IR-1 / P2: scannerの単純なStorage逃がしと除外領域importを誤受理

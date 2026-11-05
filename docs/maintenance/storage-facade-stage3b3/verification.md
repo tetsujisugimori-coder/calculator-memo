@@ -17,6 +17,14 @@ Issue [#126](https://github.com/tetsujisugimori-coder/calculator-memo/issues/126
 - 独立報告/元RED/再受入GREEN/ソースhashは [independent-review](independent-review/) に保存。レビューと実GUI成功を分離する。
 - ローカル追加実GUIは3試行すべてexit1/起動0条件。[全原証拠](evidence/local-browser/)を保存。Chromium socket EPERM（承認済同一試験escalationでも再現）、WebKitはlibgtk-4/libgraphene/libwoff2dec/libharfbuzz-icu/libhyphen/libmanette/libGLESv2不足。実操作はCIでのみ検証する。
 
+## 初回CIの追加GUIハーネス修正
+
+初回HEAD `bec0c6b958dc75174f77096e958df091aa3739b3` / tree `14e7322bff42f530a1c57405d780ae29b5e11c3e` の [run 42126158616](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42126158616) は追加GUIでFAIL。8幅/engine条件・48contextすべてを実行し、32PASS / 16FAILだった。閉じたnative details内の計算式textboxを開かずにfillしていたため、happy/autosave-unknown各8件が操作前に停止した。reset成功とpreservation/delete/reset UNKNOWN各8件はPASS。
+
+原artifact `13461504020` のSHA-256は `2dfe84e24f5a56c5dfeb60ce17c18965452484c4563de6cc7e4786ebbdb7be2e`。ダウンロードしたZIPのhash一致を確認。原results/provenance/runner/log/診断は [ci-first-red](evidence/ci-first-red/) に保存し、40PNG/16traceを含む全原ZIPも別途保管。製品失敗と断定しない。
+
+ハーネスは実ユーザーと同じsummary click/tapでeditorを開いてからfillし、reload後は既定で可視の計算ボタンを待つよう修正。force/unhide、製品コード変更、保存・HOLDの期待緩和は行わない。再発防止契約を1件追加し、harnessは6件。修正後の実GUI成功は新HEADのCI原artifactで別途確認する。旧HEADの32PASSを新HEADの完了へ流用しない。
+
 ## 独立P2と再受入
 
 | ID | 元反例 | 修正・判定 |

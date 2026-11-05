@@ -80,3 +80,13 @@ test('product operations use real UI, fixed raw expectations, and native fault o
   assert.doesNotMatch(spec, /from ['"].*lib\/|executeStorageOperation\(|runStorageOperation\(|saveDataChecked\(/);
   assert.match(spec, /additional-storage-facade-gui-not-formal/);
 });
+
+
+test('calculation editor is opened through its native summary before fill, and reload does not await a collapsed textbox', async () => {
+  const spec = await read('./storage-facade-browser.mjs');
+  assert.match(spec, /if \(!await input.isVisible\(\)\) await activate\(page.locator\('\.expression-entry > summary'\), r\)/);
+  assert.match(spec, /await \(await expressionInput\(page, r\)\).fill\('12\+34'\)/);
+  assert.match(spec, /await \(await expressionInput\(page, r\)\).fill\('8\+9'\)/);
+  assert.match(spec, /await page.reload\(\); await button\(page, '計算する'\).waitFor\(\)/);
+  assert.doesNotMatch(spec, /getByRole\('textbox', \{ name: '計算式を入力', exact: true \}\)\.(fill|waitFor)\(/);
+});

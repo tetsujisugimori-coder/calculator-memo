@@ -6,7 +6,7 @@
   "workingTree": "dirty, not the base commit tree; actual source identities are hashes below",
   "node": "v24.22.1",
   "filesCount": 141,
-  "aggregateSha256": "9551d1023b018186984524c8d9a8aba2471df92b99ce81d0ceb137ddf47d443d",
+  "aggregateSha256": "beb75a849e5001057d53d2fd37bdf62155e194f4e374d9a1b0f9ae3d64189f32",
   "files": {
     ".github/workflows/storage-facade.yml": "18e402b0847f661e2e689cf9a9a0dd687af39cf4a5ddd922dd855412933b279e",
     "app/chatgpt-auth.ts": "17a965f8948b21510cdf8ecbd70c5fdf58100e10970463f6a8fd2cc4795f8044",
@@ -66,8 +66,8 @@
     "docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs": "6d0a736c9e0e7986414f4e9f97d78c11f3cfff6ebe6b09e1fa9b899413d6590a",
     "e2e/restore-mobile.mjs": "c401b2ee3e7e5016dba7374895831b16ed4bb2447cb0bb8129e6130ddd19dc94",
     "e2e/run-storage-facade-gui.mjs": "98da72c365d09508925a35389c9ed1b7fc4eee90271a71ed4bd8349220698aa6",
-    "e2e/storage-facade-browser.mjs": "bc6b620fb2b88b24af854028d867dfd9eba7eb8ec9486f70137db4a2ca254196",
-    "e2e/storage-facade-ci.node-test.mjs": "7e09bcc4997aadf72ca095f1334670b6b532dcef8c19f5f2b7c85e1de1053327",
+    "e2e/storage-facade-browser.mjs": "21b34dfc237e1d2850232b079a60a170c6c7c7ebb30fb7f56df57b2e654d7b03",
+    "e2e/storage-facade-ci.node-test.mjs": "06cf7665f24de22a4b040476f1cc4f975f3f1c787507742005e5eb00817959ab",
     "e2e/storage-facade-fixtures.mjs": "d448f09d0086f6202a6d555a5e8247cf6689f9d149e2936456e2941eacfa1761",
     "e2e/storage-writer-boundary.mjs": "f511557e0d0f2fd279f7d95697b62fba318af619a85121f8dc1ad55f78c86ca8",
     "e2e/storage-writer-boundary.node-test.mjs": "7ce4b9cd453d0f2cef202ca645ea9f917819f8a4c8a38f5b1c68e01237c7db35",
@@ -174,5 +174,34 @@
       "effect": "Whitespace warning exemption only for archived raw logs; no log bytes rewritten"
     },
     "testStatus": "No new behavioral test run for trailing-LF-only cleanup; prior test source content remains semantically identical"
-  }
+  },
+  "ciHarnessAmendments": [
+    {
+      "verifiedAtUtc": "2026-11-05T23:17:52.169Z",
+      "baseHead": "bec0c6b958dc75174f77096e958df091aa3739b3",
+      "previousAggregateSha256": "9551d1023b018186984524c8d9a8aba2471df92b99ce81d0ceb137ddf47d443d",
+      "changes": [
+        {
+          "path": "e2e/storage-facade-browser.mjs",
+          "previousSha256": "bc6b620fb2b88b24af854028d867dfd9eba7eb8ec9486f70137db4a2ca254196",
+          "currentSha256": "21b34dfc237e1d2850232b079a60a170c6c7c7ebb30fb7f56df57b2e654d7b03"
+        },
+        {
+          "path": "e2e/storage-facade-ci.node-test.mjs",
+          "previousSha256": "7e09bcc4997aadf72ca095f1334670b6b532dcef8c19f5f2b7c85e1de1053327",
+          "currentSha256": "06cf7665f24de22a4b040476f1cc4f975f3f1c787507742005e5eb00817959ab"
+        }
+      ],
+      "sourceScope": "Only two e2e harness files; all product hashes unchanged",
+      "originalRun": 42126158616,
+      "originalArtifact": 13461504020,
+      "originalResults": {
+        "passed": 32,
+        "failed": 16
+      },
+      "cause": "Native expression details was closed; original trace lacked summary activation before fill",
+      "correction": "Real click/tap opens summary and visibility is asserted before fill; reload awaits visible Calculate button",
+      "validation": "Independently inspected original Chromium/WebKit 375 traces and reran 6 harness contracts: 6 passed, 0 failed. Product/raw/HOLD/count/timeout oracles unchanged. Corrected real GUI remains pending."
+    }
+  ]
 }
