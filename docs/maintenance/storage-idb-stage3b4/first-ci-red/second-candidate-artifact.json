@@ -1,0 +1,33 @@
+{
+  "head": "c4ed9c4779efccd90f32405e999aeac30097afe5",
+  "tree": "227e44e16080b425fb20026c9433df3d86054fc8",
+  "run": 42201366254,
+  "attempt": 1,
+  "status": "FAIL",
+  "authorBrowser": "41 cases x 2 engines x 4 widths passed (328)",
+  "independentBrowser": {
+    "chromium": "5/5",
+    "webkit": "4/5; absent-DB enumeration assertion failed"
+  },
+  "artifact": {
+    "id": 13495660112,
+    "name": "pr-storage-idb-c4ed9c4779efccd90f32405e999aeac30097afe5-1",
+    "size_in_bytes": 3146531,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13495660112",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13495660112/zip",
+    "expired": false,
+    "created_at": "2026-11-06T10:23:39Z",
+    "expires_at": "2026-11-13T10:23:38Z",
+    "updated_at": "2026-11-06T10:23:39Z",
+    "digest": "sha256:fda9f20346d56af68d4dee0cd23941a9780ff1337063f2f17b395f534a487592",
+    "workflow_run": {
+      "id": 42201366254,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b4-idb-authority-foundation",
+      "head_sha": "c4ed9c4779efccd90f32405e999aeac30097afe5"
+    }
+  },
+  "localZipBytes": "NOT_MATERIALIZED",
+  "independentZipSha256": "NOT_COMPUTED"
+}

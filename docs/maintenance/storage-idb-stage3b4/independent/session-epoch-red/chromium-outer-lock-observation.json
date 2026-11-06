@@ -1,0 +1,207 @@
+{
+  "created": {
+    "status": "CREATED",
+    "reason": "synthetic-genesis-only",
+    "phases": [],
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 0,
+      "latestOperation": "genesis"
+    }
+  },
+  "confirmation": {
+    "status": "AUTHORIZED",
+    "reason": "explicit-synthetic-session-only",
+    "phases": []
+  },
+  "original": {
+    "status": "UNKNOWN",
+    "reason": "Error:independent-lost-lock-result-after-callback",
+    "phases": [
+      "PREVALIDATION",
+      "INTENT_DURABLE",
+      "TRANSACTION_RUNNING",
+      "COMMIT_OBSERVED",
+      "READBACK_MATCH",
+      "UNKNOWN",
+      "HOLD",
+      "EXPLICIT_RECONCILIATION_REQUIRED",
+      "DIAGNOSTIC_DURABLE"
+    ]
+  },
+  "recovery": {
+    "state": "HOLD",
+    "reason": "unresolved-intent-or-hold",
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 1,
+      "latestOperation": "lost-result"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "HOLD"
+      },
+      "copy:1": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "lost-result",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+      "diagnostic:lost-result": {
+        "protocol": 1,
+        "status": "UNKNOWN",
+        "firstFailure": "Error:independent-lost-lock-result-after-callback"
+      },
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "independent-inc",
+        "generation": 1,
+        "latestOperation": "lost-result",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "intent:lost-result": {
+        "protocol": 1,
+        "operationId": "lost-result",
+        "expected": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+        "phase": "UNKNOWN",
+        "firstFailure": "Error:independent-lost-lock-result-after-callback"
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "receipt:lost-result": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 1,
+          "latestOperation": "lost-result"
+        },
+        "previous": "genesis",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  },
+  "authorize": {
+    "status": "BLOCKED",
+    "reason": "unresolved-intent-or-hold",
+    "phases": []
+  },
+  "next": {
+    "status": "BLOCKED",
+    "reason": "explicit-confirmation-or-hold",
+    "phases": [
+      "PREVALIDATION"
+    ]
+  },
+  "final": {
+    "state": "HOLD",
+    "reason": "unresolved-intent-or-hold",
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 1,
+      "latestOperation": "lost-result"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "HOLD"
+      },
+      "copy:1": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "lost-result",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+      "diagnostic:lost-result": {
+        "protocol": 1,
+        "status": "UNKNOWN",
+        "firstFailure": "Error:independent-lost-lock-result-after-callback"
+      },
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "independent-inc",
+        "generation": 1,
+        "latestOperation": "lost-result",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "intent:lost-result": {
+        "protocol": 1,
+        "operationId": "lost-result",
+        "expected": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+        "phase": "UNKNOWN",
+        "firstFailure": "Error:independent-lost-lock-result-after-callback"
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "receipt:lost-result": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 1,
+          "latestOperation": "lost-result"
+        },
+        "previous": "genesis",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  }
+}

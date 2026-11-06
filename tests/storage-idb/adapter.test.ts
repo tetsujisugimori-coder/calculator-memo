@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createIsolatedAdapter, inspectSnapshot, sameToken, validRaw, validToken, type Snapshot } from '../../e2e/fixtures/storage-idb';
+import { createIsolatedAdapter, inspectSnapshot, sameToken, validRaw, validToken, type Snapshot, type SaveRequest } from '../../e2e/fixtures/storage-idb';
 const raw = ' \n{"version":1,"history":[],"notes":[],"settings":{"theme":"light","activePanel":"history"},"future":9007199254740993001}\t';
 const token = { structure: 1 as const, incarnation: 'synthetic-incarnation', generation: 0, latestOperation: 'genesis' };
 const genesis = (): Snapshot => ({ head: { ...token, protocol: 1, legacyRaw: raw }, current: raw,
@@ -40,5 +40,12 @@ describe('isolated IndexedDB contracts', () => {
     expect(calls).toEqual(['stage3b4-test-denial']);
     expect((await adapter.save({ protocol: 1, expected: token, expectedRaw: raw, candidateRaw: raw, operationId: 'never-write', legacyRaw: raw })).status).toBe('BLOCKED');
     expect(calls).toHaveLength(1);
+  });
+  it('rejects null, absent and array save requests before opening storage', async () => {
+    let opens = 0;
+    const factory = { open() { opens++; throw Error('must not open'); } } as unknown as IDBFactory;
+    const adapter = createIsolatedAdapter('stage3b4-test-invalid-request', { factory });
+    for (const request of [null, undefined, []]) expect((await adapter.save(request as unknown as SaveRequest)).status).toBe('INVALID');
+    expect(opens).toBe(0);
   });
 });

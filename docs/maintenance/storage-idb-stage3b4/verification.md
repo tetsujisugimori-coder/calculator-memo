@@ -15,7 +15,7 @@ Refs [#128](https://github.com/tetsujisugimori-coder/calculator-memo/issues/128)
 | --- | --- |
 | Existing full Vitest suite | 124 files / 2820 tests passed before new tests; `/tmp/calculator-unit.log` |
 | Existing Node e2e contracts | 239/239 passed; `/tmp/calculator-contract.log` |
-| New pure/negative contracts | author25 + independent18; current reexecution log records actual result |
+| New pure/negative contracts | author26 + independent18; current reexecution log records actual result |
 | TypeScript | passed after initial two type errors corrected; no type-erasure workaround |
 | Normal and Pages builds | passed; existing bundle-size/classification warnings retained |
 | Writer boundary | no product failures; no new broad exclusions; root-relative and `/@fs/` safety tightening |
@@ -41,7 +41,13 @@ Native reviewer counterexamples: post-coordinator loss, loss plus failed diagnos
 
 ## Final CI / artifact acceptance
 
-Pending the first implementation push. Final entry will record exact HEAD, tree, CI run and attempt, terminal job outcomes, downloaded artifact ID/digest/local SHA256 and original per-condition evidence. Formal6 artifacts must be independently reaggregated, comparing6/6,1128 checks,592 geometry,132PNG, all source HEADs and inventory hashes. New isolated test evidence is separate and cannot substitute for formal GUI.
+Initial implementation `7bbcdf0329639eb5206cac69dfa1861d6320e9b9`, tree `e48babf4800829ec6790fc455afafb2bf50647e8`: dedicated CI [42200515926 attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42200515926) **FAIL**. Author native Chromium/WebKit39×8 passed; independent Chromium5/5, WebKit4/5. The absent-DB test inferred committed creation from `indexedDB.databases()` enumeration, while the independent native re-open protocol showed absent version0/no schema. Fixed driver retains enumeration diagnostically and checks actual open oldVersion0+empty stores+abort, with a known initializedDB negative control. Upstream [WebKit version0-enumeration fix](https://github.com/WebKit/WebKit/commit/fe33814c6298e5e9828424880df19def4b97a889) explains the pinned older engine compatibility inference; final CI must establish the corrected observation. Original artifact ID13494746051, size2955223, GitHub digest `ed3685f289c0a4617808b1d752d6249c118b59909a04717041714b2fb1f73d0d`, expires2026-11-13. Local materialization failed; do not claim independently computed ZIP hash or local original PNG inspection for this run. Original job [excerpt](first-ci-red/independent-job-excerpt.log) and artifact are retained.
+
+Second candidate `c4ed9c4779efccd90f32405e999aeac30097afe5`, tree `227e44e16080b425fb20026c9433df3d86054fc8`: starts native41×8 including clean process restart and kept-active-transaction page close. Not final code acceptance: separate parent reviewer found a session lifecycle gap on the prior code, reproduced locally on this unchanged adapter.
+
+**R6/P2 session lifecycle:** an old native-lock-queued save revived after close+reauthorize; an in-flight authorize also completed after close and allowed a save. Original [session RED](independent/session-epoch-red/summary.json). Unique per-authorization session identities now fence queued work, awaited transaction bodies, late authorize and outside result return. Third independent control closes after callback verification: exposed result UNKNOWN, committed generation1, persistent diagnostic and restarted HOLD. [Independent8-case GREEN](independent/session-epoch-green/summary.json) is local Chromium evidence; WebKit remains CI-pending. No original failure is relabeled as verified by later receipt inspection.
+
+Current final CI and formal6 raw artifact independent review are pending. Final entry will record exact HEAD, tree, CI run and attempt, terminal job outcomes, downloaded artifact ID/digest/local SHA256 and original per-condition evidence. Formal6 artifacts must be independently reaggregated, comparing6/6,1128 checks,592 geometry,132PNG, all source HEADs and inventory hashes. New isolated test evidence is separate and cannot substitute for formal GUI.
 
 A final documentation-only commit starts fresh workflows too; successful earlier candidate runs are not relabeled as final-HEAD success. Final PR Checks and an append-only GitHub comment can record that final run without another recursive evidence-only commit.
 

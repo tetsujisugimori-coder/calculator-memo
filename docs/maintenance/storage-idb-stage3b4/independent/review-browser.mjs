@@ -108,13 +108,85 @@ try{
         assert.equal(observation.final.snapshot['receipt:delayed-op'],undefined);
         return observation;
       });
-      await run('readonly-inspect-does-not-create-absent-database',async()=>{
+      await run('close-and-reauthorize-does-not-revive-queued-old-save',async()=>{
         const observation=await page.evaluate(async()=>{
-          const name='stage3b4-test-absent-'+crypto.randomUUID();const adapter=window.api.createIsolatedAdapter(name);const result=await adapter.inspect('{}');adapter.close();
-          return {name,result,listed:await indexedDB.databases()};
+          const A=' {"version":1,"history":[],"notes":[],"settings":{"theme":"light","activePanel":"history"}} ',B=A+'\n';
+          const name='stage3b4-test-session-queue-'+crypto.randomUUID(),adapter=window.api.createIsolatedAdapter(name);
+          await adapter.initialize(A,'session-queue-inc',A);const initial=await adapter.inspect(A);await adapter.authorize({token:initial.token,raw:A,legacyRaw:A});
+          let release,entered;const held=new Promise(resolve=>{release=resolve;}),started=new Promise(resolve=>{entered=resolve;});
+          const blocker=navigator.locks.request(name+':coordinator',async()=>{entered();await held;});await started;
+          const oldSave=adapter.save({protocol:1,expected:initial.token,expectedRaw:A,candidateRaw:B,operationId:'old-queued',legacyRaw:A});
+          const queued=await navigator.locks.query();
+          if(!queued.pending.some(x=>x.name===name+':coordinator')){release();await blocker;throw Error('independent fixture never queued the old save');}
+          adapter.close();const renewed=await adapter.authorize({token:initial.token,raw:A,legacyRaw:A});release();await blocker;
+          const oldOutcome=await oldSave,final=await adapter.inspect(A);adapter.close();return {queued,renewed,oldOutcome,final};
         });
-        assert.equal(observation.result.state,'UNKNOWN');assert.equal(observation.listed.some(x=>x.name===observation.name),false);return observation;
+        await writeFile(`${out}/${engine}-session-queue-observation.json`,JSON.stringify(observation,null,2)+'\n');
+        assert.equal(observation.renewed.status,'AUTHORIZED','fresh explicit authorization is independent from the revoked request');
+        assert.equal(observation.oldOutcome.status,'BLOCKED','revoked queued save must retain its original session');
+        assert.equal(observation.final.token.generation,0);assert.equal(observation.final.snapshot['intent:old-queued'],undefined);
+        return observation;
       });
+      await run('close-during-native-authorize-cannot-authorize-old-session',async()=>{
+        const observation=await page.evaluate(async()=>{
+          const A=' {"version":1,"history":[],"notes":[],"settings":{"theme":"light","activePanel":"history"}} ',B=A+'\n';
+          const name='stage3b4-test-session-authorize-'+crypto.randomUUID(),adapter=window.api.createIsolatedAdapter(name);
+          await adapter.initialize(A,'session-authorize-inc',A);const initial=await adapter.inspect(A);
+          const nativeTransaction=IDBDatabase.prototype.transaction;let entered,armed=true;const started=new Promise(resolve=>{entered=resolve;});
+          IDBDatabase.prototype.transaction=function(...args){const tx=nativeTransaction.apply(this,args);if(armed&&tx.mode==='readonly'){armed=false;entered();}return tx;};
+          let authorization;
+          try{const pending=adapter.authorize({token:initial.token,raw:A,legacyRaw:A});await started;adapter.close();authorization=await pending;}finally{IDBDatabase.prototype.transaction=nativeTransaction;}
+          const oldOutcome=await adapter.save({protocol:1,expected:initial.token,expectedRaw:A,candidateRaw:B,operationId:'after-revoked-authorize',legacyRaw:A});
+          const final=await adapter.inspect(A);adapter.close();return {authorization,oldOutcome,final};
+        });
+        await writeFile(`${out}/${engine}-session-authorize-observation.json`,JSON.stringify(observation,null,2)+'\n');
+        assert.notEqual(observation.authorization.status,'AUTHORIZED','authorization crossing close must be revoked');
+        assert.equal(observation.oldOutcome.status,'BLOCKED');assert.equal(observation.final.token.generation,0);
+        return observation;
+      });
+      await run('close-after-native-callback-before-coordinator-result-is-UNKNOWN',async()=>{
+        const observation=await page.evaluate(async()=>{
+          const A=' {"version":1,"history":[],"notes":[],"settings":{"theme":"light","activePanel":"history"}} ',B=A+'\n';
+          const name='stage3b4-test-session-postcallback-'+crypto.randomUUID(),adapter=window.api.createIsolatedAdapter(name);
+          await adapter.initialize(A,'postcallback-inc',A);const initial=await adapter.inspect(A);await adapter.authorize({token:initial.token,raw:A,legacyRaw:A});
+          const nativeRequest=navigator.locks.request.bind(navigator.locks);let callbackOutcome;
+          navigator.locks.request=async(...args)=>{const outcome=await nativeRequest(...args);callbackOutcome=outcome;adapter.close();return outcome;};
+          let original;try{original=await adapter.save({protocol:1,expected:initial.token,expectedRaw:A,candidateRaw:B,operationId:'close-before-result',legacyRaw:A});}finally{navigator.locks.request=nativeRequest;}
+          const fresh=window.api.createIsolatedAdapter(name),recovered=await fresh.inspect(A),authorization=await fresh.authorize({token:recovered.token,raw:B,legacyRaw:A});fresh.close();adapter.close();
+          return {callbackOutcome,original,recovered,authorization};
+        });
+        await writeFile(`${out}/${engine}-session-postcallback-observation.json`,JSON.stringify(observation,null,2)+'\n');
+        assert.equal(observation.callbackOutcome.status,'VERIFIED');assert.equal(observation.original.status,'UNKNOWN','revoked session cannot expose a successful coordinator result');
+        assert.equal(observation.recovered.token.generation,1);assert.equal(observation.recovered.state,'HOLD');assert.equal(observation.authorization.status,'BLOCKED');
+        assert.equal(observation.recovered.snapshot['intent:close-before-result'].phase,'UNKNOWN');
+        assert.equal(observation.recovered.snapshot['diagnostic:close-before-result'].status,'UNKNOWN');
+        return observation;
+      });
+      await run('readonly-inspect-does-not-initialize-or-upgrade-absent-database',async()=>{
+        const observation=await page.evaluate(async()=>{
+          const probe = name => new Promise((resolve,reject)=>{
+            const request=indexedDB.open(name);let observation;
+            request.onupgradeneeded=event=>{observation={kind:'upgrade',oldVersion:event.oldVersion,newVersion:event.newVersion,stores:Array.from(request.result.objectStoreNames)};request.transaction.abort();};
+            request.onsuccess=()=>{const db=request.result;observation={kind:'existing',version:db.version,stores:Array.from(db.objectStoreNames)};db.close();resolve(observation);};
+            request.onerror=()=>observation?resolve({...observation,error:request.error?.name}):reject(request.error);
+          });
+          const name='stage3b4-test-absent-'+crypto.randomUUID();const adapter=window.api.createIsolatedAdapter(name);const result=await adapter.inspect('{}');adapter.close();
+          const listed=await indexedDB.databases(),absentProbe=await probe(name);
+          const controlName='stage3b4-test-probe-control-'+crypto.randomUUID(),control=window.api.createIsolatedAdapter(controlName);
+          const raw='{"version":1,"history":[],"notes":[],"settings":{"theme":"light","activePanel":"history"}}';
+          const initialized=await control.initialize(raw,'probe-control-inc',raw);control.close();const existingProbe=await probe(controlName);
+          return {name,result,listed,absentProbe,initialized,existingProbe};
+        });
+        await writeFile(`${out}/${engine}-absent-database-observation.json`,JSON.stringify(observation,null,2)+'\n');
+        assert.equal(observation.result.state,'UNKNOWN');
+        assert.deepEqual(observation.absentProbe,{kind:'upgrade',oldVersion:0,newVersion:1,stores:[],error:'AbortError'});
+        assert.equal(observation.initialized.status,'CREATED');assert.deepEqual(observation.existingProbe,{kind:'existing',version:1,stores:['records']});
+        // Enumeration is diagnostic: older pinned WebKit may list an aborted version-0 placeholder.
+        // The independent protocol probe above must still distinguish any committed schema.
+        return observation;
+      });
+      assert.equal(record.cases.length,8,'all eight independent browser counterexamples must run');
+      assert.equal(new Set(record.cases.map(x=>x.name)).size,8,'independent case identities must be unique');
       record.status=record.cases.every(x=>x.status==='PASS')?'PASS':'FAIL';await context.close();
     }catch(e){failed=true;evidence.results.push({engine,status:'ENVIRONMENT_FAILURE',error:e.stack||String(e)});}finally{await browser?.close();}
   }

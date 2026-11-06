@@ -1,0 +1,64 @@
+{
+  "name": "stage3b4-test-absent-4ee66f37-6479-461d-84fa-32da188d033d",
+  "result": {
+    "state": "UNKNOWN",
+    "reason": "AbortError:Version change transaction was aborted in upgradeneeded event handler.",
+    "writeAllowed": false,
+    "executionAllowed": false
+  },
+  "listed": [
+    {
+      "name": "stage3b4-test-delayed-callback-a7a9b165-9cf3-4c8e-b0a3-8f8fb1c54e05",
+      "version": 1
+    },
+    {
+      "name": "stage3b4-test-independent-d5c50152-6142-499f-a1f3-239b0b9596e7",
+      "version": 1
+    },
+    {
+      "name": "stage3b4-test-independent-two-tabs-810ab961-d032-46ce-b092-665d71ce397a",
+      "version": 1
+    },
+    {
+      "name": "stage3b4-test-lost-diagnostics-3c665c12-ded9-4e70-a0af-f014d7080e9b",
+      "version": 1
+    },
+    {
+      "name": "stage3b4-test-session-authorize-7a81131b-a9a8-4fb6-b697-eb32659ea345",
+      "version": 1
+    },
+    {
+      "name": "stage3b4-test-session-postcallback-bda1d9df-121f-4f51-9702-399f169839a5",
+      "version": 1
+    },
+    {
+      "name": "stage3b4-test-session-queue-ed07cb4c-28b3-40ff-9f74-ed28c07ed30b",
+      "version": 1
+    }
+  ],
+  "absentProbe": {
+    "kind": "upgrade",
+    "oldVersion": 0,
+    "newVersion": 1,
+    "stores": [],
+    "error": "AbortError"
+  },
+  "initialized": {
+    "status": "CREATED",
+    "reason": "synthetic-genesis-only",
+    "phases": [],
+    "token": {
+      "structure": 1,
+      "incarnation": "probe-control-inc",
+      "generation": 0,
+      "latestOperation": "genesis"
+    }
+  },
+  "existingProbe": {
+    "kind": "existing",
+    "version": 1,
+    "stores": [
+      "records"
+    ]
+  }
+}

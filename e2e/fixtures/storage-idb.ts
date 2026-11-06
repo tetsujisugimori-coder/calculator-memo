@@ -93,6 +93,7 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
   if (!name.startsWith(PREFIX) || !id(name.slice(PREFIX.length))) throw Error('synthetic-namespace-required');
   const factory = options.factory ?? globalThis.indexedDB;
   let database: IDBDatabase | undefined, authorized = false, volatileHold = false;
+  let session = Symbol('unconfirmed-session');
   // Historical readback is not proof that the outside coordinator completed.
   // A new instance starts HOLD when any previous intent exists. No recovery-unlock API.
   const observed = new Set<string>();
@@ -114,8 +115,8 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
         if (rejected) { db.close(); return; }
         if (db.version !== 1 || !db.objectStoreNames.contains(STORE) || db.objectStoreNames.length !== 1) { db.close(); reject(Error('unknown-database-structure')); return; }
         database = db;
-        db.onversionchange = () => { authorized = false; volatileHold = true; db.close(); database = undefined; };
-        db.onclose = () => { authorized = false; volatileHold = true; database = undefined; };
+        db.onversionchange = () => { session = Symbol('versionchange'); authorized = false; volatileHold = true; db.close(); database = undefined; };
+        db.onclose = () => { session = Symbol('connection-closed'); authorized = false; volatileHold = true; database = undefined; };
         resolve(db);
       };
     });
@@ -148,10 +149,12 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
       } catch (e) { return { state: 'UNKNOWN', reason: message(e), writeAllowed: false, executionAllowed: false }; }
     },
     async authorize(expected: { token: Token; raw: string; legacyRaw: string }): Promise<Result> {
-      authorized = false;
+      const authorizationSession = Symbol('explicit-authorization');
+      session = authorizationSession; authorized = false;
       if (volatileHold) return result('BLOCKED', 'runtime-hold');
       try {
         const s = await read(), reason = inspectSnapshot(s);
+        if (authorizationSession !== session || volatileHold) return result('BLOCKED', 'authorization-session-invalidated');
         if (reason || unresolved(s, observed)) return result('BLOCKED', reason ?? 'unresolved-intent-or-hold');
         if (!sameToken(expected.token, s.head) || expected.raw !== s.current || expected.legacyRaw !== (s.head as Head).legacyRaw) return result('CONFLICT', 'explicit-confirmation-stale');
         authorized = true; return result('AUTHORIZED', 'explicit-synthetic-session-only');
@@ -162,8 +165,9 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
       // Detach input before the first await; caller mutation cannot change operation semantics.
       let request: SaveRequest;
       try { request = structuredClone(input); } catch (e) { return result('INVALID', message(e), phases); }
-      if (request.protocol !== 1 || !validToken(request.expected) || !validRaw(request.expectedRaw) || !validRaw(request.candidateRaw) || !id(request.operationId) || request.operationId === 'genesis' || !validRaw(request.legacyRaw)) return result('INVALID', 'invalid-request-or-protocol', phases);
+      if (!object(request) || request.protocol !== 1 || !validToken(request.expected) || !validRaw(request.expectedRaw) || !validRaw(request.candidateRaw) || !id(request.operationId) || request.operationId === 'genesis' || !validRaw(request.legacyRaw)) return result('INVALID', 'invalid-request-or-protocol', phases);
       if (!authorized || volatileHold) return result('BLOCKED', 'explicit-confirmation-or-hold', phases);
+      const savingSession = session;
       const locks = globalThis.navigator?.locks;
       if (!locks) return result('UNAVAILABLE', 'coordinator-lock-unavailable', phases);
       let intentPersisted = false;
@@ -187,10 +191,10 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
       };
       try { const outcome = await locks.request(name + ':coordinator', async () => {
         try {
-          if (!active || !authorized || volatileHold) return result('BLOCKED', 'runtime-hold', phases);
+          if (!active || !authorized || volatileHold || savingSession !== session) return result('BLOCKED', 'runtime-hold', phases);
           const db = await open();
           const prepared = await transaction<Result>(db, 'readwrite', (tx, s, set) => {
-            if (!active || !authorized || volatileHold) throw Error('coordinator-no-longer-active');
+            if (!active || !authorized || volatileHold || savingSession !== session) throw Error('coordinator-no-longer-active');
             const reason = inspectSnapshot(s);
             if (reason || (s.control as { state?: string })?.state !== 'CLEAR') { set(result('BLOCKED', reason ?? 'persistent-hold', phases)); return; }
             const h = s.head as Head;
@@ -206,9 +210,9 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
           });
           if (prepared.status !== 'PREPARED') return prepared;
           intentPersisted = true; phases.push('INTENT_DURABLE', 'TRANSACTION_RUNNING');
-          if (!active || !authorized || volatileHold) throw Error('coordinator-no-longer-active');
+          if (!active || !authorized || volatileHold || savingSession !== session) throw Error('coordinator-no-longer-active');
           const committed = await transaction<Result>(db, 'readwrite', (tx, s, set) => {
-            if (!active || !authorized || volatileHold) throw Error('coordinator-no-longer-active');
+            if (!active || !authorized || volatileHold || savingSession !== session) throw Error('coordinator-no-longer-active');
             const reason = inspectSnapshot(s), h = s.head as Head;
             if (reason || (s.control as { state: string }).state !== 'CLEAR') throw Error(reason ?? 'persistent-hold');
             if (Object.entries(s).some(([k, v]) => k.startsWith('intent:') && k !== 'intent:' + request.operationId && (v as Intent).phase !== 'READBACK_MATCH')) throw Error('other-unresolved-intent');
@@ -229,7 +233,7 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
           if (inspectSnapshot(s) || !sameToken(s.head, committed.token) || s.current !== request.candidateRaw || (s['intent:' + request.operationId] as Intent)?.phase !== 'COMMIT_RECORDED' || (s.control as { state: string }).state !== 'CLEAR') throw Error('post-commit-readback-mismatch');
           phases.push('READBACK_MATCH');
           await transaction<void>(db, 'readwrite', (tx, current) => {
-            if (!active || !authorized || volatileHold) throw Error('coordinator-no-longer-active');
+            if (!active || !authorized || volatileHold || savingSession !== session) throw Error('coordinator-no-longer-active');
             if (inspectSnapshot(current) || !sameToken(current.head, committed.token) || current.current !== request.candidateRaw || (current.control as { state: string }).state !== 'CLEAR') throw Error('ack-state-changed');
             const i = current['intent:' + request.operationId] as Intent;
             if (i.phase !== 'COMMIT_RECORDED' || i.firstFailure) throw Error('ack-intent-changed');
@@ -238,11 +242,14 @@ export function createIsolatedAdapter(name: string, options: Options = {}) {
           return result('VERIFIED', 'commit-and-readback-observed-not-media-durability', phases, committed.token);
         } catch (e) { return stopUnknown(e); }
       });
-        if (outcome.status === 'VERIFIED' && active && authorized && !volatileHold) { observed.add(request.operationId); phases.push('SESSION_RESULT_OBSERVED'); }
+        if (outcome.status === 'VERIFIED') {
+          if (!active || !authorized || volatileHold || savingSession !== session) return stopUnknown(Error('session-invalidated-before-result'));
+          observed.add(request.operationId); phases.push('SESSION_RESULT_OBSERVED');
+        }
         active = false;
         return outcome;
       } catch (e) { return stopUnknown(e); }
     },
-    close() { authorized = false; observed.clear(); database?.close(); database = undefined; },
+    close() { session = Symbol('explicit-close'); authorized = false; observed.clear(); database?.close(); database = undefined; },
   };
 }
