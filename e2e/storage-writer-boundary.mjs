@@ -25,7 +25,7 @@ export function classifySource(file) {
 export function scanWriterSources(sources) {
   const failures = [];
   const parsed = new Map(Object.entries(sources).map(([file, source]) => [file, ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, file.endsWith('tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS)]));
-  const resolveSpec = (file, spec) => spec.startsWith('.') ? path.posix.normalize(path.posix.join(path.posix.dirname(file), spec)) : spec.startsWith('@/') ? path.posix.normalize(spec.slice(2)) : spec;
+  const resolveSpec = (file, spec) => spec.startsWith('.') ? path.posix.normalize(path.posix.join(path.posix.dirname(file), spec)) : spec.startsWith('@/') ? path.posix.normalize(spec.slice(2)) : spec.startsWith('/') ? path.posix.normalize(spec).replace(/^\/+/, '') : spec;
   const resolveModule = (file, spec) => {
     const base = resolveSpec(file, spec);
     return [base, base + '.ts', base + '.tsx', base + '.js', base + '.mjs', base + '/index.ts'].find(candidate => parsed.has(candidate));
@@ -148,6 +148,7 @@ export function scanWriterSources(sources) {
     const checkImport = (node, spec) => {
       if (!spec) { report(node, 'dynamic-import-unresolved'); return; }
       const resolved = resolveSpec(file, spec);
+      if (spec.startsWith('/@fs/')) report(node, 'product-imports-absolute-filesystem');
       if (/localstorage-adapter(?:\.[cm]?[jt]s)?$/.test(resolved) && file !== FACADE) report(node, 'adapter-import-outside-facade');
       if (EXCLUDED_ROOTS.some(root => resolved.startsWith(root))) report(node, 'product-imports-excluded-source');
       if (/^(?:node:)?(?:fs|fs\/promises)$/.test(spec) || /(?:sqlite|drizzle-orm|better-sqlite)/.test(spec) && file !== 'db/index.ts' && file !== 'db/schema.ts') report(node, 'alternate-persistence-import');

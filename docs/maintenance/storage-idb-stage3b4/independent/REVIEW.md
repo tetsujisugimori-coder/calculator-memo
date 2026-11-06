@@ -1,0 +1,27 @@
+# Independent review: Stage 3B-4 isolated IDB foundation
+
+Reviewer: separate `independent_review` agent. This review constructed its own fixtures, browser driver and counterexamples; it did not modify the adapter or scanner. The worktree was concurrently edited by the implementer. These local observations identify source hashes in each summary and are not final-HEAD CI evidence.
+
+## Findings and corrective observations
+
+- **R1 / P1 — coordinator result loss could erase UNKNOWN across restart.** Initial actual Chromium execution used native IndexedDB and a deliberately wrapped native Web Locks request that discarded the successful callback result and threw. The original `save` returned UNKNOWN; a fresh instance reported READ_ONLY, authorized itself, and saved another generation (2). The original observation is retained in [initial-native-red/chromium-outer-lock-observation.json](initial-native-red/chromium-outer-lock-observation.json). The correction persists the original failure outside the coordinator callback and does not infer lifecycle success from historical READBACK_MATCH. The unchanged counterexample passed locally after correction. A new case also fails diagnostic persistence; a new instance remains HOLD/BLOCKED even though the historical intent still says READBACK_MATCH.
+- **R2 / P2 — contradictory intent failure record accepted.** A manually constructed, otherwise consistent chain with `firstFailure` relabeled READBACK_MATCH was accepted by the initial pure inspector. [initial-red.log](initial-red.log) retains the failing test. The validator now rejects contradictory intent phases. The original counterexample passed after correction.
+- **R3 / P2 — root-relative product import escaped the excluded-source boundary.** The scanner rejected `../e2e/...` and `@/e2e/...` but accepted Vite root-relative `/e2e/fixtures/storage-idb.ts`. The initial independent log preserves this RED. Canonicalizing root-relative paths and rejecting `/@fs/` addresses the scoped escape without allowing the isolated adapter into the product graph. The original counterexample passed after correction.
+- **R4 / P2 — intent/diagnostic compatibility metadata.** Independent mixed-record protocol 2 cases were added after review of the first three corrections. [protocol-red.log](protocol-red.log) retains the initial failures. Their final corrective result is recorded in the subsequent independent test output, not assumed here.
+- The implementer additionally identified a delayed callback after an already rejected coordinator request. The independent driver starts the callback, rejects its coordinator promise, then waits for the callback to finish. The corrected active fence preserved generation 0 and no primary receipt. This is an injected scheduling fault with native IDB; it is not a claim that native Web Locks behaves this way. A before-fix browser RED for this additional case was not captured.
+
+## What was actually executed
+
+- Own pure integrity/scanner corpus: initially 13/15 PASS and 2 RED; after the first corrections, 15/15 PASS. The added protocol cases brought the independent corpus to 17; their result is recorded separately.
+- Actual local Chromium `154.0.8037.57`, loopback empty page, synthetic database names only: five independently authored browser cases passed on the corrected dirty source. These covered outer result loss, result plus diagnostic loss, preauthorized second native page (stale CONFLICT, fresh-token HOLD), delayed callback fencing, and read-only inspection of an absent database (no creation).
+- Each local browser summary retains SHA/tree, dirty flag and adapter/bundle SHA-256. `fixed-native-green` and `delayed-callback-review` combined summaries remain FAIL because WebKit could not launch. Their Chromium records are PASS; this is not overall two-engine acceptance.
+- Pinned Playwright WebKit was unavailable locally. A browser download was rejected by environment network policy; no bypass was attempted by this reviewer. The CI workflow independently executes this reviewer driver with both pinned engines and must provide final-HEAD evidence before a two-engine claim.
+- No product application was loaded in this independent browser driver. No user data, production origin, migration, deletion, dual writing, deployment or selective restore execution was used.
+
+## Limits and acceptance gate
+
+The new implementation remains in an already excluded test region; product imports are prohibited by the scanner. Transaction complete, a subsequent readback, and coordinator-result observation are distinct. Neither these tests nor a self-consistent history proves disk flush, power-loss durability, rollback resistance, hostile same-origin protection, total-store-loss recovery or physical Safari behavior.
+
+Legacy raw is an explicit caller-supplied observation. It is not an atomic localStorage/IndexedDB snapshot and does not prevent a non-cooperating old tab from changing localStorage afterward. A test claiming old-tab divergence must use an actual independently read synthetic localStorage value. No automatic repair or merge is authorized.
+
+Limited acceptance remains pending exact final HEAD, both-engine independent CI output, formal GUI original artifact reaggregation, and review of the final diff. `executionAllowed=false`; actual selective restore writes NO. Do not infer a final merge recommendation from the dirty-source local observations in this document.

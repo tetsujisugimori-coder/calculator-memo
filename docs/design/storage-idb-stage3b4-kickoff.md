@@ -48,3 +48,7 @@ No automatic migration, no dual write, no localStorage deletion, no Draft releas
 - [Stage 3B-2 architecture §7](storage-architecture-stage3b2.md)
 - [Stage 3B-3 Storage Facade](storage-facade-stage3b3.md)
 - [Original remaining-risk ledger, #121](https://github.com/tetsujisugimori-coder/calculator-memo/issues/121)
+
+## Implementation follow-up
+
+The initial contract above is retained as kickoff history. The Stage3B-4 isolated adapter, current boundaries and conservative restart HOLD are described in [implementation design](storage-idb-stage3b4.md); actual results and remaining verification are tracked in the [ledger](../maintenance/storage-idb-stage3b4/verification.md). This link is not an acceptance claim.
