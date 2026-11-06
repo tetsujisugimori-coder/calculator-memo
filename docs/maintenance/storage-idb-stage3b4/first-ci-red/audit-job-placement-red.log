@@ -1,0 +1,1102 @@
+✖ backup job has no dependency on the formal job and retains failure propagation (2.82999ms)
+✔ formal contract and backup evidence remain separate (1.669867ms)
+✔ unit: command failure propagates and leaves the diagnostic log (94.720817ms)
+✔ normal_build: command failure propagates and leaves the diagnostic log (79.091456ms)
+✔ pages_build: command failure propagates and leaves the diagnostic log (58.283388ms)
+✔ apt_config: command failure propagates and leaves the diagnostic log (68.83838ms)
+✔ os_install: command failure propagates and leaves the diagnostic log (80.932883ms)
+✔ browser_install: command failure propagates and leaves the diagnostic log (63.894341ms)
+✔ workflow retains strict failure, exact HEAD, timeout and artifact contracts (1.635889ms)
+✔ log storage failure cannot be concealed by a successful command (65.008153ms)
+✔ complete six-context contract preserves 1092 prior checks plus 36 body-item-navigation checks and 592 geometry checkpoints (3.142158ms)
+✔ coverage rejects one scenario never ran (1.561598ms)
+✔ coverage rejects duplicate context replaces omitted context (2.304149ms)
+✔ coverage rejects child failed (0.469281ms)
+✔ coverage rejects scenario still running (0.497423ms)
+✔ coverage rejects checkout SHA mismatch (0.686864ms)
+✔ coverage rejects expected SHA mismatch (0.344496ms)
+✔ coverage rejects served SHA mismatch (0.880706ms)
+✔ coverage rejects incorrect mobile environment (0.719463ms)
+✔ coverage rejects entire new fixed-insertion coverage absent (0.455473ms)
+✔ coverage rejects legacy touch count without fixed-insertion operations (3.273987ms)
+✔ coverage rejects new body-item-navigation coverage omitted (0.508985ms)
+✔ coverage rejects legacy touch count without body navigation (0.600606ms)
+✔ coverage rejects new item-navigation group omitted (0.44574ms)
+✔ coverage rejects old touch count omits item-navigation operations (1.076003ms)
+✔ coverage rejects acceptance check missing (0.348219ms)
+✔ coverage rejects duplicate acceptance check (0.29225ms)
+✔ coverage rejects check from another context (4.634282ms)
+✔ coverage rejects duplicate geometry checkpoint (0.432648ms)
+✔ coverage rejects geometry checkpoint missing (0.308843ms)
+✔ coverage rejects geometry checkpoint failed (0.826948ms)
+✔ coverage rejects old touch count omits seven explicit UNKNOWN recovery actions (0.710718ms)
+✔ coverage rejects touch activation omitted (0.61818ms)
+✔ coverage rejects runtime or network error (0.890624ms)
+✔ stage process launch failure remains failed with timing evidence (63.67439ms)
+✔ missing-context validation is nonzero at the process boundary (53.174249ms)
+✔ isolated preview ports are distinct and allowed by Fetch before any transport (29.243913ms)
+✔ successful memo save waits for persistence without delaying read-only storage observations (3.68643ms)
+✔ modal overflow diagnostics are failure-only bounded and retain the strict geometry assertion (1.79433ms)
+✔ deb822 source rewrite preserves signing, suites, components and unrelated sources (1.035362ms)
+✔ legacy sources preserve options and other hosts; Azure security gets official security endpoint (0.293992ms)
+✔ unknown URI, suite and wrapped or ambiguous fields fail closed (0.760429ms)
+✔ APT configuration is restricted to root GitHub Ubuntu 24.04 and transport settings (0.741284ms)
+✔ OS and browser acquisition have separate bounded budgets without dependency omissions (0.614603ms)
+✔ bounded acquisition timeout fails and preserves its stage log and timing (172.748149ms)
+✔ official hosted-runner mirror+file indirection preserves signed source semantics (0.656349ms)
+✔ resource evidence separates Node usage from visible browser descendants (6.423844ms)
+✔ activation timing preserves real input and touch observation while splitting dispatch costs (1.930852ms)
+✔ optional npm cache cannot consume post-verification budget; locked installs remain mandatory (0.633294ms)
+✔ time sums and missing resource attribution are explicit (2.779513ms)
+✔ four mock cases aggregate only complete matching evidence (214.808571ms)
+✔ missing progress stops subsequent cases and persists failure (56.853416ms)
+✔ passing child with missing timing evidence is rejected (48.157043ms)
+✔ failed child exit is not passed (46.225051ms)
+✔ time limit terminates child and preserves prior output (1210.04878ms)
+✔ Linux timeout reaches descendant and allows cleanup (2015.336757ms)
+✔ the matrix is exactly the six immutable scenario IDs, with no fail-fast or legacy main-suite run (7.076512ms)
+✔ six distinct successful jobs preserve all 1128 checks, 592 geometry checkpoints and 132 PNG files (74.319524ms)
+✔ reject: missing sixth artifact (46.837218ms)
+✔ reject: unexpected seventh artifact (45.03878ms)
+✔ reject: foreign single-job SHA (56.203147ms)
+✔ reject: mixed run attempts (19.309499ms)
+✔ reject: failed scenario is not a success (41.479992ms)
+✔ reject: swapped scenario inside correct artifact folder (37.507406ms)
+✔ reject: missing acceptance check (36.145658ms)
+✔ reject: missing image evidence (32.438039ms)
+✔ a failed prerequisite job fails even when all six artifacts look complete (26.530832ms)
+✔ UNKNOWN observation accepts intact draft/raw and exactly one original attempt (1.931137ms)
+✔ UNKNOWN rejects: no injected attempt (1.129448ms)
+✔ UNKNOWN rejects: automatic retry even if silently dropped (0.235512ms)
+✔ UNKNOWN rejects: changed raw (0.427422ms)
+✔ UNKNOWN rejects: lost title (0.250823ms)
+✔ UNKNOWN rejects: lost body (0.342218ms)
+✔ UNKNOWN rejects: truncated remarks (0.336587ms)
+✔ UNKNOWN rejects: lost evidence link (0.743746ms)
+✔ UNKNOWN rejects: confirmation retry enabled (0.291854ms)
+✔ UNKNOWN rejects: ordinary save bypass enabled (0.274134ms)
+✔ 721/800px accept natural flow, non-overlap and reachable notes without weakening desktop sticky (0.259518ms)
+✔ natural flow rejects: old two-column sticky overlap (0.239595ms)
+✔ natural flow rejects: no real scroll (0.144672ms)
+✔ natural flow rejects: calculator document drift (0.268174ms)
+✔ natural flow rejects: notes under calculator (0.462575ms)
+✔ notes probe rejects: hit=false (0.294033ms)
+✔ notes probe rejects: enabled=false (0.256793ms)
+✔ notes probe rejects: inViewport=false (0.233526ms)
+✔ desktop still rejects wrong sticky gap or non-sticky positioning (0.783122ms)
+✔ reload reconstruction uses seven recorded UI activations and retains original pending-lock checks (0.918271ms)
+✔ the formal prerequisite job runs these negative controls before browser matrix acceptance (13.405272ms)
+✖ recovery acceptance is independent, exact HEAD, bounded, and failure propagating (3.409985ms)
+✔ all preceding formal, backup and restore acceptance remain independent (0.756844ms)
+✔ runner verifies served provenance and enforces complete eight-case acceptance (7.933382ms)
+✖ restore has independent failure-propagating job and exact HEAD evidence (3.259605ms)
+✔ restore does not replace formal or backup contracts (1.510715ms)
+✔ synthetic full originals produce 6/1128/592/132 and per-file SHA manifest (194.133021ms)
+✔ reject synthetic missing original condition (89.550726ms)
+✔ reject synthetic duplicate/unexpected condition folder (60.022408ms)
+✔ reject synthetic stale artifact folder (64.542354ms)
+✔ reject synthetic missing original provenance (66.313586ms)
+✔ reject synthetic mutated record SHA (53.788191ms)
+✔ reject synthetic mutated record tree (52.662328ms)
+✔ reject synthetic stale run (55.943892ms)
+✔ reject synthetic stale attempt (65.702187ms)
+✔ reject synthetic failed browser outcome (61.156516ms)
+✔ reject synthetic duplicate check (61.906127ms)
+✔ reject synthetic reduced check count (61.642474ms)
+✔ reject synthetic reduced geometry count (75.984943ms)
+✔ reject synthetic wrong condition identity (175.99574ms)
+✔ reject synthetic missing named PNG (91.658349ms)
+✔ reject synthetic fake PNG bytes (75.743383ms)
+✔ reject synthetic CRC corrupted PNG (96.092062ms)
+✔ reject synthetic wrong PNG dimensions (79.364727ms)
+✔ reject synthetic official aggregate mismatch (138.777797ms)
+✔ reject synthetic original inventory mismatch (69.971766ms)
+✔ PNG truncated bytes are rejected (0.736517ms)
+✔ failed prerequisites remain failed despite complete synthetic files (51.499162ms)
+✖ selection-preview acceptance is independent, exact HEAD, bounded, and failure propagating (3.537256ms)
+✔ all preceding formal, backup and restore acceptance remain independent (0.450068ms)
+✔ runner verifies served provenance and enforces complete eight-case acceptance (5.969713ms)
+✔ preview browser oracle rejects mutation, incomplete coverage and hidden errors (1.357578ms)
+✔ accepts a complete owned Space activation only (2.157916ms)
+✔ rejects missing click (2.746812ms)
+✔ rejects duplicate click (0.577715ms)
+✔ rejects missing update (0.449426ms)
+✔ rejects wrong label (0.524869ms)
+✔ rejects replaced DOM (0.341228ms)
+✔ rejects focus escaped (0.271156ms)
+✔ rejects untrusted key (0.245238ms)
+✔ rejects detached target (0.34375ms)
+✔ rejects native default left active (0.562268ms)
+✔ plan acceptance has independent bounded exact-HEAD job with no deployment capability (0.934009ms)
+✔ plan runner verifies served SHA and all eight native mobile cases, storage invariants and error propagation (9.320006ms)
+✔ Stage3A exact HEAD independent bounded job preserves formal CI and no deploy capability (5.327619ms)
+✔ exclusive evidence dir, served provenance, signal/failure propagation and eight genuine cases (1.769306ms)
+✔ product safety modules have no mutation adapter import or storage write capability (3.642804ms)
+✔ complete evidence accepted (2.437369ms)
+✔ reject missing engine (0.472741ms)
+✔ reject duplicate engine (0.361736ms)
+✔ reject failed engine (0.281638ms)
+✔ reject missing case (0.20816ms)
+✔ reject duplicate case (0.256101ms)
+✔ reject wrong sha (1.094849ms)
+✔ reject page error (0.353544ms)
+✔ reject missing observation (0.315446ms)
+✔ reject missing version (0.316919ms)
+✔ reject write enabled (0.220328ms)
+✔ reject HOLD released (0.163126ms)
+✔ reject missing source identity (0.160608ms)
+✔ reject dirty tree (0.144507ms)
+✔ reject failed summary (0.150257ms)
+✔ reject two accepted writers (0.155715ms)
+✔ reject abort partially committed (0.117863ms)
+✔ reject ack inferred (0.13405ms)
+✔ reject missing corruption fault (0.157149ms)
+✔ reject automatic bootstrap (0.130879ms)
+✔ reject empty observation for same-generation-two-tabs (0.154259ms)
+✔ reject empty observation for stale-validation-and-recovery (0.121173ms)
+✔ reject empty observation for cooperative-aba-token (0.150471ms)
+✔ reject empty observation for web-lock-ignored-by-old-tab (0.0946ms)
+✔ reject empty observation for unobserved-notification-aba (0.198447ms)
+✔ reject empty observation for final-check-set-gap (0.193573ms)
+✔ reject empty observation for transaction-abort-preserves-all (0.239049ms)
+✔ reject empty observation for commit-before-page-close-ack (0.128869ms)
+✔ reject empty observation for exception-after-commit (0.153014ms)
+✔ reject empty observation for normal-reopen-new-instance (0.116509ms)
+✔ reject empty observation for missing-corrupt-history-generation-copy (0.096262ms)
+✔ reject empty observation for entire-store-loss-no-auto-bootstrap (0.129655ms)
+✔ reject empty observation for idb-authority-legacy-fork (0.13461ms)
+✔ reject empty observation for dedicated-workers-not-single-authority (0.126787ms)
+✔ reject empty observation for restore-and-ordinary-share-transaction (0.108179ms)
+✔ additional facade CI checks exact PR head with pinned actions and read-only permissions (6.344219ms)
+✔ bounded runner preserves original outcome and failure artifacts in an exclusive directory (2.486926ms)
+✔ owned loopback build identifies source, bundle, and browser-observed asset bytes (3.029175ms)
+✔ all eight matrix cases require six completed fresh contexts; no partial or forced success (1.553254ms)
+✔ product operations use real UI, fixed raw expectations, and native fault observation without product hooks (1.844781ms)
+✔ calculation editor is opened through its native summary before fill, and reload does not await a collapsed textbox (1.233441ms)
+✔ async save polls tolerate absent optional containers but retain the fixed expected saved values (0.992134ms)
+✔ tablet layout regression uses native hit tests and restores the isolated negative-control style (2.463032ms)
+✔ all two-engine exact cases accepted (1.95365ms)
+✔ reject missing-engine (0.2619ms)
+✔ reject duplicate-engine (0.29307ms)
+✔ reject missing-case (0.181834ms)
+✔ reject duplicate-case (0.303656ms)
+✔ reject phase (0.164421ms)
+✔ reject pageerror (1.167821ms)
+✔ reject version (0.167547ms)
+✔ reject no-events (0.196491ms)
+✔ reject restart-success (0.291948ms)
+✔ reject failed (0.115503ms)
+✔ reject exception (0.116747ms)
+✔ reject late-primary (3.384243ms)
+✔ reject release-promoted (0.207959ms)
+✔ reject diagnostic-not-fired (0.144759ms)
+✔ reject invented-first-failure (0.120358ms)
+✔ reject normal-restart-unlocked (0.13159ms)
+✔ test-only implementation is absent from product import paths (8.701786ms)
+✔ isolated workflow fails normally and retains evidence without changing formal GUI counts (0.347766ms)
+✔ all repository product writers respect the boundary (1093.980513ms)
+✔ RED control rejects directSet (0.776626ms)
+✔ RED control rejects injectedSet (0.643475ms)
+✔ RED control rejects remove (0.329205ms)
+✔ RED control rejects clear (0.387993ms)
+✔ RED control rejects alias (0.436256ms)
+✔ RED control rejects methodAlias (0.442077ms)
+✔ RED control rejects destructured (0.363527ms)
+✔ RED control rejects computed (0.449205ms)
+✔ RED control rejects constantName (0.454559ms)
+✔ RED control rejects unknownName (0.193363ms)
+✔ RED control rejects propertyAssignment (0.124717ms)
+✔ RED control rejects indexAssignment (0.09666ms)
+✔ RED control rejects aliasedIndex (0.215509ms)
+✔ RED control rejects reassignedAlias (0.187061ms)
+✔ RED control rejects destructuredStorage (0.209442ms)
+✔ RED control rejects typedAlias (0.278649ms)
+✔ RED control rejects deleteProperty (0.108711ms)
+✔ RED control rejects increment (0.187366ms)
+✔ RED control rejects reflect (0.110888ms)
+✔ RED control rejects assign (0.093954ms)
+✔ RED control rejects define (0.18258ms)
+✔ RED control rejects reflectGet (0.105951ms)
+✔ RED control rejects reflectStorage (0.243672ms)
+✔ RED control rejects descriptor (0.19997ms)
+✔ RED control rejects objectEscape (0.227483ms)
+✔ RED control rejects objectShorthandEscape (0.183766ms)
+✔ RED control rejects returnEscape (0.299876ms)
+✔ RED control rejects arrowEscape (0.142622ms)
+✔ RED control rejects arrayEscape (0.159348ms)
+✔ RED control rejects exportEscape (0.13443ms)
+✔ RED control rejects cookie (0.090133ms)
+✔ RED control rejects cookieStore (0.084456ms)
+✔ RED control rejects indexedDB (0.175206ms)
+✔ RED control rejects indexViaWindow (0.153215ms)
+✔ RED control rejects cache (0.099291ms)
+✔ RED control rejects opfs (0.131208ms)
+✔ RED control rejects filesystem (0.139006ms)
+✔ RED control rejects serverDatabase (0.188505ms)
+✔ RED control rejects fsImport (0.159358ms)
+✔ RED control rejects adapterBypass (0.13674ms)
+✔ RED control rejects adapterReexport (0.184228ms)
+✔ RED control rejects excludedImport (0.157181ms)
+✔ RED control rejects excludedDynamicImport (0.177423ms)
+✔ RED control rejects unknownDynamicImport (0.233398ms)
+✔ RED control rejects eval (0.227166ms)
+✔ RED control rejects newFunction (0.138838ms)
+✔ unclassified executable root requires explicit review (0.132921ms)
+✔ reads, in-memory mutations and explicit external download are allowed (0.415944ms)
+✔ only adapter native mutation and facade adapter import allowed (0.253013ms)
+✔ test fake storage and unconnected examples excluded, product imports denied (0.31078ms)
+✔ real isolated repository GREEN -> injected direct writer RED -> removed GREEN (1076.776728ms)
+✔ full and focused derived workers parse, including nested await arguments (598.939731ms)
+✔ serialized browser and polling callbacks remain identical (383.125324ms)
+✔ full diagnostic retains all assertion calls and explicit timeout values (309.376285ms)
+✔ source drift fails instead of silently applying a diagnostic to another body (2.536768ms)
+✔ tap frame observation is opt-in and preserves tap arguments/assertions/timeouts (503.603079ms)
+✔ frame observer is bounded, records rect cost separately and never writes storage (0.498909ms)
+✔ tap observer evaluation failures report NOT_OBSERVABLE without replacing tap outcome (3.496601ms)
+✔ browser callback sample/lifecycle limits actually cancel RAF and remove listeners (6.031009ms)
+✔ bounded frame pair accepts only complete unobserved/observed evidence (3.625626ms)
+✔ missing frame, observer error, changed source, wrong SHA and incomplete checks reject (11.78737ms)
+✔ pair runner uses submitted checkout, finite caps and original PNG retention rather than old baseline app (0.64997ms)
+✔ deadline reserves complete case and cleanup budget and rejects malformed epoch (0.551136ms)
+✔ fixture raw equality cannot be replaced by equal parsed objects (0.863073ms)
+ℹ tests 261
+ℹ suites 0
+ℹ pass 257
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4794.551779
+
+✖ failing tests:
+
+test at e2e/backup-ci.node-test.mjs:7:1
+✖ backup job has no dependency on the formal job and retains failure propagation (2.82999ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /needs:|continue-on-error|if:.*success/. Input:
+  
+  '    name: Backup mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: backup_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs backup-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs backup-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs backup-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: backup_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs backup-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs backup-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Backup workflow contracts\n' +
+    '        id: backup_contract\n' +
+    '        run: node e2e/run-stage.mjs backup-contract node --test e2e/backup-ci.node-test.mjs\n' +
+    '      - name: Eight backup mobile cases (five-minute limit)\n' +
+    '        id: backup_gui\n' +
+    '        run: node e2e/run-stage.mjs backup-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-backup-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'backup', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/backup-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent backup evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-backup-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  restore:\n' +
+    '    name: Restore mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: restore_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs restore-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs restore-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs restore-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: restore_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs restore-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs restore-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Restore workflow contracts\n' +
+    '        id: restore_contract\n' +
+    '        run: node e2e/run-stage.mjs restore-contract node --test e2e/restore-ci.node-test.mjs\n' +
+    '      - name: Eight restore mobile cases (five-minute limit)\n' +
+    '        id: restore_gui\n' +
+    '        run: node e2e/run-stage.mjs restore-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-restore-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'restore', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/restore-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent restore evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-restore-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  recovery:\n' +
+    '    name: Recovery manager mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: recovery_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs recovery-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs recovery-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs recovery-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: recovery_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs recovery-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs recovery-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Recovery workflow contracts\n' +
+    '        id: recovery_contract\n' +
+    '        run: node e2e/run-stage.mjs recovery-contract node --test e2e/recovery-ci.node-test.mjs\n' +
+    '      - name: Eight recovery mobile cases (five-minute limit)\n' +
+    '        id: recovery_gui\n' +
+    '        run: node e2e/run-stage.mjs recovery-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-recovery-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'recovery', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/recovery-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent recovery evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-recovery-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  selection-preview:\n' +
+    '    name: Selection restore preview mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-n'... 8841 more characters
+  
+      at TestContext.<anonymous> (file:///workspace/calculator-memo/e2e/backup-ci.node-test.mjs:8:29)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '    name: Backup mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: backup_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs backup-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs backup-build npm run build:pages\n          node e2e/run-stage.mjs backup-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: backup_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs backup-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs backup-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Backup workflow contracts\n        id: backup_contract\n        run: node e2e/run-stage.mjs backup-contract node --test e2e/backup-ci.node-test.mjs\n      - name: Eight backup mobile cases (five-minute limit)\n        id: backup_gui\n        run: node e2e/run-stage.mjs backup-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-backup-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'backup\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/backup-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent backup evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-backup-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  restore:\n    name: Restore mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: restore_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs restore-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs restore-build npm run build:pages\n          node e2e/run-stage.mjs restore-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: restore_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs restore-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs restore-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Restore workflow contracts\n        id: restore_contract\n        run: node e2e/run-stage.mjs restore-contract node --test e2e/restore-ci.node-test.mjs\n      - name: Eight restore mobile cases (five-minute limit)\n        id: restore_gui\n        run: node e2e/run-stage.mjs restore-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-restore-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'restore\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/restore-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent restore evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-restore-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  recovery:\n    name: Recovery manager mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: recovery_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs recovery-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs recovery-build npm run build:pages\n          node e2e/run-stage.mjs recovery-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: recovery_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs recovery-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs recovery-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Recovery workflow contracts\n        id: recovery_contract\n        run: node e2e/run-stage.mjs recovery-contract node --test e2e/recovery-ci.node-test.mjs\n      - name: Eight recovery mobile cases (five-minute limit)\n        id: recovery_gui\n        run: node e2e/run-stage.mjs recovery-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-recovery-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'recovery\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/recovery-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent recovery evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-recovery-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  selection-preview:\n    name: Selection restore preview mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-n'... 8841 more characters,
+    expected: /needs:|continue-on-error|if:.*success/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at e2e/recovery-ci.node-test.mjs:6:1
+✖ recovery acceptance is independent, exact HEAD, bounded, and failure propagating (3.409985ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /needs:|continue-on-error|if:.*success/. Input:
+  
+  '    name: Recovery manager mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: recovery_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs recovery-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs recovery-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs recovery-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: recovery_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs recovery-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs recovery-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Recovery workflow contracts\n' +
+    '        id: recovery_contract\n' +
+    '        run: node e2e/run-stage.mjs recovery-contract node --test e2e/recovery-ci.node-test.mjs\n' +
+    '      - name: Eight recovery mobile cases (five-minute limit)\n' +
+    '        id: recovery_gui\n' +
+    '        run: node e2e/run-stage.mjs recovery-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-recovery-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'recovery', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/recovery-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent recovery evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-recovery-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  selection-preview:\n' +
+    '    name: Selection restore preview mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: selection-preview_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs selection-preview-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: selection-preview_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Selection preview workflow contracts\n' +
+    '        id: selection-preview_contract\n' +
+    '        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs\n' +
+    '      - name: Eight selection-preview mobile cases (five-minute limit)\n' +
+    '        id: selection-preview_gui\n' +
+    '        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'selection-preview', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/selection-preview-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent selection-preview evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '  quote-overflow:\n' +
+    '    name: Fixed quote overflow GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: quote-overflow_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs quote-overflow-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs quote-overflow-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs quote-overflow-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: quote-overflow_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs quote-overflow-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs quote-overflow-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Quote diagnostic syntax\n' +
+    '        id: quote-overflow_contract\n' +
+    '        run: node e2e/run-stage.mjs quote-overflow-contract node --check e2e/quote-overflow.mjs\n' +
+    '      - name: Fixed non-touch quote and eight mobile cases (five-minute limits)\n' +
+    '        id: quote-overflow_gui\n' +
+    '        run: |\n' +
+    '          GUI_EVIDENCE_DIR=gui-evidence/quote-overflow/narrow node e2e/run-stage.mjs quote-overflow-narrow timeout --signal=TERM --kill-after=10s 300s node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control\n' +
+    '          node e2e/run-stage.mjs quote-overflow-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-quote-overflow.mjs\n' +
+    '      - name: Acquisition timestamp collision RED GREEN and historical wrong-value control\n' +
+    '        id: quote_timestamp\n' +
+    '        run: GUI_EVIDENCE_DIR=gui-evidence/quote-timestamp node e2e/run-stage.mjs quote-timestamp node e2e/run-quote-timestamp-oracle.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'quote-overflow', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/quote-overflow-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent quote-overflow evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '     '... 2650 more characters
+  
+      at TestContext.<anonymous> (file:///workspace/calculator-memo/e2e/recovery-ci.node-test.mjs:7:29)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '    name: Recovery manager mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: recovery_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs recovery-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs recovery-build npm run build:pages\n          node e2e/run-stage.mjs recovery-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: recovery_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs recovery-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs recovery-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Recovery workflow contracts\n        id: recovery_contract\n        run: node e2e/run-stage.mjs recovery-contract node --test e2e/recovery-ci.node-test.mjs\n      - name: Eight recovery mobile cases (five-minute limit)\n        id: recovery_gui\n        run: node e2e/run-stage.mjs recovery-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-recovery-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'recovery\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/recovery-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent recovery evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-recovery-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  selection-preview:\n    name: Selection restore preview mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: selection-preview_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs selection-preview-build npm run build:pages\n          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: selection-preview_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Selection preview workflow contracts\n        id: selection-preview_contract\n        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs\n      - name: Eight selection-preview mobile cases (five-minute limit)\n        id: selection-preview_gui\n        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'selection-preview\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/selection-preview-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent selection-preview evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n  quote-overflow:\n    name: Fixed quote overflow GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: quote-overflow_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs quote-overflow-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs quote-overflow-build npm run build:pages\n          node e2e/run-stage.mjs quote-overflow-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: quote-overflow_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs quote-overflow-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs quote-overflow-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Quote diagnostic syntax\n        id: quote-overflow_contract\n        run: node e2e/run-stage.mjs quote-overflow-contract node --check e2e/quote-overflow.mjs\n      - name: Fixed non-touch quote and eight mobile cases (five-minute limits)\n        id: quote-overflow_gui\n        run: |\n          GUI_EVIDENCE_DIR=gui-evidence/quote-overflow/narrow node e2e/run-stage.mjs quote-overflow-narrow timeout --signal=TERM --kill-after=10s 300s node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control\n          node e2e/run-stage.mjs quote-overflow-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-quote-overflow.mjs\n      - name: Acquisition timestamp collision RED GREEN and historical wrong-value control\n        id: quote_timestamp\n        run: GUI_EVIDENCE_DIR=gui-evidence/quote-timestamp node e2e/run-stage.mjs quote-timestamp node e2e/run-quote-timestamp-oracle.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'quote-overflow\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/quote-overflow-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent quote-overflow evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n     '... 2650 more characters,
+    expected: /needs:|continue-on-error|if:.*success/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at e2e/restore-ci.node-test.mjs:6:1
+✖ restore has independent failure-propagating job and exact HEAD evidence (3.259605ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /needs:|continue-on-error|if:.*success/. Input:
+  
+  '    name: Restore mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: restore_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs restore-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs restore-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs restore-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: restore_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs restore-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs restore-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Restore workflow contracts\n' +
+    '        id: restore_contract\n' +
+    '        run: node e2e/run-stage.mjs restore-contract node --test e2e/restore-ci.node-test.mjs\n' +
+    '      - name: Eight restore mobile cases (five-minute limit)\n' +
+    '        id: restore_gui\n' +
+    '        run: node e2e/run-stage.mjs restore-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-restore-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'restore', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/restore-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent restore evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-restore-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  recovery:\n' +
+    '    name: Recovery manager mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: recovery_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs recovery-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs recovery-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs recovery-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: recovery_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs recovery-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs recovery-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Recovery workflow contracts\n' +
+    '        id: recovery_contract\n' +
+    '        run: node e2e/run-stage.mjs recovery-contract node --test e2e/recovery-ci.node-test.mjs\n' +
+    '      - name: Eight recovery mobile cases (five-minute limit)\n' +
+    '        id: recovery_gui\n' +
+    '        run: node e2e/run-stage.mjs recovery-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-recovery-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'recovery', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/recovery-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent recovery evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-recovery-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  selection-preview:\n' +
+    '    name: Selection restore preview mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: selection-preview_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs selection-preview-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: selection-preview_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Selection preview workflow contracts\n' +
+    '        id: selection-preview_contract\n' +
+    '        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs\n' +
+    '      - name: Eight selection-preview mobile cases (five-minute limit)\n' +
+    '        id: selection-preview_gui\n' +
+    '        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'selection-preview', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/selection-preview-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent selection-preview evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '  quote-overflow:\n' +
+    '    name: Fixed quote overflow GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41'... 5756 more characters
+  
+      at TestContext.<anonymous> (file:///workspace/calculator-memo/e2e/restore-ci.node-test.mjs:7:30)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '    name: Restore mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: restore_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs restore-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs restore-build npm run build:pages\n          node e2e/run-stage.mjs restore-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: restore_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs restore-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs restore-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Restore workflow contracts\n        id: restore_contract\n        run: node e2e/run-stage.mjs restore-contract node --test e2e/restore-ci.node-test.mjs\n      - name: Eight restore mobile cases (five-minute limit)\n        id: restore_gui\n        run: node e2e/run-stage.mjs restore-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-restore-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'restore\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/restore-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent restore evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-restore-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  recovery:\n    name: Recovery manager mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: recovery_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs recovery-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs recovery-build npm run build:pages\n          node e2e/run-stage.mjs recovery-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: recovery_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs recovery-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs recovery-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Recovery workflow contracts\n        id: recovery_contract\n        run: node e2e/run-stage.mjs recovery-contract node --test e2e/recovery-ci.node-test.mjs\n      - name: Eight recovery mobile cases (five-minute limit)\n        id: recovery_gui\n        run: node e2e/run-stage.mjs recovery-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-recovery-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'recovery\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/recovery-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent recovery evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-recovery-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  selection-preview:\n    name: Selection restore preview mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: selection-preview_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs selection-preview-build npm run build:pages\n          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: selection-preview_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Selection preview workflow contracts\n        id: selection-preview_contract\n        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs\n      - name: Eight selection-preview mobile cases (five-minute limit)\n        id: selection-preview_gui\n        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'selection-preview\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/selection-preview-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent selection-preview evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n  quote-overflow:\n    name: Fixed quote overflow GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41'... 5756 more characters,
+    expected: /needs:|continue-on-error|if:.*success/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at e2e/selection-preview-ci.node-test.mjs:6:1
+✖ selection-preview acceptance is independent, exact HEAD, bounded, and failure propagating (3.537256ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /needs:|continue-on-error|if:.*success/. Input:
+  
+  '    name: Selection restore preview mobile GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: selection-preview_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs selection-preview-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: selection-preview_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Selection preview workflow contracts\n' +
+    '        id: selection-preview_contract\n' +
+    '        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs\n' +
+    '      - name: Eight selection-preview mobile cases (five-minute limit)\n' +
+    '        id: selection-preview_gui\n' +
+    '        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'selection-preview', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/selection-preview-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent selection-preview evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '  quote-overflow:\n' +
+    '    name: Fixed quote overflow GUI (independent)\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 15\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      PR_BRANCH: ${{ github.head_ref }}\n' +
+    '      PR_NUMBER: ${{ github.event.pull_request.number }}\n' +
+    '      CI: "true"\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Set up pinned Node\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Install locked dependencies and build\n' +
+    '        id: quote-overflow_build\n' +
+    '        timeout-minutes: 4\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs quote-overflow-app-install npm ci --ignore-scripts\n' +
+    '          node e2e/run-stage.mjs quote-overflow-build npm run build:pages\n' +
+    '          node e2e/run-stage.mjs quote-overflow-gui-install npm ci --prefix e2e --ignore-scripts\n' +
+    '      - name: Install fixed browsers with bounded setup\n' +
+    '        id: quote-overflow_browsers\n' +
+    '        timeout-minutes: 5\n' +
+    '        run: |\n' +
+    '          node e2e/run-stage.mjs quote-overflow-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n' +
+    '          node e2e/run-stage.mjs quote-overflow-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n' +
+    '      - name: Quote diagnostic syntax\n' +
+    '        id: quote-overflow_contract\n' +
+    '        run: node e2e/run-stage.mjs quote-overflow-contract node --check e2e/quote-overflow.mjs\n' +
+    '      - name: Fixed non-touch quote and eight mobile cases (five-minute limits)\n' +
+    '        id: quote-overflow_gui\n' +
+    '        run: |\n' +
+    '          GUI_EVIDENCE_DIR=gui-evidence/quote-overflow/narrow node e2e/run-stage.mjs quote-overflow-narrow timeout --signal=TERM --kill-after=10s 300s node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control\n' +
+    '          node e2e/run-stage.mjs quote-overflow-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-quote-overflow.mjs\n' +
+    '      - name: Acquisition timestamp collision RED GREEN and historical wrong-value control\n' +
+    '        id: quote_timestamp\n' +
+    '        run: GUI_EVIDENCE_DIR=gui-evidence/quote-timestamp node e2e/run-stage.mjs quote-timestamp node e2e/run-quote-timestamp-oracle.mjs\n' +
+    '      - name: Preserve independent outcomes\n' +
+    '        if: always()\n' +
+    '        env:\n' +
+    '          STEP_OUTCOMES: ${{ toJSON(steps) }}\n' +
+    '        run: |\n' +
+    '          mkdir -p gui-evidence\n' +
+    "          node --input-type=module <<'NODE'\n" +
+    "          import { writeFileSync } from 'node:fs';\n" +
+    "          const record = { job: 'quote-overflow', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n" +
+    "          writeFileSync('gui-evidence/quote-overflow-ci-outcomes.json', JSON.stringify(record, null, 2) + '\\n');\n" +
+    '          NODE\n' +
+    '          node e2e/evidence-inventory.mjs\n' +
+    '      - name: Upload independent quote-overflow evidence\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: pr-quote-overflow-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: gui-evidence/\n' +
+    '          retention-days: 7\n' +
+    '          compression-level: 0\n' +
+    '          if-no-files-found: error\n' +
+    '\n' +
+    '  formal_independent_audit:\n' +
+    '    name: Independent review of original six GUI artifacts\n' +
+    '    needs: [checks, formal_scenario, formal_aggregate]\n' +
+    '    if: always()\n' +
+    '    runs-on: ubuntu-24.04\n' +
+    '    timeout-minutes: 10\n' +
+    '    env:\n' +
+    '      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n' +
+    '      CHECKS_JOB_RESULT: ${{ needs.checks.result }}\n' +
+    '      MATRIX_JOB_RESULT: ${{ needs.formal_scenario.result }}\n' +
+    '      AGGREGATE_JOB_RESULT: ${{ needs.formal_aggregate.result }}\n' +
+    '    steps:\n' +
+    '      - name: Checkout exact PR head for independent artifact review\n' +
+    '        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n' +
+    '        with:\n' +
+    '          repository: ${{ github.event.pull_request.head.repo.full_name }}\n' +
+    '          ref: ${{ github.event.pull_request.head.sha }}\n' +
+    '          persist-credentials: false\n' +
+    '      - name: Pinned Node for builtin-only independent oracle\n' +
+    '        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n' +
+    '        with:\n' +
+    '          node-version: 22.13.0\n' +
+    '          package-manager-cache: false\n' +
+    '      - name: Independently download all six original artifacts\n' +
+    '        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8\n' +
+    '        with:\n' +
+    '          pattern: formal-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}-*\n' +
+    '          path: formal-review-originals\n' +
+    '          merge-multiple: false\n' +
+    '      - name: Download official aggregate for comparison\n' +
+    '        if: always()\n' +
+    '        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8\n' +
+    '        with:\n' +
+    '          name: formal-gui-aggregate-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: formal-review-official\n' +
+    '      - name: Independent oracle negative controls\n' +
+    '        if: always()\n' +
+    '        run: node --test e2e/review-formal-artifacts.node-test.mjs\n' +
+    '      - name: Inspect original PNG bytes and independently reaggregate\n' +
+    '        if: always()\n' +
+    '        run: node e2e/review-formal-artifacts.mjs formal-review-originals formal-review-official/result.json\n' +
+    '      - name: Preserve independent manifest and original-file hashes\n' +
+    '        if: always()\n' +
+    '        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n' +
+    '        with:\n' +
+    '          name: formal-gui-independent-audit-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n' +
+    '          path: formal-independent-audit/\n' +
+    '          retention-days: 7\n' +
+    '          if-no-files-found: error\n'
+  
+      at TestContext.<anonymous> (file:///workspace/calculator-memo/e2e/selection-preview-ci.node-test.mjs:7:28)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '    name: Selection restore preview mobile GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: selection-preview_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs selection-preview-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs selection-preview-build npm run build:pages\n          node e2e/run-stage.mjs selection-preview-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: selection-preview_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs selection-preview-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs selection-preview-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Selection preview workflow contracts\n        id: selection-preview_contract\n        run: node e2e/run-stage.mjs selection-preview-contract node --test e2e/selection-preview-ci.node-test.mjs e2e/selection-space-contract.node-test.mjs\n      - name: Eight selection-preview mobile cases (five-minute limit)\n        id: selection-preview_gui\n        run: node e2e/run-stage.mjs selection-preview-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-selection-preview-gui.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'selection-preview\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/selection-preview-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent selection-preview evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-selection-preview-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n  quote-overflow:\n    name: Fixed quote overflow GUI (independent)\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      PR_BRANCH: ${{ github.head_ref }}\n      PR_NUMBER: ${{ github.event.pull_request.number }}\n      CI: "true"\n    steps:\n      - name: Checkout exact PR head\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Set up pinned Node\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Install locked dependencies and build\n        id: quote-overflow_build\n        timeout-minutes: 4\n        run: |\n          node e2e/run-stage.mjs quote-overflow-app-install npm ci --ignore-scripts\n          node e2e/run-stage.mjs quote-overflow-build npm run build:pages\n          node e2e/run-stage.mjs quote-overflow-gui-install npm ci --prefix e2e --ignore-scripts\n      - name: Install fixed browsers with bounded setup\n        id: quote-overflow_browsers\n        timeout-minutes: 5\n        run: |\n          node e2e/run-stage.mjs quote-overflow-apt-config sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs\n          node e2e/run-stage.mjs quote-overflow-browser-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit\n      - name: Quote diagnostic syntax\n        id: quote-overflow_contract\n        run: node e2e/run-stage.mjs quote-overflow-contract node --check e2e/quote-overflow.mjs\n      - name: Fixed non-touch quote and eight mobile cases (five-minute limits)\n        id: quote-overflow_gui\n        run: |\n          GUI_EVIDENCE_DIR=gui-evidence/quote-overflow/narrow node e2e/run-stage.mjs quote-overflow-narrow timeout --signal=TERM --kill-after=10s 300s node e2e/quote-overflow.mjs . narrow --expect-fit --causal --negative-control\n          node e2e/run-stage.mjs quote-overflow-gui timeout --signal=TERM --kill-after=10s 300s node e2e/run-quote-overflow.mjs\n      - name: Acquisition timestamp collision RED GREEN and historical wrong-value control\n        id: quote_timestamp\n        run: GUI_EVIDENCE_DIR=gui-evidence/quote-timestamp node e2e/run-stage.mjs quote-timestamp node e2e/run-quote-timestamp-oracle.mjs\n      - name: Preserve independent outcomes\n        if: always()\n        env:\n          STEP_OUTCOMES: ${{ toJSON(steps) }}\n        run: |\n          mkdir -p gui-evidence\n          node --input-type=module <<\'NODE\'\n          import { writeFileSync } from \'node:fs\';\n          const record = { job: \'quote-overflow\', expectedSha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, node: process.version, image: process.env.ImageOS, imageVersion: process.env.ImageVersion, recordedAt: new Date().toISOString(), steps: JSON.parse(process.env.STEP_OUTCOMES) };\n          writeFileSync(\'gui-evidence/quote-overflow-ci-outcomes.json\', JSON.stringify(record, null, 2) + \'\\n\');\n          NODE\n          node e2e/evidence-inventory.mjs\n      - name: Upload independent quote-overflow evidence\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: pr-quote-overflow-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: gui-evidence/\n          retention-days: 7\n          compression-level: 0\n          if-no-files-found: error\n\n  formal_independent_audit:\n    name: Independent review of original six GUI artifacts\n    needs: [checks, formal_scenario, formal_aggregate]\n    if: always()\n    runs-on: ubuntu-24.04\n    timeout-minutes: 10\n    env:\n      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}\n      CHECKS_JOB_RESULT: ${{ needs.checks.result }}\n      MATRIX_JOB_RESULT: ${{ needs.formal_scenario.result }}\n      AGGREGATE_JOB_RESULT: ${{ needs.formal_aggregate.result }}\n    steps:\n      - name: Checkout exact PR head for independent artifact review\n        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n        with:\n          repository: ${{ github.event.pull_request.head.repo.full_name }}\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: Pinned Node for builtin-only independent oracle\n        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6\n        with:\n          node-version: 22.13.0\n          package-manager-cache: false\n      - name: Independently download all six original artifacts\n        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8\n        with:\n          pattern: formal-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}-*\n          path: formal-review-originals\n          merge-multiple: false\n      - name: Download official aggregate for comparison\n        if: always()\n        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8\n        with:\n          name: formal-gui-aggregate-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: formal-review-official\n      - name: Independent oracle negative controls\n        if: always()\n        run: node --test e2e/review-formal-artifacts.node-test.mjs\n      - name: Inspect original PNG bytes and independently reaggregate\n        if: always()\n        run: node e2e/review-formal-artifacts.mjs formal-review-originals formal-review-official/result.json\n      - name: Preserve independent manifest and original-file hashes\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\n        with:\n          name: formal-gui-independent-audit-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}\n          path: formal-independent-audit/\n          retention-days: 7\n          if-no-files-found: error\n',
+    expected: /needs:|continue-on-error|if:.*success/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
