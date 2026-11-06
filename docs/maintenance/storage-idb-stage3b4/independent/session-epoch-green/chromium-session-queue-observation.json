@@ -1,0 +1,70 @@
+{
+  "queued": {
+    "held": [
+      {
+        "clientId": "71E5C8CF9444F62A847FE75D703652E9",
+        "mode": "exclusive",
+        "name": "stage3b4-test-session-queue-ed07cb4c-28b3-40ff-9f74-ed28c07ed30b:coordinator"
+      }
+    ],
+    "pending": [
+      {
+        "clientId": "71E5C8CF9444F62A847FE75D703652E9",
+        "mode": "exclusive",
+        "name": "stage3b4-test-session-queue-ed07cb4c-28b3-40ff-9f74-ed28c07ed30b:coordinator"
+      }
+    ]
+  },
+  "renewed": {
+    "status": "AUTHORIZED",
+    "reason": "explicit-synthetic-session-only",
+    "phases": []
+  },
+  "oldOutcome": {
+    "status": "BLOCKED",
+    "reason": "runtime-hold",
+    "phases": [
+      "PREVALIDATION"
+    ]
+  },
+  "final": {
+    "state": "READ_ONLY",
+    "reason": "consistent-observation-only",
+    "token": {
+      "structure": 1,
+      "incarnation": "session-queue-inc",
+      "generation": 0,
+      "latestOperation": "genesis"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "CLEAR"
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "session-queue-inc",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "session-queue-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  }
+}

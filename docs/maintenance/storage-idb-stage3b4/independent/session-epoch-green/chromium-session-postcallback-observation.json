@@ -1,0 +1,124 @@
+{
+  "callbackOutcome": {
+    "status": "VERIFIED",
+    "reason": "commit-and-readback-observed-not-media-durability",
+    "phases": [
+      "PREVALIDATION",
+      "INTENT_DURABLE",
+      "TRANSACTION_RUNNING",
+      "COMMIT_OBSERVED",
+      "READBACK_MATCH",
+      "UNKNOWN",
+      "HOLD",
+      "EXPLICIT_RECONCILIATION_REQUIRED",
+      "DIAGNOSTIC_DURABLE"
+    ],
+    "token": {
+      "structure": 1,
+      "incarnation": "postcallback-inc",
+      "generation": 1,
+      "latestOperation": "close-before-result"
+    }
+  },
+  "original": {
+    "status": "UNKNOWN",
+    "reason": "Error:session-invalidated-before-result",
+    "phases": [
+      "PREVALIDATION",
+      "INTENT_DURABLE",
+      "TRANSACTION_RUNNING",
+      "COMMIT_OBSERVED",
+      "READBACK_MATCH",
+      "UNKNOWN",
+      "HOLD",
+      "EXPLICIT_RECONCILIATION_REQUIRED",
+      "DIAGNOSTIC_DURABLE"
+    ]
+  },
+  "recovered": {
+    "state": "HOLD",
+    "reason": "unresolved-intent-or-hold",
+    "token": {
+      "structure": 1,
+      "incarnation": "postcallback-inc",
+      "generation": 1,
+      "latestOperation": "close-before-result"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "HOLD"
+      },
+      "copy:1": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "postcallback-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "close-before-result",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+      "diagnostic:close-before-result": {
+        "protocol": 1,
+        "status": "UNKNOWN",
+        "firstFailure": "Error:session-invalidated-before-result"
+      },
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "postcallback-inc",
+        "generation": 1,
+        "latestOperation": "close-before-result",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "intent:close-before-result": {
+        "protocol": 1,
+        "operationId": "close-before-result",
+        "expected": {
+          "structure": 1,
+          "incarnation": "postcallback-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+        "phase": "UNKNOWN",
+        "firstFailure": "Error:session-invalidated-before-result"
+      },
+      "receipt:close-before-result": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "postcallback-inc",
+          "generation": 1,
+          "latestOperation": "close-before-result"
+        },
+        "previous": "genesis",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n"
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "postcallback-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  },
+  "authorization": {
+    "status": "BLOCKED",
+    "reason": "unresolved-intent-or-hold",
+    "phases": []
+  }
+}

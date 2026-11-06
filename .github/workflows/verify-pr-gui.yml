@@ -226,6 +226,57 @@ jobs:
           if-no-files-found: error
 
 
+  formal_independent_audit:
+    name: Independent review of original six GUI artifacts
+    needs: [checks, formal_scenario, formal_aggregate]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      CHECKS_JOB_RESULT: ${{ needs.checks.result }}
+      MATRIX_JOB_RESULT: ${{ needs.formal_scenario.result }}
+      AGGREGATE_JOB_RESULT: ${{ needs.formal_aggregate.result }}
+    steps:
+      - name: Checkout exact PR head for independent artifact review
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Pinned Node for builtin-only independent oracle
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Independently download all six original artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: formal-gui-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}-*
+          path: formal-review-originals
+          merge-multiple: false
+      - name: Download official aggregate for comparison
+        if: always()
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: formal-gui-aggregate-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: formal-review-official
+      - name: Independent oracle negative controls
+        if: always()
+        run: node --test e2e/review-formal-artifacts.node-test.mjs
+      - name: Inspect original PNG bytes and independently reaggregate
+        if: always()
+        run: node e2e/review-formal-artifacts.mjs formal-review-originals formal-review-official/result.json
+      - name: Preserve independent manifest and original-file hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: formal-gui-independent-audit-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: formal-independent-audit/
+          retention-days: 7
+          if-no-files-found: error
+
+
   backup:
     name: Backup mobile GUI (independent)
     runs-on: ubuntu-24.04

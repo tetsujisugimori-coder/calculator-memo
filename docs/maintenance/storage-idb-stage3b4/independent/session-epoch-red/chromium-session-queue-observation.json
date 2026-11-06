@@ -1,0 +1,116 @@
+{
+  "queued": {
+    "held": [
+      {
+        "clientId": "1DBDD52D3D8B3B93F100DF84FB18AC8E",
+        "mode": "exclusive",
+        "name": "stage3b4-test-session-queue-bcac942b-510c-404d-837a-04efe97662ee:coordinator"
+      }
+    ],
+    "pending": [
+      {
+        "clientId": "1DBDD52D3D8B3B93F100DF84FB18AC8E",
+        "mode": "exclusive",
+        "name": "stage3b4-test-session-queue-bcac942b-510c-404d-837a-04efe97662ee:coordinator"
+      }
+    ]
+  },
+  "renewed": {
+    "status": "AUTHORIZED",
+    "reason": "explicit-synthetic-session-only",
+    "phases": []
+  },
+  "oldOutcome": {
+    "status": "VERIFIED",
+    "reason": "commit-and-readback-observed-not-media-durability",
+    "phases": [
+      "PREVALIDATION",
+      "INTENT_DURABLE",
+      "TRANSACTION_RUNNING",
+      "COMMIT_OBSERVED",
+      "READBACK_MATCH",
+      "SESSION_RESULT_OBSERVED"
+    ],
+    "token": {
+      "structure": 1,
+      "incarnation": "session-queue-inc",
+      "generation": 1,
+      "latestOperation": "old-queued"
+    }
+  },
+  "final": {
+    "state": "READ_ONLY",
+    "reason": "consistent-observation-only",
+    "token": {
+      "structure": 1,
+      "incarnation": "session-queue-inc",
+      "generation": 1,
+      "latestOperation": "old-queued"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "CLEAR"
+      },
+      "copy:1": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "session-queue-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "old-queued",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "session-queue-inc",
+        "generation": 1,
+        "latestOperation": "old-queued",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "intent:old-queued": {
+        "protocol": 1,
+        "operationId": "old-queued",
+        "expected": {
+          "structure": 1,
+          "incarnation": "session-queue-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+        "phase": "READBACK_MATCH"
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "session-queue-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "receipt:old-queued": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "session-queue-inc",
+          "generation": 1,
+          "latestOperation": "old-queued"
+        },
+        "previous": "genesis",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n"
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  }
+}

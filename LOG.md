@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-06 (JST): Stage 3B-4 隔離IndexedDB基盤・authority/UNKNOWN停止
+
+- [Issue #128](https://github.com/tetsujisugimori-coder/calculator-memo/issues/128)・[Draft PR #129](https://github.com/tetsujisugimori-coder/calculator-memo/pull/129)。開始HEAD `a68dd5a6ecb3ca1ad57015d835c84266f053d0a4`、main `f22b854c3ef564513b6aace8f0da1b48a47c461c`、cleanな別checkoutを確認。製品Facade/localStorage/全writerは不変更。
+- [設計](docs/design/storage-idb-stage3b4.md)・[検証台帳](docs/maintenance/storage-idb-stage3b4/verification.md)。同期FacadeのPromise化を避け、試験領域に独立非同期adapterを追加。永続intent完了後、同一IDB transaction内でcurrent/token/copy/receipt/intentを検証・更新しcompleteで確定を観測。原文保持、8コピー上限、世代/operation/incarnation照合、read-only authorityと旧LS分岐検出を実装。
+- 独立反例で外側lock失敗後のUNKNOWN再起動許可、矛盾intent、root-relative import迂回のREDを保全。永続診断・live instanceの観測分離・async境界fence・scanner正規化で修正し、修正後の独立再受入とCIを別記する。過去READBACK_MATCHだけでは新instanceを許可せずHOLD。復旧unlock APIは未実装。
+- ローカル全既存2820試験/239 node契約、型、通常/Pages buildは成功。新規単体44件は成功。ローカル既設Chromiumはdirty source実測、WebKit取得は環境CDN拒否で未実施。初回専用CI42200515926は作者両engine成功・独立WKのDB列挙oracle失敗を記録。直接openのversion0/schemaなしと正常DB負対照へ改め、元FAILを保全。別環境レビューのclose後旧queue復活と遅延authorizeを独立RED再現し、固有session識別で遅延処理・結果返却もfence。Vite globの独立反例を追加して拒否、正常browser再起動とkeepalive付きnative transaction中の実page終了を4幅で追加検証。正式GUI原6artifactを別runnerで取得し公式集約器をimportせず再集約する独立監査jobを追加。PNG原bytesのCRC/展開/寸法/SHA256・元inventory・1128/592/132を照合し、22反例と既存79契約成功。全Node261件で追加job配置による旧4契約の文字列混入REDを検出し、条件を変えずjobを移動して261/261成功、原ログ保持。最終HEADの両browser/正式6条件/原artifact照合は最終CIと台帳・PR本文で実測を追記する。未完了を先取りしない。
+- executionAllowed=false / Stage 3B HOLD / 選択復元実保存NOを維持。移行・二重write・本番authority切替・公開・main直接push・Draft解除・mergeなし。実機Safari/媒体永続化/実quota/transaction中の終了・復旧UX等は未検証または次工程。
+
 ## 2026-11-06 (JST): Stage 3B-3 全writerを共通Storage Facadeへ統合
 
 - [Issue #126](https://github.com/tetsujisugimori-coder/calculator-memo/issues/126)・[Draft PR #127](https://github.com/tetsujisugimori-coder/calculator-memo/pull/127)。PR #125 merge後のmain `41c2c0db0ec2b7dde81ada15c98de5316ab690ce`を新規checkout、重複PRなしを確認し `feat/stage3b3-storage-facade` で実装。main直接変更・マージ・デプロイなし。最終HEADのCIとartifact確認はPRのChecks/最終本文へ実測を追記する。

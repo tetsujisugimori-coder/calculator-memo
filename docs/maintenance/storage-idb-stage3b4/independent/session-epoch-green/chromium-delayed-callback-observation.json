@@ -1,0 +1,55 @@
+{
+  "original": {
+    "status": "UNAVAILABLE",
+    "reason": "Error:independent-early-coordinator-rejection",
+    "phases": [
+      "PREVALIDATION",
+      "UNKNOWN",
+      "HOLD",
+      "EXPLICIT_RECONCILIATION_REQUIRED",
+      "UNKNOWN",
+      "HOLD",
+      "EXPLICIT_RECONCILIATION_REQUIRED"
+    ]
+  },
+  "final": {
+    "state": "READ_ONLY",
+    "reason": "consistent-observation-only",
+    "token": {
+      "structure": 1,
+      "incarnation": "delayed-inc",
+      "generation": 0,
+      "latestOperation": "genesis"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "CLEAR"
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "delayed-inc",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "delayed-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  }
+}

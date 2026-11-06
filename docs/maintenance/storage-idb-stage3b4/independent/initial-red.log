@@ -1,0 +1,66 @@
+
+ RUN  v3.2.4 /workspace/calculator-memo
+
+ ❯ tests/storage-idb/independent.test.ts (15 tests | 2 failed) 27ms
+   ✓ independent Stage3B4 integrity counterexamples > accepts the independently constructed valid chain and exact noncanonical JSON 4ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing current 1ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing copy:1 1ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing receipt:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing intent:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects copied current whose bytes match semantically but not originally 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in head 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in copy:1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in receipt:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in control 0ms
+   × independent Stage3B4 integrity counterexamples > rejects intent with a failure record relabeled as READBACK_MATCH 5ms
+     → expected null not to be null // Object.is equality
+   ✓ independent Stage3B4 integrity counterexamples > rejects receipt containing old incarnation despite identical raw 0ms
+   ✓ independent isolated-adapter product import boundary > rejects product import ../e2e/fixtures/storage-idb 8ms
+   ✓ independent isolated-adapter product import boundary > rejects product import @/e2e/fixtures/storage-idb 1ms
+   × independent isolated-adapter product import boundary > rejects product import /e2e/fixtures/storage-idb.ts 4ms
+     → expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-idb/independent.test.ts > independent Stage3B4 integrity counterexamples > rejects intent with a failure record relabeled as READBACK_MATCH
+AssertionError: expected null not to be null // Object.is equality
+ ❯ tests/storage-idb/independent.test.ts:33:36
+     31|   it('rejects intent with a failure record relabeled as READBACK_MATCH…
+     32|     const s = committed(); (s['intent:save-1'] as Record<string, unkno…
+     33|     expect(inspectSnapshot(s)).not.toBe(null);
+       |                                    ^
+     34|   });
+     35|   it('rejects receipt containing old incarnation despite identical raw…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/storage-idb/independent.test.ts > independent isolated-adapter product import boundary > rejects product import /e2e/fixtures/storage-idb.ts
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/storage-idb/independent.test.ts:46:80
+     44|     it(`rejects product import ${specifier}`, () => {
+     45|       const failures = scanWriterSources({ 'app/page.tsx': `import { c…
+     46|       expect(failures.some(x => x.rule === 'product-imports-excluded-s…
+       |                                                                                ^
+     47|     });
+     48|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 13 passed (15)
+   Start at  10:03:09
+   Duration  1.91s (transform 314ms, setup 0ms, collect 1.48s, tests 27ms, environment 0ms, prepare 82ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

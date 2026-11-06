@@ -1,0 +1,49 @@
+
+ RUN  v3.2.4 /workspace/calculator-memo
+
+ ❯ tests/storage-idb/independent.test.ts (18 tests | 1 failed) 24ms
+   ✓ independent Stage3B4 integrity counterexamples > accepts the independently constructed valid chain and exact noncanonical JSON 3ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing current 1ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing copy:1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing receipt:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects missing intent:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects copied current whose bytes match semantically but not originally 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in head 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in copy:1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in receipt:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in control 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown protocol in intent:save-1 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects intent with a failure record relabeled as READBACK_MATCH 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects unknown diagnostic protocol instead of treating it as a known failure record 0ms
+   ✓ independent Stage3B4 integrity counterexamples > rejects receipt containing old incarnation despite identical raw 0ms
+   ✓ independent isolated-adapter product import boundary > rejects product import ../e2e/fixtures/storage-idb 8ms
+   ✓ independent isolated-adapter product import boundary > rejects product import @/e2e/fixtures/storage-idb 1ms
+   ✓ independent isolated-adapter product import boundary > rejects product import /e2e/fixtures/storage-idb.ts 1ms
+   × rejects eager Vite glob imports of the isolated adapter into a product file 6ms
+     → expected 0 to be greater than 0
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-idb/independent.test.ts > rejects eager Vite glob imports of the isolated adapter into a product file
+AssertionError: expected 0 to be greater than 0
+ ❯ tests/storage-idb/independent.test.ts:57:27
+     55| it('rejects eager Vite glob imports of the isolated adapter into a pro…
+     56|   const failures = scanWriterSources({ 'app/page.tsx': "export const f…
+     57|   expect(failures.length).toBeGreaterThan(0);
+       |                           ^
+     58| });
+     59| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 17 passed (18)
+   Start at  10:09:38
+   Duration  1.59s (transform 236ms, setup 0ms, collect 1.26s, tests 24ms, environment 0ms, prepare 68ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

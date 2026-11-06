@@ -1,0 +1,235 @@
+{
+  "created": {
+    "status": "CREATED",
+    "reason": "synthetic-genesis-only",
+    "phases": [],
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 0,
+      "latestOperation": "genesis"
+    }
+  },
+  "confirmation": {
+    "status": "AUTHORIZED",
+    "reason": "explicit-synthetic-session-only",
+    "phases": []
+  },
+  "original": {
+    "status": "UNKNOWN",
+    "reason": "Error:independent-lost-lock-result-after-callback",
+    "phases": [
+      "PREVALIDATION",
+      "INTENT_DURABLE",
+      "TRANSACTION_RUNNING",
+      "COMMIT_OBSERVED",
+      "READBACK_MATCH",
+      "UNKNOWN",
+      "HOLD"
+    ]
+  },
+  "recovery": {
+    "state": "READ_ONLY",
+    "reason": "consistent-observation-only",
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 1,
+      "latestOperation": "lost-result"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "CLEAR"
+      },
+      "copy:1": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "lost-result",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "independent-inc",
+        "generation": 1,
+        "latestOperation": "lost-result",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "intent:lost-result": {
+        "operationId": "lost-result",
+        "expected": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+        "phase": "READBACK_MATCH"
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "receipt:lost-result": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 1,
+          "latestOperation": "lost-result"
+        },
+        "previous": "genesis",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  },
+  "authorize": {
+    "status": "AUTHORIZED",
+    "reason": "explicit-synthetic-session-only",
+    "phases": []
+  },
+  "next": {
+    "status": "VERIFIED",
+    "reason": "commit-and-readback-observed-not-media-durability",
+    "phases": [
+      "PREVALIDATION",
+      "INTENT_DURABLE",
+      "TRANSACTION_RUNNING",
+      "COMMIT_OBSERVED",
+      "READBACK_MATCH"
+    ],
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 2,
+      "latestOperation": "must-not-save"
+    }
+  },
+  "final": {
+    "state": "READ_ONLY",
+    "reason": "consistent-observation-only",
+    "token": {
+      "structure": 1,
+      "incarnation": "independent-inc",
+      "generation": 2,
+      "latestOperation": "must-not-save"
+    },
+    "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"C\"} ",
+    "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+    "snapshot": {
+      "control": {
+        "protocol": 1,
+        "state": "CLEAR"
+      },
+      "copy:1": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "lost-result",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "copy:2": {
+        "protocol": 1,
+        "source": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 1,
+          "latestOperation": "lost-result"
+        },
+        "operationId": "must-not-save",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+      },
+      "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"C\"} ",
+      "head": {
+        "protocol": 1,
+        "structure": 1,
+        "incarnation": "independent-inc",
+        "generation": 2,
+        "latestOperation": "must-not-save",
+        "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "intent:lost-result": {
+        "operationId": "lost-result",
+        "expected": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+        "phase": "READBACK_MATCH"
+      },
+      "intent:must-not-save": {
+        "operationId": "must-not-save",
+        "expected": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 1,
+          "latestOperation": "lost-result"
+        },
+        "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+        "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"C\"} ",
+        "phase": "READBACK_MATCH"
+      },
+      "receipt:genesis": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "previous": null,
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+      },
+      "receipt:lost-result": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 1,
+          "latestOperation": "lost-result"
+        },
+        "previous": "genesis",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+      },
+      "receipt:must-not-save": {
+        "protocol": 1,
+        "token": {
+          "structure": 1,
+          "incarnation": "independent-inc",
+          "generation": 2,
+          "latestOperation": "must-not-save"
+        },
+        "previous": "lost-result",
+        "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"C\"} "
+      }
+    },
+    "writeAllowed": false,
+    "executionAllowed": false
+  }
+}

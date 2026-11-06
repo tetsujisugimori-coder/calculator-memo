@@ -1,0 +1,130 @@
+2026-11-06T10:14:47.7110434Z     }
+2026-11-06T10:14:47.7110478Z   ]
+2026-11-06T10:14:47.7110529Z }
+2026-11-06T10:14:47.7254461Z ##[group]Run node e2e/run-stage.mjs storage-idb-independent timeout --signal=TERM --kill-after=10s 100s node docs/maintenance/storage-idb-stage3b4/independent/review-browser.mjs
+2026-11-06T10:14:47.7255096Z [36;1mnode e2e/run-stage.mjs storage-idb-independent timeout --signal=TERM --kill-after=10s 100s node docs/maintenance/storage-idb-stage3b4/independent/review-browser.mjs[0m
+2026-11-06T10:14:47.7270631Z shell: /usr/bin/bash -e {0}
+2026-11-06T10:14:47.7270764Z env:
+2026-11-06T10:14:47.7270904Z   EXPECTED_SHA: 7bbcdf0329639eb5206cac69dfa1861d6320e9b9
+2026-11-06T10:14:47.7271070Z   CI: true
+2026-11-06T10:14:47.7271187Z   INDEPENDENT_REVIEW_LABEL: ci
+2026-11-06T10:14:47.7271318Z ##[endgroup]
+2026-11-06T10:14:49.5167209Z {
+2026-11-06T10:14:49.5167533Z   "out": "docs/maintenance/storage-idb-stage3b4/independent/ci",
+2026-11-06T10:14:49.5167773Z   "status": "FAIL",
+2026-11-06T10:14:49.5167894Z   "results": [
+2026-11-06T10:14:49.5168014Z     {
+2026-11-06T10:14:49.5168228Z       "engine": "chromium",
+2026-11-06T10:14:49.5168378Z       "status": "PASS",
+2026-11-06T10:14:49.5168523Z       "cases": [
+2026-11-06T10:14:49.5168635Z         {
+2026-11-06T10:14:49.5168850Z           "name": "outer-lock-result-loss-persists-UNKNOWN-before-new-instance",
+2026-11-06T10:14:49.5169082Z           "status": "PASS"
+2026-11-06T10:14:49.5169251Z         },
+2026-11-06T10:14:49.5169361Z         {
+2026-11-06T10:14:49.5169634Z           "name": "outer-lock-result-and-diagnostic-loss-preserve-stop-on-restart",
+2026-11-06T10:14:49.5170006Z           "status": "PASS"
+2026-11-06T10:14:49.5170192Z         },
+2026-11-06T10:14:49.5170339Z         {
+2026-11-06T10:14:49.5170660Z           "name": "preauthorized-other-tab-stale-conflict-fresh-token-HOLD",
+2026-11-06T10:14:49.5170920Z           "status": "PASS"
+2026-11-06T10:14:49.5171043Z         },
+2026-11-06T10:14:49.5171141Z         {
+2026-11-06T10:14:49.5171343Z           "name": "known-lock-rejection-fences-delayed-running-callback",
+2026-11-06T10:14:49.5171554Z           "status": "PASS"
+2026-11-06T10:14:49.5171691Z         },
+2026-11-06T10:14:49.5171794Z         {
+2026-11-06T10:14:49.5172148Z           "name": "readonly-inspect-does-not-create-absent-database",
+2026-11-06T10:14:49.5172392Z           "status": "PASS"
+2026-11-06T10:14:49.5172512Z         }
+2026-11-06T10:14:49.5172613Z       ]
+2026-11-06T10:14:49.5172731Z     },
+2026-11-06T10:14:49.5172837Z     {
+2026-11-06T10:14:49.5172947Z       "engine": "webkit",
+2026-11-06T10:14:49.5173097Z       "status": "FAIL",
+2026-11-06T10:14:49.5173219Z       "cases": [
+2026-11-06T10:14:49.5173327Z         {
+2026-11-06T10:14:49.5173544Z           "name": "outer-lock-result-loss-persists-UNKNOWN-before-new-instance",
+2026-11-06T10:14:49.5173785Z           "status": "PASS"
+2026-11-06T10:14:49.5173977Z         },
+2026-11-06T10:14:49.5174094Z         {
+2026-11-06T10:14:49.5174316Z           "name": "outer-lock-result-and-diagnostic-loss-preserve-stop-on-restart",
+2026-11-06T10:14:49.5174542Z           "status": "PASS"
+2026-11-06T10:14:49.5174895Z         },
+2026-11-06T10:14:49.5174998Z         {
+2026-11-06T10:14:49.5175185Z           "name": "preauthorized-other-tab-stale-conflict-fresh-token-HOLD",
+2026-11-06T10:14:49.5175413Z           "status": "PASS"
+2026-11-06T10:14:49.5175550Z         },
+2026-11-06T10:14:49.5175680Z         {
+2026-11-06T10:14:49.5175873Z           "name": "known-lock-rejection-fences-delayed-running-callback",
+2026-11-06T10:14:49.5176077Z           "status": "PASS"
+2026-11-06T10:14:49.5176197Z         },
+2026-11-06T10:14:49.5176296Z         {
+2026-11-06T10:14:49.5176464Z           "name": "readonly-inspect-does-not-create-absent-database",
+2026-11-06T10:14:49.5176671Z           "status": "FAIL",
+2026-11-06T10:14:49.5178009Z           "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at file:///home/runner/work/calculator-memo/calculator-memo/docs/maintenance/storage-idb-stage3b4/independent/review-browser.mjs:116:65\n    at async run (file:///home/runner/work/calculator-memo/calculator-memo/docs/maintenance/storage-idb-stage3b4/independent/review-browser.mjs:36:114)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/docs/maintenance/storage-idb-stage3b4/independent/review-browser.mjs:111:7"
+2026-11-06T10:14:49.5179027Z         }
+2026-11-06T10:14:49.5179129Z       ]
+2026-11-06T10:14:49.5179227Z     }
+2026-11-06T10:14:49.5179326Z   ]
+2026-11-06T10:14:49.5179424Z }
+2026-11-06T10:14:49.5402922Z ##[error]Process completed with exit code 1.
+2026-11-06T10:14:49.5457426Z ##[group]Run mkdir -p gui-evidence
+2026-11-06T10:14:49.5457638Z [36;1mmkdir -p gui-evidence[0m
+2026-11-06T10:14:49.5457792Z [36;1mnode --input-type=module <<'NODE'[0m
+2026-11-06T10:14:49.5457958Z [36;1mimport { writeFileSync } from 'node:fs';[0m
+2026-11-06T10:14:49.5458492Z [36;1mwriteFileSync('gui-evidence/storage-idb-ci-outcomes.json', JSON.stringify({ sha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, steps: JSON.parse(process.env.STEP_OUTCOMES) }, null, 2) + '\n');[0m
+2026-11-06T10:14:49.5459012Z [36;1mNODE[0m
+2026-11-06T10:14:49.5459134Z [36;1mnode e2e/evidence-inventory.mjs[0m
+2026-11-06T10:14:49.5475162Z shell: /usr/bin/bash -e {0}
+2026-11-06T10:14:49.5475299Z env:
+2026-11-06T10:14:49.5475464Z   EXPECTED_SHA: 7bbcdf0329639eb5206cac69dfa1861d6320e9b9
+2026-11-06T10:14:49.5475629Z   CI: true
+2026-11-06T10:14:49.5476702Z   STEP_OUTCOMES: {
+  "checkout": {
+    "outputs": {
+      "commit": "7bbcdf0329639eb5206cac69dfa1861d6320e9b9",
+      "ref": ""
+    },
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "node": {
+    "outputs": {
+      "node-version": "v22.13.0"
+    },
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "dependencies": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "boundary": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "browsers": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "acceptance": {
+    "outputs": {},
+    "outcome": "success",
+    "conclusion": "success"
+  },
+  "independent": {
+    "outputs": {},
+    "outcome": "failure",
+    "conclusion": "failure"
+  }
+}
+2026-11-06T10:14:49.5477781Z ##[endgroup]
+2026-11-06T10:14:49.5920592Z {"other":{"count":1,"bytes":1699394},"json":{"count":8,"bytes":1060100},"log":{"count":6,"bytes":132008}}
+2026-11-06T10:14:49.6020089Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-06T10:14:49.6020313Z with:
+2026-11-06T10:14:49.6020481Z   name: pr-storage-idb-7bbcdf0329639eb5206cac69dfa1861d6320e9b9-1
+2026-11-06T10:14:49.6020738Z   path: gui-evidence/
