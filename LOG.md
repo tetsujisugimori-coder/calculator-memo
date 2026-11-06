@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-06 (JST): Stage 3B-5 片方向移行・分岐救出の隔離検証を開始
+
+- [Issue #130](https://github.com/tetsujisugimori-coder/calculator-memo/issues/130)。最新 main `eb8fd95bb28e992963aba3b47a14529949736058` と Stage 3B-4 #128 / #129、実装・レビュー・CI台帳を確認し、別 checkout / `feat/stage3b5-isolated-migration` を作成。同目的の Issue/PR/branch は見つからなかった。
+- 目的は合成 localStorage snapshot から隔離 IDB への片方向移行、旧 writer 由来の分岐検出と非破壊保全。Stage 3B-4 原子的 adapter を再利用し、跨 backend の原子性は主張しない。状態と故障注入、読み取り専用 preview、独立レビュー、最終 HEAD CI・原 GUI 成果物監査を実施予定。
+- [設計](docs/design/storage-migration-stage3b5.md) / [検証台帳](docs/maintenance/storage-migration-stage3b5/verification.md)。着手時点の実装・各検査は NOT_TESTED、Draft PR は未作成。過去 1,128 checks / 592 geometry / 132 PNG は期待契約であり今回成功ではない。
+- 初期 local commit `feedd810` の独立反例で journal の namespace / genesis 照合不足と、救出後失敗＋診断保存失敗時の再起動 HOLD 欠落を発見。原 RED と修正後の独立4件 GREEN、旧／新 native driverを保持。証拠検査器も failed summary / null observation / dirty / 不正時刻を拒否へ修正。ローカル型・lint・両 build・既存 Node 契約261件・新 validator24件は成功。native はローカル IPC 拒否により未実行で、Actions を待つ。詳細と正確な対象は検証台帳へ記録する。
+- 本番保存経路、実ユーザーデータ、選択復元 `executionAllowed=false` / Stage 3B HOLD を維持。旧原文の削除・自動統合・UNKNOWN 自動 retry・本番 authority 切替・Draft解除・merge・auto-merge・公開は行わない。隔離受入と限定 merge 推奨は別判定、実データ移行許可は必ず NO。
+
 ## 2026-11-06 (JST): Stage 3B-4 隔離IndexedDB基盤・authority/UNKNOWN停止
 
 - [Issue #128](https://github.com/tetsujisugimori-coder/calculator-memo/issues/128)・[Draft PR #129](https://github.com/tetsujisugimori-coder/calculator-memo/pull/129)。開始HEAD `a68dd5a6ecb3ca1ad57015d835c84266f053d0a4`、main `f22b854c3ef564513b6aace8f0da1b48a47c461c`、cleanな別checkoutを確認。製品Facade/localStorage/全writerは不変更。
