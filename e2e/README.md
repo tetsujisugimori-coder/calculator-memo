@@ -6,6 +6,16 @@
 
 # PR GUI regression
 
+## Stage 3B-3: UNKNOWN後の正式GUI契約（2026-11-06 JST）
+
+レポート確認保存への合成quota例外は、mutation開始後のためUNKNOWN/HOLDとする。失敗時とAPI回復後の明示1600ms観測窓の両方で、setItem試行が1回のまま、保存原文が完全一致し、タイトル・Markdown・備考・根拠IDのdraftを保持し、通常保存と確認保存を無効にしていることを検査する。同じruntimeでの再試行を期待せず、明示reload後に保存済みレポートをUIで開き、未保存の備考と根拠リンクを再入力した新しい明示操作で、従来のロック待機・確認履歴検査を続ける。製品HOLDの解除APIや保存fixtureの差替えは使わない。
+
+**1128 checks・592 geometry・132 PNG・6条件は不変更。touch条件の実操作数は1337→1344（+7）**。増分はUNKNOWN後のMarkdown編集1、reload後のライブラリを開く1・レポートを開く1・Markdown編集1・根拠欄を開く1・selectをtapする1・根拠追加1。すべて既存activate経由のnative touchで記録し、この区間も厳密に7回を照合する。従来assert、画像地点、geometryを減らさない。旧1337のartifactを新契約で成功扱いしない負対照を追加した。過去節の1337は旧契約の記録であり、現在の判定は本節とci-contract.mjsに従う。
+
+正式header stressの721/800pxは、次のgrid行にあるメモ操作へsticky電卓が重なる実レイアウト問題の修正に合わせ、computed position=static、scroll前後のdocument座標不変、メモ行の非重なり、スクロール後の新規作成ボタンの有効性・viewport内・中心hit-testを検査する。1365pxでは従来のstickyとheader下28±1pxを維持する。721/800/1365×200/100%の検査地点、既存screenshot/geometry数は減らさず、メモ操作のprobeは追加click/tapを発生させない。これは保存契約の緩和ではない。
+
+原REDはHEAD715808cの正式6条件artifactに残し、改訂コードの正式成功は新HEADの原artifact再集約でのみ判定する。Node負対照はブラウザ成功の代用ではない。
+
 ## 選択復元計画（第2段階）の独立受入
 
 `node e2e/run-selective-restore-plan-gui.mjs` は所有loopback previewとexact HEADの配信照合後、Chromium/WebKit ×375/390 ×light/dark・CSS200%の8条件を実行する。UNCHANGED事前検証PASS、ADDの構造PASS/原文保持BLOCKED、選択/別page/同タブ/読取失敗/ファイル変更の失効、keyboard Space・focus復帰、長ID・44px・横幅、current/recovery/other原文不変・app set/remove/clear=0を検査。2PNG/条件、失敗時trace、進捗JSONを保存する。独立workflow `selective-restore-plan.yml`（15分job/GUI5分）で既存正式6/1128/592/132/3workers/30分と別評価。実機Safari/VoiceOver/OS文字拡大/ソフトキーボードは未検証。自己検証であり独立レビューではない。
@@ -77,7 +87,7 @@ These are explicitly configured browser contexts, not certified device models. R
 
 Each scenario actively exercises:
 
-- Optional confirmation remarks: 500 UTF-16 units (including Japanese, emoji, newlines and HTML/Markdown-looking text), visible 501-unit rejection without truncation, canceled-close and ordinary-save draft retention, injected quota failure with unchanged raw storage, retry held at the Web Locks boundary with disabled input, and clearing only after successful explicit confirmation. Timeline checks distinguish absent legacy remarks from newly saved empty remarks, preserve exact plain text and line breaks, and retain the existing two-theme 200% layout/read-only checks. These extend existing checks without adding screenshots or changing successful-trace policy.
+- Optional confirmation remarks: 500 UTF-16 units (including Japanese, emoji, newlines and HTML/Markdown-looking text), visible 501-unit rejection without truncation, canceled-close and ordinary-save draft retention, injected quota UNKNOWN with unchanged raw storage and zero retry after API recovery, explicit reload and UI draft reconstruction, a new confirmation held at the Web Locks boundary with disabled input, and clearing only after successful explicit confirmation. Timeline checks distinguish absent legacy remarks from newly saved empty remarks, preserve exact plain text and line breaks, and retain the existing two-theme 200% layout/read-only checks. These extend existing checks without adding screenshots or changing successful-trace policy.
 
 - Calculation evidence: preview/cancel cannot persist records; two explicit recalculations append two batches only after save; actual legacy/ID inputs, old records after source edits, failed rollback, explicit trial apply and save, report copy/download and read-only reproduction verification. Existing six engines/viewports and screenshot/trace budgets are unchanged.
 

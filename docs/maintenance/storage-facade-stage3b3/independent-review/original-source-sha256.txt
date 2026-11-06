@@ -1,0 +1,4 @@
+45c41ace48824e85ba170c4ef63f23027237fcc90781cf8f222114191160d49e  lib/storage-facade.ts
+e2b0269e7463863d4ace55513b12b854f569e12b813d13e134d82e5e0f2166a0  lib/storage-lock.ts
+9bdb468e6b7e077f6e3c964c881f59befcaf8e1b17fd10188fe4107c544f18eb  lib/localstorage-adapter.ts
+fe87c9168683d3c8c7509f6d5a368f1b7c4b2b51bce93688a8a401a605e5174f  e2e/storage-writer-boundary.mjs

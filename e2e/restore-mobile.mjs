@@ -40,8 +40,23 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    await upload('{');await dialog.getByRole('alert').waitFor();assert.equal(await original(),source);current.verified.push('invalid JSON leaves source');
    await upload(backup(target));await dialog.getByRole('region',{name:'復元プレビュー'}).waitFor();assert.equal(await original(),source);assert.match(await dialog.innerText(),/異なります/);
    current.before=await layout(page,dialog,'preview');assert.equal(await dialog.getByRole('button',{name:'復元を実行する',exact:true}).isDisabled(),true);current.verified.push('preview comparison no writes; approval blocked');
-   await page.evaluate(prefix=>{const original=Storage.prototype.setItem;window.__restoreOriginalSet=original;Storage.prototype.setItem=function(k,v){if(k.startsWith(prefix))throw new DOMException('full','QuotaExceededError');return original.call(this,k,v);};},prefix);
-   await tap(dialog.getByRole('button',{name:'現在データを保全する',exact:true}));await dialog.getByRole('alert').filter({hasText:'保全できない'}).waitFor();assert.equal(await original(),source);assert.equal(await dialog.getByRole('button',{name:'復元を実行する',exact:true}).isDisabled(),true);await page.evaluate(()=>{Storage.prototype.setItem=window.__restoreOriginalSet;delete window.__restoreOriginalSet;});current.verified.push('recovery quota refusal');
+   await page.evaluate(prefix=>{const original=Storage.prototype.setItem;window.__restoreOriginalSet=original;window.__preserveAttempts=0;window.__preserveFail=true;Storage.prototype.setItem=function(k,v){if(k.startsWith(prefix)){window.__preserveAttempts++;if(window.__preserveFail)throw new DOMException('full','QuotaExceededError');}return original.call(this,k,v);};},prefix);
+   await tap(dialog.getByRole('button',{name:'現在データを保全する',exact:true}));
+   await dialog.getByRole('alert').filter({hasText:'UNKNOWN'}).waitFor();assert.equal(await original(),source);
+   assert.equal(await dialog.getByRole('button',{name:'復元を実行する',exact:true}).isDisabled(),true);
+   assert.equal(await dialog.getByRole('button',{name:'現在データを保全する',exact:true}).isDisabled(),true);
+   assert.equal(await dialog.getByLabel('復元JSONファイル').isDisabled(),true);
+   // A generic thrown storage mutation is UNKNOWN. Restoring API availability
+   // must not silently authorize reupload/retry in the same page runtime.
+   await page.evaluate(()=>{window.__preserveFail=false;});
+   await dialog.getByRole('button',{name:'現在データを保全する',exact:true}).evaluate(el=>el.click());
+   assert.equal(await page.evaluate(()=>window.__preserveAttempts),1);
+   await page.evaluate(()=>{Storage.prototype.setItem=window.__restoreOriginalSet;delete window.__restoreOriginalSet;});
+   current.verified.push('recovery quota UNKNOWN terminal; automatic and repeated-click retry 0');
+   // Explicit user-style reload begins a new runtime; source bytes are checked
+   // again rather than treating the previous UNKNOWN as a confirmed failure.
+   await page.reload();await page.waitForFunction(theme=>document.documentElement.dataset.theme===theme,theme);assert.equal(await original(),source);
+   await page.evaluate(()=>document.documentElement.style.fontSize='200%');await tap(page.getByRole('button',{name:'JSONから復元',exact:true}));dialog=page.getByRole('dialog',{name:'JSONバックアップから復元',exact:true});
    await upload(backup(target));await dialog.getByText('ファイルを検証しました。',{exact:false}).waitFor();
    const other=await context.newPage();await other.goto(base);const changed=source+' ';await other.evaluate(({key,changed})=>localStorage.setItem(key,changed),{key,changed});await dialog.getByRole('alert').filter({hasText:'別タブ'}).waitFor();assert.equal(await original(),changed);assert.equal(await dialog.getByRole('button',{name:'復元を実行する',exact:true}).isDisabled(),true);await other.close();current.verified.push('other tab invalidates preview');
    await page.reload();await page.waitForFunction(theme=>document.documentElement.dataset.theme===theme,theme);await page.evaluate(()=>document.documentElement.style.fontSize='200%');await tap(page.getByRole('button',{name:'JSONから復元',exact:true}));dialog=page.getByRole('dialog',{name:'JSONバックアップから復元',exact:true});

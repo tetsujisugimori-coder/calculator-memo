@@ -1,0 +1,14 @@
+✔ independent escape control rejects propertyEscape (8.043097ms)
+✔ independent escape control rejects importedUntypedFunction (2.480618ms)
+✔ independent negative control rejects exportedAlias (8.911441ms)
+✔ independent negative control rejects parameterEscape (2.255719ms)
+✔ independent negative control rejects importedType (1.420554ms)
+✔ independent negative control rejects pathAliasExcluded (1.863976ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 444.949004

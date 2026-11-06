@@ -1,0 +1,20 @@
+{
+  "id": "chromium-desktop-1365px",
+  "expectedSha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "run": "42128709991",
+  "attempt": "1",
+  "startedAt": "2026-11-05T23:54:07.332Z",
+  "status": "failed",
+  "child": {
+    "code": 1,
+    "signal": null
+  },
+  "logError": null,
+  "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "error": {
+    "message": "Scenario child must exit successfully\n\n1 !== 0\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Scenario child must exit successfully\n\n1 !== 0\n\n    at file:///home/runner/work/calculator-memo/calculator-memo/e2e/run-formal-scenario.mjs:46:10\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)"
+  },
+  "finishedAt": "2026-11-05T23:54:41.397Z",
+  "durationMs": 34064.880289
+}

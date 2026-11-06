@@ -1,0 +1,1553 @@
+{
+  "kind": "additional-storage-facade-gui-not-formal",
+  "sha": "bec0c6b958dc75174f77096e958df091aa3739b3",
+  "startedAt": "2026-11-05T23:09:27.164Z",
+  "status": "failed",
+  "expectedCases": 8,
+  "expectedContextsPerCase": 6,
+  "noRetryObservationMs": 1600,
+  "engineOutcomes": [
+    {
+      "engine": "chromium",
+      "status": "failed",
+      "executableOverride": null,
+      "finishedAt": "2026-11-05T23:11:46.687Z"
+    },
+    {
+      "engine": "webkit",
+      "status": "failed",
+      "executableOverride": null,
+      "finishedAt": "2026-11-05T23:14:21.181Z"
+    }
+  ],
+  "limitations": [
+    "Not formal GUI success",
+    "No physical iPhone Safari, software keyboard or OS text scaling",
+    "Readback is not disk durability",
+    "Noncooperative old tabs, ABA and TOCTOU remain"
+  ],
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-375-happy",
+          "width": 375,
+          "touch": true,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:09:27.328Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:09:40.073Z"
+        },
+        {
+          "id": "chromium-375-reset-success",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:09:40.082Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:09:41.264Z"
+        },
+        {
+          "id": "chromium-375-autosave-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:09:41.268Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:09:53.963Z"
+        },
+        {
+          "id": "chromium-375-preservation-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:09:53.966Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:09:56.720Z"
+        },
+        {
+          "id": "chromium-375-delete-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:09:56.724Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:09:59.617Z"
+        },
+        {
+          "id": "chromium-375-reset-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:09:59.621Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:10:02.183Z"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-390-happy",
+          "width": 390,
+          "touch": true,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:10:02.187Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:10:14.880Z"
+        },
+        {
+          "id": "chromium-390-reset-success",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:10:14.884Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:10:16.009Z"
+        },
+        {
+          "id": "chromium-390-autosave-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:10:16.012Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:10:28.697Z"
+        },
+        {
+          "id": "chromium-390-preservation-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:10:28.701Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:10:31.450Z"
+        },
+        {
+          "id": "chromium-390-delete-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:10:31.454Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:10:34.349Z"
+        },
+        {
+          "id": "chromium-390-reset-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:10:34.353Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:10:36.901Z"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 765,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-765-happy",
+          "width": 765,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:10:36.907Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:10:49.597Z"
+        },
+        {
+          "id": "chromium-765-reset-success",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:10:49.601Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:10:50.693Z"
+        },
+        {
+          "id": "chromium-765-autosave-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:10:50.696Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:11:03.389Z"
+        },
+        {
+          "id": "chromium-765-preservation-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:03.393Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:06.133Z"
+        },
+        {
+          "id": "chromium-765-delete-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:06.137Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:09.032Z"
+        },
+        {
+          "id": "chromium-765-reset-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:09.035Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:11.590Z"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-1280-happy",
+          "width": 1280,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:11:11.597Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:11:24.317Z"
+        },
+        {
+          "id": "chromium-1280-reset-success",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:24.321Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:25.475Z"
+        },
+        {
+          "id": "chromium-1280-autosave-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:11:25.482Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:11:38.187Z"
+        },
+        {
+          "id": "chromium-1280-preservation-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:38.190Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:41.032Z"
+        },
+        {
+          "id": "chromium-1280-delete-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:41.036Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:44.083Z"
+        },
+        {
+          "id": "chromium-1280-reset-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:11:44.088Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:11:46.660Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "webkit-375-happy",
+          "width": 375,
+          "touch": true,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:11:47.480Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:12:04.548Z"
+        },
+        {
+          "id": "webkit-375-reset-success",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:04.551Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:12:06.004Z"
+        },
+        {
+          "id": "webkit-375-autosave-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:12:06.006Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:12:18.986Z"
+        },
+        {
+          "id": "webkit-375-preservation-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:18.988Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:12:22.507Z"
+        },
+        {
+          "id": "webkit-375-delete-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:22.509Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:12:26.118Z"
+        },
+        {
+          "id": "webkit-375-reset-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:26.120Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:12:28.894Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "webkit-390-happy",
+          "width": 390,
+          "touch": true,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:12:28.897Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:12:41.753Z"
+        },
+        {
+          "id": "webkit-390-reset-success",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:41.755Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:12:43.001Z"
+        },
+        {
+          "id": "webkit-390-autosave-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:12:43.003Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:12:55.856Z"
+        },
+        {
+          "id": "webkit-390-preservation-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:55.858Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:12:58.955Z"
+        },
+        {
+          "id": "webkit-390-delete-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:12:58.957Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:02.275Z"
+        },
+        {
+          "id": "webkit-390-reset-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:13:02.277Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:05.099Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 765,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "webkit-765-happy",
+          "width": 765,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:13:05.103Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:13:17.991Z"
+        },
+        {
+          "id": "webkit-765-reset-success",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:13:17.994Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:20.099Z"
+        },
+        {
+          "id": "webkit-765-autosave-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:13:20.101Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:13:32.981Z"
+        },
+        {
+          "id": "webkit-765-preservation-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:13:32.984Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:36.311Z"
+        },
+        {
+          "id": "webkit-765-delete-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:13:36.313Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:39.876Z"
+        },
+        {
+          "id": "webkit-765-reset-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:13:39.878Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:42.947Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 1280,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "webkit-1280-happy",
+          "width": 1280,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:13:42.953Z",
+          "checks": [
+            "first launch empty data persisted"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:105:68)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:300:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"system\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:13:55.910Z"
+        },
+        {
+          "id": "webkit-1280-reset-success",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:13:55.913Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:13:57.491Z"
+        },
+        {
+          "id": "webkit-1280-autosave-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:13:57.493Z",
+          "checks": [],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n  - waiting for getByRole('textbox', { name: '計算式を入力', exact: true })\n\n    at unknown (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:192:70)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:271:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:302:109",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [],
+          "finishedAt": "2026-11-05T23:14:10.423Z"
+        },
+        {
+          "id": "webkit-1280-preservation-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:14:10.427Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:14:14.037Z"
+        },
+        {
+          "id": "webkit-1280-delete-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:14:14.039Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-p_BDexZd.js",
+            "assets/index-BSqUeJVH.css"
+          ],
+          "finishedAt": "2026-11-05T23:14:18.040Z"
+        },
+        {
+          "id": "webkit-1280-reset-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:14:18.042Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:14:21.120Z"
+        }
+      ]
+    }
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: all eight matrix cases and six contexts each must pass\n    at file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:313:48",
+  "finishedAt": "2026-11-05T23:14:21.182Z"
+}

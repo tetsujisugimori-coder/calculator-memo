@@ -1,4 +1,4 @@
-import { loadData, STORAGE_KEY } from "./storage";
+import { loadData, STORAGE_KEY } from "./storage-format";
 
 // At most 2 Mi UTF-16 code units; keep allocation bounded before JSON parsing/stringifying.
 export const MAX_RAW_CODE_UNITS = 2 * 1024 * 1024;

@@ -1,0 +1,84 @@
+✖ independent negative control rejects exportedAlias (8.891017ms)
+✖ independent negative control rejects parameterEscape (1.638389ms)
+✖ independent negative control rejects importedType (1.170094ms)
+✖ independent negative control rejects pathAliasExcluded (0.435436ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 328.775833
+
+✖ failing tests:
+
+test at docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:10:54
+✖ independent negative control rejects exportedAlias (8.891017ms)
+  AssertionError [ERR_ASSERTION]: direct writer was incorrectly accepted: {"lib/source.ts":"const store=localStorage; export { store };","lib/writer.ts":"import { store } from \"./source\"; store[\"unexpected-key\"]=\"unexpected-value\";"}
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:12:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:10:54
+✖ independent negative control rejects parameterEscape (1.638389ms)
+  AssertionError [ERR_ASSERTION]: direct writer was incorrectly accepted: {"lib/writer.ts":"function write(s:any){s[\"unexpected-key\"]=\"unexpected-value\";} write(localStorage);"}
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:12:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:10:54
+✖ independent negative control rejects importedType (1.170094ms)
+  AssertionError [ERR_ASSERTION]: direct writer was incorrectly accepted: {"lib/types.ts":"export type Store=Storage;","lib/writer.ts":"import type {Store} from \"./types\"; export function write(s:Store){s[\"unexpected-key\"]=\"unexpected-value\";}"}
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:12:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:10:54
+✖ independent negative control rejects pathAliasExcluded (0.435436ms)
+  AssertionError [ERR_ASSERTION]: direct writer was incorrectly accepted: {"lib/writer.ts":"import {unapproved} from \"@/tests/leak\"; unapproved();","tests/leak.ts":"export const unapproved=()=>localStorage.setItem(\"x\",\"y\");"}
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/docs/maintenance/storage-facade-stage3b3/independent-review/scanner-independent.node-test.mjs:12:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

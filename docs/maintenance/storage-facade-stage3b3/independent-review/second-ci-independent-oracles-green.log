@@ -1,0 +1,4 @@
+{"call":"passed","before":125,"after":125,"changedLabels":1}
+{"call":"screenshot","before":68,"after":68,"changedLabels":0}
+{"independentSemanticNegativeControls":30,"status":"PASS","scope":"exact live assertion helpers, not browser operations"}
+Formal aggregator source unchanged; fixed 1128 / 592 / 132 contract retained.

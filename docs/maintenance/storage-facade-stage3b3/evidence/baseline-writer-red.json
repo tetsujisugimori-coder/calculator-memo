@@ -1,0 +1,66 @@
+{
+  "base": "41c2c0db0ec2b7dde81ada15c98de5316ab690ce",
+  "scope": "immutable baseline sources inspected using Stage3B3 scanner; source not modified",
+  "failures": [
+    {
+      "file": "lib/recovery-manager.ts",
+      "line": 105,
+      "rule": "native-storage-mutator"
+    },
+    {
+      "file": "lib/recovery-manager.ts",
+      "line": 105,
+      "rule": "storage-dynamic-or-unapproved-member"
+    },
+    {
+      "file": "lib/restore-storage.ts",
+      "line": 53,
+      "rule": "native-storage-mutator"
+    },
+    {
+      "file": "lib/restore-storage.ts",
+      "line": 53,
+      "rule": "storage-dynamic-or-unapproved-member"
+    },
+    {
+      "file": "lib/restore-storage.ts",
+      "line": 76,
+      "rule": "native-storage-mutator"
+    },
+    {
+      "file": "lib/restore-storage.ts",
+      "line": 76,
+      "rule": "storage-dynamic-or-unapproved-member"
+    },
+    {
+      "file": "lib/storage.ts",
+      "line": 168,
+      "rule": "native-storage-mutator"
+    },
+    {
+      "file": "lib/storage.ts",
+      "line": 168,
+      "rule": "storage-dynamic-or-unapproved-member"
+    },
+    {
+      "file": "lib/storage.ts",
+      "line": 183,
+      "rule": "native-storage-mutator"
+    },
+    {
+      "file": "lib/storage.ts",
+      "line": 183,
+      "rule": "storage-dynamic-or-unapproved-member"
+    },
+    {
+      "file": "lib/storage.ts",
+      "line": 203,
+      "rule": "native-storage-mutator"
+    },
+    {
+      "file": "lib/storage.ts",
+      "line": 203,
+      "rule": "storage-dynamic-or-unapproved-member"
+    }
+  ]
+}

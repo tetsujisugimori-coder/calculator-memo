@@ -1,0 +1,46 @@
+✖ independent escape control rejects propertyEscape (11.283199ms)
+✖ independent escape control rejects importedUntypedFunction (2.882181ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 654.704507
+
+✖ failing tests:
+
+test at docs/maintenance/storage-facade-stage3b3/independent-review/scanner-escape-independent.node-test.mjs:8:54
+✖ independent escape control rejects propertyEscape (11.283199ms)
+  AssertionError [ERR_ASSERTION]: direct writer was incorrectly accepted: {"lib/writer.js":"const box={}; box.store=localStorage; box.store[\"x\"]=\"y\";"}
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/docs/maintenance/storage-facade-stage3b3/independent-review/scanner-escape-independent.node-test.mjs:9:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/maintenance/storage-facade-stage3b3/independent-review/scanner-escape-independent.node-test.mjs:8:54
+✖ independent escape control rejects importedUntypedFunction (2.882181ms)
+  AssertionError [ERR_ASSERTION]: direct writer was incorrectly accepted: {"lib/escape.js":"export default function(s){s[\"x\"]=\"y\"}","lib/writer.js":"import f from \"./escape\"; f(localStorage);"}
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/docs/maintenance/storage-facade-stage3b3/independent-review/scanner-escape-independent.node-test.mjs:9:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

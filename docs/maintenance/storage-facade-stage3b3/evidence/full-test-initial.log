@@ -1,0 +1,1100 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b3
+
+ ❯ tests/formula-report-app-save.test.ts (12 tests | 4 failed) 805ms
+   ✓ persists exact text before publishing, does not auto-confirm, and retains all unrelated data 180ms
+   × quota failure keeps report out of React and autosave, allowing a safe explicit retry 78ms
+     → expected '書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止…' to contain '保存できません'
+   ✓ refuses external expression replacement without a storage event 73ms
+   ✓ refuses external report replacement without a storage event 45ms
+   ✓ refuses external invalid replacement without a storage event 61ms
+   ✓ does not expose confirmed state while queued behind a lock, then checks changed destination 43ms
+   × readback uncertainty stops retry and never publishes confirmation in React 44ms
+     → expected "setItem" to be called 1 times, but got 0 times
+   ✓ a rejected lock leaves storage and report display unchanged 35ms
+   × a local state change during lock wait invalidates the candidate instead of merging stale confirmation 65ms
+     → expected 'system' to be 'dark' // Object.is equality
+   ✓ checks persisted evidence again inside the lock and never confirms a same-ID replacement 82ms
+   × failed confirmation writes never publish appended confirmation history 56ms
+     → expected '書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止…' to contain '保存できません'
+   ✓ unsupported evidence protects the loaded original and blocks all ordinary writes 40ms
+ ❯ tests/evidence-app-save.test.ts (12 tests | 7 failed) 1376ms
+   ✓ successful explicit save persists a record before closing and keeps unknown original fields 229ms
+   × quota failure does not publish new evidence through React state or later autosave 122ms
+     → expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '保存済みとして扱っていません'
+   × foreign update before explicit save is not overwritten and draft remains open 115ms
+     → expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '競合'
+   ✓ foreign storage event freezes autosave rather than replacing new history 82ms
+   × while waiting for the shared write lock, input and all modal close routes are disabled 135ms
+     → expected <form class="note-form">…(1)</form> to be null
+   × a write followed by readback failure is reported as uncertain and never blindly appended again 83ms
+     → Cannot read properties of undefined (reading 'records')
+   ✓ a rejected browser write lock stops autosave with a visible notice and no write 77ms
+   × a corrupted replacement enters non-destructive recovery rather than generic conflict: autosave 105ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   ✓ a corrupted replacement enters non-destructive recovery rather than generic conflict: storage event 94ms
+   × a corrupted replacement enters non-destructive recovery rather than generic conflict: explicit save 76ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × continuous formula draft inputs wait for the lock, skip stale callbacks, and clear unload protection only after the latest readback 183ms
+     → expected <p aria-hidden="false" …(3)></p> to be null
+   ✓ initial pretty-printed data is not reported as unsaved user changes while its first lock is pending 72ms
+stderr | tests/formula-audit-record-comparison-app.test.ts > failed explicit source acquisition clears old comparison without rewriting fixed records
+ローカル保存領域へアクセスできませんでした Error: synthetic unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-audit-record-comparison-app.test.ts:108:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ❯ tests/restore-ui.test.ts (11 tests | 6 failed) 1665ms
+   ✓ safe restore app boundary > does not normalize already clean raw on load 103ms
+   ✓ safe restore app boundary > preview is read-only, approval is distinct and double execution cannot repeat the write  348ms
+   ✓ safe restore app boundary > same-turn same-value notification revokes approval before final click 158ms
+   × safe restore app boundary > same-tab raw change fails closed and keeps newer raw, without automatic rollback 147ms
+     → expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '上書きせず'
+   × safe restore app boundary > recovery quota failure cannot be bypassed by approval 120ms
+     → expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '上書きしません'
+   × safe restore app boundary > invalid or replaced file loses prior authority; cancelled selection is not a restore 142ms
+     → expected <label class="restore-approval">…(1)</label> to be null
+   ✓ safe restore app boundary > Enter at body or final button cannot calculate or implicitly restore 124ms
+   × safe restore app boundary > unknown write outcome stops later app autosave and keeps recovery 133ms
+     → expected '{ "version":1, "history":[], "notes":…' to be '{\n "version":1,"history":[],"notes":…' // Object.is equality
+   ✓ safe restore app boundary > does not discard or save an open memo editor 101ms
+   × safe restore app boundary > exposes original recovery JSON after remount without modifying current raw 224ms
+     → 復旧コピー 1 を書き出す: expected undefined to be truthy
+   × safe restore app boundary > maintains missing-key initialization without treating it as a restored snapshot 62ms
+     → expected null to deeply equal { version: 1, history: [], …(2) }
+ ✓ tests/formula-audit-record-comparison-app.test.ts (16 tests) 2185ms
+ ✓ tests/formula-report-diff-ui.test.ts (34 tests) 2941ms
+ ✓ tests/selection-preview-ui.test.ts (29 tests) 3246ms
+   ✓ read-only selection preview UI > contains child UNKNOWN in its selected parent without duplicating reference counts (reverse=false)  500ms
+   ✓ read-only selection preview UI > bounds a full 200-item plan to 20 rendered items and preserves the last page  473ms
+ ✓ tests/audit-roundtrip.integration.test.ts (19 tests) 3446ms
+   ✓ repeated real-app roundtrips preserve detail, filter, list scroll and focus without reads or writes  472ms
+ ✓ tests/saved-evidence-ui.test.ts (33 tests) 2020ms
+   ✓ lazily mounts per-block details for a capacity-valid large history  686ms
+ ✓ tests/formula-report-source-navigation-app.test.ts (11 tests) 2467ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\n")  539ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r\n")  357ms
+   ✓ real app navigates exact A/B/material ranges without writes or acquiring originals ("\r")  320ms
+ ✓ tests/formula-report-ui.test.ts (28 tests) 1240ms
+ ✓ tests/formula-report-diff-tracking-ui.test.ts (34 tests) 1203ms
+stderr | tests/recovery-manager-ui.test.ts > recovery copy manager UI protection > corrupt inner raw is distinct from corrupt record and no counts are invented
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at Timeout.read [as _onTimeout] (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/RecoveryManagerModal.tsx:51:18)
+    at listOnTimeout (node:internal/timers:685:17)
+    at processTimers (node:internal/timers:618:7)
+
+ ✓ tests/recovery-manager-ui.test.ts (15 tests) 1833ms
+ ✓ tests/audit-body-item-navigation-app.test.ts (6 tests) 2689ms
+   ✓ real CalculatorApp synchronizes sequential body ranges and returns to latest item without reads or writes  1203ms
+   ✓ real CalculatorApp repeated activation before frame commits at most the adjacent occurrence  414ms
+   ✓ real CalculatorApp rejects an interrupted cursor move and allows a fresh body step without committing the rejected item  457ms
+ ✓ tests/formula-report-audit-comparison-insertion-ui.test.ts (45 tests) 6921ms
+   ✓ real app previews the exact existing export bytes and cancels without reading/writing data  444ms
+   ✓ StrictMode app remains usable and explicit save/reload retains material but not new roots/history  715ms
+stderr | tests/formula-report-audit-comparison-export-ui.test.ts > failed explicit retrieval and unsaved editor edits both invalidate output without changing fixed bytes
+ローカル保存領域へアクセスできませんでした Error: synthetic acquisition failure
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-report-audit-comparison-export-ui.test.ts:134:88)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-comparison-export-ui.test.ts (16 tests) 2353ms
+   ✓ real app previews, copies and downloads identical bytes without reading or modifying original data/history  348ms
+ ✓ tests/evidence-pending-component.test.ts (7 tests) 816ms
+   ✓ pending count overflow refuses recalculation and trial application without dropping the 100 queued records  475ms
+ ✓ tests/audit-item-navigation-app.test.ts (3 tests) 1670ms
+   ✓ real CalculatorApp steps to each occurrence and repeatedly returns to its detail, focus, filter and scroll without reads or writes  896ms
+   ✓ body ABA while away leaves sequential navigation invalid after return; recheck requires choosing anew  485ms
+ ✓ tests/formula-report-quotes-ui.test.ts (24 tests) 1698ms
+ ✓ tests/formula-report-audit-storage-app.test.ts (8 tests) 1703ms
+   ✓ real storage changed retains body without describing it as current saved, even after source recheck and reopen  477ms
+stderr | tests/audit-body-item-navigation.integration.test.ts > source acquisition failure does not skip structurally complete entries or fabricate source agreement
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+    at dispatchEventForPluginEventSystem (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19320:7)
+    at dispatchEvent (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:23585:11)
+
+ ✓ tests/selective-safety-ui.test.ts (10 tests) 1217ms
+   ✓ shows Stage 3A PASS separately from Stage 2 BLOCKED and never writes  324ms
+   ✓ application storage conflict remains BLOCKED after original raw returns; reacquisition cannot clear protection  329ms
+ ✓ tests/audit-body-item-navigation.integration.test.ts (17 tests) 1680ms
+   ✓ commits name, position, selection and complete highlight together only after arrival across different item kinds  328ms
+ ✓ tests/formula-report-audit-record-ui.test.ts (16 tests) 1301ms
+ ✓ tests/report-template-navigation.test.ts (20 tests) 672ms
+ ✓ tests/formula-status-list.test.ts (25 tests) 1415ms
+ ✓ tests/formula-report-audit-export-ui.test.ts (16 tests) 936ms
+stderr | tests/formula-report-audit-ui.test.ts > unverified links are not presented as absent in difference detail (failure)
+ローカル保存領域へアクセスできませんでした Error: blocked
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-report-audit-ui.test.ts:104:101)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at refresh (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportAudit.tsx:123:20)
+    at executeDispatch (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+    at processDispatchQueue (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19166:19)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:3255:40)
+
+ ✓ tests/formula-report-audit-ui.test.ts (19 tests) 1512ms
+ ✓ tests/calculation-trial-component.test.ts (16 tests) 881ms
+ ✓ tests/formula-detail-ui.test.ts (24 tests) 541ms
+ ✓ tests/independent-roundtrip-review.test.ts (2 tests) 755ms
+   ✓ independent: close after normal return restores focus to audit opener  449ms
+   ✓ independent: a storage notification cannot revive roundtrip even with same raw value  304ms
+ ✓ tests/formula-quote-comparison-ui.test.ts (17 tests) 702ms
+ ✓ tests/audit-item-navigation.integration.test.ts (13 tests) 909ms
+ ✓ tests/deleted-calculation-graph.test.ts (5 tests) 706ms
+   ✓ A: opens historical nodes and edge after deleting every calculation without calculating or saving  321ms
+ ✓ tests/dependency-svg.test.ts (13 tests) 639ms
+   ✓ parses the display projection of actual exported node/edge syntax  524ms
+stderr | tests/formula-comparison-insertion-independent.test.ts > independent negative: failed collection acquisition refuses fixed insertion, but historical comparison remains exportable
+ローカル保存領域へアクセスできませんでした Error: storage unavailable
+    at Proxy.<anonymous> (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/formula-comparison-insertion-independent.test.ts:51:87)
+    at Proxy.mockCall (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/spy/dist/index.js:96:15)
+    at Proxy.getItem (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/tinyspy/dist/index.js:47:80)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:94:18)
+    at acquireEvidence (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportModal.tsx:35:18)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/components/FormulaReportModal.tsx:132:50
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react/cjs/react.development.js:1263:34)
+
+ ✓ tests/formula-detail-refresh.test.ts (20 tests) 997ms
+ ✓ tests/formula-comparison-insertion-independent.test.ts (12 tests) 287ms
+ ✓ tests/formula-report-audit-record-review-ui.test.ts (4 tests) 413ms
+ ✓ tests/audit-item-navigation-independent.test.ts (6 tests) 547ms
+ ✓ tests/formula-snapshot-ordering.test.ts (10 tests) 471ms
+ ✓ tests/backup-ui.test.ts (8 tests) 305ms
+stderr | tests/markdown-report-component.test.ts > refuses unreadable or absent persisted source {broken without fallback
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at readReport (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/MarkdownReportModal.tsx:14:20)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/components/MarkdownReportModal.tsx:25:56
+    at mountStateImpl (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8268:24)
+    at mountState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:8289:22)
+    at Object.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:26243:18)
+    at process.env.NODE_ENV.exports.useState (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react/cjs/react.development.js:1263:34)
+    at MarkdownReportModal (/workspace/scratch/e622c1e9421e/calculator-stage3b3/components/MarkdownReportModal.tsx:25:41)
+    at Object.react_stack_bottom_frame (/workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+
+ ✓ tests/markdown-report-component.test.ts (12 tests) 180ms
+ ✓ tests/body-navigation-list-return-independent.test.ts (1 test) 239ms
+ ✓ tests/backup-app.test.ts (2 tests) 410ms
+ ✓ tests/dependency-mermaid.test.ts (11 tests) 114ms
+ ✓ tests/dependency-graph-component.test.ts (5 tests) 277ms
+ ✓ tests/trial-independent-review.test.ts (16 tests) 185ms
+ ✓ tests/markdown-headings.test.ts (31 tests) 119ms
+ ✓ tests/formula-audit-comparison-sources-ui.test.ts (12 tests) 339ms
+ ✓ tests/calculation-evidence-verification-ui.test.ts (7 tests) 193ms
+ ✓ tests/selection-candidate-button.test.ts (10 tests) 136ms
+ ✓ tests/identification-ui.test.ts (1 test) 89ms
+ ✓ tests/formula-audit-comparison-independent.test.ts (5 tests) 125ms
+ ✓ tests/formula-comparison-boundary-ui.test.ts (3 tests) 139ms
+ ✓ tests/formula-difference-source-layout.test.ts (3 tests) 109ms
+ ✓ tests/markdown-report-download.test.ts (3 tests) 19ms
+ ✓ tests/formula-report-difference-boundaries.test.ts (74 tests) 536ms
+ ✓ tests/formula-execution.test.ts (39 tests) 730ms
+   ✓ registered formula execution > matches an independently computed 500-case arithmetic corpus  597ms
+ ✓ tests/storage-safety.test.ts (60 tests) 610ms
+ ✓ tests/selection-preview.test.ts (35 tests) 203ms
+ ✓ tests/formula-report-audit-comparison-record.test.ts (45 tests) 288ms
+ ✓ tests/formula-report-audit-roundtrip.test.ts (25 tests) 549ms
+ ✓ tests/selective-restore-plan.test.ts (68 tests) 222ms
+ ✓ tests/evidence-independent-review.test.ts (25 tests) 214ms
+ ✓ tests/formula-report-audit-record.test.ts (27 tests) 91ms
+ ✓ tests/formula-report-evidence.test.ts (50 tests) 132ms
+ ✓ tests/selective-restore-safety.test.ts (67 tests) 251ms
+ ✓ tests/markdown-report-provenance.test.ts (22 tests) 245ms
+ ✓ tests/calculation-status.test.ts (36 tests) 124ms
+ ✓ tests/execution-plan.test.ts (34 tests) 89ms
+ ✓ tests/evidence-impact-graph.test.ts (20 tests) 93ms
+ ✓ tests/block-references.test.ts (38 tests) 119ms
+ ✓ tests/formula-report-audit.test.ts (30 tests) 102ms
+ ✓ tests/formula-report-audit-export.test.ts (33 tests) 135ms
+ ✓ tests/markdown-report.test.ts (46 tests) 138ms
+ ✓ tests/evidence-impact.test.ts (39 tests) 114ms
+ ✓ tests/percent-integration.test.ts (10 tests) 88ms
+ ✓ tests/reference-phase-boundary.test.ts (9 tests) 72ms
+ ✓ tests/dependency-analysis.test.ts (28 tests) 326ms
+ ✓ tests/dependency-comparison.test.ts (13 tests) 172ms
+ ✓ tests/evidence-comparison.test.ts (41 tests) 120ms
+ ✓ tests/formula-report-diff-tracking.test.ts (38 tests) 102ms
+ ✓ tests/calculation-trial.test.ts (24 tests) 153ms
+ ✓ tests/restore-storage.test.ts (16 tests) 62ms
+ ✓ tests/variables.test.ts (39 tests) 63ms
+ ✓ tests/formula-report-diff.test.ts (32 tests) 80ms
+ ✓ tests/ast-evaluation.test.ts (18 tests) 43ms
+ ✓ tests/calculation-evidence.test.ts (20 tests) 126ms
+ ✓ tests/percent-parser.test.ts (64 tests) 113ms
+ ✓ tests/formula-report-audit-comparison.test.ts (64 tests) 74ms
+ ✓ tests/calculation-evidence-report.test.ts (15 tests) 42ms
+ ✓ tests/source-evidence-gui-contract.test.ts (13 tests) 87ms
+ ✓ tests/formula-report-audit-comparison-export.test.ts (33 tests) 65ms
+ ✓ tests/calculator.test.ts (54 tests) 63ms
+ ✓ tests/formula-comparison-boundary-independent.test.ts (21 tests) 67ms
+ ✓ tests/math-functions.test.ts (96 tests) 72ms
+ ✓ tests/formula-library.test.ts (31 tests) 44ms
+ ✓ tests/calculator-input.test.ts (50 tests) 67ms
+ ✓ tests/formula-reports.test.ts (30 tests) 53ms
+ ✓ tests/formula-quote-comparison.test.ts (16 tests) 72ms
+ ✓ tests/formula-report-audit-comparison-navigation.test.ts (45 tests) 35ms
+ ✓ tests/formula-report-quotes.test.ts (64 tests) 62ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > identifies valid outer with protected inner broken
+保存データのJSONが壊れています SyntaxError: Unexpected token 'b', "broken" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:14:233
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+
+ ✓ tests/formula-audit-comparison-export-independent.test.ts (9 tests) 21ms
+stderr | tests/recovery-manager.test.ts > recovery manager read and mutation boundary > full and oversized regions do not report capacity available
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:179
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+保存データのJSONが壊れています SyntaxError: Unexpected non-whitespace character after JSON at position 123 (line 1 column 124)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at inspectRecoverySlot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:22:23)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:34:18
+    at Array.map (<anonymous>)
+    at readRecoverySnapshot (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/recovery-reader.ts:33:31)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/recovery-manager.test.ts:21:326
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+
+ ✓ tests/recovery-manager.test.ts (25 tests) 54ms
+stderr | tests/restore-validation.test.ts > rejects coercible but non-string known settings
+ローカル保存領域へアクセスできませんでした TypeError: Cannot convert object to primitive value
+    at String (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:134:56)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at envelope (/workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/restore-validation.test.ts:5:59)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/restore-validation.test.ts:70:31
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+
+ ✓ tests/restore-validation.test.ts (50 tests) 39ms
+ ✓ tests/memo-blocks.test.ts (6 tests) 36ms
+ ✓ tests/format-copy.test.ts (6 tests) 41ms
+ ✓ tests/formula-audit-empty-independent.test.ts (17 tests) 14ms
+ ✓ tests/body-navigation-independent.test.ts (2 tests) 41ms
+ ✓ tests/confirmation-remarks-component.test.ts (2 tests) 10ms
+ ✓ tests/memo-block-preservation.test.ts (20 tests) 33ms
+ ✓ tests/storage.test.ts (42 tests) 28ms
+ ✓ tests/evidence-storage.test.ts (7 tests) 28ms
+ ✓ tests/storage-export.test.ts (5 tests) 12ms
+ ✓ tests/formula-report-timeline.test.ts (12 tests) 23ms
+ ✓ tests/evidence-impact-markdown.test.ts (6 tests) 20ms
+ ✓ tests/identification.test.ts (20 tests) 20ms
+ ✓ tests/formula-report-audit-comparison-envelope.test.ts (11 tests) 25ms
+stderr | tests/backup.test.ts > backup source protection > distinguishes missing, corrupt and inaccessible data
+保存データのJSONが壊れています SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at loadData (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/storage-format.ts:99:21)
+    at collectBackup (/workspace/scratch/e622c1e9421e/calculator-stage3b3/lib/backup.ts:22:21)
+    at /workspace/scratch/e622c1e9421e/calculator-stage3b3/tests/backup.test.ts:43:20
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+
+ ✓ tests/backup.test.ts (6 tests) 23ms
+ ✓ tests/memo-labels.test.ts (2 tests) 2ms
+ ✓ tests/url-expression.test.ts (6 tests) 6ms
+ ✓ tests/selective-storage-simulator.test.ts (15 tests) 12ms
+ ✓ tests/formula-report-audit-record-review.test.ts (2 tests) 9ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/evidence-app-save.test.ts > quota failure does not publish new evidence through React state or later autosave
+AssertionError: expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '保存済みとして扱っていません'
+
+- Expected
++ Received
+
+- 保存済みとして扱っていません
++ CMCalculation Memo計算を、意味のある記録へ。数式ガイドテーマ自動ライトダーク未保存です。再読み込み・終了に注意。書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。データのバックアップJSONから復元復旧コピーを管理選択復元プレビューRECENT計算履歴↗計算はここに残ります「=」で確定した式を、あとから復元したりメモにできます。履歴 0メモ 1CALC NOTEDESKTOP 0100準備完了()%単独計算メモを作成CCE⌫ 戻す÷789×456−123＋±0.=式を入力（累乗・sqrt・abs・pi・e）計算式を入力例: sqrt(144)+2^3。入力後は「=」またはEnter。%との組合せは未対応。12 DIGITLOCAL MEMORY登録式ライブラリ識別表示初期設定ラベル＋色色のみ識別表示なし初期設定では画面幅に合わせて識別表示を選びます。iEnter 計算　Esc クリア　数字・演算子はそのまま入力edit fixtureCALCULATION MEMO計算メモを編集×タイトル 任意本文ブロック文章・数式・計算を順番に組み立てます＋ 文章＋ 数式＋ 計算＋ 旧変数計算メモ全体を再計算試算する再計算は成功時に編集内容へ即時反映します。試算は結果を変えずに比較し、「結果を反映」で一括反映します。どちらも永続保存は「保存する」です。計算結果は確定済みです。ⓘ 参照と再計算について参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。「＋ 計算」はID参照方式です。数値だけの式も使え、参照先は一覧から選べます。旧方式で名前付き変数を追加する場合は「＋ 旧変数計算」を選びます。既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。依存関係の図を開く依存関係をMermaidで取り出す図は現在の式・参照と、ここで確認できた状態を表します。点線は未確定の依存候補です。数値計算やMemo Nexusへの送信は行いません。flowchart TD
++   block_0061["#49;#50;#32;#91;#36890;#24120;#93;"]
++   class block_0061 normal;
++   classDef normal fill:#f8fafc,stroke:#475569,color:#0f172a;
++   classDef changed fill:#fef3c7,stroke:#92400e,color:#451a03,stroke-width:3px;
++   classDef affected fill:#ede9fe,stroke:#6d28d9,color:#2e1065;
++   classDef pending stroke:#b45309,stroke-dasharray:5 3;
++   classDef uncertain stroke:#7c3aed,stroke-dasharray:2 3;
++   classDef error fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:3px;
++   classDef unknown fill:#f1f5f9,stroke:#64748b,color:#0f172a,stroke-dasharray:3 3;
++   classDef blocked fill:#ffedd5,stroke:#c2410c,color:#431407;
++ Mermaid文字列をコピー1計算ブロック↑ 上へ↓ 下へ削除通常i参照先を選んで式に挿入計算ブロックを選択ブロック 1: 12参照モード：@{番号} は選択した計算結果です。掛け算は * を入力します。変数名・登録式名を呼び出す機能ではありません。計算式計算式 12計算結果= 12使用可能: 数値、四則、小数、括弧、負数、累乗（^）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数名は英字で始め、英数字と_を使用します（例：subtotal = price * quantity）。LaTeX、その他の関数は使用できません。計算根拠の保存待ち: 0件。再計算・試算反映だけでは履歴は保存されません。本文や計算の編集・計算失敗・取消では未保存候補を破棄します。書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。キャンセル保存する
+
+ ❯ tests/evidence-app-save.test.ts:42:28
+     40|   expect(localStorage.getItem(STORAGE_KEY)).toBe(before);
+     41|   expect(host.querySelector('.note-form')).not.toBeNull();
+     42|   expect(host.textContent).toContain('保存済みとして扱っていません');
+       |                            ^
+     43|   expect(unloadPrevented()).toBe(true); expect(host.querySelector('[da…
+     44|   expect(host.querySelector('.toast')?.textContent).not.toContain('更新し…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  tests/evidence-app-save.test.ts > foreign update before explicit save is not overwritten and draft remains open
+AssertionError: expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '競合'
+
+- Expected
++ Received
+
+- 競合
++ CMCalculation Memo計算を、意味のある記録へ。数式ガイドテーマ自動ライトダーク未保存です。再読み込み・終了に注意。書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。データのバックアップJSONから復元復旧コピーを管理選択復元プレビューRECENT計算履歴↗計算はここに残ります「=」で確定した式を、あとから復元したりメモにできます。履歴 0メモ 1CALC NOTEDESKTOP 0100準備完了()%単独計算メモを作成CCE⌫ 戻す÷789×456−123＋±0.=式を入力（累乗・sqrt・abs・pi・e）計算式を入力例: sqrt(144)+2^3。入力後は「=」またはEnter。%との組合せは未対応。12 DIGITLOCAL MEMORY登録式ライブラリ識別表示初期設定ラベル＋色色のみ識別表示なし初期設定では画面幅に合わせて識別表示を選びます。iEnter 計算　Esc クリア　数字・演算子はそのまま入力edit fixtureCALCULATION MEMO計算メモを編集×タイトル 任意本文ブロック文章・数式・計算を順番に組み立てます＋ 文章＋ 数式＋ 計算＋ 旧変数計算メモ全体を再計算試算する再計算は成功時に編集内容へ即時反映します。試算は結果を変えずに比較し、「結果を反映」で一括反映します。どちらも永続保存は「保存する」です。計算結果は確定済みです。ⓘ 参照と再計算について参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。「＋ 計算」はID参照方式です。数値だけの式も使え、参照先は一覧から選べます。旧方式で名前付き変数を追加する場合は「＋ 旧変数計算」を選びます。既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。依存関係の図を開く依存関係をMermaidで取り出す図は現在の式・参照と、ここで確認できた状態を表します。点線は未確定の依存候補です。数値計算やMemo Nexusへの送信は行いません。flowchart TD
++   block_0061["#49;#50;#32;#91;#36890;#24120;#93;"]
++   class block_0061 normal;
++   classDef normal fill:#f8fafc,stroke:#475569,color:#0f172a;
++   classDef changed fill:#fef3c7,stroke:#92400e,color:#451a03,stroke-width:3px;
++   classDef affected fill:#ede9fe,stroke:#6d28d9,color:#2e1065;
++   classDef pending stroke:#b45309,stroke-dasharray:5 3;
++   classDef uncertain stroke:#7c3aed,stroke-dasharray:2 3;
++   classDef error fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:3px;
++   classDef unknown fill:#f1f5f9,stroke:#64748b,color:#0f172a,stroke-dasharray:3 3;
++   classDef blocked fill:#ffedd5,stroke:#c2410c,color:#431407;
++ Mermaid文字列をコピー1計算ブロック↑ 上へ↓ 下へ削除通常i参照先を選んで式に挿入計算ブロックを選択ブロック 1: 12参照モード：@{番号} は選択した計算結果です。掛け算は * を入力します。変数名・登録式名を呼び出す機能ではありません。計算式計算式 12計算結果= 12使用可能: 数値、四則、小数、括弧、負数、累乗（^）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数名は英字で始め、英数字と_を使用します（例：subtotal = price * quantity）。LaTeX、その他の関数は使用できません。計算根拠の保存待ち: 0件。再計算・試算反映だけでは履歴は保存されません。本文や計算の編集・計算失敗・取消では未保存候補を破棄します。書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。キャンセル保存する
+
+ ❯ tests/evidence-app-save.test.ts:56:28
+     54|   expect(localStorage.getItem(STORAGE_KEY)).toBe(foreign);
+     55|   expect(host.querySelector('.note-form')).not.toBeNull();
+     56|   expect(host.textContent).toContain('競合');
+       |                            ^
+     57| });
+     58| it('foreign storage event freezes autosave rather than replacing new h…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  tests/evidence-app-save.test.ts > while waiting for the shared write lock, input and all modal close routes are disabled
+AssertionError: expected <form class="note-form">…(1)</form> to be null
+
+- Expected: 
+null
+
++ Received: 
+<form
+  class="note-form"
+>
+  <fieldset
+    style="display: contents; border: 0px; padding: 0px; margin: 0px;"
+  >
+    <label>
+      タイトル 
+      <small>
+        任意
+      </small>
+      <input
+        placeholder="例：平方完成による解の導出"
+        value="source"
+      />
+    </label>
+    <div
+      class="memo-block-editor"
+    >
+      <div
+        aria-label="ブロックを追加"
+        class="block-add-toolbar"
+      >
+        <span>
+          <strong>
+            本文ブロック
+          </strong>
+          <small>
+            文章・数式・計算を順番に組み立てます
+          </small>
+        </span>
+        <div>
+          <button
+            type="button"
+          >
+            ＋ 文章
+          </button>
+          <button
+            type="button"
+          >
+            ＋ 数式
+          </button>
+          <button
+            type="button"
+          >
+            ＋ 計算
+          </button>
+          <button
+            type="button"
+          >
+            ＋ 旧変数計算
+          </button>
+        </div>
+      </div>
+      <div
+        class="block-reference-controls"
+      >
+        <button
+          type="button"
+        >
+          メモ全体を再計算
+        </button>
+        <button
+          type="button"
+        >
+          試算する
+        </button>
+        <p
+          class="block-help"
+        >
+          再計算は成功時に編集内容へ即時反映します。試算は結果を変えずに比較し、「結果を反映」で一括反映します。どちらも永続保存は「保存する」です。
+        </p>
+        <p
+          role="status"
+        >
+          計算結果は確定済みです。
+        </p>
+        <details>
+          <summary>
+            ⓘ 参照と再計算について
+          </summary>
+          <p>
+            参照は同じメモのブロックIDに結び付き、上下移動しても参照先は変わりません。参照モードは変数を定義せず、変数を使うブロックの結果を選択して利用します。このメモは手動再計算方式を維持します。編集・保存では再計算しません。全体が成功したときだけ結果を一括確定します。無関係の空式やエラーがある場合も確定を停止します。「一括確定を停止」はメモ全体の通知で、各ブロック自身の計算エラーを意味するものではありません。
+          </p>
+        </details>
+      </div>
+      <p
+        class="block-help"
+      >
+        「＋ 計算」はID参照方式です。数値だけの式も使え、参照先は一覧から選べます。旧方式で名前付き変数を追加する場合は「＋ 旧変数計算」を選びます。既存の変数はこのメモ内だけで有効です。変数モードだけは従来どおり上から順に評価します。ID参照の評価順は依存関係で決まります。再代入は後のブロックだけに反映され、文章・数式ブロックは変数を定義しません。再代入に失敗した場合は以前の有効な値を維持します。
+      </p>
+      <details
+        class="dependency-graph-panel"
+      >
+        <summary>
+          依存関係の図を開く
+        </summary>
+      </details>
+      <details
+        class="block-mermaid-export"
+      >
+        <summary>
+          依存関係をMermaidで取り出す
+        </summary>
+        <p
+          class="block-help"
+        >
+          図は現在の式・参照と、ここで確認できた状態を表します。点線は未確定の依存候補です。数値計算やMemo Nexusへの送信は行いません。
+        </p>
+        <textarea
+          aria-label="Mermaid依存関係図"
+          readonly=""
+          rows="7"
+          spellcheck="false"
+        >
+          flowchart TD
+  block_0061["#49;#50;#32;#91;#36890;#24120;#93;"]
+  class block_0061 normal;
+  classDef normal fill:#f8fafc,stroke:#475569,color:#0f172a;
+  classDef changed fill:#fef3c7,stroke:#92400e,color:#451a03,stroke-width:3px;
+  classDef affected fill:#ede9fe,stroke:#6d28d9,color:#2e1065;
+  classDef pending stroke:#b45309,stroke-dasharray:5 3;
+  classDef uncertain stroke:#7c3aed,stroke-dasharray:2 3;
+  classDef error fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:3px;
+  classDef unknown fill:#f1f5f9,stroke:#64748b,color:#0f172a,stroke-dasharray:3 3;
+  classDef blocked fill:#ffedd5,stroke:#c2410c,color:#431407;
+
+        </textarea>
+        <button
+          type="button"
+        >
+          Mermaid文字列をコピー
+        </button>
+      </details>
+      <div
+        class="block-editor-list"
+      >
+        <article
+          class="block-editor-card calculation "
+          data-block-id="a"
+          tabindex="-1"
+        >
+          <header>
+            <div>
+              <span
+                class="block-order"
+              >
+                1
+              </span>
+              <strong>
+                計算
+                ブロック
+              </strong>
+            </div>
+            <div
+              class="block-card-actions"
+            >
+              <button
+                aria-label="計算ブロックを上へ移動"
+                disabled=""
+                type="button"
+              >
+                ↑ 上へ
+              </button>
+              <button
+                aria-label="計算ブロックを下へ移動"
+                disabled=""
+                type="button"
+              >
+                ↓ 下へ
+              </button>
+              <button
+                aria-label="計算ブロックを削除"
+                class="danger"
+                type="button"
+              >
+                削除
+              </button>
+            </div>
+          </header>
+          <section
+            class="block-status"
+            data-state-kind="normal"
+          >
+            <div
+              class="block-status-summary"
+            >
+              <span
+                class="block-state-badge state-normal"
+              >
+                通常
+              </span>
+              <button
+                aria-controls="_r_e_"
+                aria-expanded="false"
+                aria-label="ブロック 1 の状態とエラー詳細"
+                class="block-info-button"
+                type="button"
+              >
+                i
+              </button>
+            </div>
+          </section>
+          <div
+            class="block-reference-controls"
+          >
+            <label>
+              参照先を選んで式に挿入
+              <select>
+                <option … />
+                <option … />
+              </select>
+            </label>
+            <p
+              class="block-help"
+            >
+              参照モード：@{番号} は選択した計算結果です。掛け算は * を入力します。変数名・登録式名を呼び出す機能ではありません。
+            </p>
+            <ul />
+          </div>
+          <label>
+            計算式
+            <input
+              class="code-input"
+              placeholder="例：1200 * 5 または @{1} * 5"
+              value="12"
+            />
+          </label>
+          <p
+            class="calculation-expression"
+          >
+            <span>
+              計算式
+            </span>
+             
+            <code>
+              12
+            </code>
+          </p>
+          <div
+            aria-live="polite"
+            class="calculation-live-result "
+          >
+            <span>
+              計算結果
+            </span>
+            <strong>
+              = 
+              12
+            </strong>
+          </div>
+          <p
+            class="block-help"
+          >
+            使用可能: 数値、四則、小数、括弧、負数、累乗（
+            <code>
+              ^
+            </code>
+            ）、sqrt・abs（1引数）、定数pi・e。%は従来の四則式だけで使用できます。変数名は英字で始め、英数字と_を使用します（例：subtotal = price * quantity）。LaTeX、その他の関数は使用できません。
+          </p>
+        </article>
+      </div>
+    </div>
+    <p
+      role="status"
+    >
+      計算根拠の保存待ち: 
+      0
+      件。再計算・試算反映だけでは履歴は保存されません。本文や計算の編集・計算失敗・取消では未保存候補を破棄します。
+    </p>
+    <p
+      class="field-error"
+      role="alert"
+    >
+      書き込み後の保存確認に失敗しました。記録が保存された可能性があるため、重複保存を避けるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。
+    </p>
+    <div
+      class="modal-actions"
+    >
+      <button
+        class="button-secondary"
+        type="button"
+      >
+        キャンセル
+      </button>
+      <button
+        class="button-primary"
+        type="submit"
+      >
+        保存する
+      </button>
+    </div>
+  </fieldset>
+</form>
+
+ ❯ tests/evidence-app-save.test.ts:76:44
+     74|   expect(host.querySelector('.note-form')).not.toBeNull();
+     75|   await act(async () => { release(); });
+     76|   expect(host.querySelector('.note-form')).toBeNull();
+       |                                            ^
+     77|   expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).notes[0].calcu…
+     78| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  tests/evidence-app-save.test.ts > a write followed by readback failure is reported as uncertain and never blindly appended again
+TypeError: Cannot read properties of undefined (reading 'records')
+ ❯ tests/evidence-app-save.test.ts:86:68
+     84|   await act(async () => { button('保存する').click(); });
+     85|   expect(host.textContent).toContain('保存された可能性'); expect(host.querySel…
+     86|   expect(JSON.parse(get.call(localStorage, STORAGE_KEY)!).notes[0].cal…
+       |                                                                    ^
+     87|   await act(async () => { button('保存する').click(); }); expect(writes).t…
+     88| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  tests/evidence-app-save.test.ts > a corrupted replacement enters non-destructive recovery rather than generic conflict: autosave
+ FAIL  tests/evidence-app-save.test.ts > a corrupted replacement enters non-destructive recovery rather than generic conflict: explicit save
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ tests/evidence-app-save.test.ts:105:64
+    103|     else { const select = host.querySelector<HTMLSelectElement>('.them…
+    104|   });
+    105|   expect(host.querySelector('.storage-recovery')?.textContent).toConta…
+       |                                                                ^
+    106|   expect(host.querySelector('#calculator')?.hasAttribute('inert')).toB…
+    107|   expect(localStorage.getItem(STORAGE_KEY)).toBe(malformed);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  tests/evidence-app-save.test.ts > continuous formula draft inputs wait for the lock, skip stale callbacks, and clear unload protection only after the latest readback
+AssertionError: expected <p aria-hidden="false" …(3)></p> to be null
+
+- Expected: 
+null
+
++ Received: 
+<p
+  aria-hidden="false"
+  data-testid="execution-unsaved-changes"
+  role="status"
+  style="visibility: visible;"
+>
+  未保存です。再読み込み・終了に注意。
+</p>
+
+ ❯ tests/evidence-app-save.test.ts:127:73
+    125|   expect(writes).not.toHaveBeenCalled(); expect(localStorage.getItem(S…
+    126|   await act(async () => { releases[1](); });
+    127|   expect(host.querySelector('[data-testid=execution-unsaved-changes]')…
+       |                                                                         ^
+    128|   expect(writes).toHaveBeenCalledTimes(1); expect(JSON.parse(localStor…
+    129|   expect(unloadPrevented()).toBe(false); expect(host.querySelector('[d…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  tests/formula-report-app-save.test.ts > quota failure keeps report out of React and autosave, allowing a safe explicit retry
+AssertionError: expected '書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止…' to contain '保存できません'
+
+Expected: "保存できません"
+Received: "書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。"
+
+ ❯ tests/formula-report-app-save.test.ts:40:32
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  tests/formula-report-app-save.test.ts > readback uncertainty stops retry and never publishes confirmation in React
+AssertionError: expected "setItem" to be called 1 times, but got 0 times
+ ❯ tests/formula-report-app-save.test.ts:60:32
+     58|   vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (…
+     59|   request.confirm = true; request.confirmationRemarks = '失敗時は確認未成立'; a…
+     60|   await save(); expect(writes).toHaveBeenCalledTimes(1); expect(result…
+       |                                ^
+     61| });
+     62| it('a rejected lock leaves storage and report display unchanged', asyn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  tests/formula-report-app-save.test.ts > a local state change during lock wait invalidates the candidate instead of merging stale confirmation
+AssertionError: expected 'system' to be 'dark' // Object.is equality
+
+Expected: "dark"
+Received: "system"
+
+ ❯ tests/formula-report-app-save.test.ts:73:122
+     71|   await act(async () => { const theme = host.querySelector<HTMLSelectE…
+     72|   await act(async () => releases[0]()); expect(result).toContain('アプリ状…
+     73|   await act(async () => releases[1]()); expect(stored().formulaReports…
+       |                                                                                                                          ^
+     74| });
+     75| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  tests/formula-report-app-save.test.ts > failed confirmation writes never publish appended confirmation history
+AssertionError: expected '書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止…' to contain '保存できません'
+
+Expected: "保存できません"
+Received: "書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。"
+
+ ❯ tests/formula-report-app-save.test.ts:97:32
+     95|   const raw = localStorage.getItem(STORAGE_KEY);
+     96|   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { th…
+     97|   await save(); expect(result).toContain('保存できません'); expect(localStora…
+       |                                ^
+     98|   expect(host.querySelector('output')?.textContent).toBe('null');
+     99| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  tests/restore-ui.test.ts > safe restore app boundary > same-tab raw change fails closed and keeps newer raw, without automatic rollback
+AssertionError: expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '上書きせず'
+
+Expected: "上書きせず"
+Received: "CMCalculation Memo計算を、意味のある記録へ。数式ガイドテーマ自動ライトダーク未保存です。再読み込み・終了に注意。データのバックアップJSONから復元復旧コピーを管理選択復元プレビューRECENT計算履歴↗計算はここに残ります「=」で確定した式を、あとから復元したりメモにできます。履歴 0メモ 0CALC NOTEDESKTOP 0100準備完了()%単独計算メモを作成CCE⌫ 戻す÷789×456−123＋±0.=式を入力（累乗・sqrt・abs・pi・e）計算式を入力例: sqrt(144)+2^3。入力後は「=」またはEnter。%との組合せは未対応。12 DIGITLOCAL MEMORY登録式ライブラリ識別表示初期設定ラベル＋色色のみ識別表示なし初期設定では画面幅に合わせて識別表示を選びます。iEnter 計算　Esc クリア　数字・演算子はそのまま入力SAVED計算メモ0件＋ 新規作成◇最初の計算メモを作成文章・数式・計算ブロックを複数組み合わせられます。電卓の結果だけを残す場合は単独計算メモを選べます。新規作成CALCULATION MEMOJSONバックアップから復元×復元すると、現在保存されているデータ全体がバックアップの内容に置き換わります。未保存編集は自動保存・破棄しません。編集画面を閉じ、保存状態を確認してから進んでください。復旧コピーはこのブラウザの独立キーに最大8件・合計4 Mi UTF-16コード単位まで保持し、自動削除しません。サイトデータ全体の消去や端末故障では両方失われます。私的な記録を含むため、端末外にも書き出し、保管・共有に注意してください。JSONファイルを選択上限16 MiB。拡張子だけでは判定せず内容を検証します。クラウド上のファイルを読めない場合は端末内へ保存して再選択してください。選択ファイル: long-復元.json（830 bytes）作成日時: 2026-11-05T22:38:41.686Z ／ 取得日時: 2026-11-05T22:38:41.686Z形式: calculator-memo-backup v1 ／ 保存形式: v1原文比較: 異なります。同じ件数でも内容の一致とは限りません。項目現在復元予定保存状態ok構造検証済みUTF-16長136286計算履歴00数学メモ01登録式00実行入力00レポート00構造検証は数学的正しさ・参照先の現存性・真正性の証明ではありません。現在データを保全する保全状態: 未確認 — 復元不可全体置換と保全状態を確認し、復元を承認します復元を実行するEnterでは実行しません。ボタンをタップするか、フォーカスしてSpaceで明示操作してください。保存原文または保全領域が変化しました。上書きしていません。保持中の復旧コピー2026-11-05T22:38:41.698Z — 136 UTF-16コード単位復旧コピー 1 を書き出す正常なコピーは書き出したファイルを同じ検証手順で復元できます。破損・未知形式の原文は書出しによる保全だけを行い、自動修復しません。個別削除と詳細確認は、この画面を閉じて「復旧コピーを管理」から行えます。閉じる"
+
+ ❯ tests/restore-ui.test.ts:40:231
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  tests/restore-ui.test.ts > safe restore app boundary > recovery quota failure cannot be bypassed by approval
+AssertionError: expected 'CMCalculation Memo計算を、意味のある記録へ。数式ガイドテ…' to contain '上書きしません'
+
+Expected: "上書きしません"
+Received: "CMCalculation Memo計算を、意味のある記録へ。数式ガイドテーマ自動ライトダーク未保存です。再読み込み・終了に注意。復元結果または画面更新が確認不能（UNKNOWN）のため自動保存を停止しています。復旧コピーと現在原文を保管し、内容を確認してから再読み込みしてください。データのバックアップJSONから復元復旧コピーを管理選択復元プレビューRECENT計算履歴↗計算はここに残ります「=」で確定した式を、あとから復元したりメモにできます。履歴 0メモ 0CALC NOTEDESKTOP 0100準備完了()%単独計算メモを作成CCE⌫ 戻す÷789×456−123＋±0.=式を入力（累乗・sqrt・abs・pi・e）計算式を入力例: sqrt(144)+2^3。入力後は「=」またはEnter。%との組合せは未対応。12 DIGITLOCAL MEMORY登録式ライブラリ識別表示初期設定ラベル＋色色のみ識別表示なし初期設定では画面幅に合わせて識別表示を選びます。iEnter 計算　Esc クリア　数字・演算子はそのまま入力SAVED計算メモ0件＋ 新規作成◇最初の計算メモを作成文章・数式・計算ブロックを複数組み合わせられます。電卓の結果だけを残す場合は単独計算メモを選べます。新規作成CALCULATION MEMOJSONバックアップから復元×復元すると、現在保存されているデータ全体がバックアップの内容に置き換わります。未保存編集は自動保存・破棄しません。編集画面を閉じ、保存状態を確認してから進んでください。復旧コピーはこのブラウザの独立キーに最大8件・合計4 Mi UTF-16コード単位まで保持し、自動削除しません。サイトデータ全体の消去や端末故障では両方失われます。私的な記録を含むため、端末外にも書き出し、保管・共有に注意してください。JSONファイルを選択上限16 MiB。拡張子だけでは判定せず内容を検証します。クラウド上のファイルを読めない場合は端末内へ保存して再選択してください。選択ファイル: long-復元.json（830 bytes）作成日時: 2026-11-05T22:38:41.842Z ／ 取得日時: 2026-11-05T22:38:41.842Z形式: calculator-memo-backup v1 ／ 保存形式: v1原文比較: 異なります。同じ件数でも内容の一致とは限りません。項目現在復元予定保存状態ok構造検証済みUTF-16長136286計算履歴00数学メモ01登録式00実行入力00レポート00構造検証は数学的正しさ・参照先の現存性・真正性の証明ではありません。現在データを保全する保全状態: 未確認 — 復元不可全体置換と保全状態を確認し、復元を承認します復元を実行するEnterでは実行しません。ボタンをタップするか、フォーカスしてSpaceで明示操作してください。書込みを試みましたが結果を確認できません（UNKNOWN）。自動再試行・巻戻しを停止しました。原文と保全コピーを確認し、必要なら明示的に再読み込みしてください。閉じる"
+
+ ❯ tests/restore-ui.test.ts:43:317
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  tests/restore-ui.test.ts > safe restore app boundary > invalid or replaced file loses prior authority; cancelled selection is not a restore
+AssertionError: expected <label class="restore-approval">…(1)</label> to be null
+
+- Expected: 
+null
+
++ Received: 
+<label
+  class="restore-approval"
+>
+  <input
+    disabled=""
+    type="checkbox"
+  />
+  全体置換と保全状態を確認し、復元を承認します
+</label>
+
+ ❯ tests/restore-ui.test.ts:46:134
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  tests/restore-ui.test.ts > safe restore app boundary > unknown write outcome stops later app autosave and keeps recovery
+AssertionError: expected '{ "version":1, "history":[], "notes":…' to be '{\n "version":1,"history":[],"notes":…' // Object.is equality
+
+- Expected
++ Received
+
+- {
+-  "version":1,"history":[],"notes":[{"id":"restored","type":"plain-calculation","title":"復元メモ","content":"日本語😀\n<safe>","createdAt":"2026-10-30T00:00:00Z","updatedAt":"2026-10-30T00:00:00Z"}],"settings":{"theme":"light","activePanel":"notes"},"future":123456789012345678901234567890
+- }
++ { "version":1, "history":[], "notes":[], "settings":{"theme":"light","activePanel":"history"}, "future":123456789012345678901234567890 }
+
+ ❯ tests/restore-ui.test.ts:54:114
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  tests/restore-ui.test.ts > safe restore app boundary > exposes original recovery JSON after remount without modifying current raw
+AssertionError: 復旧コピー 1 を書き出す: expected undefined to be truthy
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ button tests/restore-ui.test.ts:14:123
+     12| let host: HTMLDivElement; let root: ReturnType<typeof createRoot>;
+     13| const pause=()=>new Promise(r=>setTimeout(r,20));
+     14| function button(label:string){const b=[...host.querySelectorAll('butto…
+       |                                                                                                                           ^
+     15| async function click(label:string){await act(async()=>button(label).cl…
+     16| async function mount(){await act(async()=>root.render(createElement(Ca…
+ ❯ tests/restore-ui.test.ts:15:55
+ ❯ process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:814:22
+ ❯ click tests/restore-ui.test.ts:15:42
+ ❯ tests/restore-ui.test.ts:66:59
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+ FAIL  tests/restore-ui.test.ts > safe restore app boundary > maintains missing-key initialization without treating it as a restored snapshot
+AssertionError: expected null to deeply equal { version: 1, history: [], …(2) }
+
+- Expected: 
+{
+  "history": [],
+  "notes": [],
+  "settings": {
+    "activePanel": "history",
+    "theme": "system",
+  },
+  "version": 1,
+}
+
++ Received: 
+null
+
+ ❯ tests/restore-ui.test.ts:72:109
+     70|  });
+     71|  it('maintains missing-key initialization without treating it as a res…
+     72|   localStorage.removeItem(STORAGE_KEY);await mount();expect(JSON.parse…
+       |                                                                                                             ^
+     73|  });
+     74| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯
+
+
+ Test Files  3 failed | 118 passed (121)
+      Tests  17 failed | 2709 passed (2726)
+   Start at  07:38:37
+   Duration  36.35s (transform 6.09s, setup 0ms, collect 141.89s, tests 69.64s, environment 27.27s, prepare 13.58s)
+

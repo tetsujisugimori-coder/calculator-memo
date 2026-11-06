@@ -103,7 +103,7 @@ function completedContexts() {
   return scenarios.map((scenario, index) => ({
     status: 'passed', sha, expectedSha: sha,
     servedIdentity: { sha, branch: 'synthetic-contract', run: 'local-contract', attempt: '1' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1337 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1344 } : {}) }],
     errors: [], checks: Array.from({ length: counts[index] }, (_, i) => scenario.id + ': synthetic acceptance ' + i),
     screenshotCheckpoints: Array.from({ length: checkpointCounts[index] }, (_, i) => ({ name: scenario.id + '-synthetic-' + i, horizontalFit: 'passed' })),
   }));
@@ -132,6 +132,7 @@ const mutations = {
   'duplicate geometry checkpoint': records => { records[0].screenshotCheckpoints[1] = records[0].screenshotCheckpoints[0]; },
   'geometry checkpoint missing': records => { records[0].screenshotCheckpoints.pop(); },
   'geometry checkpoint failed': records => { records[0].screenshotCheckpoints[0].horizontalFit = 'failed'; },
+  'old touch count omits seven explicit UNKNOWN recovery actions': records => { records[2].scenarios[0].touchActivations = 1337; },
   'touch activation omitted': records => { records[2].scenarios[0].touchActivations--; },
   'runtime or network error': records => { records[0].errors.push({ type: 'blocked-external-request' }); },
 };

@@ -1,0 +1,12 @@
+✔ independent negative control rejects exportedAlias (10.282684ms)
+✔ independent negative control rejects parameterEscape (1.734693ms)
+✔ independent negative control rejects importedType (1.465224ms)
+✔ independent negative control rejects pathAliasExcluded (1.392276ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 334.954699

@@ -19,14 +19,16 @@ describe('evidence persistence boundary', () => {
     expect(saveDataChecked(base(), JSON.stringify(base()), target)).toEqual({ ok: false, reason: 'conflict' });
     expect(target.setItem).not.toHaveBeenCalled();
   });
-  it('reports write failure without a successful record', () => {
+  it('treats a thrown mutation as uncertain, not proof of no write', () => {
     const target = store(); target.setItem.mockImplementation(() => { throw new Error('quota'); });
-    expect(saveDataChecked(base(), null, target)).toEqual({ ok: false, reason: 'unavailable' });
+    // Once setItem is invoked, a generic exception cannot prove that bytes stayed unchanged.
+    expect(saveDataChecked(base(), null, target)).toEqual({ ok: false, reason: 'uncertain' });
     expect(target.raw()).toBeNull();
   });
   it('does not claim success when write is silently dropped', () => {
     const target = store(); target.setItem.mockImplementation(() => undefined);
-    expect(saveDataChecked(base(), null, target)).toEqual({ ok: false, reason: 'conflict' });
+    // Readback mismatch after mutation is UNKNOWN, unlike a pre-write conflict.
+    expect(saveDataChecked(base(), null, target)).toEqual({ ok: false, reason: 'uncertain' });
   });
   it('protects malformed and future evidence on load and save', () => {
     for (const calculationEvidence of [{ version: 2, records: [] }, { version: 1, records: [{}] }, null]) {

@@ -1,0 +1,106 @@
+✔ unit: command failure propagates and leaves the diagnostic log (286.138146ms)
+✔ normal_build: command failure propagates and leaves the diagnostic log (150.735766ms)
+✔ pages_build: command failure propagates and leaves the diagnostic log (224.828428ms)
+✔ apt_config: command failure propagates and leaves the diagnostic log (202.469384ms)
+✔ os_install: command failure propagates and leaves the diagnostic log (233.360934ms)
+✔ browser_install: command failure propagates and leaves the diagnostic log (213.539254ms)
+✔ workflow retains strict failure, exact HEAD, timeout and artifact contracts (0.806835ms)
+✔ log storage failure cannot be concealed by a successful command (186.739806ms)
+✔ complete six-context contract preserves 1092 prior checks plus 36 body-item-navigation checks and 592 geometry checkpoints (3.552701ms)
+✔ coverage rejects one scenario never ran (1.890683ms)
+✔ coverage rejects duplicate context replaces omitted context (2.124265ms)
+✔ coverage rejects child failed (1.858706ms)
+✔ coverage rejects scenario still running (2.14779ms)
+✔ coverage rejects checkout SHA mismatch (0.581369ms)
+✔ coverage rejects expected SHA mismatch (1.083958ms)
+✔ coverage rejects served SHA mismatch (0.587959ms)
+✔ coverage rejects incorrect mobile environment (1.576198ms)
+✔ coverage rejects entire new fixed-insertion coverage absent (0.631795ms)
+✔ coverage rejects legacy touch count without fixed-insertion operations (3.520707ms)
+✔ coverage rejects new body-item-navigation coverage omitted (15.509422ms)
+✔ coverage rejects legacy touch count without body navigation (0.920242ms)
+✔ coverage rejects new item-navigation group omitted (0.572275ms)
+✔ coverage rejects old touch count omits item-navigation operations (19.50139ms)
+✔ coverage rejects acceptance check missing (0.588099ms)
+✔ coverage rejects duplicate acceptance check (0.569149ms)
+✔ coverage rejects check from another context (36.218546ms)
+✔ coverage rejects duplicate geometry checkpoint (5.217963ms)
+✔ coverage rejects geometry checkpoint missing (0.650561ms)
+✔ coverage rejects geometry checkpoint failed (0.830552ms)
+✔ coverage rejects old touch count omits seven explicit UNKNOWN recovery actions (5.549528ms)
+✔ coverage rejects touch activation omitted (0.847485ms)
+✔ coverage rejects runtime or network error (1.56506ms)
+✔ stage process launch failure remains failed with timing evidence (327.693623ms)
+✔ missing-context validation is nonzero at the process boundary (218.539628ms)
+✔ isolated preview ports are distinct and allowed by Fetch before any transport (19.120959ms)
+✔ successful memo save waits for persistence without delaying read-only storage observations (6.587707ms)
+✔ modal overflow diagnostics are failure-only bounded and retain the strict geometry assertion (5.75447ms)
+✔ deb822 source rewrite preserves signing, suites, components and unrelated sources (0.98443ms)
+✔ legacy sources preserve options and other hosts; Azure security gets official security endpoint (0.33785ms)
+✔ unknown URI, suite and wrapped or ambiguous fields fail closed (0.881391ms)
+✔ APT configuration is restricted to root GitHub Ubuntu 24.04 and transport settings (0.531539ms)
+✔ OS and browser acquisition have separate bounded budgets without dependency omissions (4.215287ms)
+✖ bounded acquisition timeout fails and preserves its stage log and timing (341.936661ms)
+✔ official hosted-runner mirror+file indirection preserves signed source semantics (2.612886ms)
+✔ resource evidence separates Node usage from visible browser descendants (7.341506ms)
+✔ activation timing preserves real input and touch observation while splitting dispatch costs (1.706037ms)
+✔ optional npm cache cannot consume post-verification budget; locked installs remain mandatory (0.622478ms)
+✔ the matrix is exactly the six immutable scenario IDs, with no fail-fast or legacy main-suite run (25.476671ms)
+✔ six distinct successful jobs preserve all 1128 checks, 592 geometry checkpoints and 132 PNG files (153.490929ms)
+✔ reject: missing sixth artifact (53.716764ms)
+✔ reject: unexpected seventh artifact (134.152656ms)
+✔ reject: foreign single-job SHA (71.623382ms)
+✔ reject: mixed run attempts (175.984717ms)
+✔ reject: failed scenario is not a success (159.210131ms)
+✔ reject: swapped scenario inside correct artifact folder (84.413521ms)
+✔ reject: missing acceptance check (107.306877ms)
+✔ reject: missing image evidence (57.037667ms)
+✔ a failed prerequisite job fails even when all six artifacts look complete (110.324084ms)
+✔ UNKNOWN observation accepts intact draft/raw and exactly one original attempt (13.062166ms)
+✔ UNKNOWN rejects: no injected attempt (1.340122ms)
+✔ UNKNOWN rejects: automatic retry even if silently dropped (0.341078ms)
+✔ UNKNOWN rejects: changed raw (9.452144ms)
+✔ UNKNOWN rejects: lost title (0.357473ms)
+✔ UNKNOWN rejects: lost body (0.364776ms)
+✔ UNKNOWN rejects: truncated remarks (0.386181ms)
+✔ UNKNOWN rejects: lost evidence link (0.752195ms)
+✔ UNKNOWN rejects: confirmation retry enabled (0.413182ms)
+✔ UNKNOWN rejects: ordinary save bypass enabled (2.040886ms)
+✔ 721/800px accept natural flow, non-overlap and reachable notes without weakening desktop sticky (0.399516ms)
+✔ natural flow rejects: old two-column sticky overlap (0.320472ms)
+✔ natural flow rejects: no real scroll (0.176839ms)
+✔ natural flow rejects: calculator document drift (0.312251ms)
+✔ natural flow rejects: notes under calculator (0.243048ms)
+✔ notes probe rejects: hit=false (0.318151ms)
+✔ notes probe rejects: enabled=false (0.213139ms)
+✔ notes probe rejects: inViewport=false (0.234769ms)
+✔ desktop still rejects wrong sticky gap or non-sticky positioning (4.71296ms)
+✔ reload reconstruction uses seven recorded UI activations and retains original pending-lock checks (2.280965ms)
+✔ the formal prerequisite job runs these negative controls before browser matrix acceptance (61.337479ms)
+ℹ tests 79
+ℹ suites 0
+ℹ pass 78
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2764.192283
+
+✖ failing tests:
+
+test at e2e/ci-contract.node-test.mjs:244:1
+✖ bounded acquisition timeout fails and preserves its stage log and timing (341.936661ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /synthetic stalled acquisition/. Input:
+  
+  'timeout: sending signal TERM to command ‘/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node’\n'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/ci-contract.node-test.mjs:252:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'timeout: sending signal TERM to command ‘/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node’\n',
+    expected: /synthetic stalled acquisition/,
+    operator: 'match',
+    diff: 'simple'
+  }

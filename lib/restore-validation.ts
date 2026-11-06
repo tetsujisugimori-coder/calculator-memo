@@ -1,5 +1,5 @@
 import { MAX_RAW_CODE_UNITS } from "./backup";
-import { loadData, STORAGE_KEY } from "./storage";
+import { loadData, STORAGE_KEY } from "./storage-format";
 import type { StoredData } from "./types";
 
 export const MAX_RESTORE_FILE_BYTES = 16 * 1024 * 1024;

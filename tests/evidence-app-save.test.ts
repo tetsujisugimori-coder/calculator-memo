@@ -2,6 +2,7 @@
 import { act, createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { freshStorageRuntime } from './helpers/fresh-storage-runtime';
 import { CalculatorApp } from '../components/CalculatorApp';
 import { defaultData, STORAGE_KEY } from '../lib/storage';
 import type { Memo, PlainCalculationNote } from '../lib/types';
@@ -14,7 +15,7 @@ async function click(text: string) { await act(async () => { button(text).click(
 beforeEach(() => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
-  localStorage.clear(); localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...defaultData, notes: [note()] }));
+  freshStorageRuntime(); localStorage.clear(); localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...defaultData, notes: [note()] }));
   host = document.createElement('div'); document.body.append(host); root = createRoot(host);
 });
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -39,7 +40,8 @@ it('quota failure does not publish new evidence through React state or later aut
   await click('保存する');
   expect(localStorage.getItem(STORAGE_KEY)).toBe(before);
   expect(host.querySelector('.note-form')).not.toBeNull();
-  expect(host.textContent).toContain('保存済みとして扱っていません');
+  // A generic thrown mutation cannot establish that it did not write.
+  expect(host.textContent).toContain('再試行を停止');
   expect(unloadPrevented()).toBe(true); expect(host.querySelector('[data-testid=unsaved-changes]')).not.toBeNull();
   expect(host.querySelector('.toast')?.textContent).not.toContain('更新しました');
   expect(set).toHaveBeenCalledTimes(1);
@@ -135,4 +137,22 @@ it('initial pretty-printed data is not reported as unsaved user changes while it
   vi.stubGlobal('navigator', { locks: { request: (_name: string, operation: () => unknown) => { if (!first) return Promise.resolve(operation()); first = false; return new Promise(resolve => { release = () => resolve(operation()); }); } } });
   await open(); expect(unloadPrevented()).toBe(false); expect(host.querySelector('[data-testid=unsaved-changes]')).toBeNull(); expect(localStorage.getItem(STORAGE_KEY)).toBe(raw);
   await act(async () => { release(); }); expect(unloadPrevented()).toBe(false);
+});
+
+it('lock rejection after memo mutation keeps the editor and draft unconfirmed with zero retry', async () => {
+  await open(); const writes = vi.spyOn(Storage.prototype, 'setItem');
+  vi.stubGlobal('navigator', { locks: { request: async (_name: string, callback: () => unknown) => { await callback(); throw Error('release failure'); } } });
+  await click('保存する');
+  expect(host.textContent).toContain('UNKNOWN'); expect(host.querySelector('.note-form')).not.toBeNull();
+  expect(host.querySelector('.toast')?.textContent).not.toContain('更新しました'); expect(unloadPrevented()).toBe(true);
+  expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).notes[0].calculationEvidence.records).toHaveLength(1);
+  await click('保存する'); expect(writes).toHaveBeenCalledTimes(1);
+});
+it('post-mutation lock failure does not clear autosave unsaved protection', async () => {
+  await open(); await click('キャンセル'); const writes = vi.spyOn(Storage.prototype, 'setItem');
+  vi.stubGlobal('navigator', { locks: { request: async (_name: string, callback: () => unknown) => { await callback(); throw Error('release failure'); } } });
+  await act(async () => { const select = host.querySelector<HTMLSelectElement>('.theme-select select')!; select.value = 'dark'; select.dispatchEvent(new Event('change', { bubbles: true })); });
+  expect(host.textContent).toContain('UNKNOWN'); expect(unloadPrevented()).toBe(true);
+  expect(host.querySelector('[data-testid=unsaved-changes]')).not.toBeNull();
+  expect(writes).toHaveBeenCalledTimes(1);
 });

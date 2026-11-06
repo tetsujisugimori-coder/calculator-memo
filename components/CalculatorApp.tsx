@@ -10,7 +10,7 @@ import { formatExpression, formatNumber } from "../lib/format";
 import { historyText } from "../lib/copy";
 import { createHistoryEntry } from "../lib/history";
 import { downloadOriginalJson } from "../lib/storage-export";
-import { defaultData, loadData, saveDataChecked, withStorageWriteLock, STORAGE_KEY, resetStoredData, type StorageLoadResult } from "../lib/storage";
+import { defaultData, loadData, saveDataChecked, withStorageWriteLock, STORAGE_KEY, isStorageLockUncertain, resetStoredDataChecked, type StorageLoadResult } from "../lib/storage";
 import { appendCalculationEvidence, type EvidenceCandidate } from "../lib/calculation-evidence";
 import type { CalculationNote, HistoryEntry, Memo, NoteDraft, Panel, PlainCalculationNote, PlainNoteDraft, StoredData, Theme, FormulaReport } from "../lib/types";
 import { IdentificationSettings } from "./Identification";
@@ -156,8 +156,8 @@ export function CalculatorApp() {
       // Loading/restoring an already-clean source must not normalize whitespace,
       // unknown fields or numeric lexemes merely by mounting the application.
       if (savedRaw.current !== null && JSON.stringify(data) === confirmedData.current) return;
-      const saved = saveDataChecked(data, savedRaw.current);
-      if (saved.ok) { savedRaw.current = saved.raw; confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw); return; }
+      const saved = saveDataChecked(data, savedRaw.current, undefined, "autosave");
+      if (saved.ok) return saved;
       if (saved.reason === "uncertain") {
         conflictRef.current = true; setStorageConflict("書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。編集内容を控えて再読み込みし、確定記録を確認してください。");
       } else if (saved.reason === "conflict") {
@@ -168,7 +168,18 @@ export function CalculatorApp() {
         if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); }
         showToast("ローカル保存に失敗しました");
       }
-    }).catch(() => { if (!cancelled) { conflictRef.current = true; setStorageConflict("保存用ロックを取得できず、保存処理を停止しました。編集内容を控えて再読み込みしてください。"); showToast("ローカル保存を確認できませんでした"); } });
+    }).then(saved => {
+      if (!saved) return;
+      savedRaw.current = saved.raw; confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw);
+    }).catch(cause => {
+      if (!cancelled || isStorageLockUncertain(cause)) {
+        conflictRef.current = true;
+        setStorageConflict(isStorageLockUncertain(cause)
+          ? "保存操作後のロック処理が確認不能（UNKNOWN）のため再試行と自動保存を停止しました。編集内容を控えて再読み込みしてください。"
+          : "保存用ロックを取得できず、保存処理を停止しました。編集内容を控えて再読み込みしてください。");
+        showToast("ローカル保存を確認できませんでした");
+      }
+    });
     return () => { cancelled = true; };
     // Preview open/close deliberately does not schedule an autosave. A later real edit may save.
   }, [data, storageStatus, showToast, restoreOpen, recoveryOpen]);
@@ -260,7 +271,7 @@ export function CalculatorApp() {
     if (plainNoteEditor?.editingId && (original?.type !== "plain-calculation" || JSON.stringify(original) !== JSON.stringify(plainNoteEditor.draft))) return "編集開始後に原本が変更されました。上書きせず編集内容を保持しています。";
     explicitUnconfirmedRef.current = true; setExplicitUnconfirmed(true);
     try {
-      return await withStorageWriteLock(() => {
+      const outcome = await withStorageWriteLock(() => {
         if (conflictRef.current || restoreOpenRef.current || recoveryOpenRef.current || previewOpenRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。編集内容を確認してもう一度保存してください。";
         const now = new Date().toISOString();
         const history = original?.type === "plain-calculation" ? original.calculationEvidence : undefined;
@@ -271,7 +282,7 @@ export function CalculatorApp() {
           ? { ...original, ...safeDraft, ...(calculationEvidence ? { calculationEvidence } : {}), updatedAt: now }
           : { ...safeDraft, ...(calculationEvidence ? { calculationEvidence } : {}), id: makeId("plain-note"), type: "plain-calculation", createdAt: now, updatedAt: now };
         const next = { ...current, notes: original ? current.notes.map(item => item.id === original.id ? note : item) : [note, ...current.notes] };
-        const saved = saveDataChecked(next, savedRaw.current);
+        const saved = saveDataChecked(next, savedRaw.current, undefined, "plain-note");
         if (!saved.ok) {
           if (saved.reason === "invalid") { const loaded = loadData(); if (loaded.status === "error") { setStorageIssue(loaded); setStorageStatus("error"); } }
           if (saved.reason === "uncertain") {
@@ -283,15 +294,23 @@ export function CalculatorApp() {
           }
           return "保存できませんでした。計算根拠は保存済みとして扱っていません。編集内容を保持しています。容量・保存保護・他タブの更新を確認してください。";
         }
-        savedRaw.current = saved.raw;
-        confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw);
-        explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false);
-        liveData.current = next;
-        setData(next);
-        setPlainNoteEditor(null);
-        showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
+        return { next, raw: saved.raw };
       });
-    } catch (cause) { return cause instanceof Error ? cause.message : "保存できませんでした。編集内容を保持しています。"; }
+      if (typeof outcome === "string") return outcome;
+      if (conflictRef.current || liveData.current !== current) {
+        conflictRef.current = true; const message = "保存後にアプリ状態が変化したため結果を確認できません（UNKNOWN）。編集内容を保持し、再試行を停止しました。";
+        setStorageConflict(message); return message;
+      }
+      savedRaw.current = outcome.raw;
+      confirmedData.current = outcome.raw; setConfirmedSerialized(outcome.raw);
+      explicitUnconfirmedRef.current = false; setExplicitUnconfirmed(false);
+      liveData.current = outcome.next; setData(outcome.next);
+      setPlainNoteEditor(null);
+      showToast(plainNoteEditor?.editingId ? `${MEMO_LABELS.blocks}を更新しました` : `${MEMO_LABELS.blocks}を保存しました`);
+    } catch (cause) {
+      if (isStorageLockUncertain(cause)) { conflictRef.current = true; setStorageConflict("保存操作後のロック処理が確認不能（UNKNOWN）のため再試行と自動保存を停止しました。編集内容を控えて再読み込みしてください。"); }
+      return cause instanceof Error ? cause.message : "保存できませんでした。編集内容を保持しています。";
+    }
   }, [plainNoteEditor, showToast, storageStatus, setData]);
 
   // Reports are explicit transactions, not optimistic autosave candidates. A
@@ -300,7 +319,7 @@ export function CalculatorApp() {
     if (storageStatus !== "ready" || conflictRef.current || restoreOpenRef.current || recoveryOpenRef.current || previewOpenRef.current) return "保存保護中です。レポート本文を控え、保存原本を確認してください。";
     const current = liveData.current;
     try {
-      return await withStorageWriteLock(() => {
+      const outcome = await withStorageWriteLock(() => {
         if (conflictRef.current || restoreOpenRef.current || recoveryOpenRef.current || previewOpenRef.current || liveData.current !== current) return "保存直前にアプリ状態が変わりました。レポートは保存していません。内容を確認してください。";
         // Resolve links only against the persisted original, never live unsaved memo edits.
         const original = loadData();
@@ -311,7 +330,7 @@ export function CalculatorApp() {
         }
         const formulaReports = saveFormulaReport(current.formulaReports ?? emptyFormulaReports(), current.formulaLibrary ?? emptyFormulaLibrary(), request, new Date().toISOString(), original.data.notes);
         const next = { ...current, formulaReports };
-        const saved = saveDataChecked(next, savedRaw.current);
+        const saved = saveDataChecked(next, savedRaw.current, undefined, "formula-report");
         if (!saved.ok) {
           if (saved.reason === "invalid") {
             const loaded = loadData();
@@ -326,12 +345,21 @@ export function CalculatorApp() {
           }
           return "レポートを保存できませんでした。保存済み・確認済みとして扱っていません。本文を保持しています。容量と保存保護を確認してください。";
         }
-        savedRaw.current = saved.raw;
-        confirmedData.current = saved.raw; setConfirmedSerialized(saved.raw);
-        liveData.current = next; setData(next);
-        return formulaReports.entries.find(entry => entry.id === request.id)!;
+        return { next, raw: saved.raw, report: formulaReports.entries.find(entry => entry.id === request.id)! };
       });
-    } catch (cause) { return cause instanceof Error ? cause.message : "レポートを保存できませんでした。本文を保持しています。"; }
+      if (typeof outcome === "string") return outcome;
+      if (conflictRef.current || liveData.current !== current) {
+        conflictRef.current = true; const message = "レポート保存後にアプリ状態が変化したため結果を確認できません（UNKNOWN）。本文を保持し、再試行を停止しました。";
+        setStorageConflict(message); return message;
+      }
+      savedRaw.current = outcome.raw;
+      confirmedData.current = outcome.raw; setConfirmedSerialized(outcome.raw);
+      liveData.current = outcome.next; setData(outcome.next);
+      return outcome.report;
+    } catch (cause) {
+      if (isStorageLockUncertain(cause)) { conflictRef.current = true; setStorageConflict("レポート保存後のロック処理が確認不能（UNKNOWN）のため再試行と自動保存を停止しました。本文を控えて再読み込みしてください。"); }
+      return cause instanceof Error ? cause.message : "レポートを保存できませんでした。本文を保持しています。";
+    }
   }, [storageStatus, setData]);
 
   const requestDelete = useCallback((kind: "history" | "note", id: string) => {
@@ -368,8 +396,14 @@ export function CalculatorApp() {
     confirmLabel: "初期化する",
     action: async () => {
       const cleanData: StoredData = { ...defaultData, history: [], notes: [], settings: { ...defaultData.settings } };
-      if (!storageIssue || !await withStorageWriteLock(() => !restoreOpenRef.current && !recoveryOpenRef.current && !previewOpenRef.current && resetStoredData(storageIssue.raw)).catch(() => false)) {
+      const reset = storageIssue ? await withStorageWriteLock(() => resetStoredDataChecked(storageIssue.raw, undefined,
+        () => !restoreOpenRef.current && !recoveryOpenRef.current && !previewOpenRef.current)).catch(cause => isStorageLockUncertain(cause) ? { ok: false as const, reason: "uncertain" as const } : null) : null;
+      if (!reset?.ok) {
         setConfirm(null);
+        if (reset && !reset.ok && reset.reason === "uncertain") {
+          conflictRef.current = true;
+          setStorageConflict("初期化後の保存結果が確認不能（UNKNOWN）のため再試行と自動保存を停止しています。原文を確認してから明示的に再読み込みしてください。");
+        }
         showToast("保存データを初期化できませんでした");
         return;
       }

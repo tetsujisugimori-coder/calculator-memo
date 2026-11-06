@@ -1,0 +1,138 @@
+{
+  "head": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "run": "42128709991",
+  "attempt": "1",
+  "cases": [
+    {
+      "scenario": "chromium-desktop-1365px",
+      "status": "failed",
+      "checks": 24,
+      "geometry": 27,
+      "pngs": 6,
+      "failure": {
+        "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n",
+        "stack": "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n\n    at Proxy.<anonymous> (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:221:24)\n    at exerciseFormulaReports (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:354:45)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4223:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4300:5",
+        "stage": "chromium-desktop-1365px: formula-math-reports",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+      "servedIdentity": {
+        "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "branch": "feat/stage3b3-storage-facade",
+        "run": "42128709991",
+        "attempt": "1"
+      }
+    },
+    {
+      "scenario": "chromium-mobile-375px",
+      "status": "failed",
+      "checks": 24,
+      "geometry": 25,
+      "pngs": 6,
+      "failure": {
+        "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n",
+        "stack": "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n\n    at Proxy.<anonymous> (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:221:24)\n    at exerciseFormulaReports (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:354:45)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4223:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4300:5",
+        "stage": "chromium-mobile-375px: formula-math-reports",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+      "servedIdentity": {
+        "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "branch": "feat/stage3b3-storage-facade",
+        "run": "42128709991",
+        "attempt": "1"
+      }
+    },
+    {
+      "scenario": "chromium-mobile-390px",
+      "status": "failed",
+      "checks": 24,
+      "geometry": 25,
+      "pngs": 6,
+      "failure": {
+        "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n",
+        "stack": "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n\n    at Proxy.<anonymous> (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:221:24)\n    at exerciseFormulaReports (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:354:45)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4223:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4300:5",
+        "stage": "chromium-mobile-390px: formula-math-reports",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+      "servedIdentity": {
+        "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "branch": "feat/stage3b3-storage-facade",
+        "run": "42128709991",
+        "attempt": "1"
+      }
+    },
+    {
+      "scenario": "chromium-narrow-390px",
+      "status": "failed",
+      "checks": 23,
+      "geometry": 25,
+      "pngs": 6,
+      "failure": {
+        "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n",
+        "stack": "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n\n    at Proxy.<anonymous> (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:221:24)\n    at exerciseFormulaReports (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:354:45)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4223:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4300:5",
+        "stage": "chromium-narrow-390px: formula-math-reports",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+      "servedIdentity": {
+        "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "branch": "feat/stage3b3-storage-facade",
+        "run": "42128709991",
+        "attempt": "1"
+      }
+    },
+    {
+      "scenario": "webkit-mobile-375px",
+      "status": "failed",
+      "checks": 25,
+      "geometry": 27,
+      "pngs": 6,
+      "failure": {
+        "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n",
+        "stack": "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n\n    at Proxy.<anonymous> (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:221:24)\n    at exerciseFormulaReports (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:354:45)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4223:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4300:5",
+        "stage": "webkit-mobile-375px: formula-math-reports",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+      "servedIdentity": {
+        "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "branch": "feat/stage3b3-storage-facade",
+        "run": "42128709991",
+        "attempt": "1"
+      }
+    },
+    {
+      "scenario": "webkit-mobile-390px",
+      "status": "failed",
+      "checks": 24,
+      "geometry": 25,
+      "pngs": 6,
+      "failure": {
+        "message": "expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n",
+        "stack": "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\nExpected substring: \"レポートを保存できませんでした\"\nError: strict mode violation: getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert') resolved to 2 elements:\n    1) <p role=\"alert\">保存保護中のため変更を保存できません。本文を控えてください。</p> aka getByText('保存保護中のため変更を保存できません。本文を控えてください。')\n    2) <p role=\"alert\">書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて…</p> aka getByLabel('登録式の関連レポート').getByText('書き込み後の保存確認に失敗しました。保存された可能性があるため再試行を停止しています。本文を控えて再読み込みし、レポートを確認してください。')\n\nCall log:\n  - Expect \"to.have.text\" with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '登録式の関連レポート', exact: true }).getByRole('alert')\n\n    at Proxy.<anonymous> (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:221:24)\n    at exerciseFormulaReports (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:354:45)\n    at async exercise (file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4223:3)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/scenario.mjs:4300:5",
+        "stage": "webkit-mobile-390px: formula-math-reports",
+        "classification": "test-or-application: requires diagnosis"
+      },
+      "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+      "servedIdentity": {
+        "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "branch": "feat/stage3b3-storage-facade",
+        "run": "42128709991",
+        "attempt": "1"
+      }
+    }
+  ],
+  "actualCounts": {
+    "checks": 144,
+    "geometry": 154,
+    "pngs": 36
+  },
+  "expectedCounts": {
+    "checks": 1128,
+    "geometry": 592,
+    "pngs": 132
+  },
+  "interpretation": "FAILED partial execution; no acceptance claim"
+}

@@ -1,0 +1,15 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 test
+> vitest run --run tests/storage-facade-independent.test.ts
+
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b3
+
+ ✓ tests/storage-facade-independent.test.ts (15 tests) 76ms
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  07:45:40
+   Duration  3.34s (transform 842ms, setup 0ms, collect 2.57s, tests 76ms, environment 0ms, prepare 238ms)
+
