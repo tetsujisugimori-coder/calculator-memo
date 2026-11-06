@@ -229,6 +229,18 @@ async function exerciseFormulaLibrary(prefix) {
   }
   await passed(prefix + ": formula registration, syntax rejection, cancel, selection, edit, delete/undo, reload and unchanged notes/history");
 }
+// Shared by the live formal scenario and isolated negative controls. These are
+// observations, not a replacement for the browser actions that collect them.
+function assertUnknownReportSave(observed, expected) {
+  assert.equal(observed.attempts, 1, "UNKNOWN must not trigger another storage mutation attempt");
+  assert.equal(observed.raw, expected.raw, "Synthetic quota failure must leave the exact original raw intact");
+  assert.equal(observed.title, expected.title, "UNKNOWN must retain the report title draft");
+  assert.equal(observed.body, expected.body, "UNKNOWN must retain the complete Markdown draft");
+  assert.equal(observed.remarks, expected.remarks, "UNKNOWN must retain all confirmation remarks");
+  assert.deepEqual(observed.linkLabels, expected.linkLabels, "UNKNOWN must retain the selected evidence IDs");
+  assert.equal(observed.confirmationDisabled, true, "UNKNOWN must disable confirmation retry");
+  assert.equal(observed.ordinarySaveDisabled, true, "UNKNOWN must disable ordinary report save too");
+}
 async function exerciseFormulaReports(prefix) {
   await stage(prefix + ": formula-math-reports");
   const original = await storage();
@@ -340,23 +352,88 @@ async function exerciseFormulaReports(prefix) {
   }
   await page.evaluate(() => document.documentElement.style.fontSize = "");
   const beforeFailedConfirmation = await page.evaluate(() => localStorage.getItem("calculation-memo:data"));
-  // Fail only the synthetic storage write. Checked persistence must retain the
-  // draft, leave the exact raw original intact, and permit a corrected retry.
+  // A generic thrown mutation is UNKNOWN even when this synthetic fixture
+  // deliberately throws before native setItem. API recovery cannot clear HOLD.
   await page.evaluate(() => {
     const setItem = Storage.prototype.setItem;
+    let fail = true;
+    window.__remarksWriteAttempts = 0;
     Storage.prototype.setItem = function (key, value) {
-      if (this === localStorage && key === "calculation-memo:data") throw new DOMException("Synthetic quota failure", "QuotaExceededError");
+      if (this === localStorage && key === "calculation-memo:data") {
+        window.__remarksWriteAttempts++;
+        if (fail) throw new DOMException("Synthetic quota failure", "QuotaExceededError");
+      }
       return setItem.call(this, key, value);
     };
-    window.__restoreRemarksWrite = () => { Storage.prototype.setItem = setItem; };
+    // Keep counting after availability returns, so a silent retry cannot pass.
+    window.__allowRemarksWrite = () => { fail = false; };
   });
   await activate(confirmReport);
-  await expect(report().getByRole("alert")).toContainText("レポートを保存できませんでした");
+  const unknownNotice = report().getByRole("alert").filter({ hasText: "保存された可能性があるため再試行を停止" });
+  await expect(unknownNotice).toHaveCount(1);
+  await expect(unknownNotice).toBeVisible();
+  await expect(report().getByRole("alert").filter({ hasText: "保存保護中" })).toBeVisible();
   await expect(remarks).toHaveValue(confirmationRemarks);
   await expect(remarks).toBeEnabled();
+  const recoveryTouchStart = activeScenarioRecord.touchActivations || 0;
+  // Recovery adds seven genuine UI activations, without removing historical
+  // actions or disguising touch as keyboard/programmatic button activation.
+  await activate(report().getByRole("button", { name: "Markdownを編集", exact: true })); // +1
+  const expectedUnknown = { raw: beforeFailedConfirmation, title: "Synthetic report / math", body, remarks: confirmationRemarks,
+    linkLabels: [`メモID：${evidenceMemo.id}　記録ID：${evidenceRecord.id}`] };
+  const observeUnknown = async () => ({
+    attempts: await page.evaluate(() => window.__remarksWriteAttempts),
+    raw: await page.evaluate(() => localStorage.getItem("calculation-memo:data")),
+    title: await report().getByLabel("レポートタイトル", { exact: true }).inputValue(),
+    body: await bodyEditor().inputValue(), remarks: await remarks.inputValue(),
+    linkLabels: await report().locator(".formula-report-evidence-item > p").allTextContents(),
+    confirmationDisabled: await confirmReport.isDisabled(),
+    ordinarySaveDisabled: await report().getByRole("button", { name: "レポートを保存", exact: true }).isDisabled(),
+  });
+  const unknownBefore = await observeUnknown();
+  assertUnknownReportSave(unknownBefore, expectedUnknown);
+  await page.evaluate(() => window.__allowRemarksWrite());
+  // A new draft edit/render after API recovery still must not retry the unknown
+  // operation. Keep the original remarks intact before leaving this runtime.
+  await remarks.fill(confirmationRemarks.slice(0, -1));
+  await remarks.fill(confirmationRemarks);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  // Explicit no-retry observation window, not a sleep used for UI readiness.
+  const observationMs = 1600, observationStarted = performance.now();
+  await page.waitForTimeout(observationMs);
+  const unknownAfter = await observeUnknown();
+  const observationElapsedMs = performance.now() - observationStarted;
+  assertUnknownReportSave(unknownAfter, expectedUnknown);
+  metadata.storageFaults = [...(metadata.storageFaults || []), { scenario: currentScenario.id, operation: "report-confirmation",
+    injected: "synthetic-quota-throw-before-native-mutation", observed: "UNKNOWN/HOLD", observationMs, observationElapsedMs,
+    attemptsBefore: unknownBefore.attempts, attemptsAfter: unknownAfter.attempts,
+    originalRawUnchanged: unknownAfter.raw === unknownBefore.raw,
+    draftRetained: unknownAfter.title === unknownBefore.title && unknownAfter.body === unknownBefore.body
+      && unknownAfter.remarks === unknownBefore.remarks && JSON.stringify(unknownAfter.linkLabels) === JSON.stringify(unknownBefore.linkLabels),
+    automaticRetryAttempts: unknownAfter.attempts - unknownBefore.attempts }];
+  // An explicit reload creates a new runtime; this is a new user operation,
+  // never a retry that clears the previous operation's uncertainty in-place.
+  const reloadDialogs = [];
+  const acceptReload = async dialog => { reloadDialogs.push(dialog.type()); if (dialog.type() === "beforeunload") await dialog.accept(); else await dialog.dismiss(); };
+  page.on("dialog", acceptReload);
+  try { await page.reload(); } finally { page.off("dialog", acceptReload); }
+  assert.ok(reloadDialogs.every(type => type === "beforeunload"), "Only the explicit reload's beforeunload may be accepted");
   assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeFailedConfirmation);
+  await openLibrary(); // +2
+  await activate(library().getByRole("button", { name: "関連レポートを閲覧・編集", exact: true })); // +3
+  await activate(report().getByRole("button", { name: "Markdownを編集", exact: true })); // +4
+  await expect(report().getByLabel("レポートタイトル", { exact: true })).toHaveValue(expectedUnknown.title);
+  await expect(bodyEditor()).toHaveValue(body);
+  await expect(remarks).toHaveValue("");
+  await remarks.fill(confirmationRemarks);
+  await activate(report().getByText("根拠となる保存済み計算記録", { exact: true })); // +5
+  await activate(choices); await choices.selectOption(JSON.stringify([evidenceMemo.id, evidenceRecord.id])); // +6
+  await activate(report().getByRole("button", { name: "根拠に追加", exact: true })); // +7
+  assert.deepEqual(await report().locator(".formula-report-evidence-item > p").allTextContents(), expectedUnknown.linkLabels);
+  await expect(confirmReport).toBeEnabled();
+  assert.equal(await page.evaluate(() => localStorage.getItem("calculation-memo:data")), beforeFailedConfirmation);
+  if (currentScenario.hasTouch) assert.equal(activeScenarioRecord.touchActivations - recoveryTouchStart, 7, "UNKNOWN recovery adds exactly seven native touch activations");
   await page.evaluate(() => {
-    window.__restoreRemarksWrite();
     const locks = navigator.locks;
     const request = locks.request.bind(locks);
     let release;
@@ -1412,6 +1489,20 @@ async function exerciseHeader(prefix) {
   }
   await passed(prefix + ": header text/targets contained, guide open/category/scroll/close, theme change, sticky reopen");
 }
+function assertCalculatorScrollLayout(before, scrolled, notesProbe) {
+  assert.equal(scrolled.scrollY, 250, "Stress fixture must actually scroll");
+  if (scrolled.width <= 1080) {
+    assert.equal(scrolled.position, "static", "Two-column layout must not stick the calculator over the next notes row");
+    assert.ok(Math.abs(scrolled.calculatorTop + scrolled.scrollY - before.calculatorTop) <= 1, "Natural-flow calculator must keep its document position while scrolling");
+    assert.ok(scrolled.notesTop >= scrolled.calculatorBottom - 1, "Notes row must remain below the calculator without overlap");
+    assert.equal(notesProbe.hit, true, "Notes create button center must not be covered by the calculator or header");
+    assert.equal(notesProbe.enabled, true, "Notes create button must remain enabled");
+    assert.equal(notesProbe.inViewport, true, "Notes create button must be reachable after scrolling");
+  } else {
+    assert.equal(scrolled.position, "sticky", "Three-column desktop retains sticky calculator positioning");
+    assert.ok(Math.abs(scrolled.gap - 28) <= 1, "Desktop sticky gap must track both header growth and shrink");
+  }
+}
 async function exerciseStickyOffset(prefix) {
   // Text-size stress on the real app, not a claim about native browser text zoom.
   // Give the sticky element enough parent scroll range without changing app data.
@@ -1430,17 +1521,35 @@ async function exerciseStickyOffset(prefix) {
           }).map((element) => parseFloat(getComputedStyle(element).fontSize) * factor);
           elements.forEach((element, index) => { element.style.fontSize = sizes[index] + "px"; });
         }, scale);
-        await page.evaluate(() => scrollTo({ top: 250, behavior: "instant" }));
         const measure = () => page.evaluate(() => {
           const header = document.querySelector(".topbar").getBoundingClientRect();
-          const calculator = document.querySelector(".calculator-column").getBoundingClientRect();
-          return { width: innerWidth, scrollY, headerBottom: header.bottom, calculatorTop: calculator.top, gap: calculator.top - header.bottom };
+          const element = document.querySelector(".calculator-column");
+          const calculator = element.getBoundingClientRect();
+          const notes = document.querySelector("#notes-panel").getBoundingClientRect();
+          return { width: innerWidth, scrollY, position: getComputedStyle(element).position,
+            headerBottom: header.bottom, calculatorTop: calculator.top, calculatorBottom: calculator.bottom,
+            notesTop: notes.top, gap: calculator.top - header.bottom };
         });
-        await expect.poll(async () => Math.abs((await measure()).gap - 28), { message: "Sticky gap must track both header growth and shrink" }).toBeLessThanOrEqual(1);
+        await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+        const beforeScroll = await measure();
+        await page.evaluate(() => scrollTo({ top: 250, behavior: "instant" }));
+        if (width > 1080) await expect.poll(async () => Math.abs((await measure()).gap - 28), { message: "Desktop sticky gap must track both header growth and shrink" }).toBeLessThanOrEqual(1);
         const geometry = await measure();
-        assert.equal(geometry.scrollY, 250, "Stress fixture must actually scroll");
-        activeScenarioRecord.stickyGeometry.push({ scale, ...geometry });
+        // Keep the original screenshot/geometry checkpoint and scrolled view.
         if (width === 721) await screenshot(prefix + "-sticky-721px-text-" + scale * 100 + "pct", width, false);
+        let notesProbe = null;
+        if (width <= 1080) {
+          const create = page.locator("#notes-panel").getByRole("button", { name: "＋ 新規作成", exact: true });
+          await create.scrollIntoViewIfNeeded();
+          await expect(create).toBeEnabled(); await expect(create).toBeInViewport();
+          notesProbe = await create.evaluate(element => {
+            const r = element.getBoundingClientRect(), target = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+            return { hit: element === target || element.contains(target), enabled: !element.disabled,
+              inViewport: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth, scrollY };
+          });
+        }
+        assertCalculatorScrollLayout(beforeScroll, geometry, notesProbe);
+        activeScenarioRecord.stickyGeometry.push({ scale, ...geometry, notesProbe });
         await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
         assert.ok((await measure()).gap >= 27, "Calculator must also clear header before scrolling");
       }
@@ -1451,7 +1560,7 @@ async function exerciseStickyOffset(prefix) {
     await page.setViewportSize({ width: currentScenario.width, height: currentScenario.height });
     await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   }
-  await passed(prefix + ": real-app sticky offset follows header growth/shrink at 721/800/1365px and 200/100% text sizes");
+  await passed(prefix + ": real-app 721/800px natural flow keeps notes reachable while 1365px sticky offset tracks header growth/shrink at 200/100% text sizes");
 }
 let stageStarted = performance.now();
 async function stage(name) {

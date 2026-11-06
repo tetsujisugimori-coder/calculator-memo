@@ -1,0 +1,15 @@
+AssertionError [ERR_ASSERTION]: One or more formal scenario jobs failed or were cancelled
++ actual - expected
+
++ 'failure'
+- 'success'
+
+    at collectFormalGui (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/aggregate-formal-gui.mjs:15:10)
+    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/aggregate-formal-gui.mjs:61:20 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'failure',
+  expected: 'success',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

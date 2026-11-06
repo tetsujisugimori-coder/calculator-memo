@@ -1,0 +1,17 @@
+{
+  "status": "failed",
+  "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "out": "gui-evidence/storage-facade-715808cfbc88-2026-11-05T23-38-57-579Z-a95c3e68-f668-4a55-84f3-ddc4a7bcb66a",
+  "startedAt": "2026-11-05T23:38:57.580Z",
+  "build": {
+    "code": 0,
+    "signal": null
+  },
+  "browser": {
+    "code": 1,
+    "signal": null
+  },
+  "error": "AssertionError [ERR_ASSERTION]: browser failed: 1/null/\n    at run (file:///home/runner/work/calculator-memo/calculator-memo/e2e/run-storage-facade-gui.mjs:37:10)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/run-storage-facade-gui.mjs:95:3",
+  "stopReason": null,
+  "finishedAt": "2026-11-05T23:41:32.483Z"
+}

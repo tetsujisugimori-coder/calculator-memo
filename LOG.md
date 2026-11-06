@@ -10,6 +10,7 @@
 - 選択復元 executionAllowed=false / Stage 3B HOLD / 実書込み許可NO。旧タブ・非協調writer・ABA・TOCTOU、長期永続化は未解決。実機Safari等NOT_TESTED。独立レビュー・最終HEAD CI完了前のマージ推奨NO、Draftを維持する。
 - 提出前再検証は全124files/2820tests、型、lint（error0/既存warning3）、通常/Pages buildが成功。静的/独立scanner/新harness計63契約、既存formal失敗伝播57契約も成功。独立R1の6escape・R2の外側lease喪失後遅延削除・R3のNode24同期lock callback回帰を修正し元REDとGREENを保存。正式GUIと追加8条件は最終PR headのCI原artifactを正本として別確認し、ローカル成功へ混ぜない。
 - 初回CI `bec0c6b` の追加GUIは48context中32PASS/16FAIL。原artifact/hashを検証し、閉じたdetails内textboxを開かずfillしていたハーネス不備をtrace/製品sourceから特定。実summaryのclick/tapと可視ready待機を追加し、製品コード・保存oracle・timeoutは不変更。原REDを保存、独立再レビューと新6契約PASS。既存全体復元8条件/Stage3A8条件/Stage3B2隔離試験は同旧HEADで成功したが、新HEADの最終成功とは分離する。
+- 第2回 `715808c` は追加GUI43/48。未保存中optional値のpoll不備3件と、765pxの既存sticky電卓がメモ作成を覆う実配置不具合2件を原trace/PNGで区別。中間幅だけstatic化し、展開入力のまま操作可能を検証する。正式6条件はquota後の旧retry期待で停止し、原ZIP/hash一致・144checks/154geometry/36PNGの部分結果と元集約FAILを保存。新UNKNOWN/HOLD・retry0を先に検査し、明示reload後の新操作へ旧確認assertを引き継ぐ。1128/592/132は維持し、増える実touch7回だけ契約へ反映。CI成功を得るため製品HOLDを解除しない。
 
 ## 2026-11-05 (JST): Stage 3B-2 全writer・旧タブ・世代管理設計と隔離PoC
 

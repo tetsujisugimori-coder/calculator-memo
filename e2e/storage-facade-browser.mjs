@@ -62,6 +62,42 @@ async function expressionInput(page, r) {
   await expect(input).toBeVisible();
   return input;
 }
+async function verifyTabletMemoReachability(page, r) {
+  if (r.width !== 765) return;
+  const calculator = page.locator('.calculator-column');
+  const create = button(page.locator('#notes-panel'), '＋ 新規作成');
+  await expect(page.locator('.expression-entry')).toHaveAttribute('open', '');
+  const before = await snapshot(page), beforeCalls = await writes(page);
+  const style = await calculator.getAttribute('style');
+  const inspect = () => create.evaluate(control => {
+    const rect = control.getBoundingClientRect();
+    const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    const column = document.querySelector('.calculator-column');
+    return { hit: !!hit && control.contains(hit), calculatorIntercept: !!hit?.closest('.calculator-column'),
+      control: rect.toJSON(), calculator: column.getBoundingClientRect().toJSON(),
+      notes: document.querySelector('#notes-panel').getBoundingClientRect().toJSON(),
+      position: getComputedStyle(column).position, scrollY, viewportHeight: innerHeight };
+  });
+  try {
+    // Isolated layout negative control only. Never click through the old overlap or write app data.
+    await calculator.evaluate(element => { element.style.position = 'sticky'; });
+    await create.scrollIntoViewIfNeeded();
+    await expect.poll(async () => { const value = await inspect(); return !value.hit && value.calculatorIntercept; },
+      { message: 'Original tablet sticky layout must reproduce the calculator intercept' }).toBe(true);
+    r.tabletLayout = { originalSticky: await inspect() };
+    await page.screenshot({ path: join(out, `${r.id}-original-sticky-negative.png`) });
+  } finally {
+    await calculator.evaluate((element, original) => { if (original === null) element.removeAttribute('style'); else element.setAttribute('style', original); }, style);
+  }
+  await expect(calculator).toHaveCSS('position', 'static');
+  await create.scrollIntoViewIfNeeded();
+  await expect.poll(async () => (await inspect()).hit, { message: 'Actual product CSS must expose the new memo control' }).toBe(true);
+  r.tabletLayout.correctedStatic = await inspect();
+  await page.screenshot({ path: join(out, `${r.id}-static-reachable.png`) });
+  assert.deepEqual(await snapshot(page), before, 'layout probes preserve every storage key');
+  assert.deepEqual(await writes(page), beforeCalls, 'layout probes perform no product mutation');
+  r.checks.push('765px expanded expression: original sticky intercept reproduced; actual static layout exposes memo center; storage unchanged');
+}
 async function openRestore(page, r) {
   await activate(button(page, 'JSONから復元'), r);
   const dialog = page.getByRole('dialog', { name: 'JSONバックアップから復元', exact: true });
@@ -102,6 +138,9 @@ async function assertNoRetry(page, r, before, expectedWrites) {
   await page.waitForTimeout(record.noRetryObservationMs); // Deliberately observe beyond the autosave timer, not readiness polling.
   assert.deepEqual(await writes(page), callsAtUnknown, 'UNKNOWN must not retry, compensate, repair, or autosave after state changes');
   assert.deepEqual(await snapshot(page), snapshotAtUnknown, 'raw snapshot must remain stable throughout HOLD observation');
+  r.unknownObservation = { expectedAttempts: expectedWrites, callsAtUnknown, callsAfterObservation: await writes(page),
+    automaticRetryCount: (await writes(page)).length - callsAtUnknown.length, observationMs: record.noRetryObservationMs,
+    settingChanges: ['dark', 'light'], snapshotAtUnknown, snapshotAfterObservation: await snapshot(page) };
   for (const name of Object.keys(before).filter(k => k !== key && !k.startsWith(recoveryPrefix))) assert.equal(snapshotAtUnknown[name], before[name]);
   r.checks.push(`UNKNOWN held: ${expectedWrites} attempted mutation(s), zero automatic retries/compensation after two setting changes and ${record.noRetryObservationMs}ms`);
 }
@@ -119,6 +158,7 @@ async function happy(page, r) {
   const tab = page.getByRole('tab', { name: /^メモ/ });
   if (await tab.isVisible()) { await activate(tab, r); await expect.poll(async () => (await stored(page)).settings.activePanel).toBe('notes'); }
   await expect(page.getByTestId('unsaved-changes')).toHaveCount(0);
+  await verifyTabletMemoReachability(page, r);
   await activate(button(page.locator('#notes-panel'), '＋ 新規作成'), r);
   let dialog = page.getByRole('dialog');
   await activate(dialog.getByRole('button').filter({ hasText: 'BLOCKS / MARKDOWN' }), r);
@@ -141,7 +181,7 @@ async function happy(page, r) {
   await library.getByLabel('登録名', { exact: true }).fill('Facade formula');
   await library.getByLabel('登録する計算式', { exact: true }).fill('x+1');
   await activate(button(library, '登録する'), r);
-  await expect.poll(async () => (await stored(page)).formulaLibrary.entries[0]?.expression).toBe('x+1');
+  await expect.poll(async () => (await stored(page)).formulaLibrary?.entries[0]?.expression).toBe('x+1');
   await expect(library.getByTestId('library-unsaved-changes')).toHaveCount(0);
   await activate(button(library, 'レポートを作成'), r);
   const report = page.getByRole('dialog', { name: '登録式の関連レポート', exact: true });
@@ -149,7 +189,7 @@ async function happy(page, r) {
   await report.getByLabel('レポート本文（Markdown）', { exact: true }).fill('# Synthetic report\n\nExact body 😀');
   await geometry(page, r, 'report-draft');
   await activate(button(report, 'レポートを保存'), r);
-  await expect.poll(async () => (await stored(page)).formulaReports.entries[0]?.body).toBe('# Synthetic report\n\nExact body 😀');
+  await expect.poll(async () => (await stored(page)).formulaReports?.entries[0]?.body).toBe('# Synthetic report\n\nExact body 😀');
   await activate(button(report, 'レポートを閉じる').first(), r); await activate(button(library, '閉じる'), r);
   await expect(page.getByTestId('unsaved-changes')).toHaveCount(0);
   const beforeRestore = await raw(page);

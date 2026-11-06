@@ -1,0 +1,47 @@
+{
+  "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "run": "42128710003",
+  "attempt": "1",
+  "steps": {
+    "checkout": {
+      "outputs": {
+        "commit": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+        "ref": ""
+      },
+      "outcome": "success",
+      "conclusion": "success"
+    },
+    "node": {
+      "outputs": {
+        "node-version": "v22.13.0"
+      },
+      "outcome": "success",
+      "conclusion": "success"
+    },
+    "dependencies": {
+      "outputs": {},
+      "outcome": "success",
+      "conclusion": "success"
+    },
+    "boundary": {
+      "outputs": {},
+      "outcome": "success",
+      "conclusion": "success"
+    },
+    "fixtures": {
+      "outputs": {},
+      "outcome": "success",
+      "conclusion": "success"
+    },
+    "browsers": {
+      "outputs": {},
+      "outcome": "success",
+      "conclusion": "success"
+    },
+    "acceptance": {
+      "outputs": {},
+      "outcome": "failure",
+      "conclusion": "failure"
+    }
+  }
+}

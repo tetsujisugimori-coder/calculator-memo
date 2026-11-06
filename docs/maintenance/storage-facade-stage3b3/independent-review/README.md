@@ -28,6 +28,21 @@
 
 製品hashは全て不変。manifestは該当2fileのみ更新し、新aggregateは `beb75a849e5001057d53d2fd37bdf62155e194f4e374d9a1b0f9ae3d64189f32`。旧commit/旧hashは `ciHarnessAmendments` に保持した。先行の「GUI未確認」という記述は当時の状態であり、本追記は旧HEADの一部実行結果を追加するもの。総合PARTIAL・マージ推奨NO・選択保存NOを維持。
 
+## 第二CI失敗の正式契約・tablet修正に対する独立再確認
+
+2026-11-06 JST追記。旧HEAD `715808cfbc889018a1443d2364c487d4fea0e8fe` の正式 [run 42128709991](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42128709991) 原6条件を独立再集計し、成功完了0/6、144 checks・154 geometry・36 PNGと確認した。各原traceのquota後は「保存保護」と「UNKNOWN再試行停止」の2 alertsであり、旧単一alert/同runtimeでのretry期待が現安全契約と不一致だった。別の追加GUI [run 42128710003](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42128710003) は43/48成功、5失敗。optional保存container未生成時のpoll例外3件と、765pxのcalculatorによるnotes新規作成buttonのpointer interception2件を区別する。原765px failure PNGを実見し、製品layout不具合を確認した。
+
+修正審査結果:
+- 正式quotaは1 mutation attempt、保存生raw・title/body/remarks/根拠ID保持、両save disabledを確認。API復旧後のdraft再編集と1600ms観測でも1attempt/no retryを保持する。明示reload後の新runtimeへ未保存remarks/linkを実UIで再入力し、元のpending-lockと確認履歴assertへ戻る。製品HOLD解除や保存fixtureの差替えを使わない。
+- 追加7回の実UI操作を区間で照合し、mobile touch契約を1337から1344へ増やす。旧1337を誤受理しない負対照も追加。
+- CSS変更は既存2列+notes次行の `max-width:1080px` 内でcalculatorをstaticにする2行のみ。storage実装は全hash不変。1365pxは従来sticky/28±1を保持し、721/800pxは自然flow・notes非重なり・button center hit/有効/viewportへ既存checkpoint内で検査を更新する。
+- optional containerのnullsafe pollは未生成時undefinedを返し、従来と同じ固定式 `x+1` /本文一致を待つ。期待値やtimeoutを緩めていない。
+- 765pxの旧sticky一時注入→実CSSへの復帰をnative hitで比べ、styleをfinallyで復旧し、生raw/mutationログ不変も検査する。ただし、この新しいブラウザ対照は次CIでの実行待ちであり、実GUI GREEN済みとは呼ばない。
+
+独立実行: [正式/追加harness等4suite最終87件PASS](second-ci-controls-green.log)。別途、live scenario assertionを抽出した自作30反例（欠落/余分attempt、raw字句変更、draft欠落、保存有効化、旧sticky、座標drift、notes重なり、hit不成立、desktop誤gap等）も全拒否を確認した。[独立ログ](second-ci-independent-oracles-green.log)。AST再照合でpassed呼出125→125（layout名1件のみ改称）、screenshot呼出68→68（全引数不変）。正式aggregate source自体は不変更で、**1128/592/132と6条件の完遂要求は維持**。これらはブラウザ実行の成功を代替しない。
+
+原REDは [保存済み第二CI証拠](../evidence/ci-second-red/) に保持。manifestは新CSS、正式scenario/contract、追加負対照とworkflow配線を含む148ファイルへ拡張し、9変更sourceを照合した。新aggregateは `7257c88abf5f04c1d30c07c08a039188233c49f35a74f90b9e947965bda3b853`。全storage製品sourceの審査hashは不変。限定コード変更は次CI検証へ進められるが、新layoutの実GUI修正確認と正式/追加全条件の原artifact再集約は未了のため、**PARTIAL・merge NO・選択実保存NOを維持**。
+
 ## 発見事項とRED → GREEN
 
 ### IR-1 / P2: scannerの単純なStorage逃がしと除外領域importを誤受理

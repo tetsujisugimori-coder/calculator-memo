@@ -90,3 +90,24 @@ test('calculation editor is opened through its native summary before fill, and r
   assert.match(spec, /await page.reload\(\); await button\(page, '計算する'\).waitFor\(\)/);
   assert.doesNotMatch(spec, /getByRole\('textbox', \{ name: '計算式を入力', exact: true \}\)\.(fill|waitFor)\(/);
 });
+
+test('async save polls tolerate absent optional containers but retain the fixed expected saved values', async () => {
+  const spec = await read('./storage-facade-browser.mjs');
+  assert.match(spec, /formulaLibrary\?\.entries\[0\]\?\.expression\)\.toBe\('x\+1'\)/);
+  assert.match(spec, /formulaReports\?\.entries\[0\]\?\.body\)\.toBe\('# Synthetic report/);
+  assert.doesNotMatch(spec, /stored\(page\)\)\.formula(?:Library|Reports)\.entries/);
+});
+
+test('tablet layout regression uses native hit tests and restores the isolated negative-control style', async () => {
+  const css = await read('../app/globals.css');
+  const spec = await read('./storage-facade-browser.mjs');
+  const tablet = css.slice(css.indexOf('@media (max-width: 1080px)'), css.indexOf('@media (max-width: 720px)'));
+  assert.match(tablet, /\.calculator-column \{ position: static; \}/);
+  assert.match(css, /\.calculator-column \{ position: sticky; top:/);
+  assert.match(spec, /document.elementFromPoint/);
+  assert.match(spec, /!value.hit && value.calculatorIntercept/);
+  assert.match(spec, /finally \{\s+await calculator.evaluate/);
+  assert.match(spec, /verifyTabletMemoReachability\(page, r\);\s+await activate\(button\(page.locator\('#notes-panel'\)/);
+  assert.match(spec, /automaticRetryCount:/);
+  assert.doesNotMatch(spec, /force:\s*true/);
+});

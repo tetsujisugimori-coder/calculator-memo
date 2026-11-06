@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "mode": "six-independent-jobs",
+  "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "run": "42128709991",
+  "attempt": "1",
+  "error": {
+    "message": "One or more formal scenario jobs failed or were cancelled\n+ actual - expected\n\n+ 'failure'\n- 'success'\n",
+    "stack": "AssertionError [ERR_ASSERTION]: One or more formal scenario jobs failed or were cancelled\n+ actual - expected\n\n+ 'failure'\n- 'success'\n\n    at collectFormalGui (file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/aggregate-formal-gui.mjs:15:10)\n    at file:///workspace/scratch/e622c1e9421e/calculator-stage3b3/e2e/aggregate-formal-gui.mjs:61:20"
+  }
+}

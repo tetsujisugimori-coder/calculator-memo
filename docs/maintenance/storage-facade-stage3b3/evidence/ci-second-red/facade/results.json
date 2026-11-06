@@ -1,0 +1,1736 @@
+{
+  "kind": "additional-storage-facade-gui-not-formal",
+  "sha": "715808cfbc889018a1443d2364c487d4fea0e8fe",
+  "startedAt": "2026-11-05T23:38:59.664Z",
+  "status": "failed",
+  "expectedCases": 8,
+  "expectedContextsPerCase": 6,
+  "noRetryObservationMs": 1600,
+  "engineOutcomes": [
+    {
+      "engine": "chromium",
+      "status": "failed",
+      "executableOverride": null,
+      "finishedAt": "2026-11-05T23:40:07.635Z"
+    },
+    {
+      "engine": "webkit",
+      "status": "failed",
+      "executableOverride": null,
+      "finishedAt": "2026-11-05T23:41:32.461Z"
+    }
+  ],
+  "limitations": [
+    "Not formal GUI success",
+    "No physical iPhone Safari, software keyboard or OS text scaling",
+    "Readback is not disk durability",
+    "Noncooperative old tabs, ABA and TOCTOU remain"
+  ],
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-375-happy",
+          "width": 375,
+          "touch": true,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:38:59.931Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved",
+            "explicit block memo saved with text and calculation"
+          ],
+          "geometry": [
+            {
+              "phase": "memo-draft",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 11,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "TypeError: Cannot read properties of undefined (reading 'entries')\n    at Object.generator (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:144:69)\n    at async /home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:281:19\n    at async pollAgainstDeadline (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright-core/lib/utils/isomorphic/timeoutRunner.js:49:22)\n    at async pollMatcher (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:272:18)\n    at async happy (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:144:3)\n    at async isolated (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:278:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:307:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[{\"id\":\"history-mw46t0dx-z7mqd\",\"expression\":\"12+34\",\"displayExpression\":\"12 ＋ 34\",\"result\":46,\"resultText\":\"46\",\"createdAt\":\"2026-11-05T23:39:00.789Z\"}],\"notes\":[{\"title\":\"Facade explicit block memo\",\"content\":\"Synthetic preserved text 😀\\n\\n**計算**: `2*(5+3)` = **16**\",\"blocks\":[{\"id\":\"text-mw46t0uk-7e4nn\",\"type\":\"text\",\"content\":\"Synthetic preserved text 😀\"},{\"evaluationMode\":\"note-variables\",\"id\":\"calculation-mw46t0xc-85hhe\",\"type\":\"calculation\",\"expression\":\"2*(5+3)\",\"displayExpression\":\"2*(5+3)\",\"result\":16,\"resultText\":\"16\",\"error\":null}],\"calculationEvidence\":{\"version\":1,\"records\":[{\"calculatedAt\":\"2026-11-05T23:39:01.856Z\",\"blocks\":[{\"blockId\":\"calculation-mw46t0xc-85hhe\",\"position\":2,\"expression\":\"2*(5+3)\",\"evaluationMode\":\"note-variables\",\"inputs\":[],\"result\":\"16\",\"resultText\":\"16\",\"status\":\"success\"}],\"id\":\"4d22f4ce-13d3-430a-9ad2-37873b2c7091\",\"persistedAt\":\"2026-11-05T23:39:01.871Z\",\"evaluator\":\"calculator-memo-v1\",\"status\":\"confirmed\"}]},\"id\":\"plain-note-mw46t180-qpr6d\",\"type\":\"plain-calculation\",\"createdAt\":\"2026-11-05T23:39:01.871Z\",\"updatedAt\":\"2026-11-05T23:39:01.871Z\"}],\"settings\":{\"theme\":\"dark\",\"activePanel\":\"notes\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:39:02.355Z"
+        },
+        {
+          "id": "chromium-375-reset-success",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:02.360Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:03.462Z"
+        },
+        {
+          "id": "chromium-375-autosave-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:03.464Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:05.990Z"
+        },
+        {
+          "id": "chromium-375-preservation-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:05.994Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:08.683Z"
+        },
+        {
+          "id": "chromium-375-delete-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:08.686Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:11.516Z"
+        },
+        {
+          "id": "chromium-375-reset-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:11.520Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:14.046Z"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-390-happy",
+          "width": 390,
+          "touch": true,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:39:14.050Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved",
+            "explicit block memo saved with text and calculation"
+          ],
+          "geometry": [
+            {
+              "phase": "memo-draft",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 11,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "TypeError: Cannot read properties of undefined (reading 'entries')\n    at Object.generator (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:144:69)\n    at async /home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:281:19\n    at async pollAgainstDeadline (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright-core/lib/utils/isomorphic/timeoutRunner.js:49:22)\n    at async pollMatcher (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:272:18)\n    at async happy (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:144:3)\n    at async isolated (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:278:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:307:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[{\"id\":\"history-mw46tb94-q926g\",\"expression\":\"12+34\",\"displayExpression\":\"12 ＋ 34\",\"result\":46,\"resultText\":\"46\",\"createdAt\":\"2026-11-05T23:39:14.872Z\"}],\"notes\":[{\"title\":\"Facade explicit block memo\",\"content\":\"Synthetic preserved text 😀\\n\\n**計算**: `2*(5+3)` = **16**\",\"blocks\":[{\"id\":\"text-mw46tbpb-wzlfo\",\"type\":\"text\",\"content\":\"Synthetic preserved text 😀\"},{\"evaluationMode\":\"note-variables\",\"id\":\"calculation-mw46tbs2-kiqze\",\"type\":\"calculation\",\"expression\":\"2*(5+3)\",\"displayExpression\":\"2*(5+3)\",\"result\":16,\"resultText\":\"16\",\"error\":null}],\"calculationEvidence\":{\"version\":1,\"records\":[{\"calculatedAt\":\"2026-11-05T23:39:15.905Z\",\"blocks\":[{\"blockId\":\"calculation-mw46tbs2-kiqze\",\"position\":2,\"expression\":\"2*(5+3)\",\"evaluationMode\":\"note-variables\",\"inputs\":[],\"result\":\"16\",\"resultText\":\"16\",\"status\":\"success\"}],\"id\":\"607a180b-5ace-4797-99b3-a9ffb0f3fbaf\",\"persistedAt\":\"2026-11-05T23:39:15.921Z\",\"evaluator\":\"calculator-memo-v1\",\"status\":\"confirmed\"}]},\"id\":\"plain-note-mw46tc29-p54ml\",\"type\":\"plain-calculation\",\"createdAt\":\"2026-11-05T23:39:15.921Z\",\"updatedAt\":\"2026-11-05T23:39:15.921Z\"}],\"settings\":{\"theme\":\"dark\",\"activePanel\":\"notes\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:39:16.382Z"
+        },
+        {
+          "id": "chromium-390-reset-success",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:16.388Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:17.492Z"
+        },
+        {
+          "id": "chromium-390-autosave-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:17.495Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:20.023Z"
+        },
+        {
+          "id": "chromium-390-preservation-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:20.027Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:22.714Z"
+        },
+        {
+          "id": "chromium-390-delete-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:22.719Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:25.548Z"
+        },
+        {
+          "id": "chromium-390-reset-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:25.567Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:28.258Z"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 765,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-765-happy",
+          "width": 765,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:39:28.541Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.click: Timeout 12000ms exceeded.\nCall log:\n  - waiting for locator('#notes-panel').getByRole('button', { name: '＋ 新規作成', exact: true })\n    - locator resolved to <button class=\"panel-create-button\">＋ 新規作成</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not stable\n    - retrying click action\n      - waiting 100ms\n    - waiting for element to be visible, enabled and stable\n    - element is not stable\n  2 × retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <span>LOCAL MEMORY</span> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n  5 × retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <span>LOCAL MEMORY</span> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n  - retrying click action\n    - waiting 500ms\n\n    at activate (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:55:75)\n    at async happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:122:3)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:278:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:307:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[{\"id\":\"history-mw46tmj5-hs59z\",\"expression\":\"12+34\",\"displayExpression\":\"12 ＋ 34\",\"result\":46,\"resultText\":\"46\",\"createdAt\":\"2026-11-05T23:39:29.489Z\"}],\"notes\":[],\"settings\":{\"theme\":\"dark\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:39:41.723Z"
+        },
+        {
+          "id": "chromium-765-reset-success",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:41.728Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:42.778Z"
+        },
+        {
+          "id": "chromium-765-autosave-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:42.781Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:45.328Z"
+        },
+        {
+          "id": "chromium-765-preservation-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:45.331Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:48.018Z"
+        },
+        {
+          "id": "chromium-765-delete-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:48.021Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:50.849Z"
+        },
+        {
+          "id": "chromium-765-reset-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:50.853Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:53.350Z"
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "browserVersion": "141.0.7390.37",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "chromium-1280-happy",
+          "width": 1280,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:39:53.358Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved",
+            "explicit block memo saved with text and calculation"
+          ],
+          "geometry": [
+            {
+              "phase": "memo-draft",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 10,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "TypeError: Cannot read properties of undefined (reading 'entries')\n    at Object.generator (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:144:69)\n    at async /home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:281:19\n    at async pollAgainstDeadline (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright-core/lib/utils/isomorphic/timeoutRunner.js:49:22)\n    at async pollMatcher (/home/runner/work/calculator-memo/calculator-memo/e2e/node_modules/playwright/lib/matchers/expect.js:272:18)\n    at async happy (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:144:3)\n    at async isolated (file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:278:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:307:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[{\"id\":\"history-mw46u5mn-nam4m\",\"expression\":\"12+34\",\"displayExpression\":\"12 ＋ 34\",\"result\":46,\"resultText\":\"46\",\"createdAt\":\"2026-11-05T23:39:54.239Z\"}],\"notes\":[{\"title\":\"Facade explicit block memo\",\"content\":\"Synthetic preserved text 😀\\n\\n**計算**: `2*(5+3)` = **16**\",\"blocks\":[{\"id\":\"text-mw46u5y7-gaccf\",\"type\":\"text\",\"content\":\"Synthetic preserved text 😀\"},{\"evaluationMode\":\"note-variables\",\"id\":\"calculation-mw46u60z-pssw4\",\"type\":\"calculation\",\"expression\":\"2*(5+3)\",\"displayExpression\":\"2*(5+3)\",\"result\":16,\"resultText\":\"16\",\"error\":null}],\"calculationEvidence\":{\"version\":1,\"records\":[{\"calculatedAt\":\"2026-11-05T23:39:55.108Z\",\"blocks\":[{\"blockId\":\"calculation-mw46u60z-pssw4\",\"position\":2,\"expression\":\"2*(5+3)\",\"evaluationMode\":\"note-variables\",\"inputs\":[],\"result\":\"16\",\"resultText\":\"16\",\"status\":\"success\"}],\"id\":\"a42fc5b7-0b4d-405d-a131-a9f69f4b2949\",\"persistedAt\":\"2026-11-05T23:39:55.119Z\",\"evaluator\":\"calculator-memo-v1\",\"status\":\"confirmed\"}]},\"id\":\"plain-note-mw46u6b4-c55n4\",\"type\":\"plain-calculation\",\"createdAt\":\"2026-11-05T23:39:55.119Z\",\"updatedAt\":\"2026-11-05T23:39:55.119Z\"}],\"settings\":{\"theme\":\"dark\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:39:55.650Z"
+        },
+        {
+          "id": "chromium-1280-reset-success",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:55.654Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:56.725Z"
+        },
+        {
+          "id": "chromium-1280-autosave-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:56.729Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:39:59.337Z"
+        },
+        {
+          "id": "chromium-1280-preservation-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:39:59.342Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:02.135Z"
+        },
+        {
+          "id": "chromium-1280-delete-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:02.142Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:05.067Z"
+        },
+        {
+          "id": "chromium-1280-reset-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:05.074Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:07.611Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "passed",
+      "contexts": [
+        {
+          "id": "webkit-375-happy",
+          "width": 375,
+          "touch": true,
+          "kind": "happy",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:08.041Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved",
+            "explicit block memo saved with text and calculation",
+            "registered formula and explicit report saved",
+            "approved full restore preserved source and wrote exact whitespace/large-number/Unicode target raw",
+            "individually approved copy deletion; exact target survives reload; unrelated storage unchanged"
+          ],
+          "geometry": [
+            {
+              "phase": "memo-draft",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            },
+            {
+              "phase": "report-draft",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            },
+            {
+              "phase": "restored",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            },
+            {
+              "phase": "copy-deleted",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 24,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js",
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:15.440Z"
+        },
+        {
+          "id": "webkit-375-reset-success",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:15.443Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-p_BDexZd.js",
+            "assets/index-BSqUeJVH.css"
+          ],
+          "finishedAt": "2026-11-05T23:40:16.586Z"
+        },
+        {
+          "id": "webkit-375-autosave-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:16.588Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:19.308Z"
+        },
+        {
+          "id": "webkit-375-preservation-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:19.310Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:22.406Z"
+        },
+        {
+          "id": "webkit-375-delete-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:22.408Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:25.540Z"
+        },
+        {
+          "id": "webkit-375-reset-unknown",
+          "width": 375,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:25.542Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 375,
+              "document": 375,
+              "body": 375
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:28.220Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "passed",
+      "contexts": [
+        {
+          "id": "webkit-390-happy",
+          "width": 390,
+          "touch": true,
+          "kind": "happy",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:28.224Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved",
+            "explicit block memo saved with text and calculation",
+            "registered formula and explicit report saved",
+            "approved full restore preserved source and wrote exact whitespace/large-number/Unicode target raw",
+            "individually approved copy deletion; exact target survives reload; unrelated storage unchanged"
+          ],
+          "geometry": [
+            {
+              "phase": "memo-draft",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            },
+            {
+              "phase": "report-draft",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            },
+            {
+              "phase": "restored",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            },
+            {
+              "phase": "copy-deleted",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 24,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js",
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:32.583Z"
+        },
+        {
+          "id": "webkit-390-reset-success",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:32.585Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 4,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:33.741Z"
+        },
+        {
+          "id": "webkit-390-autosave-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:33.743Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:36.448Z"
+        },
+        {
+          "id": "webkit-390-preservation-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:36.450Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 3,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:39.383Z"
+        },
+        {
+          "id": "webkit-390-delete-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:39.385Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 5,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:42.498Z"
+        },
+        {
+          "id": "webkit-390-reset-unknown",
+          "width": 390,
+          "touch": true,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:42.499Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 390,
+              "document": 390,
+              "body": 390
+            }
+          ],
+          "touches": 2,
+          "clicks": 0,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:40:45.214Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 765,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "failed",
+      "contexts": [
+        {
+          "id": "webkit-765-happy",
+          "width": 765,
+          "touch": false,
+          "kind": "happy",
+          "status": "failed",
+          "startedAt": "2026-11-05T23:40:45.216Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved"
+          ],
+          "geometry": [],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "error": "locator.click: Timeout 12000ms exceeded.\nCall log:\n  - waiting for locator('#notes-panel').getByRole('button', { name: '＋ 新規作成', exact: true })\n    - locator resolved to <button class=\"panel-create-button\">＋ 新規作成</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not stable\n    - retrying click action\n      - waiting 100ms\n    3 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <span>LOCAL MEMORY</span> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n    4 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n      - waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <span>LOCAL MEMORY</span> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n    3 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <summary>式を入力（累乗・sqrt・abs・pi・e）</summary> from <div class=\"calculator-column\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n\n    at activate (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:55:75)\n    at async happy (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:122:3)\n    at async isolated (/home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:278:5)\n    at async file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:307:9",
+          "storage": {
+            "calculation-memo:data": "{\"version\":1,\"history\":[{\"id\":\"history-mw46vaa1-y5zam\",\"expression\":\"12+34\",\"displayExpression\":\"12 ＋ 34\",\"result\":46,\"resultText\":\"46\",\"createdAt\":\"2026-11-05T23:40:46.921Z\"}],\"notes\":[],\"settings\":{\"theme\":\"dark\",\"activePanel\":\"history\"}}",
+            "other-app": "untouched"
+          },
+          "mutations": [
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            },
+            {
+              "method": "setItem",
+              "key": "calculation-memo:data"
+            }
+          ],
+          "finishedAt": "2026-11-05T23:40:59.129Z"
+        },
+        {
+          "id": "webkit-765-reset-success",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:40:59.131Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:00.382Z"
+        },
+        {
+          "id": "webkit-765-autosave-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:00.386Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:03.147Z"
+        },
+        {
+          "id": "webkit-765-preservation-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:03.149Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:06.258Z"
+        },
+        {
+          "id": "webkit-765-delete-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:06.260Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:09.511Z"
+        },
+        {
+          "id": "webkit-765-reset-unknown",
+          "width": 765,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:09.513Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 765,
+              "document": 765,
+              "body": 765
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:12.258Z"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 1280,
+      "browserVersion": "26.0",
+      "executableOverride": null,
+      "status": "passed",
+      "contexts": [
+        {
+          "id": "webkit-1280-happy",
+          "width": 1280,
+          "touch": false,
+          "kind": "happy",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:12.302Z",
+          "checks": [
+            "first launch empty data persisted",
+            "ordinary calculation 12+34=46 and settings autosaved",
+            "explicit block memo saved with text and calculation",
+            "registered formula and explicit report saved",
+            "approved full restore preserved source and wrote exact whitespace/large-number/Unicode target raw",
+            "individually approved copy deletion; exact target survives reload; unrelated storage unchanged"
+          ],
+          "geometry": [
+            {
+              "phase": "memo-draft",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            },
+            {
+              "phase": "report-draft",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            },
+            {
+              "phase": "restored",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            },
+            {
+              "phase": "copy-deleted",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 23,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js",
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:18.539Z"
+        },
+        {
+          "id": "webkit-1280-reset-success",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-success",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:18.544Z",
+          "checks": [
+            "reset cancel leaves original; explicit confirmed reset clears only current data and preserves recovery/other keys"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-verified",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 4,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:19.928Z"
+        },
+        {
+          "id": "webkit-1280-autosave-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "autosave-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:19.931Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "autosave-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:22.821Z"
+        },
+        {
+          "id": "webkit-1280-preservation-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "preservation-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:22.823Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "preservation-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 3,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:26.071Z"
+        },
+        {
+          "id": "webkit-1280-delete-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "delete-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:26.073Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "delete-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 5,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:29.576Z"
+        },
+        {
+          "id": "webkit-1280-reset-unknown",
+          "width": 1280,
+          "touch": false,
+          "kind": "reset-unknown",
+          "status": "passed",
+          "startedAt": "2026-11-05T23:41:29.578Z",
+          "checks": [
+            "UNKNOWN held: 1 attempted mutation(s), zero automatic retries/compensation after two setting changes and 1600ms"
+          ],
+          "geometry": [
+            {
+              "phase": "reset-unknown",
+              "viewport": 1280,
+              "document": 1280,
+              "body": 1280
+            }
+          ],
+          "touches": 0,
+          "clicks": 2,
+          "errors": [],
+          "consoleErrors": [],
+          "assetErrors": [],
+          "servedAssets": [
+            "index.html",
+            "assets/index-BSqUeJVH.css",
+            "assets/index-p_BDexZd.js"
+          ],
+          "finishedAt": "2026-11-05T23:41:32.408Z"
+        }
+      ]
+    }
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: all eight matrix cases and six contexts each must pass\n    at file:///home/runner/work/calculator-memo/calculator-memo/e2e/storage-facade-browser.mjs:320:48",
+  "finishedAt": "2026-11-05T23:41:32.462Z"
+}

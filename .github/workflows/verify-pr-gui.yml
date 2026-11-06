@@ -42,7 +42,7 @@ jobs:
           node e2e/run-stage.mjs app-install npm ci --ignore-scripts
       - name: CI failure and coverage contracts
         id: ci_contract
-        run: node e2e/run-stage.mjs ci-contract node --test e2e/ci-contract.node-test.mjs
+        run: node e2e/run-stage.mjs ci-contract node --test e2e/ci-contract.node-test.mjs e2e/formal-storage-recovery.node-test.mjs
       - name: Six independent GUI jobs and aggregator negative controls
         id: split_contract
         run: node e2e/run-stage.mjs split-contract node --test e2e/formal-split.node-test.mjs

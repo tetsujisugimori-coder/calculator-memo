@@ -25,6 +25,16 @@ Issue [#126](https://github.com/tetsujisugimori-coder/calculator-memo/issues/126
 
 ハーネスは実ユーザーと同じsummary click/tapでeditorを開いてからfillし、reload後は既定で可視の計算ボタンを待つよう修正。force/unhide、製品コード変更、保存・HOLDの期待緩和は行わない。再発防止契約を1件追加し、harnessは6件。修正後の実GUI成功は新HEADのCI原artifactで別途確認する。旧HEADの32PASSを新HEADの完了へ流用しない。
 
+## 第2回CIの原証拠と契約整合
+
+HEAD `715808cfbc889018a1443d2364c487d4fea0e8fe` / tree `c7d7bbe8b498c6067a488de27d3a67ba058189dc`。追加GUI [run42128710003](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42128710003) は48context中43PASS/5FAIL。全32UNKNOWN/HOLDと8reset、WebKit375/390/1280のhappyがPASSした。Chromium3条件は未保存中のoptional formulaLibraryをpoll内で直接参照しTypeError、両765pxはsticky電卓が新規メモボタンを覆う実レイアウト問題。前者の最終期待値を維持してoptional chainingを追加し、後者は中間幅の2行gridに限りstickyを外す。入力欄を閉じる回避、force clickやDOMでの偽装は行わない。CSSは基点mainと同じで、この試験で発見した既存不具合として区別する。
+
+正式GUI [run42128709991](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42128709991) は6条件ともquota故障後の旧「同じruntimeで再試行可能」期待で停止。原6ZIPすべてのGitHub digestとローカルSHA-256が一致し、実測は144 checks /154 geometry /36 PNG。原集約器もmatrix failureを拒否しexit1。未完了を1128/592/132成功へ読み替えない。
+
+quota故障を残してUNKNOWN・生raw不変・draft保持・write試行1回/再試行0を検査し、明示reload後に保存済reportを開き、未保存備考/根拠linkをUI再入力して従来pending-lock/confirmation検証へ続く。元checks1128・geometry592・PNG132の基準は不変更。reloadとdraft再構成による実touch増分7回を隠さず、touch契約1337→1344へ更新する。元成功oracleを削らない。追加formal負対照21件は既存CIのci-contract stepへ接続。修正後ローカル全124files/2820tests、Node契約145件（順次実行）、型、lint（error0/既存warning3）、Pages buildはPASS。これらは次HEADの実GUI成功ではない。既存120ms子process起動契約は並行作業中にstartup前timeoutが出たため原REDを保持し、期待/timeout不変更の順次再実行145PASSと分離する。
+
+[第2回原RED/再集計/失敗provenance](evidence/ci-second-red/)を保持。原ZIP・trace・PNGも別途保管。修正後最終HEADのCI/原artifactと独立再レビューでのみGREENを判定し、前SHAの成功を混ぜない。
+
 ## 独立P2と再受入
 
 | ID | 元反例 | 修正・判定 |

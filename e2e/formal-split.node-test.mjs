@@ -19,7 +19,7 @@ function recordFor(scenario, i) {
   return {
     status: 'passed', sha, expectedSha: sha, run, attempt, branch: 'test-branch',
     servedIdentity: { sha, run, attempt, branch: 'test-branch' },
-    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1337 } : {}) }],
+    scenarios: [{ ...scenario, status: 'passed', ...(scenario.hasTouch ? { touchActivations: 1344 } : {}) }],
     errors: [],
     checks: Array.from({ length: counts[i] }, (_, n) => scenario.id + ': synthetic ' + n),
     screenshotCheckpoints: Array.from({ length: geometry[i] }, (_, n) => ({ name: scenario.id + '-geometry-' + n, horizontalFit: 'passed' })),

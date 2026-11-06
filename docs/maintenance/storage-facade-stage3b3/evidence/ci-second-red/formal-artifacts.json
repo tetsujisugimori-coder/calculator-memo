@@ -1,0 +1,135 @@
+[
+  {
+    "id": 13464925816,
+    "name": "formal-gui-715808cfbc889018a1443d2364c487d4fea0e8fe-1-chromium-mobile-390px",
+    "size_in_bytes": 5327363,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13464925816",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13464925816/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:55:21Z",
+    "expires_at": "2026-11-12T23:55:20Z",
+    "updated_at": "2026-11-05T23:55:21Z",
+    "digest": "sha256:e606c75d17264b5007f5b9609c8db77919d5e52c88ac9ca5523d37f7fe099c0d",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  },
+  {
+    "id": 13464102288,
+    "name": "formal-gui-715808cfbc889018a1443d2364c487d4fea0e8fe-1-chromium-narrow-390px",
+    "size_in_bytes": 2296637,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13464102288",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13464102288/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:54:38Z",
+    "expires_at": "2026-11-12T23:54:37Z",
+    "updated_at": "2026-11-05T23:54:38Z",
+    "digest": "sha256:b9fc2cf5894cf1b6704f93f7f8be09d1d031b0463c48cc34f26356819a6b9ed4",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  },
+  {
+    "id": 13464077711,
+    "name": "formal-gui-715808cfbc889018a1443d2364c487d4fea0e8fe-1-webkit-mobile-375px",
+    "size_in_bytes": 4281642,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13464077711",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13464077711/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:56:56Z",
+    "expires_at": "2026-11-12T23:56:55Z",
+    "updated_at": "2026-11-05T23:56:56Z",
+    "digest": "sha256:5624e0a1b8cfd4632d25036f374c29db1a3b861aa1e46212e10a8e8be7927ef3",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  },
+  {
+    "id": 13463623744,
+    "name": "formal-gui-715808cfbc889018a1443d2364c487d4fea0e8fe-1-webkit-mobile-390px",
+    "size_in_bytes": 6112017,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463623744",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463623744/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:57:59Z",
+    "expires_at": "2026-11-12T23:57:58Z",
+    "updated_at": "2026-11-05T23:57:59Z",
+    "digest": "sha256:50a9830352551c766e410bd9964eb9e064b1c90447146a40b955671431975430",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  },
+  {
+    "id": 13463578799,
+    "name": "formal-gui-aggregate-715808cfbc889018a1443d2364c487d4fea0e8fe-1",
+    "size_in_bytes": 470,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463578799",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463578799/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:58:14Z",
+    "expires_at": "2026-11-12T23:58:13Z",
+    "updated_at": "2026-11-05T23:58:14Z",
+    "digest": "sha256:1ac4db3306470e12a2b5812b7ab638729d03a4b5ecae56b97efdc087ecbab870",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  },
+  {
+    "id": 13463473409,
+    "name": "formal-gui-715808cfbc889018a1443d2364c487d4fea0e8fe-1-chromium-desktop-1365px",
+    "size_in_bytes": 2277592,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463473409",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463473409/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:54:42Z",
+    "expires_at": "2026-11-12T23:54:41Z",
+    "updated_at": "2026-11-05T23:54:42Z",
+    "digest": "sha256:eb7433ca09cf1e1fe629b823ac399ae6165eca11829cc6f8ed8a9ac36ecc7552",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  },
+  {
+    "id": 13463073457,
+    "name": "formal-gui-715808cfbc889018a1443d2364c487d4fea0e8fe-1-chromium-mobile-375px",
+    "size_in_bytes": 3865755,
+    "url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463073457",
+    "archive_download_url": "https://api.github.com/repos/tetsujisugimori-coder/calculator-memo/actions/artifacts/13463073457/zip",
+    "expired": false,
+    "created_at": "2026-11-05T23:47:11Z",
+    "expires_at": "2026-11-12T23:47:11Z",
+    "updated_at": "2026-11-05T23:47:11Z",
+    "digest": "sha256:0d9b11bc2ca017f61cb78e97a5cb693500198e7ca3d0a581e88c4bc13b821fda",
+    "workflow_run": {
+      "id": 42128709991,
+      "repository_id": 1308745365,
+      "head_repository_id": 1308745365,
+      "head_branch": "feat/stage3b3-storage-facade",
+      "head_sha": "715808cfbc889018a1443d2364c487d4fea0e8fe"
+    }
+  }
+]
