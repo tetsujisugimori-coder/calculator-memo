@@ -27,6 +27,16 @@ const manifest=JSON.parse(await readFile(`${root}/red-source.json`,'utf8'));
 assert.equal(evidence.oldSourceSha256,manifest.sourceSha256);
 assert.equal(hash(await readFile('e2e/fixtures/storage-idb.ts')),manifest.adapterSourceSha256,'old/current comparison requires unchanged Stage 3B-4 adapter');
 evidence.moduleHashes=Object.fromEntries(Object.entries(modules).map(([k,v])=>[k,hash(v)]));
+// Retain the exact bytes served to the browser, independently of the author fixture.
+// First-publication artifacts recorded hashes only; this starts byte retention now.
+evidence.moduleFiles={};
+for(const [label,code] of Object.entries(modules)) {
+  const file=label+'.mjs';
+  await writeFile(out+'/'+file,code,'utf8');
+  const bytes=await readFile(out+'/'+file);
+  assert.equal(hash(bytes),evidence.moduleHashes[label],'retained module bytes must match served code');
+  evidence.moduleFiles[label]={file,bytes:bytes.length,sha256:hash(bytes)};
+}
 if(process.env.EXPECTED_SHA)assert.equal(evidence.sha,process.env.EXPECTED_SHA);
 if(process.env.GITHUB_ACTIONS==='true')assert.equal(evidence.dirty,false);
 if(process.argv.includes('--build-only')){console.log(JSON.stringify({status:'BUNDLE_ONLY_NO_BROWSER_EXECUTED',...evidence},null,2));process.exit(0);}
@@ -90,5 +100,5 @@ try {
  for(const engine of ['chromium','webkit']){const rows=evidence.results.filter(r=>r.engine===engine);if(rows.length!==7||rows.filter(r=>r.status==='EXPECTED_RED').length!==1||rows.filter(r=>r.status==='PASS').length!==6)failed=true;}
  assert.equal(hash(await readFile('e2e/fixtures/storage-migration.ts')),evidence.currentSourceSha256,'current source changed during review');
 }finally{server.closeAllConnections();await new Promise(r=>server.close(r));evidence.status=failed?'FAIL':'PASS';evidence.finishedAt=new Date().toISOString();await writeFile(out+'/summary.json',JSON.stringify(evidence,null,2)+'\n');}
-console.log(JSON.stringify({out,status:evidence.status,cases:evidence.results.map(({engine,label,scenario,status,error})=>({engine,label,scenario,status,error}))},null,2));
+console.log(JSON.stringify({out,status:evidence.status,moduleHashes:evidence.moduleHashes,moduleFiles:evidence.moduleFiles,cases:evidence.results.map(({engine,label,scenario,status,error})=>({engine,label,scenario,status,error}))},null,2));
 if(failed)process.exitCode=1;

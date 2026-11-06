@@ -41,3 +41,46 @@ The independent reviewer reproduced two journal validation defects against local
 Independent evidence-validator counterexamples (failed summary, null observations, dirty provenance, invalid/reversed timestamps) were fixed without changing browser assertions. The validator has 24 synthetic positive/negative tests; the separate reviewer controls pass. Native suite remains 33 × 8, independent native suite 7 × 2. These are expected counts, not current browser passes.
 
 Latest focused local check: 85 author + 4 independent unit tests PASS, types PASS, lint zero errors / three existing warnings. Normal and Pages build passed. Prior full unit 2,921 predates added tests and must not be called final total. Existing serial Node contracts 261 PASS plus newer evidence-validator 24 PASS are separately observed. Final-HEAD aggregate remains pending.
+
+## 2026-11-07 JST: technical evidence update
+
+### 1. Overall judgment
+Isolated acceptance PARTIAL; limited merge recommendation NO pending final evidence; real-data migration/production switch NO. Stage 3B HOLD and `executionAllowed=false` remain unchanged.
+
+### 2. Issue, PR and identity
+Issue #130 / Draft PR #131 / `feat/stage3b5-isolated-migration`. First published HEAD `1c9f80ff78307691fb80931fd3e42f407e012819`, tree `5232ca127e5890a11efc0c3df484c8f32d0b996b`; base `eb8fd95bb28e992963aba3b47a14529949736058`. New final-HEAD results belong in PR #131 after verification.
+
+### 3. Change and design
+Only this ledger and the independent driver change. The driver retains exact `old.mjs`/`current.mjs` bytes alongside moduleHashes, records lengths/hashes, and checks readback. The first artifact retained hashes without those bytes. Product, engine, adapter, dependencies and formal GUI contract are unchanged. This PR already updates LOG.md; this evidence-only follow-up uses the ledger to avoid duplicating its existing entry.
+
+### 4. Migration
+First-HEAD CI run [42242084213](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/42242084213), attempt 1: 33 cases × 2 engines × 4 widths = 264 passed rows, independently recounted from its job log. These are historical results, not the new HEAD's native acceptance.
+
+### 5. Branch rescue
+First independent native log: 14 rows, old EXPECTED_RED2 and current/control PASS12. Repaired diagnostic-loss sequence requires UNKNOWN→UNKNOWN→BLOCKED, no second rescue and unchanged primary records. VERIFIED guarantees only its recorded pair; preappend failure can leave an observed value uncaptured.
+
+### 6. Generation, authority and receipt
+Raw/hash, generations, receipts and known causality stay distinct. No timestamp winner or guessed legacy parent. Historical attempts fence restart; no recovery-unlock API.
+
+### 7. Faults and independent review
+Published P1/P2 RED/GREEN evidence remains intact. Fresh focused89, validator24 and separate positive1/negative6 controls pass. Independent pure controls reproduce old namespace/genesis acceptance and current rejection. Manifest validation alone does not verify observation semantics.
+
+### 8. CI and regression provenance
+First HEAD: eight required workflows SUCCESS, attempt1: GUI42242084015, 3B5-42242084213, 3B4-42242084361, 3B3-42242084177, 3B2-42242084165, 3B1-42242084073, 3A42242083946, restore-plan42242084145. First GUI log confirms128files/2953unit passes, lint0errors/3warnings, types and both builds. Formal CI audit reports1128checks/592geometry/132PNG; its132 PNG hash/dimension log rows were recounted. That is not a new local PNG byte audit.
+
+First native artifact13515921689 ZIP SHA256 `af5c6c40443b7921700a6798ee9d15121a7922e68ea88aa7ed7b190f607f2595`; aggregate13516318592 `6e0deb0bcea2815008c2aa44add169eba78d4f91a52fdda7025807e7d2776e62`; independent audit13516408410 `aff9a6d3836bbd2cc073509c6d0b4310ec511d69ab27204ed5e184e3dbadecc6`. Original six ZIP IDs13516576904/13515832373/13516447297/13516362840/13515833718/13516547790. These are CI/API digests; local ZIP hashes have not been recomputed. Artifacts expire2026-11-13.
+
+### 9. Missing evidence and limits
+Original ZIP bytes, final native summary observations and both final retained module files still require independent inspection. New final-HEAD CI is pending. Earlier local failures2952/2953unit and284/285Node must remain recorded: raw logs are unavailable; unchanged separate reruns reported2953/2953unit,285/285Node and recovery15/15, with root cause unproven. No cross-backend atomicity, old-writer fencing, silent ABA detection, media durability/powerloss, actual quota exhaustion, whole-store loss/rollback recovery or physical Safari proof.
+
+### 10. A–J
+A/B/C/E/F/G PARTIAL pending final native observations; D PASS within static/focused scope; H NOT_TESTED for new final HEAD; I PARTIAL pending original-byte inspection; J PASS within unchanged-product/source scope.
+
+### 11. Limited merge
+NO pending final evidence. Any later recommendation covers only synthetic isolated verification infrastructure; human decides merge and Draft stays intact.
+
+### 12. Real-data prerequisites
+Separate design/acceptance must address durable capture, old-writer lifecycle, manual UNKNOWN reconciliation, authority continuity, supported-browser storage loss/rollback, backup and rollout/rollback. Real-data operations remain NO.
+
+### 13. Stage 3B-6 proposal
+Design read-only reconciliation of persisted attempts and recorded branches, preserving uncertainty. Test capture gaps, retention/loss and physical Safari before proposing any execution unlock or production authority.
