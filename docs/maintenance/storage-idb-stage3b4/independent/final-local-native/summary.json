@@ -1,0 +1,482 @@
+{
+  "reviewer": "separate-agent-independent_review",
+  "sha": "7bbcdf0329639eb5206cac69dfa1861d6320e9b9",
+  "tree": "e48babf4800829ec6790fc455afafb2bf50647e8",
+  "dirty": true,
+  "sourceSha256": "c2db41c734547c53c3dba8771137e46d16f7da1fabd8b867c59908af807b9d60",
+  "results": [
+    {
+      "engine": "chromium",
+      "version": "154.0.8037.57",
+      "status": "PASS",
+      "cases": [
+        {
+          "name": "outer-lock-result-loss-persists-UNKNOWN-before-new-instance",
+          "status": "PASS",
+          "observation": {
+            "created": {
+              "status": "CREATED",
+              "reason": "synthetic-genesis-only",
+              "phases": [],
+              "token": {
+                "structure": 1,
+                "incarnation": "independent-inc",
+                "generation": 0,
+                "latestOperation": "genesis"
+              }
+            },
+            "confirmation": {
+              "status": "AUTHORIZED",
+              "reason": "explicit-synthetic-session-only",
+              "phases": []
+            },
+            "original": {
+              "status": "UNKNOWN",
+              "reason": "Error:independent-lost-lock-result-after-callback",
+              "phases": [
+                "PREVALIDATION",
+                "INTENT_DURABLE",
+                "TRANSACTION_RUNNING",
+                "COMMIT_OBSERVED",
+                "READBACK_MATCH",
+                "UNKNOWN",
+                "HOLD",
+                "EXPLICIT_RECONCILIATION_REQUIRED",
+                "DIAGNOSTIC_DURABLE"
+              ]
+            },
+            "recovery": {
+              "state": "HOLD",
+              "reason": "unresolved-intent-or-hold",
+              "token": {
+                "structure": 1,
+                "incarnation": "independent-inc",
+                "generation": 1,
+                "latestOperation": "lost-result"
+              },
+              "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+              "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+              "snapshot": {
+                "control": {
+                  "protocol": 1,
+                  "state": "HOLD"
+                },
+                "copy:1": {
+                  "protocol": 1,
+                  "source": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "operationId": "lost-result",
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+                },
+                "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+                "diagnostic:lost-result": {
+                  "protocol": 1,
+                  "status": "UNKNOWN",
+                  "firstFailure": "Error:independent-lost-lock-result-after-callback"
+                },
+                "head": {
+                  "protocol": 1,
+                  "structure": 1,
+                  "incarnation": "independent-inc",
+                  "generation": 1,
+                  "latestOperation": "lost-result",
+                  "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+                },
+                "intent:lost-result": {
+                  "protocol": 1,
+                  "operationId": "lost-result",
+                  "expected": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+                  "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+                  "phase": "UNKNOWN",
+                  "firstFailure": "Error:independent-lost-lock-result-after-callback"
+                },
+                "receipt:genesis": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "previous": null,
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+                },
+                "receipt:lost-result": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 1,
+                    "latestOperation": "lost-result"
+                  },
+                  "previous": "genesis",
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+                }
+              },
+              "writeAllowed": false,
+              "executionAllowed": false
+            },
+            "authorize": {
+              "status": "BLOCKED",
+              "reason": "unresolved-intent-or-hold",
+              "phases": []
+            },
+            "next": {
+              "status": "BLOCKED",
+              "reason": "explicit-confirmation-or-hold",
+              "phases": [
+                "PREVALIDATION"
+              ]
+            },
+            "final": {
+              "state": "HOLD",
+              "reason": "unresolved-intent-or-hold",
+              "token": {
+                "structure": 1,
+                "incarnation": "independent-inc",
+                "generation": 1,
+                "latestOperation": "lost-result"
+              },
+              "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+              "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+              "snapshot": {
+                "control": {
+                  "protocol": 1,
+                  "state": "HOLD"
+                },
+                "copy:1": {
+                  "protocol": 1,
+                  "source": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "operationId": "lost-result",
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+                },
+                "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+                "diagnostic:lost-result": {
+                  "protocol": 1,
+                  "status": "UNKNOWN",
+                  "firstFailure": "Error:independent-lost-lock-result-after-callback"
+                },
+                "head": {
+                  "protocol": 1,
+                  "structure": 1,
+                  "incarnation": "independent-inc",
+                  "generation": 1,
+                  "latestOperation": "lost-result",
+                  "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+                },
+                "intent:lost-result": {
+                  "protocol": 1,
+                  "operationId": "lost-result",
+                  "expected": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} ",
+                  "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} ",
+                  "phase": "UNKNOWN",
+                  "firstFailure": "Error:independent-lost-lock-result-after-callback"
+                },
+                "receipt:genesis": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "previous": null,
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"A\"} "
+                },
+                "receipt:lost-result": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "independent-inc",
+                    "generation": 1,
+                    "latestOperation": "lost-result"
+                  },
+                  "previous": "genesis",
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"},\"independent\":\"B\"} "
+                }
+              },
+              "writeAllowed": false,
+              "executionAllowed": false
+            }
+          }
+        },
+        {
+          "name": "outer-lock-result-and-diagnostic-loss-preserve-stop-on-restart",
+          "status": "PASS",
+          "observation": {
+            "original": {
+              "status": "UNKNOWN",
+              "reason": "Error:independent-lost-result-no-diagnostic",
+              "phases": [
+                "PREVALIDATION",
+                "INTENT_DURABLE",
+                "TRANSACTION_RUNNING",
+                "COMMIT_OBSERVED",
+                "READBACK_MATCH",
+                "UNKNOWN",
+                "HOLD",
+                "EXPLICIT_RECONCILIATION_REQUIRED",
+                "DIAGNOSTIC_UNAVAILABLE"
+              ]
+            },
+            "recovery": {
+              "state": "HOLD",
+              "reason": "unresolved-intent-or-hold",
+              "token": {
+                "structure": 1,
+                "incarnation": "lost-diagnostic-inc",
+                "generation": 1,
+                "latestOperation": "lost-both"
+              },
+              "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+              "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+              "snapshot": {
+                "control": {
+                  "protocol": 1,
+                  "state": "CLEAR"
+                },
+                "copy:1": {
+                  "protocol": 1,
+                  "source": {
+                    "structure": 1,
+                    "incarnation": "lost-diagnostic-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "operationId": "lost-both",
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+                },
+                "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+                "head": {
+                  "protocol": 1,
+                  "structure": 1,
+                  "incarnation": "lost-diagnostic-inc",
+                  "generation": 1,
+                  "latestOperation": "lost-both",
+                  "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+                },
+                "intent:lost-both": {
+                  "protocol": 1,
+                  "operationId": "lost-both",
+                  "expected": {
+                    "structure": 1,
+                    "incarnation": "lost-diagnostic-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "expectedRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+                  "candidateRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n",
+                  "phase": "READBACK_MATCH"
+                },
+                "receipt:genesis": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "lost-diagnostic-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "previous": null,
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+                },
+                "receipt:lost-both": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "lost-diagnostic-inc",
+                    "generation": 1,
+                    "latestOperation": "lost-both"
+                  },
+                  "previous": "genesis",
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} \n"
+                }
+              },
+              "writeAllowed": false,
+              "executionAllowed": false
+            },
+            "authorization": {
+              "status": "BLOCKED",
+              "reason": "unresolved-intent-or-hold",
+              "phases": []
+            }
+          }
+        },
+        {
+          "name": "preauthorized-other-tab-stale-conflict-fresh-token-HOLD",
+          "status": "PASS",
+          "observation": {
+            "winner": {
+              "status": "VERIFIED",
+              "reason": "commit-and-readback-observed-not-media-durability",
+              "phases": [
+                "PREVALIDATION",
+                "INTENT_DURABLE",
+                "TRANSACTION_RUNNING",
+                "COMMIT_OBSERVED",
+                "READBACK_MATCH",
+                "SESSION_RESULT_OBSERVED"
+              ],
+              "token": {
+                "structure": 1,
+                "incarnation": "two-page-inc",
+                "generation": 1,
+                "latestOperation": "native-winner"
+              }
+            },
+            "stale": {
+              "status": "CONFLICT",
+              "reason": "expected-state-mismatch",
+              "phases": [
+                "PREVALIDATION"
+              ]
+            },
+            "fresh": {
+              "status": "BLOCKED",
+              "reason": "unresolved-intent-or-hold",
+              "phases": [
+                "PREVALIDATION"
+              ]
+            },
+            "own": {
+              "status": "VERIFIED",
+              "reason": "commit-and-readback-observed-not-media-durability",
+              "phases": [
+                "PREVALIDATION",
+                "INTENT_DURABLE",
+                "TRANSACTION_RUNNING",
+                "COMMIT_OBSERVED",
+                "READBACK_MATCH",
+                "SESSION_RESULT_OBSERVED"
+              ],
+              "token": {
+                "structure": 1,
+                "incarnation": "two-page-inc",
+                "generation": 2,
+                "latestOperation": "own-next"
+              }
+            }
+          }
+        },
+        {
+          "name": "known-lock-rejection-fences-delayed-running-callback",
+          "status": "PASS",
+          "observation": {
+            "original": {
+              "status": "UNAVAILABLE",
+              "reason": "Error:independent-early-coordinator-rejection",
+              "phases": [
+                "PREVALIDATION",
+                "UNKNOWN",
+                "HOLD",
+                "EXPLICIT_RECONCILIATION_REQUIRED",
+                "UNKNOWN",
+                "HOLD",
+                "EXPLICIT_RECONCILIATION_REQUIRED"
+              ]
+            },
+            "final": {
+              "state": "READ_ONLY",
+              "reason": "consistent-observation-only",
+              "token": {
+                "structure": 1,
+                "incarnation": "delayed-inc",
+                "generation": 0,
+                "latestOperation": "genesis"
+              },
+              "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+              "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+              "snapshot": {
+                "control": {
+                  "protocol": 1,
+                  "state": "CLEAR"
+                },
+                "current": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} ",
+                "head": {
+                  "protocol": 1,
+                  "structure": 1,
+                  "incarnation": "delayed-inc",
+                  "generation": 0,
+                  "latestOperation": "genesis",
+                  "legacyRaw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+                },
+                "receipt:genesis": {
+                  "protocol": 1,
+                  "token": {
+                    "structure": 1,
+                    "incarnation": "delayed-inc",
+                    "generation": 0,
+                    "latestOperation": "genesis"
+                  },
+                  "previous": null,
+                  "raw": " {\"version\":1,\"history\":[],\"notes\":[],\"settings\":{\"theme\":\"light\",\"activePanel\":\"history\"}} "
+                }
+              },
+              "writeAllowed": false,
+              "executionAllowed": false
+            }
+          }
+        },
+        {
+          "name": "readonly-inspect-does-not-create-absent-database",
+          "status": "PASS",
+          "observation": {
+            "name": "stage3b4-test-absent-ca26cff8-e415-49a4-a5ff-fae27a08cee7",
+            "result": {
+              "state": "UNKNOWN",
+              "reason": "AbortError:Version change transaction was aborted in upgradeneeded event handler.",
+              "writeAllowed": false,
+              "executionAllowed": false
+            },
+            "listed": [
+              {
+                "name": "stage3b4-test-delayed-callback-b6f7fdd1-a40f-4c3b-bbac-bc20f988f0fc",
+                "version": 1
+              },
+              {
+                "name": "stage3b4-test-independent-ed2aee75-f9f8-401d-9d9f-e986225c9eb7",
+                "version": 1
+              },
+              {
+                "name": "stage3b4-test-independent-two-tabs-bbeb4ae5-7c9b-494f-b07d-2570c41a1180",
+                "version": 1
+              },
+              {
+                "name": "stage3b4-test-lost-diagnostics-d25fb538-4f5f-4e3b-b88c-62bca2275489",
+                "version": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "status": "ENVIRONMENT_FAILURE",
+      "error": "browserType.launch: Executable doesn't exist at /tmp/calculator-browsers/webkit-2215/pw_run.sh\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝\n    at /workspace/calculator-memo/docs/maintenance/storage-idb-stage3b4/independent/review-browser.mjs:32:26"
+    }
+  ],
+  "moduleSha256": "2cc923ced32f449d036fc1b406dda7ea21e012fa63ab7bf6385fb7be7b5b6ff0",
+  "status": "FAIL",
+  "finishedAt": "2026-11-06T10:10:21.937Z"
+}

@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { once } from 'node:events';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { build } from 'vite';
 import { chromium, webkit } from './node_modules/playwright/index.mjs';
 
@@ -18,7 +19,7 @@ const evidence = {
   provenance: { sha, tree, dirty: !!git('status', '--porcelain'), node: process.version,
     platform: process.platform, startedAt: new Date().toISOString(),
     run: process.env.GITHUB_RUN_ID || 'local', attempt: process.env.GITHUB_RUN_ATTEMPT || 'local' },
-  matrix: [], unverified: ['physical Safari', 'power loss/media flush', 'browser process crash', 'actual quota exhaustion', 'page termination during active native transaction'],
+  matrix: [], unverified: ['physical Safari', 'power loss/media flush', 'browser process crash', 'actual quota exhaustion', 'uncontrolled page/process crash' ],
 };
 const save = () => writeFile(join(out, 'summary.json'), JSON.stringify(evidence, null, 2) + '\n');
 await save();
@@ -54,7 +55,7 @@ try {
     res.setHeader('Cache-Control', 'no-store');
     if (req.url === '/fixture.mjs') { res.setHeader('Content-Type', 'text/javascript'); res.end(fixtureModule); }
     else if (req.url === '/identity.json') { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(evidence.provenance)); }
-    else if (req.url === '/') { res.setHeader('Content-Type', 'text/html'); res.end('<!doctype html><meta charset="utf-8"><title>Stage 3B-4 synthetic transaction acceptance</title><script type="module">window.api=await import("/fixture.mjs")</script>'); }
+    else if (req.url === '/') { res.setHeader('Content-Type', 'text/html'); res.end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Stage 3B-4 synthetic transaction acceptance</title><script type="module">window.api=await import("/fixture.mjs")</script>'); }
     else { res.statusCode = 404; res.end(); }
   });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
@@ -84,9 +85,9 @@ try {
           entry.finishedAt = new Date().toISOString(); await save();
         };
         // Case implementations below use fixed input raw strings, never serialization from actual state.
-        await runCases({ page, other, context: activeContext, base, record, A, B, C });
-        assert.equal(result.cases.length, 39, 'complete isolated acceptance case count');
-        assert.equal(new Set(result.cases.map(c => c.name)).size, 39, 'each case identity must be unique');
+        await runCases({ page, other, context: activeContext, base, record, A, B, C, width, engineType: type, launchOptions: { headless: true, ...(engine === 'chromium' && process.env.CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.CHROMIUM_EXECUTABLE_PATH } : {}) } });
+        assert.equal(result.cases.length, 41, 'all 41 original negative and lifecycle cases must execute');
+        assert.equal(new Set(result.cases.map(c => c.name)).size, 41, 'case identities must be unique');
         assert.deepEqual(result.errors, [], 'no uncaught browser exceptions');
         result.status = result.cases.length > 0 && result.cases.every(c => c.status === 'passed') ? 'passed' : 'failed';
         if (result.status === 'failed') {
@@ -115,7 +116,7 @@ finally {
   console.log(JSON.stringify({ out, status: evidence.status, matrix: evidence.matrix.map(m => ({ engine: m.engine, width: m.width, status: m.status, error: m.error, cases: m.cases?.map(c => ({ name: c.name, status: c.status, error: c.error })) })) }, null, 2));
 }
 
-async function runCases({ page, other, context, base, record, A, B, C }) {
+async function runCases({ page, other, context, base, record, A, B, C, width, engineType, launchOptions }) {
   const setup = async () => {
     const name = 'stage3b4-test-' + randomUUID();
     const initial = await page.evaluate(async ({ name, raw }) => {
@@ -400,6 +401,76 @@ async function runCases({ page, other, context, base, record, A, B, C }) {
     assert.equal((await refresh(other)).status, 'BLOCKED');
     const result = await save(other, 'after-page-termination', C); assert.equal(result.status, 'BLOCKED');
     return { inspected, result, interruption: 'actual page close after tx complete at explicit synthetic ack barrier; not browser crash or power loss' };
+  });
+  await record('normal-browser-process-restart-preserves-records-and-HOLD', 'actual-clean-browser-process-restart', async () => {
+    const profile = await mkdtemp(join(tmpdir(), 'stage3b4-test-profile-'));
+    let persistent;
+    try {
+      persistent = await engineType.launchPersistentContext(profile, { ...launchOptions, viewport: { width, height: 900 }, isMobile: width <= 390, hasTouch: width <= 390, serviceWorkers: 'block' });
+      await persistent.route('**/*', route => new URL(route.request().url()).origin === new URL(base).origin ? route.continue() : route.abort());
+      let p = await persistent.newPage(); await p.goto(base); await p.waitForFunction(() => !!window.api);
+      const name = 'stage3b4-test-restart-' + randomUUID();
+      const before = await p.evaluate(async ({ name, A, B }) => {
+        const adapter = window.api.createIsolatedAdapter(name); await adapter.initialize(A, 'restart-inc', A);
+        const initial = await adapter.inspect(A); await adapter.authorize({ token: initial.token, raw: A, legacyRaw: A });
+        const staleRequest = { protocol: 1, expected: initial.token, expectedRaw: A, candidateRaw: B, operationId: 'restart-op', legacyRaw: A };
+        const outcome = await adapter.save(staleRequest); const committed = await adapter.inspect(A); adapter.close();
+        return { staleRequest, outcome, committed, viewportWidth: innerWidth };
+      }, { name, A, B });
+      assert.equal(before.outcome.status, 'VERIFIED'); assert.equal(before.viewportWidth, width);
+      await persistent.close(); persistent = undefined;
+      persistent = await engineType.launchPersistentContext(profile, { ...launchOptions, viewport: { width, height: 900 }, isMobile: width <= 390, hasTouch: width <= 390, serviceWorkers: 'block' });
+      await persistent.route('**/*', route => new URL(route.request().url()).origin === new URL(base).origin ? route.continue() : route.abort());
+      p = await persistent.newPage(); await p.goto(base); await p.waitForFunction(() => !!window.api);
+      const after = await p.evaluate(async ({ name, A, B, staleRequest }) => {
+        const adapter = window.api.createIsolatedAdapter(name), observed = await adapter.inspect(A);
+        const authorization = await adapter.authorize({ token: observed.token, raw: B, legacyRaw: A });
+        const oldRequest = await adapter.save(staleRequest); const final = await adapter.inspect(A); adapter.close();
+        return { observed, authorization, oldRequest, final, viewportWidth: innerWidth };
+      }, { name, A, B, staleRequest: before.staleRequest });
+      assert.equal(after.viewportWidth, width);
+      assert.deepEqual(after.observed.snapshot, before.committed.snapshot, 'native persistent profile survived full clean browser close/relaunch');
+      assert.equal(after.observed.state, 'HOLD'); assert.equal(after.authorization.status, 'BLOCKED'); assert.equal(after.oldRequest.status, 'BLOCKED');
+      assert.deepEqual(after.final.snapshot, before.committed.snapshot);
+      return { before, after, interruption: 'cleanly closed browser process, reopened same isolated profile; not crash or power loss' };
+    } finally { await persistent?.close(); await rm(profile, { recursive: true, force: true }); }
+  });
+  await record('actual-page-close-during-native-transaction-is-atomic', 'native-page-close-with-injected-transaction-keepalive', async () => {
+    const { name } = await setup(), before = await nativeSnapshot(page);
+    const producer = await context.newPage(); await producer.goto(base); await producer.waitForFunction(() => !!window.api);
+    await producer.evaluate(async ({ name, A, B }) => {
+      const nativeTransaction = IDBDatabase.prototype.transaction;
+      IDBDatabase.prototype.transaction = function(...args) { const tx = nativeTransaction.apply(this, args); if (tx.mode === 'readwrite') window.activeWriteTransaction = tx; return tx; };
+      window.cutpoint = null;
+      const adapter = window.api.createIsolatedAdapter(name, { fault: point => {
+        if (point !== 'request-success') return;
+        const tx = window.activeWriteTransaction;
+        window.cutpoint = { at: performance.now(), mode: tx.mode, reads: 0, complete: false };
+        tx.addEventListener('complete', () => { window.cutpoint.complete = true; });
+        // Queue native reads in success handlers so complete cannot precede the observed cutpoint.
+        const keepAlive = () => { tx.objectStore('records').get('head').onsuccess = () => { window.cutpoint.reads++; keepAlive(); }; };
+        keepAlive();
+      } });
+      const initial = await adapter.inspect(A); await adapter.authorize({ token: initial.token, raw: A, legacyRaw: A });
+      window.terminatedSave = adapter.save({ protocol: 1, expected: initial.token, expectedRaw: A, candidateRaw: B, operationId: 'terminate-active', legacyRaw: A });
+    }, { name, A, B });
+    await producer.waitForFunction(() => window.cutpoint?.reads > 0 && !window.cutpoint.complete);
+    const cutpoint = await producer.evaluate(() => ({ ...window.cutpoint })); assert.equal(cutpoint.complete, false);
+    await producer.close();
+    const after = await nativeSnapshot(other), inspected = await other.evaluate(raw => window.adapter.inspect(raw), A);
+    const oldToken = { structure: 1, incarnation: 'inc-' + name, generation: 0, latestOperation: 'genesis' };
+    const expectedOld = { head: { protocol: 1, ...oldToken, legacyRaw: A }, current: A,
+      'receipt:genesis': { protocol: 1, token: oldToken, previous: null, raw: A } };
+    const nextToken = { ...oldToken, generation: 1, latestOperation: 'terminate-active' };
+    const expectedNew = { ...expectedOld, head: { protocol: 1, ...nextToken, legacyRaw: A }, current: B,
+      'copy:1': { protocol: 1, source: oldToken, operationId: 'terminate-active', raw: A },
+      'receipt:terminate-active': { protocol: 1, token: nextToken, previous: 'genesis', raw: B } };
+    assert.deepEqual(primary(before), expectedOld, 'independently constructed starting primary');
+    assert.ok([A, B].includes(after.current));
+    assert.deepEqual(primary(after), after.current === A ? expectedOld : expectedNew, 'entire primary must be exactly old or exactly new');
+    assert.equal(await other.evaluate(snapshot => window.api.inspectSnapshot(snapshot), after), null, 'no partially committed current/head/copy/receipt');
+    assert.equal(inspected.state, 'HOLD');
+    return { cutpoint, outcomeObservedAfterPageClose: after.current === A ? 'ALL_OLD' : 'ALL_NEW', after, inspected, injection: 'queued native readonly requests hold transaction active, actual producer page close; no process crash claim' };
   });
   await record('namespace-rejects-production-name', 'synthetic-request', async () => {
     const result = await page.evaluate(() => { try { window.api.createIsolatedAdapter('calculation-memo'); return 'accepted'; } catch { return 'rejected'; } });

@@ -15,11 +15,11 @@ Refs [#128](https://github.com/tetsujisugimori-coder/calculator-memo/issues/128)
 | --- | --- |
 | Existing full Vitest suite | 124 files / 2820 tests passed before new tests; `/tmp/calculator-unit.log` |
 | Existing Node e2e contracts | 239/239 passed; `/tmp/calculator-contract.log` |
-| New pure/negative contracts | author25 + independent17; current reexecution log records actual result |
+| New pure/negative contracts | author25 + independent18; current reexecution log records actual result |
 | TypeScript | passed after initial two type errors corrected; no type-erasure workaround |
 | Normal and Pages builds | passed; existing bundle-size/classification warnings retained |
 | Writer boundary | no product failures; no new broad exclusions; root-relative and `/@fs/` safety tightening |
-| Local isolated Chromium | four widths375/390/765/1280, 39/39 each (156 passed), dirty-source candidate; recorded bundle/source hashes in summary |
+| Local isolated Chromium | four widths375/390/765/1280, 41/41 each (164 passed; includes clean process restart and native active-transaction page close), dirty-source candidate; recorded bundle/source hashes in summary |
 | Local WebKit | NOT EXECUTED: download403 Domain forbidden under managed network policy; runner correctly failed overall |
 | Formal GUI6 | pending final-head Actions; baseline1128/592/132 is an expected comparison, never a substituted result |
 
@@ -36,6 +36,9 @@ The reviewer is a separate agent from the adapter implementer, with its own inpu
 
 Native reviewer counterexamples: post-coordinator loss, loss plus failed diagnostics, preauthorized stale/fresh competing tab, delayed callback after rejection, absent-DB read-only open. Injected lock rejection/faults are distinguished from native IDB effects. Local combined reviewer runner remains failed if WebKit cannot launch; Chromium observations alone do not make it a two-engine PASS.
 
+- **R5/P2, Vite glob isolation escape:** eager `import.meta.glob` bypassed normal import inspection. Product glob macros now fail closed; original [RED](independent/glob-red.log), [independent18/18 GREEN](independent/final-unit-green.log).
+- Author lifecycle harness initially retained obsolete39 assertions alongside41 after adding two cases; local failure was preserved, stale assertions removed, and the 41-case count/unique identity gate retained.
+
 ## Final CI / artifact acceptance
 
 Pending the first implementation push. Final entry will record exact HEAD, tree, CI run and attempt, terminal job outcomes, downloaded artifact ID/digest/local SHA256 and original per-condition evidence. Formal6 artifacts must be independently reaggregated, comparing6/6,1128 checks,592 geometry,132PNG, all source HEADs and inventory hashes. New isolated test evidence is separate and cannot substitute for formal GUI.
@@ -46,7 +49,7 @@ A final documentation-only commit starts fresh workflows too; successful earlier
 
 - New sessions with any prior intent remain HOLD; no explicit recovery-unlock API or production authority switch. Consistent receipts describe observed committed records, never historical UI acknowledgement success.
 - Real two-tab contention, native transaction abort, versionchange and actual page close are different from injected put/quota/readback/ack faults.
-- Actual disk quota exhaustion, page kill during an active native transaction, entire browser-process crash, power loss/media flush, long sleep and physical Safari remain NOT_TESTED. Eight-copy capacity and unsafe generation rejection are tested, not an unbounded production capacity strategy.
+- Actual disk quota exhaustion, uncontrolled renderer kill, entire browser-process crash, power loss/media flush, long sleep and physical Safari remain NOT_TESTED. Eight-copy capacity and unsafe generation rejection are tested, not an unbounded production capacity strategy.
 - Legacy raw is caller-acquired snapshot input; observed fork is detected without writes, but there is no LS/IDB cross-backend atomicity, old-tab rescue/import or protection from unobserved ABA/hostile same-origin modification/whole-store rollback/loss.
 - JSONv1, 8 production slots, current Facade, normal UI and disabled selective restore remain protected by existing unchanged regression paths.
 - Future work: approved one-way migration and old-LS rescue, production authority switch, compaction/capacity, recovery UX and real Safari. These are not completed by isolated acceptance.

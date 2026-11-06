@@ -180,6 +180,7 @@ export function scanWriterSources(sources) {
       if ((ts.isDeleteExpression(node) || (ts.isPostfixUnaryExpression(node) || ts.isPrefixUnaryExpression(node)) && [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) && isStorage(node.expression || node.operand)) report(node, 'persistent-property-mutation');
       if (ts.isCallExpression(node)) {
         const name = member(node.expression);
+        if (['glob', 'globEager'].includes(name) && ts.isPropertyAccessExpression(node.expression) && ts.isMetaProperty(node.expression.expression) && node.expression.expression.keywordToken === ts.SyntaxKind.ImportKeyword) report(node, 'dynamic-import-unresolved');
         if (['assign', 'set', 'defineProperty', 'defineProperties', 'deleteProperty'].includes(name) && node.arguments.some(isStorage)) report(node, 'reflective-storage-mutation');
         if (['get', 'getOwnPropertyDescriptor', 'getOwnPropertyDescriptors'].includes(name) && (node.arguments.some(isStorage) || node.arguments.some(argument => NATIVE_MUTATORS.has(literal(argument)) || ['localStorage', 'sessionStorage'].includes(literal(argument))))) report(node, 'reflective-storage-access');
         if (ts.isIdentifier(node.expression) && ['eval', 'Function'].includes(node.expression.text)) report(node, 'dynamic-code');

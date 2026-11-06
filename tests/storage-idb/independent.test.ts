@@ -51,3 +51,8 @@ describe('independent isolated-adapter product import boundary', () => {
     });
   }
 });
+
+it('rejects eager Vite glob imports of the isolated adapter into a product file', () => {
+  const failures = scanWriterSources({ 'app/page.tsx': "export const fixture = import.meta.glob('/e2e/fixtures/storage-idb.ts', { eager: true });" });
+  expect(failures.length).toBeGreaterThan(0);
+});
