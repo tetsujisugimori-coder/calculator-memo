@@ -1,10 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CASES, EXPECTED, validateReconciliationEvidence } from './storage-reconciliation-evidence.mjs';
-const good = () => ({ kind: 'read-only-reconciliation', status: 'passed', HOLD: true, executionAllowed: false,
-  provenance: { dirty: false, sha: 'a'.repeat(40), tree: 'b'.repeat(40), sourceSha256: 'c'.repeat(64), moduleSha256: 'd'.repeat(64) },
-  matrix: ['chromium', 'webkit'].flatMap(engine => [375, 390, 765, 1280].map(width => ({ engine, width, status: 'passed', browserVersion: 'test-version', errors: [], png: `${engine}-${width}.png`, pngSha256: 'e'.repeat(64), cases: CASES.map((name, i) => ({ name, status: 'passed', startedAt: '2026-11-07T00:00:00Z', finishedAt: '2026-11-07T00:00:01Z', observation: { executionAllowed: false, before: 'exact raw', after: 'exact raw', mutations: 0, report: { state: EXPECTED[i], HOLD: true, executionAllowed: false, findings: [] } } })) }))) });
-test('complete evidence positive control', () => assert.deepEqual(validateReconciliationEvidence(good(), { sha: 'a'.repeat(40), tree: 'b'.repeat(40) }), []));
+import { validateReconciliationEvidence } from './storage-reconciliation-evidence.mjs';
+import { readFileSync } from 'node:fs';
+const original = JSON.parse(readFileSync(new URL('./fixtures/storage-reconciliation-evidence.json', import.meta.url), 'utf8'));
+// Structural-validator fixture only. Repeating one real context here is not browser execution evidence.
+const good = () => { const e = structuredClone(original); e.matrix = ['chromium', 'webkit'].flatMap(engine => [375,390,765,1280].map(width => ({ ...structuredClone(original.matrix[0]), engine, width }))); return e; };
+test('complete evidence positive control', () => assert.deepEqual(validateReconciliationEvidence(good(), { sha: original.provenance.sha, tree: original.provenance.tree }), []));
 const mutations = [
  e => { e.matrix = []; }, e => { e.matrix.pop(); }, e => { e.matrix[1] = e.matrix[0]; },
  e => { e.matrix[0].cases = []; }, e => { e.matrix[0].cases.pop(); }, e => { e.matrix[0].cases[1] = e.matrix[0].cases[0]; },
@@ -18,3 +19,8 @@ const mutations = [
 ];
 mutations.forEach((mutate, i) => test(`reject independent malformed evidence ${i}`, () => { const e = good(); mutate(e); assert.notDeepEqual(validateReconciliationEvidence(e), []); }));
 test('reject stale HEAD despite syntactically valid SHA', () => assert.ok(validateReconciliationEvidence(good(), { sha: '0'.repeat(40), tree: 'b'.repeat(40) }).includes('provenance')));
+
+test('missing raw report fails closed', () => { const e = good(); delete e.matrix[0].cases[0].observation.report.evidence; assert.ok(validateReconciliationEvidence(e).length); });
+test('candidate hash mutation fails', () => { const e = good(); e.matrix[0].cases[0].observation.report.candidates[0].hash = '0'.repeat(64); assert.ok(validateReconciliationEvidence(e).includes('candidate-integrity')); });
+test('erasing failure reasons fails', () => { const e = good(); e.matrix[0].cases[1].observation.report.findings = []; assert.ok(validateReconciliationEvidence(e).includes('missing-case-reason')); });
+test('erasing restart observation fails', () => { const e = good(); delete e.matrix[0].cases[12].observation.pageReloadReport; assert.ok(validateReconciliationEvidence(e).includes('restart-evidence-missing')); });

@@ -22,3 +22,11 @@ Stage 3B HOLD / executionAllowed=false。実データ移行・本番切替NO。�
 追加自己反例2件は原HEAD f7082543でRED（元29件は成功）。過去source Bから現在Aへの復帰がCONSISTENTとなる問題を、過去観測との差分CONFLICTで拒否。破損headと明示HOLDが共存するとHOLD所見が消える問題は、構造判定とHOLD記録の独立化で修正。同反例で31/31 GREEN。独立レビューとは呼ばない。
 
 ローカルWebKitはDebian公式snapshot由来の既設展開済み依存ライブラリを/tmp browser bundle sys/libへ補完して実行予定。固定binaryの明示executablePathを記録し、CIではこのoverrideを拒否する。ldconfigのシステムcacheへ変更せず、repo依存/lockとブラウザbinaryは変更しない。CIの標準launcher結果と別扱いにする。
+
+## 別枠native診断の実測
+
+公開HEAD `163bcdab984796e59804d926093e7c2b52acfb97` / tree `b44b3ebe8b3200926d9c59e45eb9baa95543f7ba`で、Chromium141.0.7390.37 / WebKit26.0、375/390/765/1280pxの8条件×16ケース=128ケース成功。実IDBへ隔離故障を投入し、診断前後原票一致・mutator呼出0・UNKNOWN再読込保持・close後旧要求の失効を確認。代表PNG8枚、全文JSONとbundleを別実行dirに保存。iPhone Safari実機ではない。製品の正式GUI6条件とは別結果。
+
+同HEADの全129files/2984tests成功。初回31局所試験には自己反例2件を含む。証拠検査器を追加強化し、理由コード欠落・原票不一致・候補hash不一致・再読込原票欠落を拒否する30件の正負対照を確認。固定JSONは一つの実行contextを使った構造テスト用fixtureで、複製した条件を新規ブラウザ実行とは数えない。
+
+最終の独立レビュー・正式GUI原artifact・全CIはPR #133最終Checksと後続記録を正本とし、この中間成功だけで限定マージYESにしない。
