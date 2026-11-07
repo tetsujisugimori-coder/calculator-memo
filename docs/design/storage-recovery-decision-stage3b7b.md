@@ -10,7 +10,7 @@ Stage 3B-6の読取り専用診断結果を、**合成データに限定した�
 2. HOLD=true、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHEDを必須とする。矛盾があればfail-closed。
 3. 代表状態と全所見の優先順位整合を確認し、**すべての所見**と不足証拠、既知/未知の因果関係をそのまま返す。
 4. 候補は原本の順序・出典別に保持し、誰も自動選抜しない。判断資料には原文を埋め込まず、長さ・hash・ID等のメタデータを記載する。hash自体を真正性の保証としない。
-5. 環境別A1〜A6の確認済み原証拠がなければNOT_TESTEDとする。PASSを申告する場合は参照先を要求するが、その参照先の真正性・端末の適格性は別途人間が確認する。Stage 3B-7AのCIが成功しても実機SafariまでPASSへしない。
+5. 環境別A1〜A6の原証拠がなければNOT_TESTEDとする。PASSの申告には参照先と限定条件を要求する。ただし参照先の真正性・端末の適格性を自動確認する能力はないため、環境結果には `evidenceVerified=false` を明示し、独立検証済みとして扱わない。Stage 3B-7AのCIが成功しても実機SafariまでPASSへしない。
 6. 返却された資料は常にHOLD・selectedCandidate=null。資料を閲覧・コピーしても復旧の実行許可にはならない。
 
 ## 過去UNKNOWNと失効
