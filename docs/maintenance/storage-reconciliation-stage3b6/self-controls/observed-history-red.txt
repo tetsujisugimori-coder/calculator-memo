@@ -1,0 +1,81 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b6
+
+ ❯ tests/storage-reconciliation.test.ts (31 tests | 2 failed) 53ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > retains raw, UTF16 hash, generation and immutable input, never a winner 8ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > freezes supplied evidence before asynchronous work 1ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > blocks restore while preserving unknown facts 1ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > blocks merge while preserving unknown facts 0ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > blocks migration while preserving unknown facts 0ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > blocks retry while preserving unknown facts 1ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > absence of source cannot be consistent 0ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > absence of target cannot be consistent 1ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > absence of journal cannot be consistent 1ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > whole store disappearance keeps previous evidence and missing reasons 1ms
+   ✓ Stage 3B-6 observed consistency is not recovery authority > read changed and closed stale requests cannot report success 2ms
+   ✓ fault evidence and causal history > missing migration receipt after before receipt remains incomplete plus unknown 1ms
+   ✓ fault evidence and causal history > missing migration receipt after after primary write response lost remains incomplete plus unknown 1ms
+   ✓ fault evidence and causal history > missing migration receipt after quota remains incomplete plus unknown 1ms
+   ✓ fault evidence and causal history > receipt exists but source-before differs from target receipt: conflict, not repaired 2ms
+   ✓ fault evidence and causal history > retains UNKNOWN after restart and readable receipts 1ms
+   ✓ fault evidence and causal history > snapshot HOLD never hides a missing receipt or source uncertainty 0ms
+   ✓ fault evidence and causal history > valid snapshot with pending interrupted intent preserves ambiguity 1ms
+   ✓ fault evidence and causal history > rollback is detected from separate retained checkpoint, not time 1ms
+   ✓ fault evidence and causal history > ABA equal raw keeps generation and does not infer same save 1ms
+   ✓ fault evidence and causal history > late old source edit remains a separate candidate without authority 1ms
+   ✓ fault evidence and causal history > lost append-only evidence is incomplete despite valid current 1ms
+   ✓ fault evidence and causal history > captured B lost before commit cannot be reconstructed from attempt 1ms
+   ✓ fault evidence and causal history > all separate recorded branches retained with verified raw hashes and unknown parents 10ms
+   ✓ fault evidence and causal history > corruption never reports consistency 0 1ms
+   ✓ fault evidence and causal history > corruption never reports consistency 1 1ms
+   ✓ fault evidence and causal history > corruption never reports consistency 2 1ms
+   ✓ fault evidence and causal history > corruption never reports consistency 3 0ms
+   ✓ fault evidence and causal history > rejects production scope before touching storage 0ms
+   × retained negative observations are not erased > observed source ABA to frozen legacy remains a conflict 6ms
+     → expected [] to include 'source-changed-since-checkpoint'
+   × retained negative observations are not erased > corrupt head does not hide explicit persistent HOLD 7ms
+     → expected [ 'CORRUPTED' ] to deeply equal { Object ($$typeof, sample, ...) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-reconciliation.test.ts > retained negative observations are not erased > observed source ABA to frozen legacy remains a conflict
+AssertionError: expected [] to include 'source-changed-since-checkpoint'
+ ❯ tests/storage-reconciliation.test.ts:138:27
+    136|     const previous = capture(); previous.source = present(B);
+    137|     const result = await reconcileEvidence({ scope, previous, capture:…
+    138|     expect(codes(result)).toContain('source-changed-since-checkpoint');
+       |                           ^
+    139|     expect(result.state).toBe('CONFLICT');
+    140|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/storage-reconciliation.test.ts > retained negative observations are not erased > corrupt head does not hide explicit persistent HOLD
+AssertionError: expected [ 'CORRUPTED' ] to deeply equal { Object ($$typeof, sample, ...) }
+
+- Expected
++ Received
+
+- ArrayContaining [
++ [
+    "CORRUPTED",
+-   "BLOCKED",
+  ]
+
+ ❯ tests/storage-reconciliation.test.ts:144:47
+    142|     const s = genesis(); s.control = { protocol: 1, state: 'HOLD' }; s…
+    143|     const result = await reconcileEvidence(request(capture(s)));
+    144|     expect(result.findings.map(f => f.state)).toEqual(expect.arrayCont…
+       |                                               ^
+    145|   });
+    146| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 29 passed (31)
+   Start at  19:17:46
+   Duration  1.35s (transform 261ms, setup 0ms, collect 898ms, tests 53ms, environment 1ms, prepare 92ms)
+

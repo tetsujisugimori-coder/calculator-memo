@@ -130,3 +130,17 @@ describe('fault evidence and causal history', () => {
     expect(read).toBe(0);
   });
 });
+
+describe('retained negative observations are not erased', () => {
+  it('observed source ABA to frozen legacy remains a conflict', async () => {
+    const previous = capture(); previous.source = present(B);
+    const result = await reconcileEvidence({ scope, previous, capture: capture() });
+    expect(codes(result)).toContain('source-changed-since-checkpoint');
+    expect(result.state).toBe('CONFLICT');
+  });
+  it('corrupt head does not hide explicit persistent HOLD', async () => {
+    const s = genesis(); s.control = { protocol: 1, state: 'HOLD' }; s.head = {};
+    const result = await reconcileEvidence(request(capture(s)));
+    expect(result.findings.map(f => f.state)).toEqual(expect.arrayContaining(['CORRUPTED', 'BLOCKED']));
+  });
+});

@@ -1,0 +1,11 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b6
+
+ ✓ tests/storage-reconciliation.test.ts (31 tests) 74ms
+
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+   Start at  19:18:12
+   Duration  1.45s (transform 274ms, setup 0ms, collect 988ms, tests 74ms, environment 0ms, prepare 96ms)
+

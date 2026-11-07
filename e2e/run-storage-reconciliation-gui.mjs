@@ -22,6 +22,8 @@ let server, browser, context;
 try {
   assert.equal(sha, process.env.EXPECTED_SHA || sha);
   assert.equal(evidence.provenance.dirty, false, 'commit source before evidence run');
+  if (process.env.GITHUB_ACTIONS === 'true') assert.equal(process.env.WEBKIT_EXECUTABLE_PATH || '', '', 'CI must use pinned default launcher');
+  evidence.provenance.webkitExecutableOverride = process.env.WEBKIT_EXECUTABLE_PATH || null;
   evidence.provenance.sourceSha256 = await sourceHash();
   const built = await build({ configFile: false, logLevel: 'error', build: { write: false, minify: false, lib: { entry: 'e2e/fixtures/storage-reconciliation-browser.ts', formats: ['es'] }, rolldownOptions: { output: { codeSplitting: false } } } });
   const chunks = (Array.isArray(built) ? built : [built]).flatMap(x => x.output).filter(x => x.type === 'chunk'); assert.equal(chunks.length, 1);
@@ -36,7 +38,7 @@ try {
   server.listen(0, '127.0.0.1'); await once(server, 'listening'); const origin = `http://127.0.0.1:${server.address().port}`;
   for (const [engine, type] of [['chromium', chromium], ['webkit', webkit]]) {
     try {
-      browser = await type.launch({ headless: true });
+      browser = await type.launch({ headless: true, ...(engine === 'webkit' && process.env.WEBKIT_EXECUTABLE_PATH ? { executablePath: process.env.WEBKIT_EXECUTABLE_PATH } : {}) });
       for (const width of [375, 390, 765, 1280]) {
         const row = { engine, width, browserVersion: browser.version(), status: 'running', errors: [], cases: [] }; evidence.matrix.push(row); await save();
         context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: width < 400, isMobile: width < 400, serviceWorkers: 'block' });

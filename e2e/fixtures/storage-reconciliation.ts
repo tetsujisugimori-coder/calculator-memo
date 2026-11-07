@@ -53,6 +53,7 @@ export async function reconcileEvidence(input: Request) {
   if (target) {
     const head = !targetReason && validToken(target.head) ? tokenOf(target.head) : null;
     await candidate('target.current', target.current, head, head?.latestOperation ?? null);
+    if (object(target.control) && target.control.protocol === 1 && target.control.state === 'HOLD') add('BLOCKED', 'persistent-target-hold', 'target.control');
     if (!targetReason) {
       for (const [key, value] of Object.entries(target)) {
         if (key.startsWith('receipt:') && object(value) && validToken(value.token)) knownCausality.push(`${key}: ${String(value.previous)} -> ${value.token.latestOperation} at incarnation=${value.token.incarnation}, generation=${value.token.generation}`);
@@ -63,7 +64,6 @@ export async function reconcileEvidence(input: Request) {
         }
         if (key.startsWith('diagnostic:')) add('UNKNOWN', 'retained-target-unknown', 'target.' + key);
       }
-      if (object(target.control) && target.control.state === 'HOLD') add('BLOCKED', 'persistent-target-hold', 'target.control');
       if (capture.source?.kind === 'present' && object(target.head) && capture.source.value !== target.head.legacyRaw) {
         add('CONFLICT', 'old-source-diverged-from-frozen-legacy', 'source', 'target.head.legacyRaw');
         unknownCausality.push('Old-source edit order and ancestry are not established by timestamps or equal content.');
@@ -101,6 +101,8 @@ export async function reconcileEvidence(input: Request) {
   }
   if (previous) {
     // Checkpoints are separately retained observations, not a new storage authority/format.
+    if (previous.source.kind === 'present' && !validRaw(previous.source.value)) add('CORRUPTED', 'invalid-previous-source', 'previous.source');
+    if (previous.source.kind === 'present' && capture.source.kind === 'present' && previous.source.value !== capture.source.value) add('CONFLICT', 'source-changed-since-checkpoint', 'previous.source', 'source');
     const p = snapshot(previous.target);
     let pReason: string | null = null;
     try { pReason = p ? inspectSnapshot(p) : null; } catch { pReason = 'invalid-previous-snapshot'; }
