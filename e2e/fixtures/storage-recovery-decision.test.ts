@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { reconcileEvidence } from './storage-reconciliation';
 import { buildRecoveryDecisionSheet, type ReconciliationReport } from './storage-recovery-decision';
 
 function fixture(): ReconciliationReport {
@@ -85,5 +86,26 @@ describe('Stage 3B-7B decision-only layer', () => {
     expect(() => buildRecoveryDecisionSheet(fixture(), [recorded, recorded])).toThrow('invalid-environment-evidence');
     expect(buildRecoveryDecisionSheet(fixture(), [recorded]).environment[0].status).toBe('PASS');
     expect(buildRecoveryDecisionSheet(fixture(), [recorded]).environment[1].status).toBe('NOT_TESTED');
+  });
+});
+
+describe('integration with the actual Stage 3B-6 reconciler', () => {
+  it('keeps all real synthetic candidate origins, without copying raw or granting execution', async () => {
+    const raw = JSON.stringify({ version: 1, history: [], notes: [], settings: { theme: 'light', activePanel: 'history' } });
+    const token = { structure: 1, incarnation: 'review', generation: 0, latestOperation: 'genesis' };
+    const snapshot = { head: { ...token, protocol: 1, legacyRaw: raw }, current: raw,
+      control: { protocol: 1, state: 'CLEAR' },
+      'receipt:genesis': { protocol: 1, token, previous: null, raw } };
+    const report = await reconcileEvidence({
+      scope: { source: 'stage3b5-test-review', destination: 'stage3b4-test-review' },
+      capture: { source: { kind: 'present', value: raw }, target: { kind: 'present', value: snapshot }, journal: { kind: 'present', value: {} } },
+    });
+    expect(report.state).toBe('CONSISTENT');
+    const sheet = buildRecoveryDecisionSheet(report);
+    expect(sheet.candidates.map(x => x.evidence)).toEqual(report.candidates.map(x => x.evidence));
+    expect(sheet.candidateCount).toBe(2);
+    expect(sheet.selectedCandidate).toBeNull();
+    expect(sheet.executionAllowed).toBe(false);
+    expect(JSON.stringify(sheet)).not.toContain(raw);
   });
 });
