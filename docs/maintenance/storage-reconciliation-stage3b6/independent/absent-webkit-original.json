@@ -1,0 +1,100 @@
+{
+  "note": "Independent direct IndexedDB open + upgrade abort. No fixture or production code. Synthetic isolated origin.",
+  "engines": [
+    {
+      "engine": "chromium",
+      "browser": "141.0.7390.37",
+      "before": [],
+      "events": [
+        {
+          "event": "upgrade",
+          "old": 1,
+          "stores": []
+        },
+        {
+          "event": "error",
+          "error": "AbortError: Version change transaction was aborted in upgradeneeded event handler."
+        }
+      ],
+      "after": [
+        {
+          "delay": 0,
+          "databases": []
+        },
+        {
+          "delay": 50,
+          "databases": []
+        },
+        {
+          "delay": 500,
+          "databases": []
+        },
+        {
+          "delay": 2000,
+          "databases": []
+        }
+      ],
+      "afterReload": []
+    },
+    {
+      "engine": "webkit",
+      "browser": "26.0",
+      "before": [],
+      "events": [
+        {
+          "event": "upgrade",
+          "old": 1,
+          "stores": []
+        },
+        {
+          "event": "error",
+          "error": "AbortError: The operation was aborted."
+        }
+      ],
+      "after": [
+        {
+          "delay": 0,
+          "databases": [
+            {
+              "name": "stage3b4-test-independent-absent",
+              "version": 0
+            }
+          ]
+        },
+        {
+          "delay": 50,
+          "databases": [
+            {
+              "name": "stage3b4-test-independent-absent",
+              "version": 0
+            }
+          ]
+        },
+        {
+          "delay": 500,
+          "databases": [
+            {
+              "name": "stage3b4-test-independent-absent",
+              "version": 0
+            }
+          ]
+        },
+        {
+          "delay": 2000,
+          "databases": [
+            {
+              "name": "stage3b4-test-independent-absent",
+              "version": 0
+            }
+          ]
+        }
+      ],
+      "afterReload": [
+        {
+          "name": "stage3b4-test-independent-absent",
+          "version": 0
+        }
+      ]
+    }
+  ]
+}

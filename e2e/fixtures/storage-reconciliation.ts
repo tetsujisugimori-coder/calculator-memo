@@ -12,7 +12,7 @@ export type Request = { scope: Scope; capture: Capture; previous?: Capture; requ
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 const validScope = (s: Scope) => !!s && /^stage3b5-test-[A-Za-z0-9_-]{1,120}$/.test(s.source) && /^stage3b4-test-[A-Za-z0-9_-]{1,120}$/.test(s.destination);
-const snapshot = (r: ReadEvidence<Snapshot>) => r.kind === 'present' && object(r.value) ? r.value : null;
+const snapshot = (r: ReadEvidence<Snapshot> | undefined) => r?.kind === 'present' && object(r.value) ? r.value : null;
 const priorities: State[] = ['CORRUPTED', 'CONFLICT', 'INCOMPLETE', 'UNKNOWN', 'BLOCKED'];
 
 /** Freezes caller input before async hashing. Evidence consistency never grants authority. */
@@ -54,9 +54,9 @@ export async function reconcileEvidence(input: Request) {
     const head = !targetReason && validToken(target.head) ? tokenOf(target.head) : null;
     await candidate('target.current', target.current, head, head?.latestOperation ?? null);
     if (object(target.control) && target.control.protocol === 1 && target.control.state === 'HOLD') add('BLOCKED', 'persistent-target-hold', 'target.control');
-    if (!targetReason) {
-      for (const [key, value] of Object.entries(target)) {
-        if (key.startsWith('receipt:') && object(value) && validToken(value.token)) knownCausality.push(`${key}: ${String(value.previous)} -> ${value.token.latestOperation} at incarnation=${value.token.incarnation}, generation=${value.token.generation}`);
+    // Integrity defects in one record must not hide other retained uncertainty.
+    for (const [key, value] of Object.entries(target)) {
+        if (!targetReason && key.startsWith('receipt:') && object(value) && validToken(value.token)) knownCausality.push(`${key}: ${String(value.previous)} -> ${value.token.latestOperation} at incarnation=${value.token.incarnation}, generation=${value.token.generation}`);
         if (key.startsWith('intent:') && object(value)) {
           // Even READBACK_MATCH is not evidence of outer coordinator completion.
           add('UNKNOWN', 'historical-intent-not-completion:' + String(value.phase), 'target.' + key);
@@ -64,18 +64,30 @@ export async function reconcileEvidence(input: Request) {
         }
         if (key.startsWith('diagnostic:')) add('UNKNOWN', 'retained-target-unknown', 'target.' + key);
       }
+    if (!targetReason) {
       if (capture.source?.kind === 'present' && object(target.head) && capture.source.value !== target.head.legacyRaw) {
         add('CONFLICT', 'old-source-diverged-from-frozen-legacy', 'source', 'target.head.legacyRaw');
         unknownCausality.push('Old-source edit order and ancestry are not established by timestamps or equal content.');
       }
     }
   }
-  if (journal && !journalReason) {
+  if (journal) {
+    // Validate each record with only its required predecessor; unrelated corruption
+    // cannot erase a valid pending attempt or a preserved branch.
+    const validRecords = new Set<string>();
     for (const [key, value] of Object.entries(journal)) {
-      if (!object(value)) continue;
+      const subset: Snapshot = { [key]: value };
+      if (object(value) && key.startsWith('receipt:')) subset['attempt:' + value.migrationId] = journal['attempt:' + value.migrationId];
+      if (object(value) && key.startsWith('rescue:')) subset['rescue-attempt:' + value.rescueId] = journal['rescue-attempt:' + value.rescueId];
+      const reason = await inspectJournalRecords(subset, request.scope);
+      if (!reason) validRecords.add(key);
+      else add('CORRUPTED', reason, 'journal.' + key);
+    }
+    for (const [key, value] of Object.entries(journal)) {
+      if (!object(value) || !validRecords.has(key)) continue;
       if (key.startsWith('diagnostic:')) add('UNKNOWN', 'retained-journal-unknown:' + String(value.reason), 'journal.' + key);
       if (key.startsWith('attempt:')) {
-        if (!journal['receipt:' + value.migrationId]) { add('INCOMPLETE', 'migration-receipt-missing', 'journal.' + key); missingEvidence.push('journal.receipt:' + value.migrationId); }
+        if (!validRecords.has('receipt:' + value.migrationId)) { add('INCOMPLETE', 'migration-receipt-missing', 'journal.' + key); missingEvidence.push('journal.receipt:' + value.migrationId); }
         add('UNKNOWN', 'historical-migration-attempt-not-completion', 'journal.' + key);
       }
       if (key.startsWith('receipt:') && target && !targetReason) {
@@ -86,7 +98,7 @@ export async function reconcileEvidence(input: Request) {
       }
       if (key.startsWith('rescue-attempt:')) {
         add('UNKNOWN', 'historical-rescue-attempt-not-completion', 'journal.' + key);
-        if (!journal['rescue:' + value.rescueId]) {
+        if (!validRecords.has('rescue:' + value.rescueId)) {
           add('INCOMPLETE', 'rescue-capture-gap-no-durable-raw', 'journal.' + key);
           missingEvidence.push('uncaptured-source-value:' + value.rescueId);
           unknownCausality.push('Values overwritten before durable branch capture cannot be reconstructed from attempt metadata.');
@@ -100,13 +112,17 @@ export async function reconcileEvidence(input: Request) {
     }
   }
   if (previous) {
+    for (const key of ['source', 'target', 'journal'] as const) {
+      const r = previous[key];
+      if (!r || !['present', 'absent', 'unavailable'].includes(r.kind) || r.kind === 'present' && (key === 'source' ? typeof r.value !== 'string' : !object(r.value))) add('CORRUPTED', 'invalid-previous-read-envelope', 'previous.' + key);
+    }
     // Checkpoints are separately retained observations, not a new storage authority/format.
-    if (previous.source.kind === 'present' && !validRaw(previous.source.value)) add('CORRUPTED', 'invalid-previous-source', 'previous.source');
-    if (previous.source.kind === 'present' && capture.source.kind === 'present' && previous.source.value !== capture.source.value) add('CONFLICT', 'source-changed-since-checkpoint', 'previous.source', 'source');
+    if (previous.source?.kind === 'present' && !validRaw(previous.source.value)) add('CORRUPTED', 'invalid-previous-source', 'previous.source');
+    if (previous.source?.kind === 'present' && capture.source.kind === 'present' && previous.source.value !== capture.source.value) add('CONFLICT', 'source-changed-since-checkpoint', 'previous.source', 'source');
     const p = snapshot(previous.target);
     let pReason: string | null = null;
     try { pReason = p ? inspectSnapshot(p) : null; } catch { pReason = 'invalid-previous-snapshot'; }
-    if (previous.target.kind === 'unavailable' || previous.journal.kind === 'unavailable' || previous.source.kind === 'unavailable') add('UNKNOWN', 'previous-observation-unavailable');
+    if (previous.target?.kind === 'unavailable' || previous.journal?.kind === 'unavailable' || previous.source?.kind === 'unavailable') add('UNKNOWN', 'previous-observation-unavailable');
     if (pReason) add('CORRUPTED', 'invalid-previous-evidence:' + pReason, 'previous.target');
     if (p && !pReason && target && !targetReason && validToken(p.head) && validToken(target.head)) {
       if (p.head.incarnation !== target.head.incarnation) add('CONFLICT', 'incarnation-changed-not-inferred-authority', 'previous.target.head', 'target.head');
@@ -118,12 +134,12 @@ export async function reconcileEvidence(input: Request) {
         else knownCausality.push(p.current === target.current ? 'Same content, later generation: retained ABA history; not the same save.' : 'Checkpoint predecessor retained by exact receipt.');
       }
     }
-    for (const key of ['source', 'target', 'journal'] as const) if (previous[key].kind === 'present' && capture[key]?.kind === 'absent') add('INCOMPLETE', 'previously-observed-store-disappeared', key);
+    for (const key of ['source', 'target', 'journal'] as const) if (previous[key]?.kind === 'present' && capture[key]?.kind === 'absent') add('INCOMPLETE', 'previously-observed-store-disappeared', key);
     const pj = snapshot(previous.journal);
     if (pj) {
       const reason = await inspectJournalRecords(pj, request.scope);
       if (reason) add('CORRUPTED', 'invalid-previous-journal:' + reason, 'previous.journal');
-      else if (journal && !journalReason) for (const [key, value] of Object.entries(pj)) {
+      if (journal) for (const [key, value] of Object.entries(pj)) {
         if (!Object.hasOwn(journal, key)) add('INCOMPLETE', 'append-only-journal-record-lost', 'journal.' + key);
         else if (!same(value, journal[key])) add('CONFLICT', 'append-only-journal-record-changed', 'journal.' + key);
       }
@@ -140,15 +156,23 @@ export async function reconcileEvidence(input: Request) {
   };
 }
 
-/** Opening an absent database aborts its upgrade; no store/record is created. */
+/** Enumerate first: even an aborted open of an absent DB changes WebKit's catalog. */
 export async function readSyntheticStore(name: string, storeName: 'records' | 'evidence', factory: IDBFactory = indexedDB): Promise<ReadEvidence<Snapshot>> {
   if (!/^stage3b4-test-[A-Za-z0-9_-]{1,160}$/.test(name)) throw Error('synthetic-namespace-required');
+  if (!factory || typeof factory.databases !== 'function') return { kind: 'unavailable', reason: 'read-only-database-enumeration-unavailable' };
+  try {
+    const names = await factory.databases();
+    if (!names.some(db => db.name === name)) return { kind: 'absent' };
+  } catch (e) { return { kind: 'unavailable', reason: 'database-enumeration-failed:' + String(e) }; }
+  // IndexedDB has no open-existing-only API. A concurrent deletion after the
+  // enumeration can still trigger upgrade: abort and retain UNKNOWN, never seed.
   return new Promise(resolve => {
     let absent = false, rejected = false;
-    const req = factory.open(name);
+    let req: IDBOpenDBRequest;
+    try { req = factory.open(name); } catch (e) { resolve({ kind: 'unavailable', reason: String(e) }); return; }
     req.onupgradeneeded = () => { absent = true; req.transaction?.abort(); };
     req.onblocked = () => { rejected = true; resolve({ kind: 'unavailable', reason: 'read-open-blocked' }); };
-    req.onerror = () => resolve(absent ? { kind: 'absent' } : { kind: 'unavailable', reason: String(req.error) });
+    req.onerror = () => resolve(absent ? { kind: 'unavailable', reason: 'store-disappeared-between-enumeration-and-open' } : { kind: 'unavailable', reason: String(req.error) });
     req.onsuccess = () => {
       const db = req.result;
       if (rejected) { db.close(); return; }

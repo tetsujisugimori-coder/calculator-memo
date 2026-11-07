@@ -51,6 +51,10 @@ jobs:
         id: acceptance
         timeout-minutes: 6
         run: node e2e/run-stage.mjs storage-reconciliation-browser timeout --signal=TERM --kill-after=10s 330s node e2e/run-storage-reconciliation-gui.mjs
+      - name: Independent native counterexamples and read-only catalog controls
+        id: independent_acceptance
+        timeout-minutes: 6
+        run: node e2e/run-stage.mjs reconciliation-independent-browser timeout --signal=TERM --kill-after=10s 330s node docs/maintenance/storage-reconciliation-stage3b6/independent/browser-controls.mjs
       - name: Preserve failures and outcomes
         if: always()
         env:

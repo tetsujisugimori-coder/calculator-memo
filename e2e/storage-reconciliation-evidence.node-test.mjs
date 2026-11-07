@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateReconciliationEvidence } from './storage-reconciliation-evidence.mjs';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 const original = JSON.parse(readFileSync(new URL('./fixtures/storage-reconciliation-evidence.json', import.meta.url), 'utf8'));
 // Structural-validator fixture only. Repeating one real context here is not browser execution evidence.
@@ -24,3 +25,15 @@ test('missing raw report fails closed', () => { const e = good(); delete e.matri
 test('candidate hash mutation fails', () => { const e = good(); e.matrix[0].cases[0].observation.report.candidates[0].hash = '0'.repeat(64); assert.ok(validateReconciliationEvidence(e).includes('candidate-integrity')); });
 test('erasing failure reasons fails', () => { const e = good(); e.matrix[0].cases[1].observation.report.findings = []; assert.ok(validateReconciliationEvidence(e).includes('missing-case-reason')); });
 test('erasing restart observation fails', () => { const e = good(); delete e.matrix[0].cases[12].observation.pageReloadReport; assert.ok(validateReconciliationEvidence(e).includes('restart-evidence-missing')); });
+
+const originMutations = [
+ ['missing candidates', e => { e.matrix[0].cases[0].observation.report.candidates = []; }],
+ ['invented source causality', e => { Object.assign(e.matrix[0].cases[0].observation.report.candidates[0], { token: { structure: 1, incarnation: 'invented', generation: 4, latestOperation: 'invented' }, receipt: 'invented' }); }],
+ ['replacement raw with valid hash', e => { const c = e.matrix[0].cases[0].observation.report.candidates[0]; c.raw += ' '; c.length = c.raw.length; c.hash = createHash('sha256').update(Buffer.from(c.raw, 'utf16le')).digest('hex'); }],
+ ['duplicate candidate origin', e => { const c = e.matrix[0].cases.find(c => c.name === 'multiple-branches').observation.report.candidates; c[3] = structuredClone(c[2]); }],
+ ['invented inventory', e => { e.matrix[0].cases[0].observation.report.candidates[0].ids = ['notes:invented']; }],
+ ['write permission', e => { e.matrix[0].cases[0].observation.report.writeAllowed = true; }],
+];
+for (const [name, mutate] of originMutations) test('independent regression: ' + name, () => { const e = good(); mutate(e); assert.ok(validateReconciliationEvidence(e).length); });
+
+test('independent regression: schema validity cannot be flipped', () => { const e = good(); e.matrix[0].cases[0].observation.report.candidates[0].schemaValid = false; assert.ok(validateReconciliationEvidence(e).includes('candidate-schema')); });

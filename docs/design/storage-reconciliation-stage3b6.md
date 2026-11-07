@@ -10,7 +10,7 @@ Stage 3B-4のrecords（head/current/control/receipt/copy/intent/diagnostic）、
 
 診断入力のCaptureは保存形式ではなく読取結果の報告構造。present/absent/unavailableを区別する。source/target/journalを2巡して一致を観察するが跨ストアのatomic snapshotと主張しない。変化時はUNKNOWN。無通知ABAや両巡の間で消えた変更は検出不能と明記する。過去のCaptureを別保管した場合は巻戻り、incarnation変化、append-only journalの消失/変更と照合できる。過去観測がなければ未観測の巻戻りを検出できたとしない。
 
-IndexedDBはreadonly transactionのみ。未存在DBはopenのupgradeをabortし、store/recordを作成しない。sourceは指定getterのみ。診断表示は所有loopbackの合成ページに限定し、本番UIにボタンを足さない。close時のepochで遅延読取結果を失効させる。
+IndexedDBはreadonly transactionのみ。まずdatabases()で列挙し、未存在DBをopenしない。列挙不能はUNKNOWNとする。WebKitでは未存在DBのopen→upgrade abortでもversion 0のcatalog entryがreload後まで残ることを独立実測したため、この処理を避ける。列挙→open間の他context削除競合には既存限定openのAPIがなく、upgradeをabortしてUNKNOWNとし、catalogまで不変とは保証しない。store/recordの作成や削除はしない。sourceは指定getterのみ。診断表示は所有loopbackの合成ページに限定し、本番UIにボタンを足さない。close時のepochで遅延読取結果を失効させる。
 
 ## 判定
 
@@ -39,3 +39,7 @@ rescue-attemptがありrescue recordがない場合は `rescue-capture-gap-no-du
 単体の構造反例とnative IndexedDBの破損/消失/巻戻り注入を分離する。診断前後snapshot一致とStorage/IDB mutator呼出0を検証する。receipt前障害、応答喪失、quota例外は合成注入であり実ディスク障害ではない。Chromium/WebKit4幅の別枠診断と既存正式GUI6条件1128/592/132は別々に評価。実機Safari、OS/private browsing保持、実quota、媒体flush、捕捉前source値はNOT_TESTED/UNKNOWNを保持する。
 
 戻し方はこのPRのe2e fixture/tests/workflow/docsをrevertすること。製品保存形式変更がないため実データ移行や逆移行は不要。
+
+## 独立反例後の判定保全
+
+currentまたはpreviousの破損recordを検出しても、別の有効なattempt・UNKNOWN・捕捉gap・append-only消失を隠さない。journalの各recordと必須先行recordを個別に検証し、未検証branchを候補へ昇格させない。取得例外、過去観測envelope破損、候補の原文/世代/receipt/ID改変は独立反例で検証する。

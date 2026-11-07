@@ -1,0 +1,34 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b6
+
+ ❯ tests/storage-reconciliation-independent.test.ts (7 tests | 1 failed) 29ms
+   ✓ independent Stage 3B-6 counterexamples > positive: identical independent genesis remains bounded consistency only 10ms
+   ✓ independent Stage 3B-6 counterexamples > R1: synchronous IndexedDB SecurityError must be reported UNKNOWN, not lose the report 6ms
+   ✓ independent Stage 3B-6 counterexamples > R2: corrupt retained target capture cannot be silently ignored as CONSISTENT 1ms
+   ✓ independent Stage 3B-6 counterexamples > R2: corrupt retained journal capture cannot be silently ignored as CONSISTENT 1ms
+   ✓ independent Stage 3B-6 counterexamples > R3: a missing receipt must not hide an explicit retained target UNKNOWN 1ms
+   ✓ independent Stage 3B-6 counterexamples > R3: unrelated corrupt journal record must not hide pending rescue capture gap 1ms
+   × independent mixed checkpoint evidence > R3 extension: unrelated current journal corruption cannot hide a known prior record loss 8ms
+     → expected [ 'invalid-journal-record', …(1) ] to include 'append-only-journal-record-lost'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-reconciliation-independent.test.ts > independent mixed checkpoint evidence > R3 extension: unrelated current journal corruption cannot hide a known prior record loss
+AssertionError: expected [ 'invalid-journal-record', …(1) ] to include 'append-only-journal-record-lost'
+ ❯ tests/storage-reconciliation-independent.test.ts:63:46
+     61|     const result = await reconcileEvidence({ scope, capture: current, …
+     62|     expect(result.state).toBe('CORRUPTED');
+     63|     expect(result.findings.map(f => f.code)).toContain('append-only-jo…
+       |                                              ^
+     64|   });
+     65| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  19:33:32
+   Duration  2.24s (transform 444ms, setup 0ms, collect 1.52s, tests 29ms, environment 0ms, prepare 122ms)
+

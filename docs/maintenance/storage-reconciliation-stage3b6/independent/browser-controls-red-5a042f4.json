@@ -1,0 +1,82 @@
+{
+  "out": "gui-evidence/independent-reconciliation-5a042f4b85e6-18958d02-cd10-442f-8070-64ed6f67e7cf",
+  "sha": "5a042f4b85e62973d9204335b185157d02146fcd",
+  "sourceSha256": "c20c367eaa0fb6ba85422ee1311e5c1d655c6b6a43a42ed483330f44634cd64e",
+  "moduleSha256": "73357a7fd2121b054e4d9c02d6b9257fefef12259463fcdbdf36094a5061c962",
+  "sourceUnchanged": false,
+  "conditions": 8,
+  "cases": 64,
+  "red": [
+    "chromium:375:R1 synchronous open failure",
+    "chromium:375:R2 malformed retained checkpoint",
+    "chromium:375:R3 missing receipt plus persistent UNKNOWN",
+    "chromium:375:R3 corrupt journal plus valid capture gap",
+    "chromium:390:R1 synchronous open failure",
+    "chromium:390:R2 malformed retained checkpoint",
+    "chromium:390:R3 missing receipt plus persistent UNKNOWN",
+    "chromium:390:R3 corrupt journal plus valid capture gap",
+    "chromium:765:R1 synchronous open failure",
+    "chromium:765:R2 malformed retained checkpoint",
+    "chromium:765:R3 missing receipt plus persistent UNKNOWN",
+    "chromium:765:R3 corrupt journal plus valid capture gap",
+    "chromium:1280:R1 synchronous open failure",
+    "chromium:1280:R2 malformed retained checkpoint",
+    "chromium:1280:R3 missing receipt plus persistent UNKNOWN",
+    "chromium:1280:R3 corrupt journal plus valid capture gap",
+    "webkit:375:R1 synchronous open failure",
+    "webkit:375:R2 malformed retained checkpoint",
+    "webkit:375:R3 missing receipt plus persistent UNKNOWN",
+    "webkit:375:R3 corrupt journal plus valid capture gap",
+    "webkit:375:absent read creates no database",
+    "webkit:390:R1 synchronous open failure",
+    "webkit:390:R2 malformed retained checkpoint",
+    "webkit:390:R3 missing receipt plus persistent UNKNOWN",
+    "webkit:390:R3 corrupt journal plus valid capture gap",
+    "webkit:390:absent read creates no database",
+    "webkit:765:R1 synchronous open failure",
+    "webkit:765:R2 malformed retained checkpoint",
+    "webkit:765:R3 missing receipt plus persistent UNKNOWN",
+    "webkit:765:R3 corrupt journal plus valid capture gap",
+    "webkit:765:absent read creates no database",
+    "webkit:1280:R1 synchronous open failure",
+    "webkit:1280:R2 malformed retained checkpoint",
+    "webkit:1280:R3 missing receipt plus persistent UNKNOWN",
+    "webkit:1280:R3 corrupt journal plus valid capture gap",
+    "webkit:1280:absent read creates no database"
+  ],
+  "errors": [],
+  "pngs": [
+    {
+      "png": "chromium-375.png",
+      "sha256": "1c520ed57eb0d0eba4447f87434768aa5ab9ebbeb4b6c8e3418c23b49ef2ba39"
+    },
+    {
+      "png": "chromium-390.png",
+      "sha256": "bb73f31c9e44d619224d0f2fc44eeb2fd3667fecd588b4763b6c5a251a9f289a"
+    },
+    {
+      "png": "chromium-765.png",
+      "sha256": "27115843aee32ff4c53a1d6c64e48c59073c26a532cae9b5df90bac7f65dcf8a"
+    },
+    {
+      "png": "chromium-1280.png",
+      "sha256": "057d184f5a3593d93fefa44387493f3132578fa1e52177c41dd5e46979b6917c"
+    },
+    {
+      "png": "webkit-375.png",
+      "sha256": "b47f2617821583b212e3906c98fe07499b0f646abc15d9d629479cdb6b3f6892"
+    },
+    {
+      "png": "webkit-390.png",
+      "sha256": "97fa47f24e92e1cdf9c2d2835a872905e81df7a0d35eba5d887a522dc2e3c509"
+    },
+    {
+      "png": "webkit-765.png",
+      "sha256": "56801a00a9e27ea5f1ff7fcf2e14fe09fcf13720e8cd2599cddae4c01c007546"
+    },
+    {
+      "png": "webkit-1280.png",
+      "sha256": "080c48b586a9420190fed8b1e0d19b964756844ce630b1b323fb4af3e386d69d"
+    }
+  ]
+}
