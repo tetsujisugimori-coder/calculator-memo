@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-07 (JST): Stage 3B-7A 未検証環境の安全確認（準備・原票補強）
+
+- [Issue #134](https://github.com/tetsujisugimori-coder/calculator-memo/issues/134)。PR #133統合後のmainから独立branchで開始。実機Safari/private browsing/実quota/強制終了/媒体永続性は未検証（NOT_TESTED）、安全な隔離環境がないまま破壊的試験は行わない。
+- [設計](docs/design/storage-environment-stage3b7a.md)・[検証台帳](docs/maintenance/storage-environment-stage3b7a/verification.md)。Stage 3B-6独立runnerの初期ロード失敗でrow/エラー/途中証拠が消えないよう局所修正し、未完走/欠落を成功にしない。
+- 自動検証・独立再レビュー・正式GUI・最終CIはPR作成前時点で未実行。既存1128/592/132は期待契約のみ。executionAllowed=false、Stage 3B HOLD、実書込み/実移行/実救出NO。Draft PRで提出、マージ・公開なし。
+
+
 ## 2026-11-07 (JST): Stage 3B-6 読取り専用照合と手動復旧判断基盤
 
 - [Issue #132](https://github.com/tetsujisugimori-coder/calculator-memo/issues/132)。PR #131統合main ce87b7cから専用branchで開始。既存records/journal形式とvalidatorを再利用し、製品差分・実データwriteなし。
