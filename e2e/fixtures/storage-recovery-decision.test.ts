@@ -72,7 +72,7 @@ describe('Stage 3B-7B decision-only layer', () => {
   });
   it('rejects executable candidate and production scope', () => {
     const a = fixture();
-    a.candidates[0] = { ...a.candidates[0], executionAllowed: true as false };
+    (a.candidates[0] as { executionAllowed: boolean }).executionAllowed = true;
     expect(() => buildRecoveryDecisionSheet(a)).toThrow();
     const b = fixture();
     b.subject.source = 'production-user-data';
