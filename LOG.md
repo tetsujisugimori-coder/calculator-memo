@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-07 (JST): Stage 3B-6 読取り専用照合と手動復旧判断基盤
+
+- [Issue #132](https://github.com/tetsujisugimori-coder/calculator-memo/issues/132)。PR #131統合main ce87b7cから専用branchで開始。既存records/journal形式とvalidatorを再利用し、製品差分・実データwriteなし。
+- [設計](docs/design/storage-reconciliation-stage3b6.md)と[検証台帳](docs/maintenance/storage-reconciliation-stage3b6/verification.md)。複数所見を保持し、CONSISTENTと実行許可を分離。欠落receipt/全消失/巻戻り/ABA/捕捉gapをUNKNOWN等で保持し、勝者推測や未捕捉原文再構成をしない。
+- 初期dirty局所29単体・26Node証拠契約・型検査成功。最終HEAD CI・正式GUI・独立レビュー前のためマージ推奨NO。既存1128/592/132の過去成功は加算しない。
+- HOLD、executionAllowed=false、実移行/救出/統合/本番切替NO。Draft解除・merge・公開なし。
+
 ## 2026-11-06 (JST): Stage 3B-5 片方向移行・分岐救出の隔離検証を開始
 
 - [Issue #130](https://github.com/tetsujisugimori-coder/calculator-memo/issues/130)。最新 main `eb8fd95bb28e992963aba3b47a14529949736058` と Stage 3B-4 #128 / #129、実装・レビュー・CI台帳を確認し、別 checkout / `feat/stage3b5-isolated-migration` を作成。同目的の Issue/PR/branch は見つからなかった。

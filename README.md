@@ -1,5 +1,7 @@
 # Calculation Memo
 
+Stage 3B-6は合成データ専用の[保存履歴の読取り専用照合](docs/design/storage-reconciliation-stage3b6.md)です。原文・世代・receipt・分岐証拠を区別し、不足記録・UNKNOWN・捕捉gapを残した手動判断用レポートを生成します。**復旧実行、実データ移行、production authority切替は行いません。Stage 3B HOLD / executionAllowed=falseを継続します。** [検証台帳](docs/maintenance/storage-reconciliation-stage3b6/verification.md)。
+
 Stage 3B-3は、既存の全writerを操作別の[Storage Facade](docs/design/storage-facade-stage3b3.md)へ統合します。通常保存・初期化・全体復元・保全管理の読戻しとUNKNOWNを共通化し、直接書込みを静的契約で検出します。保存先/JSON v1は変更せず、選択復元は `executionAllowed=false`／HOLDのままです。[検証と残る保証境界](docs/maintenance/storage-facade-stage3b3/verification.md)を確認してください。
 
 Stage 3B-2では、[全writer棚卸し](docs/design/storage-writers-stage3b2.md)と[旧タブ・世代管理・4方式比較](docs/design/storage-architecture-stage3b2.md)、隔離したIndexedDB transactionの試験PoCを追加しています。製品の保存経路は切り替えず、実選択復元は引き続き `executionAllowed=false`／HOLDです。[検証・保証限界](docs/maintenance/storage-architecture-20261105/verification.md)を参照してください。
