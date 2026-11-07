@@ -1,6 +1,7 @@
 // Stage 3B-7B: synthetic-only, pure human decision material.
 // No storage APIs, no persistence, and no recovery operation is exposed.
 import type { reconcileEvidence } from './storage-reconciliation';
+import { HASH_ALGORITHM } from './storage-migration';
 
 export type ReconciliationReport = Awaited<ReturnType<typeof reconcileEvidence>>;
 export type EnvironmentStatus = 'PASS' | 'FAIL' | 'PARTIAL' | 'UNKNOWN' | 'NOT_TESTED';
@@ -34,8 +35,15 @@ export function buildRecoveryDecisionSheet(report: ReconciliationReport, observe
       report.state !== (priorities.find(s => states.has(s)) ?? 'CONSISTENT')) {
     throw Error('inconsistent-diagnostic-state');
   }
+  if (report.findings.some(f => !f || typeof f.code !== 'string' || !Array.isArray(f.evidence) || f.evidence.some(s => typeof s !== 'string')) ||
+      [...report.usedEvidence, ...report.missingEvidence, ...report.knownCausality, ...report.unknownCausality].some(s => typeof s !== 'string')) {
+    throw Error('invalid-finding-evidence');
+  }
   if (report.candidates.some(c => c.executionAllowed !== false ||
       typeof c.evidence !== 'string' || !c.evidence ||
+      typeof c.raw !== 'string' || c.raw.length !== c.length ||
+      !Array.isArray(c.ids) || c.ids.some(s => typeof s !== 'string') ||
+      c.hashAlgorithm !== HASH_ALGORITHM ||
       typeof c.length !== 'number' || !Number.isSafeInteger(c.length) || c.length < 0 ||
       typeof c.hash !== 'string' || !/^[a-f0-9]{64}$/i.test(c.hash))) {
     throw Error('invalid-or-executable-candidate');
@@ -48,15 +56,15 @@ export function buildRecoveryDecisionSheet(report: ReconciliationReport, observe
         !Array.isArray(check.evidenceRefs) ||
         check.evidenceRefs.some(x => typeof x !== 'string' || !x.trim()) ||
         typeof check.limitation !== 'string' ||
-        (check.status === 'PASS' && check.evidenceRefs.length === 0)) {
+        (check.status === 'PASS' && (check.evidenceRefs.length === 0 || !check.limitation.trim()))) {
       throw Error('invalid-environment-evidence');
     }
     supplied.set(check.id, check);
   }
   const environment = ids.map(id => {
     const observed = supplied.get(id);
-    return observed ? { ...observed, evidenceRefs: [...observed.evidenceRefs] } :
-      { id, status: 'NOT_TESTED' as const, evidenceRefs: [], limitation: 'No independent environment evidence supplied.' };
+    return observed ? { ...observed, evidenceRefs: [...observed.evidenceRefs], evidenceVerified: false as const } :
+      { id, status: 'NOT_TESTED' as const, evidenceRefs: [], limitation: 'No independent environment evidence supplied.', evidenceVerified: false as const };
   });
   const candidates = report.candidates.map((c, index) => ({
     index, evidence: c.evidence, length: c.length, hash: c.hash,
