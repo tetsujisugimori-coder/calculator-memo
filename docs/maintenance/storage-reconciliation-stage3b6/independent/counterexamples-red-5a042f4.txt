@@ -1,0 +1,90 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b6
+
+ ❯ tests/storage-reconciliation-independent.test.ts (6 tests | 5 failed) 26ms
+   ✓ independent Stage 3B-6 counterexamples > positive: identical independent genesis remains bounded consistency only 10ms
+   × independent Stage 3B-6 counterexamples > R1: synchronous IndexedDB SecurityError must be reported UNKNOWN, not lose the report 4ms
+     → Synthetic denied storage
+   × independent Stage 3B-6 counterexamples > R2: corrupt retained target capture cannot be silently ignored as CONSISTENT 2ms
+     → expected 'CONSISTENT' not to be 'CONSISTENT' // Object.is equality
+   × independent Stage 3B-6 counterexamples > R2: corrupt retained journal capture cannot be silently ignored as CONSISTENT 1ms
+     → expected 'CONSISTENT' not to be 'CONSISTENT' // Object.is equality
+   × independent Stage 3B-6 counterexamples > R3: a missing receipt must not hide an explicit retained target UNKNOWN 5ms
+     → expected [ 'INCOMPLETE', 'BLOCKED' ] to deeply equal ArrayContaining{…}
+   × independent Stage 3B-6 counterexamples > R3: unrelated corrupt journal record must not hide pending rescue capture gap 2ms
+     → expected [ 'invalid-journal-record' ] to include 'rescue-capture-gap-no-durable-raw'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-reconciliation-independent.test.ts > independent Stage 3B-6 counterexamples > R1: synchronous IndexedDB SecurityError must be reported UNKNOWN, not lose the report
+SecurityError: Synthetic denied storage
+ ❯ Object.open tests/storage-reconciliation-independent.test.ts:23:38
+     21|   });
+     22|   it('R1: synchronous IndexedDB SecurityError must be reported UNKNOWN…
+     23|     const factory = { open() { throw new DOMException('Synthetic denie…
+       |                                      ^
+     24|     const reader = createReadOnlyReconciler({ scope, getItem: () => ra…
+     25|     const result = await reader.diagnose();
+ ❯ e2e/fixtures/storage-reconciliation.ts:148:25
+ ❯ readSyntheticStore e2e/fixtures/storage-reconciliation.ts:146:10
+ ❯ capture e2e/fixtures/storage-reconciliation.ts:172:84
+ ❯ Object.diagnose e2e/fixtures/storage-reconciliation.ts:177:27
+ ❯ tests/storage-reconciliation-independent.test.ts:25:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/storage-reconciliation-independent.test.ts > independent Stage 3B-6 counterexamples > R2: corrupt retained target capture cannot be silently ignored as CONSISTENT
+ FAIL  tests/storage-reconciliation-independent.test.ts > independent Stage 3B-6 counterexamples > R2: corrupt retained journal capture cannot be silently ignored as CONSISTENT
+AssertionError: expected 'CONSISTENT' not to be 'CONSISTENT' // Object.is equality
+ ❯ tests/storage-reconciliation-independent.test.ts:33:30
+     31|     previous[key] = present(null) as unknown as Capture[typeof key];
+     32|     const result = await reconcileEvidence({ scope, capture: capture()…
+     33|     expect(result.state).not.toBe('CONSISTENT');
+       |                              ^
+     34|     expect(result.findings.some(f => f.state === 'CORRUPTED')).toBe(tr…
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/storage-reconciliation-independent.test.ts > independent Stage 3B-6 counterexamples > R3: a missing receipt must not hide an explicit retained target UNKNOWN
+AssertionError: expected [ 'INCOMPLETE', 'BLOCKED' ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
++ [
+    "INCOMPLETE",
+-   "UNKNOWN",
+    "BLOCKED",
+  ]
+
+ ❯ tests/storage-reconciliation-independent.test.ts:42:47
+     40|     delete target['receipt:genesis'];
+     41|     const result = await reconcileEvidence({ scope, capture: c });
+     42|     expect(result.findings.map(f => f.state)).toEqual(expect.arrayCont…
+       |                                               ^
+     43|   });
+     44|   it('R3: unrelated corrupt journal record must not hide pending rescu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/storage-reconciliation-independent.test.ts > independent Stage 3B-6 counterexamples > R3: unrelated corrupt journal record must not hide pending rescue capture gap
+AssertionError: expected [ 'invalid-journal-record' ] to include 'rescue-capture-gap-no-durable-raw'
+ ❯ tests/storage-reconciliation-independent.test.ts:50:46
+     48|     const result = await reconcileEvidence({ scope, capture: c });
+     49|     expect(result.state).toBe('CORRUPTED');
+     50|     expect(result.findings.map(f => f.code)).toContain('rescue-capture…
+       |                                              ^
+     51|     expect(result.missingEvidence).toContain('uncaptured-source-value:…
+     52|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  19:29:46
+   Duration  1.77s (transform 399ms, setup 0ms, collect 1.11s, tests 26ms, environment 0ms, prepare 330ms)
+

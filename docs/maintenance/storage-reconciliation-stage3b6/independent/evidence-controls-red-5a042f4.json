@@ -1,0 +1,64 @@
+{
+  "source": "gui-evidence/storage-reconciliation-5a042f4b85e6-cf390e26-5ed5-4b46-ad62-df4a922ca544/summary.json",
+  "checkedSHA": "5a042f4b85e62973d9204335b185157d02146fcd",
+  "cases": [
+    {
+      "name": "positive original native evidence",
+      "expected": "accept",
+      "actual": "accept",
+      "failures": [],
+      "status": "GREEN"
+    },
+    {
+      "name": "R4 delete all source/current candidates",
+      "expected": "reject",
+      "actual": "accept",
+      "failures": [],
+      "status": "RED"
+    },
+    {
+      "name": "R4 invent source generation and receipt",
+      "expected": "reject",
+      "actual": "accept",
+      "failures": [],
+      "status": "RED"
+    },
+    {
+      "name": "R4 replace candidate raw and recompute hash",
+      "expected": "reject",
+      "actual": "accept",
+      "failures": [],
+      "status": "RED"
+    },
+    {
+      "name": "R4 replace same-length candidates with duplicates",
+      "expected": "reject",
+      "actual": "accept",
+      "failures": [],
+      "status": "RED"
+    },
+    {
+      "name": "R4 fabricate candidate ID inventory",
+      "expected": "reject",
+      "actual": "accept",
+      "failures": [],
+      "status": "RED"
+    },
+    {
+      "name": "old HEAD rejected with current expected SHA",
+      "expected": "reject",
+      "actual": "reject",
+      "failures": [
+        "provenance"
+      ],
+      "status": "GREEN"
+    },
+    {
+      "name": "R5 report writeAllowed true",
+      "expected": "reject",
+      "actual": "accept",
+      "failures": [],
+      "status": "RED"
+    }
+  ]
+}
