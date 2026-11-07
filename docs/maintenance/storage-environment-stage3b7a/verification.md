@@ -3,7 +3,7 @@
 ## 現段階
 - 作業範囲：独立runner初期失敗の原証拠保持、環境検証の手順と判定境界。
 - 実機Safari/プライベートブラウズ/実quota/列挙競合/OS強制終了・媒体耐久性：NOT_TESTED。このPRで実測したと主張しない。
-- A6の改修：読込み失敗行を残すfail-closedのコード変更。実際のブラウザ注入と独立検査：未実行。
+- A6の改修：読込み失敗行を残すfail-closedのコード変更。独立CI内で使い捨てChromiumを起動し、初期ロード直前に合成例外を1回注入する負対照を追加。子プロセスexit1、失敗行のstage/error/条件1件、PNG未生成を親が検査し、原stdout/stderr/summaryを保存する。**新最終HEADのCI実測は未確認**。
 - Stage 3B HOLD、実データ書込み・移行・削除・復旧なし。
 - CIの最終HEAD/run/attempt/原artifact照合：未実行。PR後のChecksと原物の確認を必要とする。
 
