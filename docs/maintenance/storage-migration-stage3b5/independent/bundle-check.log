@@ -1,0 +1,16 @@
+{
+  "status": "BUNDLE_ONLY_NO_BROWSER_EXECUTED",
+  "kind": "independent-synthetic-migration",
+  "sha": "feedd810ee47f19476f56a8c83524b2cb9eebb9e",
+  "tree": "6f85a299892bd542e7ced0a984a33cd25eae6166",
+  "dirty": true,
+  "oldSha": "feedd810ee47f19476f56a8c83524b2cb9eebb9e",
+  "oldSourceSha256": "b28aa6dcbb83f8ff352e52efcac00eb7692bc951df488cf7a6853959591d58a1",
+  "currentSourceSha256": "5f0bec8ffa8f42558ebcb16f8c0b1d1f36b5f1b0c33cb927c50d58d837b817bc",
+  "executionAllowed": false,
+  "results": [],
+  "moduleHashes": {
+    "old": "7ea6d2f8c1401bf65dbb7f8fcd1d307f44864022907067cd9ad12f9a02fc1564",
+    "current": "dd8e538a19d788aeb5de1b80106779177ee0851421618d3b17fa43907be24906"
+  }
+}

@@ -1,0 +1,7 @@
+{"name":"failedSummary","rejected":["summary-status"]}
+{"name":"nullObservation","rejected":["case-status"]}
+{"name":"dirtySource","rejected":["dirty-or-unknown-source"]}
+{"name":"invalidTime","rejected":["case-time"]}
+{"name":"reversedTime","rejected":["case-time"]}
+{"name":"failedCase","rejected":["case-status"]}
+PASS: one positive control and six independent negative controls; no native browser claim
