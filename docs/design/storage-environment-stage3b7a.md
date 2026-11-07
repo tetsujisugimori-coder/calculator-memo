@@ -20,7 +20,7 @@
 実機/隔離環境の所有または使用権、既存データ非接触の証明、試験origin、プロフィール、データ消去範囲を事前に記録する。条件が不足する場合は破壊的な検査を開始しない。容量圧迫、deleteDatabase、强制killは本番originや個人保存領域では実施しない。予期しない本番originへのアクセス、既存データ検出、権限不明、記録漏れでは直ちに中止しUNKNOWNを記録する。
 
 ## A6 診断runnerの変更
-Stage 3B-6独立runnerの各engine/width行をcontext作成前に確保する。load/初回wait/evaluateで例外が出ても、rowのstageとerror、既に捕捉したpageerrors、実行済みケースを原summaryに残す。行が8未満、行status不合格、pageerrors、RED、source内容変化はexit 1とする。空のrowsや欠落行を「全部成功」とみなさない。失敗に伴う未生成PNGは存在を捏造しない。stderrにも例外/ログを残す。
+Stage 3B-6独立runnerの各engine/width行をcontext作成前に確保する。load/初回wait/evaluateで例外が出ても、rowのstageとerror、既に捕捉したpageerrors、実行済みケースを原summaryに残す。専用のSTAGE3B7A_STARTUP_PROBE=1は独立CIの負対照専用。使い捨てChromium 1条件で初期ロード直前に合成例外を発生させ、exit1・失敗原票・失敗段階・未生成PNGを検査する。通常実行ではこのフラグを指定せず、8条件の完走を要求。行が8未満、行status不合格、pageerrors、RED、source内容変化はexit 1とする。空のrowsや欠落行を「全部成功」とみなさない。失敗に伴う未生成PNGは存在を捏造しない。stderrにも例外/ログを残す。
 
 ## 証拠の最低項目
 HEAD、tree、run/attempt、OS/ブラウザversion、実機/エミュレーション、origin隔離条件、実データ未使用、日時とタイムゾーン、条件、失敗段階、原票、期待/実観測、mutatorの有無、終了コード、証拠hash、NOT_TESTEDと理由を区別。機密の原文と機器識別情報は公開しない。
