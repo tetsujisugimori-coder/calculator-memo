@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-07 (JST): Stage 3B-7B 手動復旧判断資料の純粋生成（実行なし）
+
+- [Issue #135](https://github.com/tetsujisugimori-coder/calculator-memo/issues/135)。PR #133統合後mainからStage 3B-7Aとは別branch。Stage 3B-6合成診断結果の全候補/全所見/未取得情報を落とさず復旧判断用資料に変換し、勝者選択/復旧実行はしない。
+- [設計](docs/design/storage-recovery-decision-stage3b7b.md)・[検証台帳](docs/maintenance/storage-recovery-decision-stage3b7b/verification.md)。source/targetをsynthetic namespaceに制限し、CONSISTENTでもHOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHED。環境未検証はNOT_TESTED、候補原文は判断資料から除外。
+- 合成unit反例を追加。Vitest/型・lint/両build/正式GUI/最終HEAD CI・別担当独立レビューは実行前時点でNOT_TESTED。従来GUI1128/592/132は過去の契約期待値で、今回実施として数えない。製品保存経路不変更、マージ・公開なし。
+
+
 ## 2026-11-07 (JST): Stage 3B-6 読取り専用照合と手動復旧判断基盤
 
 - [Issue #132](https://github.com/tetsujisugimori-coder/calculator-memo/issues/132)。PR #131統合main ce87b7cから専用branchで開始。既存records/journal形式とvalidatorを再利用し、製品差分・実データwriteなし。
