@@ -10,7 +10,7 @@ function fixture(): ReconciliationReport {
     missingEvidence: [], knownCausality: [], unknownCausality: [],
     candidates: [{
       evidence: 'source', raw: '{"synthetic":true}', length: 18,
-      hash: 'a'.repeat(64), hashAlgorithm: 'SHA-256-UTF16LE',
+      hash: 'a'.repeat(64), hashAlgorithm: 'SHA-256/UTF-16LE-code-units',
       ids: [], schemaValid: true, token: null, receipt: null,
       rationale: 'Synthetic reference only', executionAllowed: false,
     }],
@@ -70,6 +70,18 @@ describe('Stage 3B-7B decision-only layer', () => {
     const x = fixture();
     x.findings = [{ state: 'UNKNOWN', code: 'unavailable', evidence: ['source'] }];
     expect(() => buildRecoveryDecisionSheet(x)).toThrow('inconsistent-diagnostic-state');
+  });
+  it('rejects falsified candidate metadata and malformed findings', () => {
+    const wrongHashAlgorithm = fixture();
+    (wrongHashAlgorithm.candidates[0] as { hashAlgorithm: string }).hashAlgorithm = 'made-up';
+    expect(() => buildRecoveryDecisionSheet(wrongHashAlgorithm)).toThrow('invalid-or-executable-candidate');
+    const wrongLength = fixture();
+    wrongLength.candidates[0].length = 1;
+    expect(() => buildRecoveryDecisionSheet(wrongLength)).toThrow('invalid-or-executable-candidate');
+    const missingFinding = fixture();
+    missingFinding.findings = [{ state: 'UNKNOWN', code: 'read-error', evidence: null as unknown as string[] }];
+    missingFinding.state = 'UNKNOWN';
+    expect(() => buildRecoveryDecisionSheet(missingFinding)).toThrow('invalid-finding-evidence');
   });
   it('rejects executable candidate and production scope', () => {
     const a = fixture();
