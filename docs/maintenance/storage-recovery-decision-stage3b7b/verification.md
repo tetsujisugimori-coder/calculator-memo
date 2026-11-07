@@ -4,7 +4,7 @@
 - 合成限定で既存Stage 3B-6報告を入力とする、pure decision sheet builderを追加。
 - 出力は原文を含まない候補メタデータ、全所見、未取得証拠、因果関係と環境別保証状態。
 - CONSISTENTを含め、HOLD・writeAllowed=false・executionAllowed=false・authority=NOT_ESTABLISHED・selectedCandidate=nullを維持。復旧実行系APIなし。
-- Vitest合成反例7系統。異なる代表状態/併存/偽許可/産地scope/環境PASSの証拠不足/重複を拒否。
+- Vitest合成反例を `tests/storage-recovery-decision-stage3b7b.test.ts` へ移し正式単体検出対象にした。異なる代表状態/併存/偽許可/産地scope/環境PASSの証拠不足/重複に加え、hash algorithm・原文長・findings provenanceの偽装拒否を追加。環境参照は `evidenceVerified=false` と表示し自動的な実証済み認定を避ける。
 
 ## 初期実行結果
 - TypeScript型検査、Vitest、lint、両build、正式GUI、独立レビュー、CI原成果物照合：本台帳起票時点ではNOT_TESTED。
