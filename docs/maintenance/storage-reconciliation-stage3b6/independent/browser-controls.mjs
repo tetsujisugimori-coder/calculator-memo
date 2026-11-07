@@ -27,10 +27,12 @@ const server = createServer((req,res) => {
 });
 server.listen(0,'127.0.0.1'); await once(server,'listening');
 const origin = `http://127.0.0.1:${server.address().port}`;
+// Bounded negative control: one synthetic browser, one context, never a production profile.
+const startupProbe = process.env.STAGE3B7A_STARTUP_PROBE === '1';
 try {
-for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
+for(const [engine,type] of (startupProbe ? [['chromium',chromium]] : [['chromium',chromium],['webkit',webkit]])) {
   const browser = await type.launch({headless:true,...(engine === 'webkit' && webkitOverride ? { executablePath: webkitOverride } : {})});
-  try {for(const width of [375,390,765,1280]) {
+  try {for(const width of (startupProbe ? [375] : [375,390,765,1280])) {
     // Record an incomplete row before opening a context. A load failure must never
     // disappear from the evidence as a missing browser condition.
     const errors=[], row={engine,width,browserVersion:browser.version(),launcher:engine==='webkit' && webkitOverride ? webkitOverride : 'pinned default',status:'running',stage:'context',errors,cases:[]};
@@ -42,6 +44,7 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
     await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
     const page=await context.newPage();page.on('pageerror',e=>errors.push(String(e)));
     row.stage='initial-load';
+    if (startupProbe) throw new Error('STAGE3B7A_SYNTHETIC_INITIAL_LOAD_FAILURE');
     await page.goto(origin);await page.waitForFunction(()=>!!window.api);
     row.stage='native-controls';
     const result=await page.evaluate(async id=>{
