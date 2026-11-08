@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-09 (JST): PR #136 行内部分実行のP2局所修正
+
+- 必須8ケースの名前・一意性・GREENと、engine/width必須8条件の完全一致を検査する。順序変更は許容し、欠落・重複・未知値・終了失敗は拒否。製品・保存形式の変更なし。
+- 旧HEAD 91b0a7392a93193ad3af967472341870f35f8d02の原証拠を保持。独立再受入と最終CIは確認待ち。
+- 関連 Issue #134 / PR #136。Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHEDを維持。実機Safari/private/実quota/媒体/OS強制終了はNOT_TESTED。
+
+
 ## 2026-11-07 (JST): Stage 3B-7A 未検証環境の安全確認（準備・原票補強）
 
 - [Issue #134](https://github.com/tetsujisugimori-coder/calculator-memo/issues/134)。PR #133統合後のmainから独立branchで開始。実機Safari/private browsing/実quota/強制終了/媒体永続性は未検証（NOT_TESTED）、安全な隔離環境がないまま破壊的試験は行わない。

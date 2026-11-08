@@ -41,6 +41,8 @@ jobs:
       - name: Migration evidence negative controls
         id: evidence_contract
         run: node e2e/run-stage.mjs reconciliation-evidence-controls node --test e2e/storage-reconciliation-evidence.node-test.mjs
+      - name: Independent runner exact row and case contracts
+        run: node e2e/run-stage.mjs independent-row-contract node --test docs/maintenance/storage-reconciliation-stage3b6/independent/row-contract.node-test.mjs
       - name: Fixed browser setup
         id: browsers
         timeout-minutes: 5
