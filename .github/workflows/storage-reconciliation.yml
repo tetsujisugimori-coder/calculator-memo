@@ -53,6 +53,9 @@ jobs:
         id: stage3b7a_startup_negative
         timeout-minutes: 4
         run: node e2e/run-stage.mjs stage3b7a-startup-negative node docs/maintenance/storage-environment-stage3b7a/initial-load-negative.mjs
+      - name: Same early-return counterexample before and after P2 fix
+        timeout-minutes: 6
+        run: node e2e/run-stage.mjs independent-partial-negative node docs/maintenance/storage-environment-stage3b7a/partial-execution-negative.mjs
       - name: Read-only diagnostics against native synthetic storage faults
         id: acceptance
         timeout-minutes: 6
