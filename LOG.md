@@ -1,5 +1,33 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-10 (JST): PR #137 再開と最終HEAD再受入
+
+- 最新mainを再取得し、`bfa35325c784d49cd8af520f9eb3cd6a47be2f92` が保全済み修正 `500f4a302a3a5eb926dc560233a7c8a61e5a27e5` の祖先であることを確認。PR #136側とPR #137側の記録は両方保持する。製品コード、builder、workflow、lockfileは再開時に変更していない。
+- 検証fixtureと判断資料のGitHub保存を再開。過去の停止記録・旧HEAD失敗・ローカル原ログは削除せず保持する。READMEに試験専用層と未実装境界を追記。
+- この記録を含む最終remote HEADの全CI、正式GUI原6成果物、別担当レビューの結果は [PR #137](https://github.com/tetsujisugimori-coder/calculator-memo/pull/137) のSHA・run付き追補へ記録する。本記録時点は再確認中で、過去HEADの成功を流用しない。
+- [Issue #135](https://github.com/tetsujisugimori-coder/calculator-memo/issues/135) 全体は未完。Stage 3B HOLD、Draft維持、マージ・本番公開・実データ書込みなし。検証結果と限定マージ可否は別に判定する。
+
+## 2026-11-09 (JST): PR #137 Stage 3B-7B fixture整合性修正
+
+- 旧CI 42420517862の原票から候補2のraw9文字/length18の不整合を確定。builderの拒否は正しく、fixtureを原文由来のlength/hash/algorithmへ修正。旧反例拒否と実reconciler接続を含む16単体をローカルで確認。
+- 最新mainのPR #136統合を既存枝へ取り込み、LOG競合は双方保全。製品・builder拒否条件・正式GUI契約は不変更。
+- [原因・原失敗・再現と限界](docs/maintenance/storage-recovery-decision-stage3b7b/reacceptance-20261109/README.md)。全体CI・原GUI artifact照合・独立レビューはPR #137の最終HEAD記録で判定し、先取りしない。
+- Issue #135 / PR #137。Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHED。hashの真正性、最新観測への失効、製品UI、実機環境は別の未検証範囲。Draft維持、merge/本番実書込みなし。
+
+## 2026-11-09 (JST): PR #136 行内部分実行のP2局所修正
+
+- 必須8ケースの名前・一意性・GREENと、engine/width必須8条件の完全一致を検査する。順序変更は許容し、欠落・重複・未知値・終了失敗は拒否。製品・保存形式の変更なし。
+- 旧HEAD 91b0a7392a93193ad3af967472341870f35f8d02の原証拠を保持。独立再受入と最終CIは確認待ち。
+- 関連 Issue #134 / PR #136。Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHEDを維持。実機Safari/private/実quota/媒体/OS強制終了はNOT_TESTED。
+
+
+## 2026-11-07 (JST): Stage 3B-7A 未検証環境の安全確認（準備・原票補強）
+
+- [Issue #134](https://github.com/tetsujisugimori-coder/calculator-memo/issues/134)。PR #133統合後のmainから独立branchで開始。実機Safari/private browsing/実quota/強制終了/媒体永続性は未検証（NOT_TESTED）、安全な隔離環境がないまま破壊的試験は行わない。
+- [設計](docs/design/storage-environment-stage3b7a.md)・[検証台帳](docs/maintenance/storage-environment-stage3b7a/verification.md)。Stage 3B-6独立runnerの初期ロード失敗でrow/エラー/途中証拠が消えないよう局所修正し、未完走/欠落を成功にしない。
+- 自動検証・独立再レビュー・正式GUI・最終CIはPR作成前時点で未実行。既存1128/592/132は期待契約のみ。executionAllowed=false、Stage 3B HOLD、実書込み/実移行/実救出NO。Draft PRで提出、マージ・公開なし。
+
+
 ## 2026-11-07 (JST): Stage 3B-7B 手動復旧判断資料の純粋生成（実行なし）
 
 - [Issue #135](https://github.com/tetsujisugimori-coder/calculator-memo/issues/135)。PR #133統合後mainからStage 3B-7Aとは別branch。Stage 3B-6合成診断結果の全候補/全所見/未取得情報を落とさず復旧判断用資料に変換し、勝者選択/復旧実行はしない。

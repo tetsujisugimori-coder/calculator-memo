@@ -1,3 +1,4 @@
+import { validateCases, validateRows } from './row-contract.mjs';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -27,15 +28,26 @@ const server = createServer((req,res) => {
 });
 server.listen(0,'127.0.0.1'); await once(server,'listening');
 const origin = `http://127.0.0.1:${server.address().port}`;
+// Bounded negative control: one synthetic browser, one context, never a production profile.
+const startupProbe = process.env.STAGE3B7A_STARTUP_PROBE === '1';
 try {
-for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
+for(const [engine,type] of (startupProbe ? [['chromium',chromium]] : [['chromium',chromium],['webkit',webkit]])) {
   const browser = await type.launch({headless:true,...(engine === 'webkit' && webkitOverride ? { executablePath: webkitOverride } : {})});
-  try {for(const width of [375,390,765,1280]) {
-    const context = await browser.newContext({viewport:{width,height:1100},hasTouch:width<400,isMobile:width<400,serviceWorkers:'block'});
-    const errors=[];
+  try {for(const width of (startupProbe ? [375] : [375,390,765,1280])) {
+    // Record an incomplete row before opening a context. A load failure must never
+    // disappear from the evidence as a missing browser condition.
+    const errors=[], row={engine,width,browserVersion:browser.version(),launcher:engine==='webkit' && webkitOverride ? webkitOverride : 'pinned default',status:'running',stage:'context',errors,cases:[]};
+    evidence.rows.push(row);
+    let context;
+    try {
+    context = await browser.newContext({viewport:{width,height:1100},hasTouch:width<400,isMobile:width<400,serviceWorkers:'block'});
+    row.stage='new-page';
     await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
     const page=await context.newPage();page.on('pageerror',e=>errors.push(String(e)));
+    row.stage='initial-load';
+    if (startupProbe) throw new Error('STAGE3B7A_SYNTHETIC_INITIAL_LOAD_FAILURE');
     await page.goto(origin);await page.waitForFunction(()=>!!window.api);
+    row.stage='native-controls';
     const result=await page.evaluate(async id=>{
       const api=window.api, scope={source:'stage3b5-test-independent-'+id,destination:'stage3b4-test-independent-'+id};
       const raw=JSON.stringify({version:1,history:[],notes:[],settings:{theme:'light',activePanel:'history'},independent:'native-\uD800'});
@@ -75,10 +87,12 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
     await page.locator('button')[width<400?'tap':'click']();
     const png=`${engine}-${width}.png`;await page.screenshot({path:`${out}/${png}`,fullPage:true});
     for(const c of result.cases){for(const candidate of c.report?.candidates??[]){assert.equal(candidate.hash,hash(Buffer.from(candidate.raw,'utf16le')));assert.equal(candidate.raw.length,candidate.length);}}
-    evidence.rows.push({engine,width,browserVersion:browser.version(),launcher:engine==='webkit' && webkitOverride ? webkitOverride : 'pinned default',errors,png,pngSha256:hash(await readFile(`${out}/${png}`)),...result});
-    await context.close();
+    Object.assign(row,{png,pngSha256:hash(await readFile(`${out}/${png}`)),...result,status:errors.length===0 && validateCases(result.cases)?'passed':'failed',stage:'complete'});
+    }catch(error){row.status='failed';row.error=String(error?.stack??error);}
+    finally{try{await context?.close();}catch(error){row.status='failed';row.closeError=String(error?.stack??error);}}
   }}finally{await browser.close();}
 }
 }finally{server.closeAllConnections();await new Promise(r=>server.close(r));evidence.finished=new Date().toISOString();evidence.sourceUnchanged=evidence.sourceSha256===hash(await readFile(source));await writeFile(`${out}/summary.json`,JSON.stringify(evidence,null,2)+'\n');}
-const summary={out,sha:evidence.sha,sourceSha256:evidence.sourceSha256,moduleSha256:evidence.moduleSha256,sourceUnchanged:evidence.sourceUnchanged,conditions:evidence.rows.length,cases:evidence.rows.reduce((n,r)=>n+r.cases.length,0),red:evidence.rows.flatMap(r=>r.cases.filter(c=>c.status==='RED').map(c=>`${r.engine}:${r.width}:${c.name}`)),errors:evidence.rows.flatMap(r=>r.errors),pngs:evidence.rows.map(r=>({png:r.png,sha256:r.pngSha256}))};
-console.log(JSON.stringify(summary,null,2));if(process.env.OUTPUT)await writeFile(process.env.OUTPUT,JSON.stringify(summary,null,2)+'\n');process.exitCode=summary.red.length||summary.errors.length||!summary.sourceUnchanged?1:0;
+const contractErrors=validateRows(evidence.rows);
+const summary={contractErrors,out,sha:evidence.sha,sourceSha256:evidence.sourceSha256,moduleSha256:evidence.moduleSha256,sourceUnchanged:evidence.sourceUnchanged,conditions:evidence.rows.length,cases:evidence.rows.reduce((n,r)=>n+r.cases.length,0),red:evidence.rows.flatMap(r=>r.cases.filter(c=>c.status==='RED').map(c=>`${r.engine}:${r.width}:${c.name}`)),errors:evidence.rows.flatMap(r=>r.errors),failures:evidence.rows.filter(r=>r.status!=='passed').map(r=>({engine:r.engine,width:r.width,stage:r.stage,error:r.error??r.closeError??null,errors:r.errors})),pngs:evidence.rows.filter(r=>r.png).map(r=>({png:r.png,sha256:r.pngSha256}))};
+console.log(JSON.stringify(summary,null,2));if(process.env.OUTPUT)await writeFile(process.env.OUTPUT,JSON.stringify(summary,null,2)+'\n');process.exitCode=contractErrors.length||summary.red.length||summary.errors.length||summary.failures.length||summary.conditions!==8||!summary.sourceUnchanged?1:0;

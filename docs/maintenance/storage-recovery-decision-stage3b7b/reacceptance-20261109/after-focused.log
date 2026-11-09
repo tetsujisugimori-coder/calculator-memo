@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b7b
+
+ ✓ tests/storage-recovery-decision-stage3b7b.test.ts (16 tests) 96ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  19:30:35
+   Duration  4.19s (transform 628ms, setup 0ms, collect 3.20s, tests 96ms, environment 0ms, prepare 187ms)
+

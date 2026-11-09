@@ -1,0 +1,36 @@
+
+ RUN  v3.2.4 /workspace/scratch/e622c1e9421e/calculator-stage3b7b-before
+
+ ❯ tests/storage-recovery-decision-stage3b7b.test.ts (9 tests | 1 failed) 59ms
+   ✓ Stage 3B-7B decision-only layer > never authorizes a CONSISTENT observation and leaves environments untested 5ms
+   × Stage 3B-7B decision-only layer > retains concurrent conflict and UNKNOWN without selecting a branch 9ms
+     → invalid-or-executable-candidate
+   ✓ Stage 3B-7B decision-only layer > retains CORRUPTED, BLOCKED and UNKNOWN findings simultaneously 1ms
+   ✓ Stage 3B-7B decision-only layer > fails closed if report claims write or execution permissions 7ms
+   ✓ Stage 3B-7B decision-only layer > rejects a summary that hides UNKNOWN findings 0ms
+   ✓ Stage 3B-7B decision-only layer > rejects falsified candidate metadata and malformed findings 1ms
+   ✓ Stage 3B-7B decision-only layer > rejects executable candidate and production scope 0ms
+   ✓ Stage 3B-7B decision-only layer > refuses unsubstantiated environment PASS and duplicate tracks 1ms
+   ✓ integration with the actual Stage 3B-6 reconciler > keeps all real synthetic candidate origins, without copying raw or granting execution 32ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/storage-recovery-decision-stage3b7b.test.ts > Stage 3B-7B decision-only layer > retains concurrent conflict and UNKNOWN without selecting a branch
+Error: invalid-or-executable-candidate
+ ❯ buildRecoveryDecisionSheet e2e/fixtures/storage-recovery-decision.ts:49:11
+     47|       typeof c.length !== 'number' || !Number.isSafeInteger(c.length) …
+     48|       typeof c.hash !== 'string' || !/^[a-f0-9]{64}$/i.test(c.hash))) {
+     49|     throw Error('invalid-or-executable-candidate');
+       |           ^
+     50|   }
+     51| 
+ ❯ tests/storage-recovery-decision-stage3b7b.test.ts:44:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  19:29:53
+   Duration  5.67s (transform 1.10s, setup 0ms, collect 3.82s, tests 59ms, environment 0ms, prepare 344ms)
+

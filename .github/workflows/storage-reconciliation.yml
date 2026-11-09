@@ -41,12 +41,21 @@ jobs:
       - name: Migration evidence negative controls
         id: evidence_contract
         run: node e2e/run-stage.mjs reconciliation-evidence-controls node --test e2e/storage-reconciliation-evidence.node-test.mjs
+      - name: Independent runner exact row and case contracts
+        run: node e2e/run-stage.mjs independent-row-contract node --test docs/maintenance/storage-reconciliation-stage3b6/independent/row-contract.node-test.mjs
       - name: Fixed browser setup
         id: browsers
         timeout-minutes: 5
         run: |
           node e2e/run-stage.mjs storage-reconciliation-apt sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
           node e2e/run-stage.mjs storage-reconciliation-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Stage 3B-7A independent startup fail-closed negative control
+        id: stage3b7a_startup_negative
+        timeout-minutes: 4
+        run: node e2e/run-stage.mjs stage3b7a-startup-negative node docs/maintenance/storage-environment-stage3b7a/initial-load-negative.mjs
+      - name: Same early-return counterexample before and after P2 fix
+        timeout-minutes: 6
+        run: node e2e/run-stage.mjs independent-partial-negative node docs/maintenance/storage-environment-stage3b7a/partial-execution-negative.mjs
       - name: Read-only diagnostics against native synthetic storage faults
         id: acceptance
         timeout-minutes: 6

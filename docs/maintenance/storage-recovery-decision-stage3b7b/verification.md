@@ -19,3 +19,9 @@
 
 ## 戻し方
 今回の試験専用TS・テスト・文書・LOG差分をrevert。本番保存スキーマ/データの逆移行は不要。
+
+## 2026-11-09 JST 追補
+初期記録を保全し、[fixture不整合の原因・RED/GREEN・原証拠](reacceptance-20261109/README.md)を追加した。最終HEAD CIと独立レビューの結果はPR #137の対応SHA付き記録を参照。Issue #135全体のUI/失効/実媒体受入まで完了したとは扱わない。
+
+## 2026-11-10 JST 再開
+最新main `bfa35325c784d49cd8af520f9eb3cd6a47be2f92` との整合と保存済みローカル修正の保全を再確認し、既存Draft PRへ反映して全CIと独立再受入をやり直す。旧HEAD `d247d72` とローカル `500f4a3` の証拠は履歴として保持する。正式GUIの原6 ZIP、JSON/PNG/hash、run/attempt、Stage 3Aと3B系列は最終remote HEADごとに別担当が照合する。完了した結果と未完条件はPR #137・Issue #135へ追記し、本書の事前記録で成功を先取りしない。
