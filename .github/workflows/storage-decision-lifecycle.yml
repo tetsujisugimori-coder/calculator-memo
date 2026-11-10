@@ -38,6 +38,9 @@ jobs:
         run: |
           node e2e/run-stage.mjs lifecycle-units npx vitest run tests/storage-decision-lifecycle.test.ts
           node e2e/run-stage.mjs lifecycle-evidence-controls node --test e2e/storage-decision-lifecycle-evidence.node-test.mjs
+      - name: Independent same-input concurrency counterexamples
+        id: independent
+        run: node e2e/run-stage.mjs independent-lifecycle node docs/maintenance/storage-decision-lifecycle-stage3b8/independent/concurrency.mjs
       - name: Fixed browser setup
         id: browsers
         timeout-minutes: 5

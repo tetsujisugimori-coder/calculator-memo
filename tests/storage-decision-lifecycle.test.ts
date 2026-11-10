@@ -123,3 +123,30 @@ it('rejects array accessors and hidden or symbol properties without invoking the
   const c=[1]; Object.defineProperty(c,Symbol('secret'),{value:2}); expect(()=>canonical(c)).toThrow();
   const d={a:1}; Object.defineProperty(d,'secret',{value:2}); expect(()=>canonical(d)).toThrow();
 });
+
+it('concurrent review cannot erase an observed ABA from the in-flight review', async () => {
+ let reads=0, release!: (x:Observation)=>void, pending!:()=>void;
+ const ready=new Promise<void>(r=>{pending=r;});
+ const s=createDecisionLifecycle(async()=>{reads++;if(reads===3)return {...fixture(),revision:'B'};if(reads===4){pending();return new Promise<Observation>(r=>{release=r;});}return fixture();});
+ const v=await s.generate();const older=s.useForReview(v.id);await ready;
+ const newer=await s.useForReview(v.id);release(fixture());await older;
+ expect(newer.allowed).toBe(false);expect(s.view().status).toBe('STALE');expect((await s.useForReview(v.id)).allowed).toBe(false);
+});
+
+it('overlapping use cannot hide an in-flight read failure', async () => {
+ let wait=false, reject!: (e:Error)=>void;
+ const s=createDecisionLifecycle(()=>wait?new Promise<Observation>((_,r)=>{reject=r;}):Promise.resolve(fixture()));
+ const v=await s.generate();wait=true;const first=s.useForReview(v.id);
+ expect((await s.useForReview(v.id)).allowed).toBe(false);
+ reject(Error('injected'));await first;wait=false;
+ expect(s.view().status).toBe('UNKNOWN');expect((await s.useForReview(v.id)).allowed).toBe(false);
+});
+it('explicit new ID separates an earlier in-flight changed observation', async () => {
+ let reads=0, release!:(x:Observation)=>void, pending!:()=>void;
+ const ready=new Promise<void>(r=>{pending=r;});
+ const s=createDecisionLifecycle(async()=>{reads++;if(reads===3)return {...fixture(),revision:'B'};if(reads===4){pending();return new Promise<Observation>(r=>{release=r;});}return fixture();});
+ const old=await s.generate();const check=s.useForReview(old.id);await ready;
+ const next=await s.generate();expect(next.id).not.toBe(old.id);release(fixture());
+ expect((await check).allowed).toBe(false);expect(s.view().status).toBe('VALID');
+ expect((await s.useForReview(next.id)).allowed).toBe(true);
+});

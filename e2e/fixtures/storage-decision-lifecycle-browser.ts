@@ -3,6 +3,7 @@ import { createDecisionLifecycle, describeDecision, type Observation } from './s
 export function mountLifecycle(key: string) {
   if (!/^stage3b8-test-[A-Za-z0-9_-]{1,100}$/.test(key)) throw Error('synthetic-key-required');
   let failRead = false, disposed = false;
+  let lastUse: { allowed: boolean; id: number; status: string } | null = null;
   const lifecycle = createDecisionLifecycle(async () => {
     if (failRead) throw Error('synthetic-read-failure');
     const raw = localStorage.getItem(key);
@@ -12,7 +13,7 @@ export function mountLifecycle(key: string) {
   const display = document.querySelector<HTMLPreElement>('#report')!;
   const render = () => { display.textContent = JSON.stringify({ ...describeDecision(lifecycle.view()), id: lifecycle.view().id, checking: lifecycle.view().checking, writeAllowed: false }, null, 2); };
   const generate = async () => { const p=lifecycle.generate(); render(); await p; if (!disposed) render(); };
-  const use = async () => { const p=lifecycle.useForReview(lifecycle.view().id); render(); const r=await p; if (!disposed) render(); return r; };
+  const use = async () => { const p=lifecycle.useForReview(lifecycle.view().id); render(); const r=await p; lastUse={allowed:r.allowed,id:r.view.id,status:r.view.status}; if (!disposed) render(); return r; };
   const refresh = async () => { const p=lifecycle.revalidate(); render(); await p; if (!disposed) render(); };
   const storage = (event: StorageEvent) => {
     if (event.storageArea !== localStorage) return;
@@ -27,6 +28,6 @@ export function mountLifecycle(key: string) {
   document.querySelector('#generate')!.addEventListener('click', generate);
   document.querySelector('#use')!.addEventListener('click', use);
   render();
-  return { lifecycle, generate, use, render, setReadFailure(value: boolean) { failRead=value; },
+  return { lifecycle, generate, use, render, getLastUse:()=>lastUse, setReadFailure(value: boolean) { failRead=value; },
     dispose() { disposed=true; lifecycle.close(); channel.close(); window.removeEventListener('storage', storage); channel.removeEventListener('message', broadcast); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('pageshow', pageShow); document.querySelector('#generate')!.removeEventListener('click', generate); document.querySelector('#use')!.removeEventListener('click', use); render(); } };
 }

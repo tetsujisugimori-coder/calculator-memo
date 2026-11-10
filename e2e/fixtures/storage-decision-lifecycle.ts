@@ -106,7 +106,9 @@ export function createDecisionLifecycle(read: () => Promise<Observation>) {
     return view();
   }
   async function revalidate() {
-    if (closed || current.status !== 'VALID' || !baseline) return view();
+    // Do not supersede a same-ID check: an older observation may already contain a change.
+    // Concurrent users fail closed while the single in-flight check completes.
+    if (closed || busy > 0 || current.status !== 'VALID' || !baseline) return view();
     const ticket = ++epoch, original = baseline; busy++;
     try {
       const first = await capture(), second = await capture();
