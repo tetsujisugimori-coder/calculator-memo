@@ -21,3 +21,9 @@ A → B → A without an observed generation/history change remains undetectable
 Run `npx vitest run tests/storage-recovery-races.test.ts`, `node e2e/recovery-races-negative-controls.mjs`, then on a clean committed checkout `node e2e/run-storage-recovery-races.mjs`. The dedicated workflow fixes Node 22.13.0, lockfiles, browsers and exact PR HEAD. Existing formal GUI remains separate and must retain its 6-condition / 1128-check / 592-geometry / 132-PNG contract. Existing workflows are unchanged.
 
 Local initial negative-control build failed because mutation ran after TypeScript transformation; the transform is now explicitly pre-transform, preserving literal-source target assertions. The failed log is retained under work/negative.log locally. An initial full lint process was killed; this is not PASS or a proven product fault. Local Node 24 differs from formal CI Node 22.13.0. Final acceptance is pending CI and independent review.
+
+### Additional evidence controls and local attempts
+
+Six report mutants reject a missing condition, missing case, nonzero write count, false final VALID, UNKNOWN carrying review authority, and reordered event sequence. These are synthetic validator tests, not claimed browser observations. The complete production LOG.md is preserved byte-for-byte after detecting connector response truncation during submission; chronological work notes are here instead.
+
+Local browser attempt 1: required Playwright Chromium 1194 executable absent in default cache. Attempt 2 used existing pinned cache and an explicitly local WebKit dependency wrapper; process exited 137 before completing the suite. Full default-parallel unit run ended ERR_IPC_CHANNEL_CLOSED. Neither is treated as PASS or an established product bug; serialized retry and formal CI provide separately identified results. No expectations, waits or browser versions were relaxed.
