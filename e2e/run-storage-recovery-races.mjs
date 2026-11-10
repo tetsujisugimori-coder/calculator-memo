@@ -8,6 +8,7 @@ import {build} from 'vite';
 import {chromium,webkit} from './node_modules/playwright/index.mjs';
 import {scenarios} from './scenario-config.mjs';
 import {validateRaceEvidence,CASES} from './storage-recovery-races-evidence.mjs';
+import {pendingControls} from './recovery-races-pending-controls.mjs';
 const git=(...x)=>execFileSync('git',x,{encoding:'utf8'}).trim(),hash=x=>createHash('sha256').update(x).digest('hex');
 const sha=git('rev-parse','HEAD'),out=`gui-evidence/recovery-races-${sha.slice(0,12)}-${randomUUID()}`;await mkdir(out,{recursive:true});
 const result={kind:'synthetic-recovery-races',sha,tree:git('rev-parse','HEAD^{tree}'),dirty:!!git('status','--porcelain'),status:'running',run:process.env.GITHUB_RUN_ID||'local',attempt:process.env.GITHUB_RUN_ATTEMPT||'local',startedAt:new Date().toISOString(),node:process.version,platform:process.platform,rows:[]};
@@ -27,5 +28,5 @@ try{
   await page.locator('#run').focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>window.result);assert.equal(await page.evaluate(()=>window.result.status),'PASS');row.writes=await page.evaluate(()=>window.writes);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);const file=`${s.id}.png`;await page.screenshot({path:`${out}/${file}`,fullPage:true});row.png={file,sha256:hash(await readFile(`${out}/${file}`))};const trace=`${s.id}.zip`;await context.tracing.stop({path:`${out}/${trace}`});row.trace={file:trace,sha256:hash(await readFile(`${out}/${trace}`))};row.status='PASS';await context.close();context=null;await browser.close();browser=null;await save();
  }
- result.status='PASS';result.finishedAt=new Date().toISOString();validateRaceEvidence(result);await save();console.log(JSON.stringify({out,status:'PASS',rows:result.rows.length,cases:result.rows.reduce((n,r)=>n+r.cases.length,0)}));
+ result.status='PASS';result.finishedAt=new Date().toISOString();validateRaceEvidence(result);await writeFile(`${out}/pending-controls.json`,JSON.stringify(pendingControls(result),null,2));await save();console.log(JSON.stringify({out,status:'PASS',rows:result.rows.length,cases:result.rows.reduce((n,r)=>n+r.cases.length,0)}));
 }catch(e){result.status='FAIL';result.error=String(e);await save();if(context)await context.tracing.stop({path:`${out}/failure.zip`}).catch(()=>{});throw e;}finally{await context?.close();await browser?.close();server?.close();}

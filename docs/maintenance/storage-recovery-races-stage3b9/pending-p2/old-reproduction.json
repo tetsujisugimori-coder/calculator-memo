@@ -1,0 +1,50 @@
+{
+  "source": {
+    "head": "cb3183355cdb8717cb162ef7d1d421c5d0a2b530",
+    "tree": "2483c9fd6d9fdf20f7230b1de434fcfa255178d0",
+    "run": "42890011272",
+    "attempt": "1",
+    "artifact": 13798670341,
+    "summarySha256": "55e09e48d9178f09549beae3ae8b2fe2939a0c91887ad3c9c25d3eb600d95c4a",
+    "validatorSha256": "5719810bcf1758d3a9f9cd1399bc08ab1394865e312375855a9f8383aa124b77"
+  },
+  "results": [
+    {
+      "environment": "chromium-desktop-1365px",
+      "normalAccepted": true,
+      "mutatedAccepted": true,
+      "mutation": "sequence5 reusable false -> true only"
+    },
+    {
+      "environment": "chromium-narrow-390px",
+      "normalAccepted": true,
+      "mutatedAccepted": true,
+      "mutation": "sequence5 reusable false -> true only"
+    },
+    {
+      "environment": "chromium-mobile-390px",
+      "normalAccepted": true,
+      "mutatedAccepted": true,
+      "mutation": "sequence5 reusable false -> true only"
+    },
+    {
+      "environment": "chromium-mobile-375px",
+      "normalAccepted": true,
+      "mutatedAccepted": true,
+      "mutation": "sequence5 reusable false -> true only"
+    },
+    {
+      "environment": "webkit-mobile-390px",
+      "normalAccepted": true,
+      "mutatedAccepted": true,
+      "mutation": "sequence5 reusable false -> true only"
+    },
+    {
+      "environment": "webkit-mobile-375px",
+      "normalAccepted": true,
+      "mutatedAccepted": true,
+      "mutation": "sequence5 reusable false -> true only"
+    }
+  ],
+  "originalPreserved": true
+}

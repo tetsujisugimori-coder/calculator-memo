@@ -1,26 +1,52 @@
 // Synthetic integration harness. Not imported by product code; no storage/writer API.
 import { createDecisionLifecycle, type Observation } from './storage-decision-lifecycle';
-export type Event = { sequence:number; operationId:number; phase:string; decisionId:number; stateId:string|null; generation:number|null; status:string; reusable:boolean; reasons:string[]; outcome:string; writeAllowed:false; executionAllowed:false };
+type Operation = {
+  kind: 'generate'|'review'; requestedDecisionId: number|null;
+  mode: 'validation'|'immediate-rejection';
+  rejectionReason: 'old-id'|'busy'|'not-valid'|'closed'|null;
+};
+export type Event = {
+  sequence:number; operationId:number; phase:string; decisionId:number;
+  stateId:string|null; generation:number|null; status:string; reusable:boolean;
+  checking:boolean; reasons:string[]; outcome:string; operation:Operation|null;
+  requestAllowed:boolean|null; writeAllowed:false; executionAllowed:false;
+};
 export function createRecoverySession(read:()=>Promise<Observation>) {
   let sequence=0, operation=0, epoch=0, closed=false;
   const events:Event[]=[];
   const lifecycle=createDecisionLifecycle(read);
   let visible=lifecycle.view();
-  const record=(id:number,phase:string,outcome:string)=>events.push({sequence:++sequence,operationId:id,phase,decisionId:visible.id,stateId:visible.fingerprint,generation:null,status:visible.status,reusable:visible.reusable,reasons:[...visible.reasons],outcome,writeAllowed:false,executionAllowed:false});
-  const snapshot=()=>structuredClone({view:visible,events});
+  const record=(id:number,phase:string,outcome:string,op:Operation|null=null,requestAllowed:boolean|null=null)=>events.push({sequence:++sequence,operationId:id,phase,decisionId:visible.id,stateId:visible.fingerprint,generation:null,status:visible.status,reusable:visible.reusable,checking:visible.checking,reasons:[...visible.reasons],outcome,operation:op?{...op}:null,requestAllowed,writeAllowed:false,executionAllowed:false});
+  const snapshot=()=>structuredClone({eventSchemaVersion:2,view:visible,events});
   async function run(kind:'generate'|'review',expectedId=visible.id) {
     const id=++operation,ticket=++epoch;
-    record(id,'start',kind);
-    if(closed){record(id,'finish','closed-rejected');return snapshot();}
+    visible=lifecycle.view();
+    const rejectionReason=closed?'closed':kind==='review'?(expectedId!==visible.id?'old-id':visible.checking?'busy':visible.status!=='VALID'?'not-valid':null):null;
+    const op:Operation={kind,requestedDecisionId:kind==='review'?expectedId:null,mode:rejectionReason?'immediate-rejection':'validation',rejectionReason};
+    record(id,'start',kind,op);
+    if(rejectionReason){
+      // Do not describe a rejected request as a pending validation. Current material
+      // may still be reusable: rejecting an old ID grants that request no authority.
+      record(id,'immediate-rejection','request-rejected',op,false);
+      // Still exercise the underlying lifecycle rejection rather than replacing
+      // its decision with the observer's classification.
+      const result=kind==='review'?await lifecycle.useForReview(expectedId):await lifecycle.generate();
+      visible=lifecycle.view();
+      const allowed='allowed' in result?result.allowed:false;
+      record(id,'finish',closed?'closed-rejected':allowed?'review-allowed':'review-rejected',op,allowed);
+      return snapshot();
+    }
     const pending=kind==='generate'?lifecycle.generate():lifecycle.useForReview(expectedId);
-    visible=lifecycle.view();record(id,'pending','no-authority-while-checking');
+    visible=lifecycle.view();record(id,'checking','no-authority-while-checking',op);
     try {
       const result=await pending;
-      if(ticket!==epoch || closed){record(id,'finish','obsolete-response-discarded');return snapshot();}
+      if(ticket!==epoch || closed){record(id,'finish','obsolete-response-discarded',op,kind==='review'?false:null);return snapshot();}
       visible=lifecycle.view();
-      record(id,'finish',kind==='review'&&'allowed' in result?(result.allowed?'review-allowed':'review-rejected'):'new-material');
+      const allowed=kind==='review'&&'allowed' in result?result.allowed:null;
+      record(id,'finish',kind==='review'?(allowed?'review-allowed':'review-rejected'):'new-material',op,allowed);
     } catch {
-      lifecycle.notifyChange('unknown'); visible=lifecycle.view();record(id,'finish','exception-unknown');
+      if(ticket!==epoch || closed){record(id,'finish','obsolete-response-discarded',op,kind==='review'?false:null);return snapshot();}
+      lifecycle.notifyChange('unknown'); visible=lifecycle.view();record(id,'finish','exception-unknown',op,kind==='review'?false:null);
     }
     return snapshot();
   }

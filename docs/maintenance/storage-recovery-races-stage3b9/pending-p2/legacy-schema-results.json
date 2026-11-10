@@ -1,0 +1,35 @@
+{
+  "note": "Not a semantic fix proof. Both legacy normal and legacy mutant lack v2 operation evidence; new normal plus same-meaning mutants are tested separately.",
+  "rows": [
+    {
+      "environment": "chromium-desktop-1365px",
+      "legacyNormalRejectedBySchema": true,
+      "legacyMutantRejectedBySchema": true
+    },
+    {
+      "environment": "chromium-narrow-390px",
+      "legacyNormalRejectedBySchema": true,
+      "legacyMutantRejectedBySchema": true
+    },
+    {
+      "environment": "chromium-mobile-390px",
+      "legacyNormalRejectedBySchema": true,
+      "legacyMutantRejectedBySchema": true
+    },
+    {
+      "environment": "chromium-mobile-375px",
+      "legacyNormalRejectedBySchema": true,
+      "legacyMutantRejectedBySchema": true
+    },
+    {
+      "environment": "webkit-mobile-390px",
+      "legacyNormalRejectedBySchema": true,
+      "legacyMutantRejectedBySchema": true
+    },
+    {
+      "environment": "webkit-mobile-375px",
+      "legacyNormalRejectedBySchema": true,
+      "legacyMutantRejectedBySchema": true
+    }
+  ]
+}
