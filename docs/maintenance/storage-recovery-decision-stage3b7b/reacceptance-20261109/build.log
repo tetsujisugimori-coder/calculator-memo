@@ -1,0 +1,72 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 build
+> vinext build
+
+
+  vinext build  (Vite 8.0.13)
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProxy environment variables detected. We'll use your proxy for fetch requests.[0m
+
+
+[1/5] analyze client references...
+[2Ktransforming...✓ 134 modules transformed.
+rendering chunks...
+[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - vinext:google-fonts (57%)
+  - vinext:react-canary (7%)
+  - vite:css (6%)
+  - rsc:virtual-client-package (5%)
+  - vinext:jsx-in-js (3%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 26.31s
+[2/5] analyze server references...
+[2Ktransforming...✓ 2924 modules transformed.
+rendering chunks...
+[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - rsc:virtual-client-package (27%)
+  - vinext:react-canary (17%)
+  - vinext:jsx-in-js (8%)
+  - vinext:optimize-imports (7%)
+  - rsc:scan-strip (6%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 4.63s
+[3/5] build rsc environment...
+[2Ktransforming...✓ 140 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 1.28s
+[4/5] build client environment...
+[2Ktransforming...✓ 4867 modules transformed.
+rendering chunks...
+computing gzip size...
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 6.46s
+[5/5] build ssr environment...
+[2Ktransforming...✓ 2945 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 4.94s
+[0m
+  Route (app)
+  ─ ? /
+
+  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

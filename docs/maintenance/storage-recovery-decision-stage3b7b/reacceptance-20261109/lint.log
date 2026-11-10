@@ -1,0 +1,20 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> calculation-memo@0.1.0 lint
+> eslint . --ignore-pattern dist --ignore-pattern dist-pages --ignore-pattern .next
+
+
+/workspace/scratch/e622c1e9421e/calculator-stage3b7b/e2e/formal-split.node-test.mjs
+  4:36  warning  'readdir' is defined but never used  @typescript-eslint/no-unused-vars
+
+/workspace/scratch/e622c1e9421e/calculator-stage3b7b/e2e/webkit-diagnostic-observer.mjs
+  74:17  warning  'stop' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  74:23  warning  'raf' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+✖ 3 problems (0 errors, 3 warnings)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

@@ -1,0 +1,114 @@
+{
+  "recorded_at": "2026-11-09T19:32:12+09:00",
+  "original_head": "d247d721fb35bd3ce1ccef6efdbef53d47119e21",
+  "merged_main": "bfa35325c784d49cd8af520f9eb3cd6a47be2f92",
+  "local_node": "v24.22.1",
+  "old_ci_node": "v22.13.0",
+  "old_ci_run": 42420517862,
+  "old_ci_job": 128548429839,
+  "command": "node_modules/.bin/vitest run tests/storage-recovery-decision-stage3b7b.test.ts",
+  "old_exit": 1,
+  "new_exit": 0,
+  "old_tests": 9,
+  "old_failed": 1,
+  "new_tests": 16,
+  "new_failed": 0,
+  "raw": {
+    "{\"synthetic\":true}": {
+      "length_utf16_code_units": 18,
+      "sha256_utf16le": "538d4a4683b8e5f2ebb3a7e88f832f7ee979f4b29d2e0d8470b7fe47105cb0f6"
+    },
+    "different": {
+      "length_utf16_code_units": 9,
+      "sha256_utf16le": "59cf386c865810cd8033d719a47dc12d474fd72720940538af1c02f201829085"
+    }
+  },
+  "files": {
+    "after-focused.log": {
+      "bytes": 324,
+      "sha256": "cfdadbee6ead7bf1e99b91c8ffc3f2ec92ffed32d25b80de156f81cdb648ddf5"
+    },
+    "before-d247d72.log": {
+      "bytes": 2137,
+      "sha256": "dac3cc6cb3627fe48e978eb8128dc9cef16e55b99cb1878dc9126cbc913f4c8a"
+    },
+    "build.log": {
+      "bytes": 2525,
+      "sha256": "81968175d5bb9e23cc6ea455bf43c4adfd7163696bcfc41e640ee1c8b49f9d28"
+    },
+    "checks-exit.txt": {
+      "bytes": 73,
+      "sha256": "5fd7d78c677998b4ac41260db0459a9169968b997887d147261686c5b013e3d5"
+    },
+    "lint.log": {
+      "bytes": 915,
+      "sha256": "405a0fde6d980c48e3f8d2284e3ee108ee5b763d9e902e6d1a5417773d5ff9ca"
+    },
+    "node-ci-group.log": {
+      "bytes": 5359,
+      "sha256": "d346d518bf0773c1925c9b4edfadc4bf59f01dd5464b3aac4e2bb82985aab376"
+    },
+    "node-contracts-serial.log.gz": {
+      "bytes": 6925,
+      "sha256": "b174c28cce1240a051a06a5ae51e75cbae00f0672086b851b325d90401958444"
+    },
+    "node-contracts.log.gz": {
+      "bytes": 7440,
+      "sha256": "17ec9f5ec177b7e35ff4255a2c91cb3e383808814f186264b1ce15f3d5071fd2"
+    },
+    "old-ci-42420517862-job128548429839.log.gz": {
+      "bytes": 23048,
+      "sha256": "b35731fe0e58cf9673e1d5609c50be43223cca0ef928d51fff4e936d24db1ba1"
+    },
+    "pages-build.log.gz": {
+      "bytes": 3492,
+      "sha256": "bcb17dfe6691f3dc62837349607e4d212e2a27cf425bd5115d666325dae0888d"
+    },
+    "typecheck.log": {
+      "bytes": 307,
+      "sha256": "1b858dbf0c97776106c87789b8f615689f5419ea53c7afbc58483acbd9d61c94"
+    },
+    "unit-all.log.gz": {
+      "bytes": 10521,
+      "sha256": "04e12d97b0d59823624f8895b96f0909c9a16f638071fa958c6e5b58208c56fd"
+    }
+  },
+  "code_commit": "ce4e839eb822b908709827b5b05cd1f70065b218",
+  "code_tree": "cce2822244af0c3b333a739371b57809db5f3b69",
+  "checked_at": "2026-11-09T19:37:47+09:00",
+  "full_validation": {
+    "unit": {
+      "passed": 3015,
+      "files": 132,
+      "exit": 0
+    },
+    "typecheck": {
+      "exit": 0
+    },
+    "lint": {
+      "exit": 0,
+      "warnings": 3
+    },
+    "normal_build": {
+      "exit": 0
+    },
+    "pages_build": {
+      "exit": 0
+    },
+    "node_all_parallel": {
+      "passed": 321,
+      "failed": 1,
+      "exit": 1
+    },
+    "node_ci_group": {
+      "passed": 68,
+      "failed": 0,
+      "exit": 0
+    },
+    "node_all_serial": {
+      "passed": 322,
+      "failed": 0,
+      "exit": 0
+    }
+  }
+}
