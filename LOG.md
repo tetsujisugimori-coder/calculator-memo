@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-10 (JST): 判断資料の自動失効研究（Issue #138）
+
+- PR #137のマージを確認し、main `6173c9a3507195b476a8c1db356e1611702802db` から独立ブランチを作成。既存reconcilerと判断資料builderをそのまま再利用する。
+- 隔離合成fixtureにVALID／STALE／UNKNOWN、fingerprint・世代・authority・backup・選択条件照合、通知と利用直前再照合、非同期応答無効化、明示再生成を追加した。既存製品コード・保存領域・正式GUI契約は変更しない。
+- 38単体試験と対象lint・型検査はローカル成功。最終HEADの全CI・6条件原票・独立レビューはDraft PRのSHA付き結果で確認する。本記録では未完了を成功扱いしない。
+- [Issue #138](https://github.com/tetsujisugimori-coder/calculator-memo/issues/138)。設計・再現手順は `docs/maintenance/storage-decision-lifecycle-stage3b8/README.md`。PRは作成予定。
+- 未観測ABA、非協調writer、複数保存先の非原子的読取、照合後TOCTOU、実機Safariは保証対象外。Stage 3B HOLD、実書込み禁止、マージ禁止を維持する。
+
+
 ## 2026-11-10 (JST): PR #137 再開と最終HEAD再受入
 
 - 最新mainを再取得し、`bfa35325c784d49cd8af520f9eb3cd6a47be2f92` が保全済み修正 `500f4a302a3a5eb926dc560233a7c8a61e5a27e5` の祖先であることを確認。PR #136側とPR #137側の記録は両方保持する。製品コード、builder、workflow、lockfileは再開時に変更していない。
