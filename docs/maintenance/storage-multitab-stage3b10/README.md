@@ -63,7 +63,7 @@ node e2e/multitab-negative-controls.mjs
 ```
 
 The last command first validates a complete same-HEAD normal run and its files,
-then rejects 12 damaged evidence variants. It launches two explicit browser
+then rejects 18 damaged evidence variants. It launches two explicit browser
 mutants: accepting cached stale observations and disabling real communication.
 Both must exit 1 with the specific expected failed case; their summaries remain
 FAIL/RED and are never counted as successful normal cases. The control campaign
@@ -74,3 +74,29 @@ timeouts, absent cases and page failures are failures, not skips.
 
 Local commands and exact tested commits/results will be reported separately.
 No CI or browser success is claimed by this document before execution.
+
+## Independent operation-history correction
+
+Independent review of the first submitted verifier found P2: removing all initial
+generate start/finish events and consistently renumbering the raw sequence and
+checkpoint references was accepted. An intermediate VALID snapshot with an
+unearned new decision ID was also accepted even though same-ID revival failed.
+The original compatible raw rows and reviewer scripts/results were retained;
+these early normal rows came from an intentionally failing mutant campaign and
+are not counted as a full normal browser acceptance.
+
+The corrected verifier requires the scenario-specific operation histories for
+each initial page and replacement boot, sequential operation IDs, and decision ID
+creation only from an explicit generate. It rejects rollback and requires native
+reads within successful generation/review bounds. Checkpoint permission and view
+must match the actual raw review result. The same independent counterexamples
+are rejected while their unchanged compatible positive rows remain accepted.
+The parent applied this narrow fix after the separate reviewer reported it;
+independent reacceptance and final-head CI remain recorded in PR #143.
+
+Thirteen focused Node oracle tests include a complete synthetic positive history,
+consistent-numbering operation loss, unearned-ID revival, rollback and missing
+native reads. They are validator controls, not fabricated browser execution.
+The full real-browser campaign adds the same semantic corruptions to original
+same-head evidence. Final measured results and failed attempts belong to the
+SHA-specific Issue/PR report, not a presumed PASS in this design document.

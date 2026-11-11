@@ -10,8 +10,15 @@ const summaries=await Promise.all(candidates.map(async n=>({path:`gui-evidence/$
 const source=summaries.filter(x=>x.data.status==='PASS').sort((a,b)=>b.data.startedAt.localeCompare(a.data.startedAt))[0];
 assert.ok(source,'complete-normal-run-required');validateMultitabEvidence(source.data);await verifyArtifactFiles(source.data,source.path.replace('/summary.json',''));
 const output={sha,normalEvidence:source.path,status:'running',evidenceMutations:[],browserMutants:[]};
+function renumber(row){const counts=new Map(),refs=new Map();for(const e of row.events){const old=e.sequence;e.sequence=(counts.get(e.boot)||0)+1;counts.set(e.boot,e.sequence);refs.set(`${e.boot}:${old}`,e.sequence);}for(const c of row.checks)c.evidenceSequence=refs.get(`${c.boot}:${c.evidenceSequence}`);}
 const mutations={
  'missing-case':x=>x.rows.pop(),
+ 'whole-generations-dropped-renumbered':x=>{const r=x.rows[0];r.events=r.events.filter(e=>!/^generate-(start|finish)$/.test(e.kind));renumber(r);},
+ 'all-reviews-dropped-renumbered':x=>{const r=x.rows.find(r=>r.name==='unknown-read');r.events=r.events.filter(e=>!/^review-(start|finish)$/.test(e.kind));renumber(r);},
+ 'unearned-new-id-revival':x=>{const r=x.rows.find(r=>r.name==='delayed-duplicate-reordered'),i=r.events.findIndex(e=>e.kind==='receive'&&e.pageId==='A');const e=structuredClone(r.events[i]);e.kind='snapshot';e.sequence+=0.5;e.monotonic+=0.01;Object.assign(e.decision,{id:2,status:'VALID',reusable:true});r.events.splice(i+1,0,e);renumber(r);},
+ 'decision-id-rollback':x=>{Object.assign(x.rows[0].events.find(e=>e.kind==='send').decision,{id:0,status:'STALE',reusable:false});},
+ 'review-native-reads-missing':x=>{const r=x.rows.find(r=>r.name==='stale-evidence'),s=r.events.find(e=>e.kind==='review-start');r.events=r.events.filter(e=>!(e.boot===s.boot&&e.sequence>s.sequence&&e.kind==='read-captured'));renumber(r);},
+ 'checkpoint-outcome-not-raw':x=>{const r=x.rows.find(r=>r.name==='late-older-response');r.events.find(e=>e.kind==='review-finish').allowed=true;},
  'duplicate-case':x=>{x.rows[1]=structuredClone(x.rows[0]);},
  'page-failure':x=>x.rows[0].errors.push('synthetic page failure'),
  'missing-raw-row':x=>x.rows[0].events.splice(3,1),

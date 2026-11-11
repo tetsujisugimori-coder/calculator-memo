@@ -19,6 +19,71 @@ export const EXPECTED_CHECKS={
  'noncooperative-writer':{'unannounced-write-denied':'STALE'},
  'late-older-response':{'new-generation-valid':'VALID','older-result-denied':'VALID'},
 };
+// Fixed operation contract, transcribed from the scenario actions. A missing whole
+// operation pair must not make completeness checking vacuously true.
+export const A_OPERATIONS = {
+ 'broadcast-three-tabs':['generate'], 'delayed-duplicate-reordered':['generate'],
+ 'stale-evidence':['generate','review'], 'generation-aba':['generate','review'],
+ 'check-then-use':['generate','review','review'], reload:['generate'],
+ 'close-reconnect':['generate'], 'disconnect-missed':['generate','generate','review'],
+ 'close-during-async':['generate','review'], 'page-close-during-async':['generate','review'],
+ 'communication-failure':['generate','generate'], 'unknown-read':['generate','review','review'],
+ 'lock-failure':['generate','review'], 'noncooperative-writer':['generate','review'],
+ 'late-older-response':['generate','review','generate'],
+};
+function validateOperationHistory(row) {
+ const byBoot=new Map(), firstBoot=new Map();
+ for(const e of row.events){
+  if(!byBoot.has(e.boot)){byBoot.set(e.boot,{pageId:e.pageId,issued:0,starts:[],events:[]});if(!firstBoot.has(e.pageId))firstBoot.set(e.pageId,e.boot);}
+  const state=byBoot.get(e.boot);assert.equal(e.pageId,state.pageId,'boot-page-identity');
+  assert.equal(e.decision.id,state.issued,'decision-id-without-explicit-generation');
+  if(e.kind==='generate-start')state.issued++;
+  if(/^(generate|review)-start$/.test(e.kind)){assert.equal(e.operationId,state.starts.length+1,'operation-id-sequence');state.starts.push(e);}
+  state.events.push(e);
+ }
+ const replacement=['reload','close-reconnect','page-close-during-async'].includes(row.name);
+ assert.equal(byBoot.size,replacement?4:3,'exact-boot-count');assert.equal(row.pagesCreated,['close-reconnect','page-close-during-async'].includes(row.name)?4:3,'exact-page-count');
+ assert.deepEqual([...firstBoot.keys()].sort(),['A','B','C']);
+ for(const [boot,state] of byBoot){
+  const initial=firstBoot.get(state.pageId)===boot;
+  const kinds=initial?(state.pageId==='A'?A_OPERATIONS[row.name]:['generate']):(row.name==='page-close-during-async'?[]:['review']);
+  assert.deepEqual(state.starts.map(e=>e.kind.split('-')[0]),kinds,'required-operation-history');
+  for(const start of state.starts){
+   const finish=state.events.find(e=>e.operationId===start.operationId&&e.kind===start.kind.replace('start','finish'));
+   if(!finish){assert.equal(row.name,'page-close-during-async');assert.equal(start.kind,'review-start');continue;}
+   const inside=state.events.filter(e=>e.sequence>start.sequence&&e.sequence<finish.sequence);
+   if(start.kind==='generate-start'){
+    const reads=inside.filter(e=>e.kind==='read-captured'&&e.decision.id===start.decision.id+1);
+    assert.equal(reads.length,2,'generation-requires-two-native-reads');
+    const generation=row.name==='late-older-response'&&start.operationId>1?2:1;
+    assert.ok(reads.every(e=>e.generation===generation),'generation-native-read-identity');
+    assert.equal(finish.decision.id,start.decision.id+1);assert.equal(finish.decision.status,'VALID','successful-explicit-generation');
+   }else{
+    assert.equal(typeof finish.allowed,'boolean');assert.equal(finish.allowed,finish.requestedId===finish.decision.id&&finish.decision.reusable,'review-outcome-authority');
+    const reads=inside.filter(e=>e.kind==='read-captured'&&e.decision.id===start.requestedId);
+    if(['stale-evidence','generation-aba','check-then-use','disconnect-missed','noncooperative-writer'].includes(row.name)){
+     assert.equal(reads.length,2,'review-requires-two-native-reads');
+     const generation=row.name==='check-then-use'&&start.operationId===2?1:row.name==='generation-aba'?3:2;
+     assert.ok(reads.every(e=>e.generation===generation),'review-native-read-identity');
+    }
+    if(row.name==='unknown-read'&&start.operationId===2)assert.equal(inside.filter(e=>e.kind==='read-failed').length,1,'review-missing-read-failure');
+    if(row.name==='lock-failure')assert.equal(inside.filter(e=>e.kind==='lock-unavailable').length,1,'review-missing-lock-failure');
+   }
+  }
+ }
+ for(const c of row.checks){
+  const state=byBoot.get(c.boot),before=state.events.filter(e=>e.sequence<c.evidenceSequence);
+  if(c.allowed!==undefined||c.label==='initial-check'){
+   const finish=before.filter(e=>e.kind==='review-finish').at(-1);assert.ok(finish,'checkpoint-review-result-required');
+   assert.equal(finish.allowed,c.label==='initial-check'?true:c.allowed,'checkpoint-review-result-mismatch');
+   assert.deepEqual(c.view,finish.decision,'checkpoint-review-view-mismatch');
+  }
+  if(c.label==='pending-no-authority'){
+   const pending=state.starts.filter(e=>e.kind==='review-start'&&e.sequence<c.evidenceSequence&&!before.some(f=>f.kind==='review-finish'&&f.operationId===e.operationId));
+   assert.equal(pending.length,1,'pending-review-history-required');
+  }
+ }
+}
 function validateCase(row){
  assert.equal(row.status,'PASS');assert.deepEqual(row.errors,[]);assert.equal(row.pagesCreated>=3,true);
  assert.match(row.namespace,/^stage3b10-test-[a-f0-9-]+$/);
@@ -38,6 +103,7 @@ function validateCase(row){
   if(e.kind==='review-finish'&&e.allowed){assert.equal(v.reusable,true);assert.equal(e.requestedId,v.id);}
  }
  for(const op of operations.values())if(!op.finish){assert.equal(row.name,'page-close-during-async','unfinished-operation');assert.ok(row.terminatedBoots.includes(op.start.boot),'real-page-close-required');assert.equal(op.start.kind,'review-start');}
+ validateOperationHistory(row);
  assert.ok(boots.size>=3);assert.equal(ordinals.size,row.pagesCreated);for(const field of ['raw','trace']){assert.ok(row[field]?.file);assert.match(row[field].sha256,/^[a-f0-9]{64}$/);}assert.ok(row.events.some(e=>e.kind==='write-committed'));assert.ok(row.events.some(e=>e.kind==='read-captured'));assert.ok(row.events.some(e=>e.kind==='write-lock-acquired'));assert.ok(row.events.some(e=>e.kind==='read-lock-acquired'));
  const expected=EXPECTED_CHECKS[row.name];assert.ok(expected);assert.deepEqual(row.checks.map(c=>c.label).sort(),Object.keys(expected).sort());
  for(const c of row.checks){const e=row.events.find(e=>e.boot===c.boot&&e.sequence===c.evidenceSequence);assert.ok(e&&e.kind==='snapshot','checkpoint-raw-event-required');assert.deepEqual(c.view,e.decision,'checkpoint-raw-mismatch');assert.equal(c.view.status,expected[c.label],c.label);assert.equal(c.view.executionAllowed,false);assert.equal(c.view.writeAllowed,false);assert.equal(c.view.authority,'NOT_ESTABLISHED');
