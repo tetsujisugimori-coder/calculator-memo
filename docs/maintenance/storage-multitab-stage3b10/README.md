@@ -63,7 +63,7 @@ node e2e/multitab-negative-controls.mjs
 ```
 
 The last command first validates a complete same-HEAD normal run and its files,
-then rejects 18 damaged evidence variants. It launches two explicit browser
+then rejects 24 damaged evidence variants. It launches two explicit browser
 mutants: accepting cached stale observations and disabling real communication.
 Both must exit 1 with the specific expected failed case; their summaries remain
 FAIL/RED and are never counted as successful normal cases. The control campaign
@@ -91,12 +91,28 @@ creation only from an explicit generate. It rejects rollback and requires native
 reads within successful generation/review bounds. Checkpoint permission and view
 must match the actual raw review result. The same independent counterexamples
 are rejected while their unchanged compatible positive rows remain accepted.
-The parent applied this narrow fix after the separate reviewer reported it;
-independent reacceptance and final-head CI remain recorded in PR #143.
+The narrow fix addresses the independently reported issue. Independent
+reacceptance and final-head CI remain recorded in PR #143.
 
-Thirteen focused Node oracle tests include a complete synthetic positive history,
+Nineteen focused Node oracle tests include a complete synthetic positive history,
 consistent-numbering operation loss, unearned-ID revival, rollback and missing
 native reads. They are validator controls, not fabricated browser execution.
 The full real-browser campaign adds the same semantic corruptions to original
 same-head evidence. Final measured results and failed attempts belong to the
 SHA-specific Issue/PR report, not a presumed PASS in this design document.
+
+The second independent pass also demonstrated missing causative writer/lock rows,
+received invalidation hidden behind phantom checking, and multiple cases pointing
+to a single trace. The verifier now requires exact controlled writer histories,
+read-to-commit revision/generation linkage, case-specific race ordering, checking
+backed by a live validation, invalidation regardless of checking, and distinct
+exact case artifact names with complete regular-file inventory. The original
+unchanged 30 cases remain positive; the same corruptions reject. Native trace
+inspection independently confirmed three/four real page events per case and
+matched before/after API call identities in those original traces.
+
+The two real browser mutants intentionally stop at their first required failure
+in Chromium. Their specific semantic RED results do not constitute WebKit mutant
+execution. Normal WebKit 15-case acceptance is separate; WebKit mutants remain
+NOT_TESTED. The original mutation report and final-head report distinguish this
+coverage limit from production safety or physical Safari coverage.

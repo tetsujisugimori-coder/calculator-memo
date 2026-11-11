@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile,readdir,lstat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 export const CASES=['broadcast-three-tabs','delayed-duplicate-reordered','stale-evidence','generation-aba','check-then-use','reload','close-reconnect','disconnect-missed','close-during-async','page-close-during-async','communication-failure','unknown-read','lock-failure','noncooperative-writer','late-older-response'];
 export const EXPECTED_CHECKS={
@@ -34,10 +34,13 @@ export const A_OPERATIONS = {
 function validateOperationHistory(row) {
  const byBoot=new Map(), firstBoot=new Map();
  for(const e of row.events){
-  if(!byBoot.has(e.boot)){byBoot.set(e.boot,{pageId:e.pageId,issued:0,starts:[],events:[]});if(!firstBoot.has(e.pageId))firstBoot.set(e.pageId,e.boot);}
+  if(!byBoot.has(e.boot)){byBoot.set(e.boot,{pageId:e.pageId,issued:0,starts:[],events:[],validating:new Set()});if(!firstBoot.has(e.pageId))firstBoot.set(e.pageId,e.boot);}
   const state=byBoot.get(e.boot);assert.equal(e.pageId,state.pageId,'boot-page-identity');
   assert.equal(e.decision.id,state.issued,'decision-id-without-explicit-generation');
+  if(/^(generate|review)-finish$/.test(e.kind))state.validating.delete(e.operationId);
+  assert.equal(e.decision.checking,state.validating.size>0,'checking-requires-active-validation');
   if(e.kind==='generate-start')state.issued++;
+  if(e.kind==='generate-start'||e.kind==='review-start'&&e.requestedId===e.decision.id&&e.decision.status==='VALID'&&!e.decision.checking)state.validating.add(e.operationId);
   if(/^(generate|review)-start$/.test(e.kind)){assert.equal(e.operationId,state.starts.length+1,'operation-id-sequence');state.starts.push(e);}
   state.events.push(e);
  }
@@ -84,7 +87,43 @@ function validateOperationHistory(row) {
   }
  }
 }
+const CHANGE_CASES=['stale-evidence','check-then-use','disconnect-missed','late-older-response'];
+function validateWriterHistory(row){
+ const expected=[['A','A',1,true]];
+ if(row.name==='broadcast-three-tabs')expected.push(['A','B',2,true],['B','C',3,true]);
+ else if(row.name==='delayed-duplicate-reordered')expected.push(['B','B',2,true],['B','C',3,true]);
+ else if(row.name==='generation-aba')expected.push(['B','B',2,true],['B','A',3,true]);
+ else if(row.name==='noncooperative-writer')expected.push(['C','B',2,false]);
+ else if(CHANGE_CASES.includes(row.name))expected.push(['B','B',2,true]);
+ const writes=row.events.filter(e=>e.kind==='write-committed');
+ assert.deepEqual(writes.map(e=>[e.pageId,e.revision,e.generation,e.cooperative]),expected,'required-native-writer-history');
+ const held=new Set();let latest;
+ for(const e of row.events){
+  if(e.kind==='write-lock-acquired'){assert.ok(!held.has(e.boot),'write-lock-pair');held.add(e.boot);}
+  if(e.kind==='write-committed'){
+   assert.equal(held.has(e.boot),e.cooperative,'cooperative-write-lock-required');held.delete(e.boot);latest=e;
+  }
+  if(e.kind==='read-captured'){
+   assert.ok(latest,'native-read-before-bootstrap');
+   assert.equal(e.generation,latest.generation,'native-read-committed-generation');
+   assert.equal(e.revision,latest.revision,'native-read-committed-revision');
+  }
+ }
+ assert.equal(held.size,0,'write-lock-without-completion');
+ const index=e=>row.events.indexOf(e);
+ for(const p of ['A','B','C'])assert.ok(index(writes[0])<row.events.findIndex(e=>e.pageId===p&&e.kind==='generate-start'),'bootstrap-before-generation');
+ if(row.name==='check-then-use'){
+  const c=row.checks.find(c=>c.label==='initial-check');const check=row.events.find(e=>e.boot===c.boot&&e.sequence===c.evidenceSequence);
+  const review=row.events.filter(e=>e.kind==='review-start').at(-1);
+  assert.ok(index(check)<index(writes[1])&&index(writes[1])<index(review),'write-between-check-and-use');
+ }
+ if(row.name==='late-older-response'){
+  const pause=row.events.find(e=>e.kind==='read-paused'),next=row.events.filter(e=>e.pageId==='A'&&e.kind==='generate-start').at(-1),resume=row.events.find(e=>e.kind==='read-resumed');
+  assert.ok(index(pause)<index(writes[1])&&index(writes[1])<index(next)&&index(next)<index(resume),'write-before-new-generation-and-old-response');
+ }
+}
 function validateCase(row){
+ assert.ok(['chromium','webkit'].includes(row.engine));
  assert.equal(row.status,'PASS');assert.deepEqual(row.errors,[]);assert.equal(row.pagesCreated>=3,true);
  assert.match(row.namespace,/^stage3b10-test-[a-f0-9-]+$/);
  assert.ok(row.events.length>15,'missing-raw-events');
@@ -97,14 +136,16 @@ function validateCase(row){
   const v=e.decision;assert.equal(v.HOLD,true);assert.equal(v.executionAllowed,false);assert.equal(v.writeAllowed,false);assert.equal(v.authority,'NOT_ESTABLISHED');
   assert.ok(['VALID','STALE','UNKNOWN'].includes(v.status));assert.equal(v.reusable,v.status==='VALID'&&!v.checking);
   const key=`${e.boot}:${v.id}`;if(invalidated.has(key))assert.equal(v.reusable,false,'invalidated-decision-revived');if(['STALE','UNKNOWN'].includes(v.status)&&!['generate-start','generate-finish','read-captured','read-lock-acquired','read-paused','read-resumed','snapshot','connected','boot'].includes(e.kind))invalidated.add(key);
+  if(['communication-error','disconnected','reconnected','session-closed'].includes(e.kind)){assert.equal(v.status,previous?.decision.status==='STALE'?'STALE':'UNKNOWN','lifecycle-event-must-invalidate-status');invalidated.add(key);}
   if(e.kind==='send'){const old=sends.get(e.messageId);if(old){assert.equal(old.boot,e.boot);assert.equal(old.messageGeneration,e.messageGeneration);assert.equal(old.messageKind,e.messageKind);}else sends.set(e.messageId,e);}
-  if(e.kind==='receive'){const s=sends.get(e.messageId);assert.ok(s,'actual-send-required');assert.notEqual(s.boot,e.boot);assert.equal(s.pageId,e.sender);assert.equal(s.boot,e.senderBoot);assert.equal(s.messageGeneration,e.messageGeneration);assert.equal(s.messageKind,e.messageKind);assert.equal(v.reusable,false);}
+  if(e.kind==='receive'){const s=sends.get(e.messageId);assert.ok(s,'actual-send-required');assert.notEqual(s.boot,e.boot);assert.equal(s.pageId,e.sender);assert.equal(s.boot,e.senderBoot);assert.equal(s.messageGeneration,e.messageGeneration);assert.equal(s.messageKind,e.messageKind);assert.equal(v.status,e.messageKind==='change'?'STALE':previous?.decision.status==='STALE'?'STALE':'UNKNOWN','receive-must-invalidate-status');assert.equal(v.reusable,false);invalidated.add(key);}
   if(/^(generate|review)-(start|finish)$/.test(e.kind)){assert.ok(Number.isSafeInteger(e.operationId)&&e.operationId>0);const key=`${e.boot}:${e.operationId}`;if(e.kind.endsWith('start')){assert.ok(!operations.has(key),'unique-operation');operations.set(key,{start:e});}else{const op=operations.get(key);assert.ok(op&&!op.finish,'operation-start-required');assert.equal(e.kind.split('-')[0],op.start.kind.split('-')[0]);assert.equal(e.requestedId,op.start.requestedId);op.finish=e;}}
   if(e.kind==='review-finish'&&e.allowed){assert.equal(v.reusable,true);assert.equal(e.requestedId,v.id);}
  }
  for(const op of operations.values())if(!op.finish){assert.equal(row.name,'page-close-during-async','unfinished-operation');assert.ok(row.terminatedBoots.includes(op.start.boot),'real-page-close-required');assert.equal(op.start.kind,'review-start');}
  validateOperationHistory(row);
- assert.ok(boots.size>=3);assert.equal(ordinals.size,row.pagesCreated);for(const field of ['raw','trace']){assert.ok(row[field]?.file);assert.match(row[field].sha256,/^[a-f0-9]{64}$/);}assert.ok(row.events.some(e=>e.kind==='write-committed'));assert.ok(row.events.some(e=>e.kind==='read-captured'));assert.ok(row.events.some(e=>e.kind==='write-lock-acquired'));assert.ok(row.events.some(e=>e.kind==='read-lock-acquired'));
+ validateWriterHistory(row);
+ assert.ok(boots.size>=3);assert.equal(ordinals.size,row.pagesCreated);for(const field of ['raw','trace']){assert.equal(row[field]?.file,`${row.engine}-${row.name}${field==='raw'?'-raw.json':'.zip'}`,'case-artifact-filename');assert.match(row[field].sha256,/^[a-f0-9]{64}$/);}assert.ok(row.events.some(e=>e.kind==='write-committed'));assert.ok(row.events.some(e=>e.kind==='read-captured'));assert.ok(row.events.some(e=>e.kind==='write-lock-acquired'));assert.ok(row.events.some(e=>e.kind==='read-lock-acquired'));
  const expected=EXPECTED_CHECKS[row.name];assert.ok(expected);assert.deepEqual(row.checks.map(c=>c.label).sort(),Object.keys(expected).sort());
  for(const c of row.checks){const e=row.events.find(e=>e.boot===c.boot&&e.sequence===c.evidenceSequence);assert.ok(e&&e.kind==='snapshot','checkpoint-raw-event-required');assert.deepEqual(c.view,e.decision,'checkpoint-raw-mismatch');assert.equal(c.view.status,expected[c.label],c.label);assert.equal(c.view.executionAllowed,false);assert.equal(c.view.writeAllowed,false);assert.equal(c.view.authority,'NOT_ESTABLISHED');
   if(c.label.includes('denied'))assert.equal(c.allowed,false,c.label);
@@ -146,6 +187,10 @@ export {validateCase};
 
 export async function verifyArtifactFiles(x,directory){
  const hash=b=>createHash('sha256').update(b).digest('hex');
+ const required=['fixture.mjs.txt','summary.json',...x.rows.flatMap(r=>[r.raw.file,r.trace.file])];
+ assert.equal(new Set(required).size,required.length,'one-artifact-per-case');
+ const names=await readdir(directory);assert.deepEqual(names.filter(n=>n!=='negative-controls.json').sort(),required.sort(),'exact-artifact-inventory');
+ for(const name of names){const stat=await lstat(`${directory}/${name}`);assert.ok(stat.isFile()&&!stat.isSymbolicLink(),'regular-artifact-only');}
  assert.equal(hash(await readFile(`${directory}/fixture.mjs.txt`)),x.bundleHash,'bundle-hash');
  for(const row of x.rows){for(const kind of ['raw','trace']){
   assert.match(row[kind].file,/^[a-z0-9-]+\.(json|zip)$/,'local-artifact-name');

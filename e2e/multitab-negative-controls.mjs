@@ -13,6 +13,12 @@ const output={sha,normalEvidence:source.path,status:'running',evidenceMutations:
 function renumber(row){const counts=new Map(),refs=new Map();for(const e of row.events){const old=e.sequence;e.sequence=(counts.get(e.boot)||0)+1;counts.set(e.boot,e.sequence);refs.set(`${e.boot}:${old}`,e.sequence);}for(const c of row.checks)c.evidenceSequence=refs.get(`${c.boot}:${c.evidenceSequence}`);}
 const mutations={
  'missing-case':x=>x.rows.pop(),
+ 'received-change-hidden-by-checking':x=>{const r=x.rows.find(r=>r.name==='delayed-duplicate-reordered');Object.assign(r.events.find(e=>e.kind==='receive'&&e.pageId==='A').decision,{status:'VALID',checking:true,reusable:false});},
+ 'checking-without-validation':x=>{Object.assign(x.rows[0].events.find(e=>e.kind==='generate-finish').decision,{checking:true,reusable:false});},
+ 'trace-aliased-from-another-case':x=>{x.rows[1].trace=structuredClone(x.rows[0].trace);},
+ 'causative-write-dropped-renumbered':x=>{const r=x.rows.find(r=>r.name==='stale-evidence');r.events=r.events.filter(e=>!(e.pageId==='B'&&['write-lock-acquired','write-committed'].includes(e.kind)));renumber(r);},
+ 'writer-lock-dropped-renumbered':x=>{const r=x.rows.find(r=>r.name==='stale-evidence');r.events=r.events.filter(e=>!(e.pageId==='B'&&e.kind==='write-lock-acquired'));renumber(r);},
+ 'native-read-revision-forged':x=>{const r=x.rows.find(r=>r.name==='stale-evidence');r.events.find(e=>e.kind==='read-captured').revision='forged';},
  'whole-generations-dropped-renumbered':x=>{const r=x.rows[0];r.events=r.events.filter(e=>!/^generate-(start|finish)$/.test(e.kind));renumber(r);},
  'all-reviews-dropped-renumbered':x=>{const r=x.rows.find(r=>r.name==='unknown-read');r.events=r.events.filter(e=>!/^review-(start|finish)$/.test(e.kind));renumber(r);},
  'unearned-new-id-revival':x=>{const r=x.rows.find(r=>r.name==='delayed-duplicate-reordered'),i=r.events.findIndex(e=>e.kind==='receive'&&e.pageId==='A');const e=structuredClone(r.events[i]);e.kind='snapshot';e.sequence+=0.5;e.monotonic+=0.01;Object.assign(e.decision,{id:2,status:'VALID',reusable:true});r.events.splice(i+1,0,e);renumber(r);},

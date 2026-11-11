@@ -2,6 +2,7 @@
 
 ## 2026-11-11 (JST): Stage 3B-10 実ブラウザ複数タブ検証を開始
 
+- 追加の独立反例で原因writer記録の全脱落、checking表示に隠れた通知失効漏れ、別条件traceの流用を確認。期待writer列・読取とcommitの対応・競合順序・通知失効・実validation中のchecking・条件別原票/traceの一対一対応を補強。19局所検査と未改変30原票の再照合が成功し、24原票変異を最終CIで検証する。WebKit正常系とChromiumのみの実ブラウザ変異検証を区別し、WebKit変異はNOT_TESTEDと明記。
 - [Draft PR #143](https://github.com/tetsujisugimori-coder/calculator-memo/pull/143)。初期独立レビューで操作原票全体の脱落・未生成IDの途中復活を誤受理するP2を確認。元反例を保持し、必須操作履歴・ID生成・操作区間内の読取り・許可結果の対応を照合する修正と13局所検査を追加。最終HEADのCI・原票・独立再受入はPRの実測報告に分離する。
 - [Issue #142](https://github.com/tetsujisugimori-coder/calculator-memo/issues/142)。PR #141 の merge と最新 main `6b7d46d2dd98058968860802c56eb2edd043dcf7` を確認し、`test/real-multitab-stage3b10` の専用 checkout を作成。既存 lifecycle・session・原票照合の基盤を再利用し、実 BroadcastChannel/Web Locks/IndexedDB を隔離合成領域で検証する。
 - 製品保存経路・保存形式・既存正式 GUI の 6条件/1128 checks/592 geometry/132 PNG 契約は変更しない。専用原票で通信順序、資料失効、ABA、競合、ライフサイクル、異常系と検証器の負対照を確認する。
