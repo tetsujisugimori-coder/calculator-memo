@@ -1,0 +1,75 @@
+name: Stage 3B real-browser multi-tab
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+concurrency:
+  group: storage-multitab-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  multitab:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      CI: 'true'
+    steps:
+      - name: Checkout exact PR head
+        id: checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Pinned Node
+        id: node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Locked dependencies
+        id: dependencies
+        run: |
+          npm ci --ignore-scripts
+          npm ci --prefix e2e --ignore-scripts
+      - name: Lifecycle and multi-tab evidence contracts
+        id: controls
+        run: |
+          node e2e/run-stage.mjs multitab-units npx vitest run tests/storage-decision-lifecycle.test.ts tests/storage-recovery-races.test.ts
+          node e2e/run-stage.mjs multitab-evidence-units node --test e2e/storage-multitab-evidence.node-test.mjs
+      - name: Fixed browser setup
+        id: browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs storage-reconciliation-apt sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs storage-reconciliation-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Chromium and WebKit isolated three-page acceptance
+        id: acceptance
+        timeout-minutes: 6
+        run: node e2e/run-stage.mjs multitab-browser timeout --signal=TERM --kill-after=10s 330s node e2e/run-storage-multitab.mjs
+      - name: Real browser mutants must be RED
+        id: mutants
+        timeout-minutes: 4
+        run: node e2e/run-stage.mjs multitab-negative-controls timeout --signal=TERM --kill-after=10s 210s node e2e/multitab-negative-controls.mjs
+      - name: Preserve failures and outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          writeFileSync('gui-evidence/multitab-ci-outcomes.json', JSON.stringify({ sha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, steps: JSON.parse(process.env.STEP_OUTCOMES) }, null, 2) + '\n');
+          NODE
+          node e2e/evidence-inventory.mjs
+      - name: Upload isolated acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-storage-multitab-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: |
+            gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
