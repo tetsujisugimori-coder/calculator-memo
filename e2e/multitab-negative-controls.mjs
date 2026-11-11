@@ -1,0 +1,41 @@
+// A successful control campaign means each intentionally broken run is RED.
+// Mutant summaries retain FAIL and are never folded into normal browser PASS rows.
+import assert from 'node:assert/strict';
+import {readFile,writeFile,readdir} from 'node:fs/promises';
+import {spawnSync,execFileSync} from 'node:child_process';
+import {validateMultitabEvidence,verifyArtifactFiles} from './storage-multitab-evidence.mjs';
+const sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+const candidates=(await readdir('gui-evidence')).filter(n=>n.startsWith(`multitab-${sha.slice(0,12)}-none-`));
+const summaries=await Promise.all(candidates.map(async n=>({path:`gui-evidence/${n}/summary.json`,data:JSON.parse(await readFile(`gui-evidence/${n}/summary.json`,'utf8'))})));
+const source=summaries.filter(x=>x.data.status==='PASS').sort((a,b)=>b.data.startedAt.localeCompare(a.data.startedAt))[0];
+assert.ok(source,'complete-normal-run-required');validateMultitabEvidence(source.data);await verifyArtifactFiles(source.data,source.path.replace('/summary.json',''));
+const output={sha,normalEvidence:source.path,status:'running',evidenceMutations:[],browserMutants:[]};
+const mutations={
+ 'missing-case':x=>x.rows.pop(),
+ 'duplicate-case':x=>{x.rows[1]=structuredClone(x.rows[0]);},
+ 'page-failure':x=>x.rows[0].errors.push('synthetic page failure'),
+ 'missing-raw-row':x=>x.rows[0].events.splice(3,1),
+ 'absent-real-communication':x=>{x.rows[0].events=x.rows[0].events.filter(e=>e.kind!=='receive');for(const boot of new Set(x.rows[0].events.map(e=>e.boot))){let i=0;for(const e of x.rows[0].events.filter(e=>e.boot===boot))e.sequence=++i;}},
+ 'stale-accepted':x=>{const c=x.rows.find(r=>r.name==='stale-evidence').checks[0];c.allowed=true;c.view.status='VALID';c.view.reusable=true;},
+ 'cleanup-missing':x=>{delete x.rows[0].cleanup.deleted;},
+ 'outside-namespace-modified':x=>{x.rows[0].cleanup.sentinelAfter='changed';},
+ 'write-authority-granted':x=>{x.rows[0].events[0].decision.writeAllowed=true;},
+ 'wrong-head':x=>{x.sha='missing';},
+ 'no-browser-version':x=>{delete x.rows[0].browserVersion;},
+ 'unfinished-run':x=>{x.status='running';},
+};
+for(const [name,mutate] of Object.entries(mutations)){const x=structuredClone(source.data);mutate(x);assert.throws(()=>validateMultitabEvidence(x),name);output.evidenceMutations.push({name,result:'RED'});}
+try{
+ for(const [mutant,failedCase] of [['accept-stale','stale-evidence'],['disable-communication','broadcast-three-tabs']]){
+  const r=spawnSync(process.execPath,['e2e/run-storage-multitab.mjs'],{env:{...process.env,MULTITAB_MUTANT:mutant,EXPECTED_SHA:sha},encoding:'utf8',timeout:120000,maxBuffer:10*1024*1024});
+  assert.equal(r.error,undefined);assert.equal(r.status,1,`${mutant} must exit RED (1)`);
+  const lines=r.stderr.split('\n').filter(l=>l.startsWith('{'));const location=JSON.parse(lines.at(-1));
+  const raw=JSON.parse(await readFile(`${location.out}/summary.json`,'utf8'));assert.equal(raw.status,'FAIL');assert.equal(raw.mutant,mutant);assert.equal(raw.rows.at(-1).name,failedCase);assert.equal(raw.rows.at(-1).status,'FAIL');
+  const failed=raw.rows.at(-1);assert.deepEqual(failed.errors,[],'environment-page-failure-is-not-mutant-detection');
+  if(mutant==='accept-stale'){assert.match(raw.error,/use-stale-denied/);assert.ok(failed.events.some(e=>e.kind==='mutant-cached-read'));assert.ok(failed.events.some(e=>e.kind==='review-finish'&&e.allowed===true));}
+  else{assert.match(raw.error,/^Error: Timeout: missing-real-message:/);assert.ok(failed.events.some(e=>e.kind==='send'));assert.equal(failed.events.filter(e=>e.kind==='receive').length,0);}
+  output.browserMutants.push({mutant,result:'RED',exitCode:r.status,evidence:`${location.out}/summary.json`,failedCase,error:raw.error});
+ }
+ output.status='PASS-controls-only';
+}finally{await writeFile(source.path.replace('summary.json','negative-controls.json'),JSON.stringify(output,null,2)+'\n');}
+console.log(JSON.stringify(output,null,2));
