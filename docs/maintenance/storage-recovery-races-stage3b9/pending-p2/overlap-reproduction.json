@@ -1,0 +1,15 @@
+{
+  "localImplementation": "1195dbd",
+  "case": "old-generation-late",
+  "mutatedSequence": 8,
+  "operationId": 3,
+  "unfinishedOperationId": 2,
+  "mutation": {
+    "checking": false,
+    "reusable": true
+  },
+  "normalAccepted": true,
+  "mutantAcceptedBeforeFix": true,
+  "fixedRejection": "inflight-validation-checking",
+  "originalPreserved": true
+}
