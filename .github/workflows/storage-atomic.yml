@@ -1,0 +1,81 @@
+name: Stage 3B-11 isolated atomic compare/update
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+concurrency:
+  group: storage-atomic-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  atomic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      CI: 'true'
+      TMPDIR: ${{ github.workspace }}/work/stage3b11-tmp
+    steps:
+      - name: Checkout exact PR head
+        id: checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Dedicated temporary workspace
+        run: mkdir -p "$TMPDIR"
+      - name: Pinned Node
+        id: node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.13.0
+          package-manager-cache: false
+      - name: Locked dependencies
+        id: dependencies
+        run: |
+          mkdir -p "$TMPDIR"
+          df -h "$GITHUB_WORKSPACE"
+          df -i "$GITHUB_WORKSPACE"
+          npm ci --ignore-scripts
+          npm ci --prefix e2e --ignore-scripts
+      - name: Atomic update and evidence contracts
+        id: controls
+        run: |
+          node e2e/run-stage.mjs atomic-units npx vitest run tests/storage-atomic-stage3b11.test.ts
+          node e2e/run-stage.mjs atomic-evidence-units node --test e2e/storage-atomic-evidence.node-test.mjs
+      - name: Fixed browser setup
+        id: browsers
+        timeout-minutes: 5
+        run: |
+          node e2e/run-stage.mjs storage-reconciliation-apt sudo --preserve-env=GITHUB_ACTIONS "$(command -v node)" e2e/configure-ci-apt.mjs
+          node e2e/run-stage.mjs storage-reconciliation-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
+      - name: Chromium and WebKit isolated three-page acceptance
+        id: acceptance
+        timeout-minutes: 8
+        run: node e2e/run-stage.mjs atomic-browser timeout --signal=TERM --kill-after=10s 450s node e2e/run-storage-atomic.mjs
+      - name: Real browser mutants must be RED
+        id: mutants
+        timeout-minutes: 8
+        run: node e2e/run-stage.mjs atomic-negative-controls timeout --signal=TERM --kill-after=10s 450s node e2e/atomic-negative-controls.mjs
+      - name: Preserve failures and outcomes
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          mkdir -p gui-evidence
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          writeFileSync('gui-evidence/atomic-ci-outcomes.json', JSON.stringify({ sha: process.env.EXPECTED_SHA, run: process.env.GITHUB_RUN_ID, attempt: process.env.GITHUB_RUN_ATTEMPT, steps: JSON.parse(process.env.STEP_OUTCOMES) }, null, 2) + '\n');
+          NODE
+          node e2e/evidence-inventory.mjs
+      - name: Upload isolated acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-storage-atomic-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: |
+            gui-evidence/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
