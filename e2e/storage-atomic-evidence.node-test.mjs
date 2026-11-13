@@ -2,20 +2,26 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {CASES,EXPECTATIONS,REQUIRED_CALLS,validateAtomicCase,validateAtomicEvidence} from './storage-atomic-evidence.mjs';
 function positive(){
- const namespace='stage3b11-test-11111111-1111-1111-1111-111111111111',r={explicitOperationId:'op-a'},rb={explicitOperationId:'op-b'};
+ const namespace='stage3b11-test-11111111-1111-1111-1111-111111111111';
+ const token0={structure:1,incarnation:'inc-1',generation:0,latestOperation:'genesis'},token1={...token0,generation:1,latestOperation:'op-a'};
+ const head0={...token0,namespace,target:'current',fingerprint:'1:A'};
+ const r={explicitOperationId:'op-a',expectedRaw:'A',candidateRaw:'B',expectedToken:token0,generation:0,incarnation:'inc-1'},rb={...r,explicitOperationId:'op-b'};
  const verified={status:'VERIFIED',txId:'A'},rejected={status:'REJECTED',txId:'B'};
- const final={head:{generation:1},current:'B',receipts:{genesis:{},'op-a':{}},copies:{1:{}}};
+ const final={head:{...head0,...token1,fingerprint:'1:B'},current:'B',receipts:{genesis:{token:token0,operationId:'genesis',raw:'A',fingerprint:'1:A',previous:null},'op-a':{token:token1,operationId:'op-a',raw:'B',fingerprint:'1:B',previous:'genesis'}},copies:{1:{raw:'A',token:token0,operationId:'op-a'}},attempts:{}};
  const row={name:'A-same-token',engine:'chromium',status:'PASS',errors:[],browserVersion:'test-only-not-browser',namespace,sentinelName:'sentinel',executionAllowed:false,writeAllowed:false,authority:'NOT_ESTABLISHED',classification:'VERIFIED-isolated-contract',results:[verified,rejected],final,events:[],journal:[],raw:{file:'chromium-A-same-token-raw.json',sha256:'a'.repeat(64)},trace:{file:'chromium-A-same-token.zip',sha256:'b'.repeat(64)},cleanup:{deleted:true,contextClosed:true,before:['sentinel'],after:['sentinel'],sentinelBefore:'outside-synthetic-namespace',sentinelAfter:'outside-synthetic-namespace',localBefore:{},localAfter:{}}};
  const seq={A:0,B:0,C:0};const emit=(p,kind,data={})=>row.events.push({namespace,pageId:p,pageOrdinal:'ABC'.indexOf(p)+1,boot:p,session:p,sequence:++seq[p],monotonic:seq[p],kind,...data});
- for(const [p,req,res]of [['A',r,verified],['B',rb,rejected]]){const d={txId:p,operationId:req.explicitOperationId};emit(p,'update-request',{...d,request:req});if(p==='A'){for(const kind of ['compare-success','write-request','tx-complete','readback-match'])emit(p,kind,d);}emit(p,'update-result',{...d,result:res});}
+ for(const [p,req,res]of [['A',r,verified],['B',rb,rejected]]){const d={txId:p,operationId:req.explicitOperationId};emit(p,'update-request',{...d,request:req});if(p==='A'){emit(p,'tx-start',{...d,mode:'readwrite',scope:['state','receipts','copies','attempts']});emit(p,'tx-read',{...d,head:head0,current:'A',receiptCount:1});emit(p,'compare-success',{...d,head:head0});emit(p,'write-request',{...d,token:token1,raw:'B'});emit(p,'write-request-success',d);emit(p,'tx-complete',d);emit(p,'readback',{...d,snapshot:final});emit(p,'readback-match',d);}emit(p,'update-result',{...d,result:res});}
  emit('C','tx-read',{head:final.head,current:'B',receiptCount:2});
  for(const [label,method,pageId,args,result,role]of [['init','initialize','A',[],{}],['request-a','request','A',[],r],['request-b','request','B',[],rb],['update-a','update','A',[r,{}],verified,'update'],['update-b','update','B',[rb,{}],rejected,'update'],['final','snapshot','C',[],final]])row.journal.push({ordinal:row.journal.length+1,label,method,pageId,args,result,role,started:row.journal.length,finished:row.journal.length+1});
  return row;
 }
 const renumber=x=>{const seen={};for(const e of x.events)e.sequence=seen[e.boot]=(seen[e.boot]||0)+1;};
 test('complete synthetic oracle control accepted (not a browser result)',()=>assert.equal(validateAtomicCase(positive()),true));
-test('all fixed cases have independently defined expectations',()=>{assert.equal(CASES.length,26);assert.equal(new Set(CASES).size,26);assert.deepEqual(Object.keys(EXPECTATIONS).sort(),[...CASES].sort());assert.deepEqual(Object.keys(REQUIRED_CALLS).sort(),[...CASES].sort());});
+test('all fixed cases have independently defined expectations',()=>{assert.equal(CASES.length,28);assert.equal(new Set(CASES).size,28);assert.deepEqual(Object.keys(EXPECTATIONS).sort(),[...CASES].sort());assert.deepEqual(Object.keys(REQUIRED_CALLS).sort(),[...CASES].sort());});
 const mutations={
+ 'missing native read':x=>{x.events=x.events.filter(e=>e.kind!=='tx-read');renumber(x);},
+ 'wrong native scope':x=>{x.events.find(e=>e.kind==='tx-start').scope=['state'];},
+ 'coherent final receipt tamper':x=>{x.final.receipts['op-a'].raw='forged';},
  'missing transaction complete':x=>{x.events=x.events.filter(e=>e.kind!=='tx-complete');renumber(x);},
  'success before complete':x=>{const n=x.events.findIndex(e=>e.kind==='update-result');const [e]=x.events.splice(n,1);x.events.splice(1,0,e);renumber(x);},
  'comparison outside transaction':x=>{x.events.find(e=>e.kind==='compare-success').txId='outside';},

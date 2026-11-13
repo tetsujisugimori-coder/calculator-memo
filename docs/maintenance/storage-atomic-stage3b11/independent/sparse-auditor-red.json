@@ -1,0 +1,7 @@
+{
+  "kind": "synthetic-counterexample-not-browser",
+  "expected": "REJECT missing native tx-start/read/write-success chain",
+  "accepted": true,
+  "inputSha256": "1f8a9a40930cfe5198cbf150cebd2904f5ded5e957baa66a665b640f3e9aff0a",
+  "auditorSha256": "c98f4d00b467a6911fdc9b37fd982ae8e14a2140a8e6767ab996b6c53a4080c3"
+}

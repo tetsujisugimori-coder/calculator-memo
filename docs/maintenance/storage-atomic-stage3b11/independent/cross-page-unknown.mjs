@@ -1,0 +1,17 @@
+import {build} from '../../../../node_modules/vite/dist/node/index.js';
+import {chromium} from '../../../../e2e/node_modules/playwright/index.mjs';
+import {createServer} from 'node:http';import {once} from 'node:events';import {readFile,writeFile,mkdir} from 'node:fs/promises';import {createHash,randomUUID} from 'node:crypto';
+const original=process.argv.includes('--original');
+const source=original?await readFile(new URL('./fixture-before.ts.txt',import.meta.url)):await readFile('e2e/fixtures/storage-atomic.ts');const sourceHash=createHash('sha256').update(source).digest('hex');
+const built=await build({configFile:false,logLevel:'error',plugins:original?[{name:'preserved-review-source',load(id){if(id.endsWith('/e2e/fixtures/storage-atomic.ts'))return source.toString();}}]:[],build:{write:false,minify:false,lib:{entry:'e2e/fixtures/storage-atomic.ts',formats:['es']},rolldownOptions:{output:{codeSplitting:false}}}});const code=(Array.isArray(built)?built:[built]).flatMap(x=>x.output).find(x=>x.type==='chunk').code;
+const server=createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/fixture.mjs'?'text/javascript':'text/html');res.end(req.url==='/fixture.mjs'?code:'<!doctype html><title>independent synthetic test</title>');});server.listen(0,'127.0.0.1');await once(server,'listening');
+const browser=await chromium.launch({headless:true});const context=await browser.newContext({serviceWorkers:'block'}),events=[];await context.exposeBinding('emit',(source,event)=>events.push({...event,url:source.page.url()}));const namespace='stage3b11-test-'+randomUUID();const pages=[];let result;
+try{
+for(const id of ['A','B']){const p=await context.newPage();await p.goto('http://127.0.0.1:'+server.address().port);await p.evaluate(async({namespace,id})=>{const {startAtomic}=await import('/fixture.mjs');window.f=startAtomic({namespace,pageId:id},e=>window.emit(e));},{namespace,id});pages.push(p);}
+const call=(p,method,...args)=>p.evaluate(async({method,args})=>{const r=await window.f[method](...args);await window.f.flush();return r;},{method,args});
+await call(pages[0],'initialize');const a=await call(pages[0],'request','op-a','B'),b=await call(pages[1],'request','op-b','C');const first=await call(pages[0],'update',a,{abort:true});const before=await call(pages[1],'snapshot');const second=await call(pages[1],'update',b);const after=await call(pages[1],'snapshot');result={sourceHash,bundleHash:createHash('sha256').update(code).digest('hex'),browser:browser.version(),namespace,first,before,second,after,expectation:'UNKNOWN from A must hold later prepared B operation; current A unchanged and no B commit',observedViolation:second.status==='VERIFIED'&&after.current==='C',events};
+for(const p of pages)await call(p,'close');await pages[0].evaluate(n=>new Promise((yes,no)=>{const r=indexedDB.deleteDatabase(n);r.onsuccess=()=>yes(true);r.onerror=()=>no(r.error);}),namespace);result.cleanup=true;
+}finally{await context.close();await browser.close();server.close();}
+const directory=`gui-evidence/atomic-independent-${Date.now()}-${randomUUID()}`;await mkdir(directory,{recursive:true});const out=directory+'/cross-page.json';await writeFile(out,JSON.stringify(result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({out,sourceHash,first:result.first.status,second:result.second.status,current:result.after.current,observedViolation:result.observedViolation}));
+
+if(original ? !result.observedViolation : result.observedViolation)process.exitCode=1;
