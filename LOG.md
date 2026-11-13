@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-14 (JST): Stage 3B-11 隔離原子更新検証の着手
+
+- Issue #144。PR #143 のマージと最新 main 164dcaf0e630cc5a1464283b9847656d602fa734 を確認し専用枝を作成。
+- [実行前計画](docs/maintenance/storage-atomic-stage3b11/README.md)を固定。既存 token/receipt と実ブラウザ原票基盤を調査し、同一 IDB transaction 内の再照合を隔離合成環境だけで検証する。
+- Stage 3B HOLD・実データ書込み禁止は維持。製品保存方式・正式GUI契約は変更しない。
+- 初期計画時点の実装・試験・独立レビュー・CI・保全は未実施。結果は実行対象SHAごとに記録し、既存成功を流用しない。
+
 ## 2026-11-11 (JST): Stage 3B-10 実ブラウザ複数タブ検証を開始
 
 - 追加の独立反例で原因writer記録の全脱落、checking表示に隠れた通知失効漏れ、別条件traceの流用を確認。期待writer列・読取とcommitの対応・競合順序・通知失効・実validation中のchecking・条件別原票/traceの一対一対応を補強。19局所検査と未改変30原票の再照合が成功し、24原票変異を最終CIで検証する。WebKit正常系とChromiumのみの実ブラウザ変異検証を区別し、WebKit変異はNOT_TESTEDと明記。
