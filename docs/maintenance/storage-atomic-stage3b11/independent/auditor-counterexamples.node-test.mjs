@@ -14,3 +14,7 @@ test('unchanged original real A row accepted, not whole-campaign acceptance',()=
 test('fixed sparse native-chain counterexample: old false acceptance, new refusal',()=>{assert.equal(old.validateAtomicCase(sparse),true);assert.throws(()=>validateAtomicCase(sparse));});
 const red=JSON.parse(await readFile(new URL('./native-mutations-red.json',import.meta.url)));
 for(const[name,mutate]of Object.entries(mutations))test(`independent fixed ${name} RED/GREEN`,()=>{const row=structuredClone(original);mutate(row);const hash=createHash('sha256').update(JSON.stringify(row,null,2)+'\n').digest('hex');assert.equal(hash,red.results.find(r=>r.name===name).inputSha256,'counterexample bytes fixed');assert.equal(old.validateAtomicCase(row),true);assert.throws(()=>validateAtomicCase(row));});
+const originalE=JSON.parse(await readFile(new URL('./native-e-original.json',import.meta.url)));
+const abortRed=JSON.parse(await readFile(new URL('./missing-abort-red.json',import.meta.url)));
+test('unchanged native E row accepted independently',()=>assert.equal(validateAtomicCase(originalE),true));
+test('fixed missing native abort is rejected',()=>{const row=structuredClone(originalE);row.events=row.events.filter(e=>e.kind!=='tx-abort');renumber(row);assert.equal(createHash('sha256').update(JSON.stringify(row,null,2)+'\n').digest('hex'),abortRed.inputSha256);assert.equal(old.validateAtomicCase(row),true);assert.throws(()=>validateAtomicCase(row));});

@@ -100,6 +100,30 @@ export function validateAtomicCase(row){
   const readback=found.readback.snapshot,receipt=readback.receipts[req.explicitOperationId];assert.equal(readback.current,req.candidateRaw,'readback-current');assert.ok(receipt,'readback-receipt-required');assert.equal(receipt.raw,req.candidateRaw,'readback-receipt-original');assert.equal(receipt.previous,req.expectedToken.latestOperation,'readback-receipt-predecessor');assert.deepEqual(receipt.token,found['write-request'].token,'readback-token');assert.equal(readback.copies[String(req.generation+1)].raw,req.expectedRaw,'readback-preserved-original');
   assert.ok(!own.some(e=>e.kind==='tx-abort'),'aborted-not-verified');
  }
+ // UNKNOWN is an observation result, not evidence that the intended abort or
+ // post-commit ack-loss actually occurred. Bind their native chain separately.
+ if(['E-abort','G-lost-ack'].includes(row.name)){
+  const j=row.journal.find(j=>j.label==='update-a'),req=j.args[0];
+  assert.equal(j.result.status,'UNKNOWN');assert.ok(j.result.txId);
+  const own=row.events.filter(e=>e.txId===j.result.txId);
+  for(const e of own){assert.equal(e.pageId,j.pageId,'main-page-binding');assert.equal(e.boot,req.boot,'main-boot-binding');assert.equal(e.session,req.session,'main-session-binding');assert.equal(e.operationId,req.explicitOperationId,'main-operation-binding');}
+  let previous=-1;const found={};
+  const chain=['update-request','tx-start','tx-read','compare-success','write-request',row.name==='E-abort'?'tx-abort':'tx-complete','update-result'];
+  for(const kind of chain){const matches=own.filter(e=>e.kind===kind);assert.equal(matches.length,1,`unknown-native-count:${kind}`);const at=own.indexOf(matches[0]);assert.ok(at>previous,`unknown-native-order:${kind}`);previous=at;found[kind]=matches[0];}
+  assert.deepEqual(found['update-request'].request,req);assert.equal(found['tx-start'].mode,'readwrite');assert.deepEqual([...found['tx-start'].scope].sort(),['attempts','copies','receipts','state']);
+  assert.equal(found['tx-read'].current,req.expectedRaw);assert.deepEqual(found['compare-success'].head,found['tx-read'].head);
+  for(const key of ['structure','incarnation','generation','latestOperation'])assert.equal(found['tx-read'].head[key],req.expectedToken[key],`unknown-token:${key}`);
+  assert.equal(found['tx-read'].head.namespace,req.namespace);assert.equal(found['tx-read'].head.target,req.target);assert.equal(found['tx-read'].head.fingerprint,req.fingerprint);
+  assert.equal(found['write-request'].raw,req.candidateRaw);assert.deepEqual(found['write-request'].token,{...req.expectedToken,generation:req.generation+1,latestOperation:req.explicitOperationId});
+  assert.deepEqual(found['update-result'].result,j.result);assert.deepEqual(row.final.attempts[req.explicitOperationId].request,req);assert.equal(row.final.attempts[req.explicitOperationId].status,'UNKNOWN');assert.equal(row.final.hold,true);
+  if(row.name==='E-abort'){
+   assert.equal(own.filter(e=>e.kind==='tx-complete').length,0,'abort-must-not-complete');
+   assert.equal(row.final.current,req.expectedRaw);assert.equal(row.final.receipts[req.explicitOperationId],undefined);assert.equal(Object.keys(row.final.copies).length,0);
+  }else{
+   assert.equal(own.filter(e=>e.kind==='tx-abort').length,0,'commit-must-not-abort');
+   const receipt=row.final.receipts[req.explicitOperationId];assert.ok(receipt);assert.equal(row.final.current,req.candidateRaw);assert.equal(receipt.raw,req.candidateRaw);assert.deepEqual(receipt.token,found['write-request'].token);assert.equal(receipt.previous,req.expectedToken.latestOperation);assert.equal(row.final.copies[String(req.generation+1)].raw,req.expectedRaw);
+  }
+ }
  const writers=row.journal.filter(j=>j.method==='writer');const writerStarts=row.events.filter(e=>e.kind==='writer-start');assert.equal(writerStarts.length,writers.length,'missing-competitor-raw');assert.equal(row.events.filter(e=>e.kind==='writer-complete').length,writers.length,'missing-competitor-complete');
  for(let i=0;i<writers.length;i++){const j=writers[i],start=writerStarts[i];assert.equal(start.pageId,j.pageId);assert.equal(start.raw,j.args[0]);const own=row.events.filter(e=>e.txId===start.txId&&e.boot===start.boot);let before=-1;const found={};for(const kind of ['writer-start','tx-start','tx-read','writer-read','writer-request','tx-complete','writer-complete']){const at=own.findIndex(e=>e.kind===kind);assert.ok(at>before,`competitor-native-chain:${kind}`);before=at;found[kind]=own[at];}assert.deepEqual([...found['tx-start'].scope].sort(),['attempts','copies','receipts','state']);assert.equal(found['tx-start'].mode,'readwrite');assert.deepEqual(found['writer-read'].head,found['tx-read'].head);assert.equal(found['writer-read'].raw,found['tx-read'].current);assert.equal(found['writer-request'].raw,j.args[0]);}
  const expected=EXPECTATIONS[row.name];assert.deepEqual(row.results.map(r=>r.status).sort(),[...expected.results].sort(),'scenario-outcome');assert.deepEqual(row.results,row.journal.filter(j=>['update','reuse','diagnostic'].includes(j.role)&&j.result).map(j=>j.result),'response-journal-binding');

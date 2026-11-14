@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-14 (JST): Stage 3B-11 原票保全とabort監査の再開
+
+- Library保存・実再取得・独立hash/CRC/復元照合後、候補d03f44aを別作業領域へ復元。元領域は変更せず、remoteレビュー文書57b0c73を通常mergeで保持。
+- 同一の未提出abort原票削除反例を修正前6 PASS/1 FAILで再現。主transactionの開始・scope・読取・照合・書込要求・native abort・complete不在と、page/boot/session/operation束縛を検査。write request成功をabortの必須条件にしない。
+- Gの擬似ack消失はUNKNOWNと実commit・最終独立読戻しを別照合。実通信切断やOS停止の証明ではない。
+- 局所監査35件と新規19件成功。全ブラウザ・正式GUI・最終CI・原artifact監査はこの記録時点で未完了、限定マージNO。Stage 3B HOLD、製品接続禁止を維持。
+- Refs #144 / PR #145。[保全と復元監査](https://chatgpt.com/space/page_88e0a98e26b48191b00d2cac91810ee7)。旧失敗票・レビューは保持。
+
+
 ## 2026-11-14 (JST): Stage 3B-11 隔離原子更新検証の着手
 
 - Issue #144。PR #143 のマージと最新 main 164dcaf0e630cc5a1464283b9847656d602fa734 を確認し専用枝を作成。

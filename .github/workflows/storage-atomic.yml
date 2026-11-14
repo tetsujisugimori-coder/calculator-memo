@@ -43,7 +43,7 @@ jobs:
         id: controls
         run: |
           node e2e/run-stage.mjs atomic-units npx vitest run tests/storage-atomic-stage3b11.test.ts
-          node e2e/run-stage.mjs atomic-evidence-units node --test e2e/storage-atomic-evidence.node-test.mjs
+          node e2e/run-stage.mjs atomic-evidence-units node --test e2e/storage-atomic-evidence.node-test.mjs e2e/storage-atomic-abort.node-test.mjs
           node e2e/run-stage.mjs atomic-independent-units node --test docs/maintenance/storage-atomic-stage3b11/independent/auditor-counterexamples.node-test.mjs
       - name: Fixed browser setup
         id: browsers
