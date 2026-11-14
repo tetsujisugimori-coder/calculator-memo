@@ -1,5 +1,14 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-14 (JST): Stage 3B-11 Node timeout契約の準備境界
+
+- Library保全ZIP（12,388,155 bytes、SHA-256 c04fae8f2d0dbd5213d7218dd23792b36aaf7d16c0db5880061be2892d40c318）を新領域で実取得。CRC198、manifest197、候補8cac179/tree664cab4、Git整合性を独立照合。remote c73ad183のレビュー文書を通常mergeし両履歴を保持。
+- 旧timeout試験は単独再実行では成功。200msの固定起動遅延を100ms予算内へ置く対照で、marker前のTERM/124を再現。当時の失敗原因を一意に立証したものではない。production wrapperやCI時間制限は変更しない。
+- 試験fixtureのNode準備を処理予算から分離。0/200ms準備、ready→stalled marker→GNU timeout 124、TERM、stage timing、shell/子孫の終了とreapを確認。100ms処理・200ms kill-after・内2s外5s上限を維持。外側watchdog発火経路の全子孫停止保証は未検証。
+- 編集中局所検証: Node410/410、固定監査58/58、unit3114/3114、lint/type/Pages build成功。最終commit後の再受入と区別する。最終候補の結果はPR #145/Issue #144への実測追補を参照し、未確認CIを成功としない。
+- 通常push dry-runはUsername不足、候補8cac179のGitHub commit objectは404。履歴を捨てるsquashやforce更新は行わない。正規の同一履歴提出はBLOCKED。WebKitは7共有ライブラリ不足でNOT_TESTED、正式GUI全6条件と最終HEAD CIは未完了。
+- Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHED。製品接続・実データ書込みなし。限定マージNO。保全先: https://chatgpt.com/space/page_88e0a98e26b48191b00d2cac91810ee7 。旧失敗・原票・文書を保持。
+
 ## 2026-11-14 (JST): Stage 3B-11 原票保全とabort監査の再開
 
 - Library保存・実再取得・独立hash/CRC/復元照合後、候補d03f44aを別作業領域へ復元。元領域は変更せず、remoteレビュー文書57b0c73を通常mergeで保持。
