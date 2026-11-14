@@ -7,6 +7,29 @@ import { createHash } from 'node:crypto';
 
 // Execute the unchanged two readiness contracts against isolated wrapper copies.
 // These faults never modify the submitted wrapper or application source.
+function assertTimeoutControlLog(log, mode) {
+  const blocks = log.split(/(?=^(?:not )?ok \d+ - )/m);
+  const conditions = [];
+  for (const delay of [0, 200]) {
+    const matches = blocks.filter(b => new RegExp(`^(?:not )?ok \\d+ - bounded acquisition timeout.*startup ${delay}ms`).test(b));
+    assert.equal(matches.length, 1, `one result for ${mode}/${delay}`);
+    const block = matches[0];
+    assert.match(block, new RegExp(`^${mode === 'normal' ? 'ok' : 'not ok'} \\d+ - `));
+    if (mode !== 'normal') assert.match(block, /failureType: ['"]testCodeFailure['"]/);
+    if (mode === 'false-success') {
+      assert.match(block, /0 !== 124/);
+      assert.match(block, /^\s+actual: 0\s*$/m);
+      assert.match(block, /^\s+expected: 124\s*$/m);
+    }
+    if (mode === 'drop-log') {
+      assert.match(block, /did not match the regular expression[\s\S]*synthetic preparation ready/);
+      assert.match(block, /^\s+actual: (?:''|"")\s*$/m);
+    }
+    conditions.push({ startupDelayMs: delay, status: mode === 'normal' ? 'GREEN' : 'semantic-RED' });
+  }
+  return conditions;
+}
+
 const out = 'gui-evidence/node-timeout-controls';
 await mkdir(out, { recursive: true });
 const original = await readFile('e2e/run-stage.mjs', 'utf8');
@@ -43,12 +66,7 @@ try {
       assert.equal(p.error, undefined, 'control runner must finish within its existing finite bound');
       assert.equal(p.signal, null);
       assert.equal(p.status, mode === 'normal' ? 0 : 1);
-      for (const delay of [0, 200]) {
-        const line = new RegExp(`^${mode === 'normal' ? 'ok' : 'not ok'} \\d+ - bounded acquisition timeout.*startup ${delay}ms`, 'm');
-        assert.match(log, line, `both unchanged startup contracts must run: ${mode}/${delay}`);
-      }
-      if (mode === 'false-success') assert.match(log, /0 !== 124/);
-      if (mode === 'drop-log') assert.match(log, /did not match the regular expression[\s\S]*synthetic preparation ready/);
+      result.conditions = assertTimeoutControlLog(log, mode);
       result.status = mode === 'normal' ? 'GREEN-two-conditions' : 'semantic-RED-two-conditions';
     } finally {
       await rm(scratch, { recursive: true, force: true });
