@@ -1,0 +1,12 @@
+# Stage 3B-12 fixed observation contract
+2026-11-15 JST. Refs #146. Base ffd99fc404328c35bc365d8587c204e6174e5e66, tree 536ba2539a7c868a7d30bd237150c90f1d3c4b80. Clean new clone. 31GiB free, 3,730,654 free inodes at start; additional budget 1GiB (existing regression artifacts separately). No original deletion.
+
+Stage 3B HOLD; executionAllowed=false; writeAllowed=false; authority=NOT_ESTABLISHED. Product source, storage and user profiles remain untouched. Existing Stage3B11 fixture is reused without modification, including its UUID prefix; the new server has a dedicated random loopback port and serves no product files. No public hosting is authorized.
+
+Fixed automated matrix: Chromium/WebKit × normal, reload, lost-ack, abort, readback-mismatch, stale-writer, missing-receipt, quota-injected, eviction-injected, interrupted. One fresh context and UUID DB per row. Synthetic quota and eviction are injected only in this owned context; neither establishes physical quota, OS eviction or durable media behavior. A transaction completion is not durable storage. No retries on UNKNOWN. One retry attempt is permitted only as a negative control asserting rejection, never to obtain success.
+
+Evidence records HEAD/tree/run/attempt, engine/version, trial/device, namespace, native events with boot/transaction/operation IDs, request, result, independent snapshot and diagnosis, transitions, cleanup, errors, original trace and served bundle bytes. Request-success, tx-complete, readback and durability are independent fields. Auditor reconstructs native chains and rejects missing/foreign/reordered evidence and false success. Evidence completeness is separate from physical acceptance, always NOT_TESTED in cloud runs.
+
+Browser deadlines 30s API, bounded 8-minute CI step. Failure is preserved, not retried. New manual page is test-only and not in product build. Manual real-device records require explicit device metadata and independent evidence audit; user-agent alone never qualifies as device proof. No dangerous disk filling, OS kill, user-profile cleanup, site-data clearing or power interruption.
+
+Existing formal GUI 6/1128/592/132, Stage3B11 28 cases per browser and faults, all units/Node/lint/types/builds remain unchanged. This stage's tests are additional, not substitutes. Results pending exact HEAD execution and independent review. Physical Safari, private mode, standalone app, real eviction/quota/OS interruption/media durability remain NOT_TESTED/UNKNOWN.

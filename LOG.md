@@ -1,5 +1,12 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-15 (JST): Stage 3B-12 isolated physical observation foundation
+- Base merge ffd99fc404328c35bc365d8587c204e6174e5e66 / tree 536ba2539a7c868a7d30bd237150c90f1d3c4b80 verified; clean dedicated clone. Refs #146. Draft PR not yet created.
+- Reuse unchanged Stage3B11 native atomic fixture on a dedicated loopback origin. Add observation auditor, manual synthetic page/protocol, fixed 20 cloud cases and evidence faults. Product code, storage, existing CI budgets and formal GUI expectations unchanged.
+- Physical Safari/private/standalone/background, real quota/eviction/OS interruption/media durability NOT_TESTED/UNKNOWN. Manual page namespace reopen support and public HTTPS availability remain incomplete; no publication authorized or performed.
+- Initial node checks passed; exact final HEAD browser/CI/independent review/archive pending. Results must be read from final PR checks and raw evidence, not inferred here. Stage3B HOLD; executionAllowed=false; writeAllowed=false; authority=NOT_ESTABLISHED; UNKNOWN never authorizes replay.
+- Revert only new test/docs/workflow files to undo. No real data changed. Limited merge recommendation pending, physical acceptance NO.
+
 
 
 ## 2026-11-14 (JST): Stage 3B-11 提出候補の受入とWindows原証拠保全
