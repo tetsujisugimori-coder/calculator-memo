@@ -1,0 +1,97 @@
+{
+  "kind": "independent-runner-validator-fixed-counterexample-audit",
+  "checkedAt": "2026-11-14T12:34:52.683Z",
+  "status": "PASS-local-parser-scope",
+  "sourceSha256": "ec6480453c30540cc5cb626364e6cbe8066548973571f50ff1691444c4f22460",
+  "functionSha256": "a7279dc6d4e1384c6c530b0ad77c918e36cf92408a973380b570df6dacd0a1e5",
+  "node": "v24.20.0",
+  "results": [
+    {
+      "name": "original-fixed-false-success",
+      "inputSha256": "4ac83716eb0c81d05b50e0558977e5ad3d76d7eccbc9a90086d8166129d121fd",
+      "oldAccepts": true,
+      "newRejects": true
+    },
+    {
+      "name": "realistic-mixed-false-success-200",
+      "inputSha256": "f141a45763e47a9821a52752176ce0a0d7359a0856ca248e3b74df04f60a7233",
+      "oldAccepts": true,
+      "newRejects": true,
+      "newReason": "The input did not match the regular expression /0 !== 124/. Input:\n\n'not ok 2 - bounded acquisition timeout fails and preserves its stage log and timing (startup 200ms)\\n' +\n  '  ---\\n' +\n  \"  failureType: 'testCodeFailure'\\n\" +\n  '  error: ENOENT missing prerequisite unrelated failure\\n' +\n  \"  actual: 'setup failure'\\n\" +\n  '  expected: 124\\n' +\n  '  ...\\n'\n"
+    },
+    {
+      "name": "realistic-mixed-false-success-0",
+      "inputSha256": "470a98942bb3f70d28ac8e6aff775aacb6df83138bc9c6dc3b956bb0a7538834",
+      "oldAccepts": true,
+      "newRejects": true,
+      "newReason": "The input did not match the regular expression /0 !== 124/. Input:\n\n'not ok 1 - bounded acquisition timeout fails and preserves its stage log and timing (startup 0ms)\\n' +\n  '  ---\\n' +\n  \"  failureType: 'testCodeFailure'\\n\" +\n  '  error: ENOENT missing prerequisite unrelated failure\\n' +\n  \"  actual: 'setup failure'\\n\" +\n  '  expected: 124\\n' +\n  '  ...\\n'\n"
+    },
+    {
+      "name": "intended-red-false-success",
+      "inputSha256": "aa66ef48e1223c120dc574a5edd654a0cc869474eb99a72e0aefa147e6a94804",
+      "accepted": true,
+      "conditions": [
+        {
+          "startupDelayMs": 0,
+          "status": "semantic-RED"
+        },
+        {
+          "startupDelayMs": 200,
+          "status": "semantic-RED"
+        }
+      ]
+    },
+    {
+      "name": "original-fixed-drop-log",
+      "inputSha256": "ab7d9ca38c4a8a56798ead5865ef0f15175fec978913b73752d1e76a35678318",
+      "oldAccepts": true,
+      "newRejects": true
+    },
+    {
+      "name": "realistic-mixed-drop-log-200",
+      "inputSha256": "d5943b051ec838304a780cc9ab13adb1ec8342e5f205be6c626e4abed4dadb8e",
+      "oldAccepts": true,
+      "newRejects": true,
+      "newReason": "The input did not match the regular expression /did not match the regular expression[\\s\\S]*synthetic preparation ready/. Input:\n\n'not ok 2 - bounded acquisition timeout fails and preserves its stage log and timing (startup 200ms)\\n' +\n  '  ---\\n' +\n  \"  failureType: 'testCodeFailure'\\n\" +\n  '  error: ENOENT missing prerequisite unrelated failure\\n' +\n  \"  actual: 'setup failure'\\n\" +\n  \"  expected: '/synthetic preparation ready/'\\n\" +\n  '  ...\\n'\n"
+    },
+    {
+      "name": "realistic-mixed-drop-log-0",
+      "inputSha256": "d94c5ac7d4722c706c420b73dd28654f7174b4d0910b833c8066c3f4c5ad41bb",
+      "oldAccepts": true,
+      "newRejects": true,
+      "newReason": "The input did not match the regular expression /did not match the regular expression[\\s\\S]*synthetic preparation ready/. Input:\n\n'not ok 1 - bounded acquisition timeout fails and preserves its stage log and timing (startup 0ms)\\n' +\n  '  ---\\n' +\n  \"  failureType: 'testCodeFailure'\\n\" +\n  '  error: ENOENT missing prerequisite unrelated failure\\n' +\n  \"  actual: 'setup failure'\\n\" +\n  \"  expected: '/synthetic preparation ready/'\\n\" +\n  '  ...\\n'\n"
+    },
+    {
+      "name": "intended-red-drop-log",
+      "inputSha256": "b21b7aef832901577bf5f295cf59ec7356c7d922168d0f657720eec731a85cad",
+      "accepted": true,
+      "conditions": [
+        {
+          "startupDelayMs": 0,
+          "status": "semantic-RED"
+        },
+        {
+          "startupDelayMs": 200,
+          "status": "semantic-RED"
+        }
+      ]
+    },
+    {
+      "name": "normal-green",
+      "inputSha256": "1788a86eed6d9ad2da5879a9de79091b5b9c482b0324c1a1a6b52380a21d543b",
+      "accepted": true,
+      "conditions": [
+        {
+          "startupDelayMs": 0,
+          "status": "GREEN"
+        },
+        {
+          "startupDelayMs": 200,
+          "status": "GREEN"
+        }
+      ]
+    }
+  ],
+  "scope": "Actual candidate pure function extracted and executed against synthetic immutable logs; Linux subprocess controls not executed here",
+  "findings": "Original mixed reason false acceptance corrected per condition. Initial minimal mixed logs and realistic diagnostic logs retained separately."
+}

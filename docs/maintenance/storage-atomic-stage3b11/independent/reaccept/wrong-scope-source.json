@@ -1,0 +1,9 @@
+{
+  "sha": "5141bfd1facd2dab8bd12f76cc33e6076763fd1f",
+  "run": 43595322176,
+  "attempt": 1,
+  "artifact": 14113344348,
+  "rawSha256": "fe91b3f850a5ee9e80e329cdba02d82fadf0f50b1b7afe607a150fa5e178b9db",
+  "rowSha256": "7aa66d14b0b50cdd1c6de666f8c98c8a00c5e28510009f58aee5e0122b21f2d6",
+  "scope": "summary row derived without semantic changes; raw events/journal retained separately; original artifact unchanged"
+}

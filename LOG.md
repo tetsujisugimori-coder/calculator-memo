@@ -1,5 +1,57 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+
+## 2026-11-14 (JST): Stage 3B-11 提出候補の受入とWindows原証拠保全
+
+- 受入対象の実装HEAD `39f04dd8e0182e976b51422486a53f58be2f995b` / tree `6aa8df3a3bb60e86f4c60914098b5ee2871356b8`。保全候補2b750222と最新レビューf0c0c336を通常merge/commit/pushで保持しGitHubから読戻し。初回5141bfdと第2回0f98d652の負対照FAILは削除せず、主transactionの故障注入対象とnative診断理由の対応を局所修正。製品・validator・fixture本体・Node原試験・正式GUI条件・既存時間予算は不変更。
+- 環境と通常回帰: GitHub Actions Ubuntu24.04 / Node22.13.0。全Node契約433/433・skip0、単体135files/3114tests、lint exit0（既存warning3）、型検査・通常build・Pages build exit0。Windows Node24.20.0の固定16局所試験と、原ZIP中の旧Node24.22.1実測は別証拠。
+- [隔離atomic run43596639007/attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/43596639007): Chromium/WebKit各28正常、証拠変異12、実browser故障16を全実行。原artifact14114927100は6,566,965 bytes / SHA256 `c5ca7b895f95d7fad8604ed47129b2c067228f138368114f866a14307ae187ae`。別担当が206CRC、正常/故障72traceのhash/CRC、同一HEAD/tree/run/attempt、原票とsummary・ケース集合・cleanupを再照合PASS。
+- Node正常準備0/200msと失敗exit誤成功・stageログ欠落各2条件は、各TAP blockの理由/actual/expected、原log hash、限定wrapper変異とcleanupを独立再確認。ready/stalled/closed124順序・TERM・timing124・fixture shell/子孫ESRCHは不変の試験本体がLinuxで成功。inner一時fixtureの原log/PIDは従来finallyで削除される限界を残す。過去無計測失敗の一意原因・外側watchdog発火時の全子孫停止は未確定。
+- E-abortは同一主txの開始/読取/比較/書込要求/abortとcomplete不在、G-lost-ackはcomplete/receipt/独立readbackを両engine原票で確認。UNKNOWN・HOLDと自動再試行禁止を維持。観測結果と実commitを混同しない。
+- [正式GUI run43596638947/attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/43596638947): 既存6条件/1128checks/592geometry/132PNG、成功trace0、touch各1344を維持。6原ZIP＋aggregate＋CI独立manifestを実取得し、別担当が既存監査器でWindows独立再集計PASS。PNG全hash/chunkCRC/decompress、geometry、inventory、provenance、配信HEAD/run/attemptが一致。originalsInventorySHA256 `a077bbfbb29c30c78c46d505a7e35ce406560994cbf1fc885aa2bb55722d71c0`。Windows監査の初回長パス展開失敗は元エラーを残し短い別領域で解消、原ZIP不変。
+- 実装39f04ddの14workflowはterminal、13success・条件外PR113 diagnosticの1skip。独立レビューで今回範囲の未解決P1/P2なし。これは記録前実装HEADの結果であり、**本記録を含む新しい最終HEADのCI/原artifact監査は [PR #145 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145/checks) と同PR/Issueの最終SHA/run付き追補を参照**。この記録自身の未確認成功を先取りしない。
+- Windows保全先 `C:\Users\tetsu\Dev-Artifact-Archive\calculator-memo\PR-145\`。原ZIP23,798,010 bytes/SHA9675c8bf...は独立コピー読戻し一致。旧候補ZIP・固定反例・全履歴・初回/第2回の失敗および修正pushによる旧正式GUI取消をHEAD別に保持。最終記録HEADの原artifact/履歴bundle・全hash台帳と別領域復元の完了結果もPR追補で報告する。作業cloneは `C:\Users\tetsu\Dev-Workspace\calculator-memo\restored-stage3b11`（元ローカルmain未更新）。
+- Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。戻し方はこの隔離試験/文書/追加CIだけを通常revertし原証拠を保持。実データ変更はない。
+- Stage 3B HOLD / executionAllowed=false / writeAllowed=false / authority=NOT_ESTABLISHED。実データ・製品保存経路・移行/実復元・UNKNOWN後自動再試行は禁止。実機Safari/private/実quota/eviction/媒体耐久性/OS強制終了/非協調旧writer完全排他はUNKNOWN/NOT_TESTED。テスト・文書に限定したマージ推奨は最終記録HEADのCI・独立原証拠監査完了後に判断し、製品HOLD解除とは分ける。Draft解除/マージ/公開/ブランチ削除/main更新なし。
+
+## 2026-11-14 (JST): Stage 3B-11 Windows復元と履歴を保持した正規提出
+
+- Windows原ZIPをsize 23,798,010 bytes / SHA-256 `9675c8bf4432976cd8a934339e72b6bbe88a22aa56cb0226c4e44836b6fc14d0`、132 CRC、manifest131全サイズ/hashで照合。RESULT.mdに従い別cloneへ候補 `2b7502227228654857b2393936285a2cd76c50ad` / tree `d1334fb9af8ed13586745639e25a2978c28efb28` を復元しfsck --full成功。原ZIP・内包旧ZIP・原反例・失敗ログは変更しない。
+- 最新レビュー文書HEAD `f0c0c3362860e57cf596058256c8852fff034a11` を通常merge `8763d928f291708a874204ad9f7bef32b50db296` で保持。Windows checkoutの改行変換を独立担当が検出し、当該cloneのautocrlfを停止してGit archiveから原バイトを復元。ローカルmainは更新しない。
+- 第一希望は既存Linux環境での全受入。WindowsにはWSL distributionがないため、既存Actions Ubuntu24.04 / Node22.13.0を使用する。過去Node24結果は別の証拠。既存隔離atomic jobへ全Node契約と、同一0/200ms入力の正常対照・失敗exit誤成功・stageログ欠落各2条件（4故障検出）を追加。故障は専用一時コピーに限定し、原wrapper・製品・既存GUI・時間予算は不変更。
+- 独立レビューで追加runnerの「片条件が別原因で失敗しても全体log中の理由で誤受理」を固定反例2件と診断付き4件で再現。各startup TAP blockのfailureType/reason/actual/expectedを個別検査へ修正。同じ6反例を拒否し正常GREEN2条件・意図RED4条件を維持する9局所検査を独立確認。原入力・旧RED・修正後監査を `independent/node-timeout-parser/` へ保持。
+- 初回提出 `5141bfd1` / run43595322176/attempt1はNode契約とChromium/WebKit各28正常成功、負対照は `undetected-evidence:wrongScope` でFAIL。原artifact14113344348（SHA256 `16702139b83b00e985ff1329c6aedab51d4678d0905c7207925880df73426770`）を無変更取得。注入が予約txを対象にしていたため、主txをjournal結果txId/page/boot/operationで一意選択へ修正。同一原票の正常受理・旧注入見逃し・修正注入complete-store-scope拒否を3固定試験で確認。原raw/summary行と入力形式取り違えの初回ローカル失敗も保持。
+- 修正候補 `0f98d652` / run43595932071/attempt1は全Node・両browser56正常成功、browser故障4件目abort-successで旧診断名期待と現行verified-native-chain:tx-completeが不一致。原artifact14114536673（SHA256 `a1c9d28bc146072101bc5890fa1b2670aa145f215e82156873950487c33e6d0f`）を保持。validator/fixture/正常期待を弱めず、abort/early-successの理由を現契約のcomplete/readback不在へ束縛し、同一主txのnative原票も確認する。失敗後のFAILラベルだけで拒否を確認せず、診断cloneで原票内容の独立再拒否を要求。全16browser変異の個別結果を完走保存する。元失敗と修正後は別HEADとして扱う。
+- 検証結果: 原保全物の照合と復元PASS。提出後の全Node・単体・lint・型・両build・両browser28ケースと故障対照・正式GUI6/1128/592/132・原artifact独立監査は、この記録commitの最終HEAD ChecksとPRのSHA/run/attempt付き結果で確認する。現時点の未実行を成功としない。
+- Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。原失敗と過去レビューを保持。Windows原ZIP: `C:\Users\tetsu\Dev-Workspace\calculator-memo\calculator-stage3b11-node-reaccept-2b750222.zip`。最終原artifact保全・独立読戻しは確認待ち。
+- Stage 3B HOLD / executionAllowed=false / writeAllowed=false / authority=NOT_ESTABLISHED。外側watchdog全子孫停止、過去無計測失敗の一意原因、実機Safari/媒体耐久性は未確定。実データ/製品接続/UNKNOWN自動再試行なし。全受入前のマージ推奨NO、Draft解除・マージ・公開・ブランチ削除なし。
+
+## 2026-11-14 (JST): Stage 3B-11 Node timeout契約の準備境界
+
+- Library保全ZIP（12,388,155 bytes、SHA-256 c04fae8f2d0dbd5213d7218dd23792b36aaf7d16c0db5880061be2892d40c318）を新領域で実取得。CRC198、manifest197、候補8cac179/tree664cab4、Git整合性を独立照合。remote c73ad183のレビュー文書を通常mergeし両履歴を保持。
+- 旧timeout試験は単独再実行では成功。200msの固定起動遅延を100ms予算内へ置く対照で、marker前のTERM/124を再現。当時の失敗原因を一意に立証したものではない。production wrapperやCI時間制限は変更しない。
+- 試験fixtureのNode準備を処理予算から分離。0/200ms準備、ready→stalled marker→GNU timeout 124、TERM、stage timing、shell/子孫の終了とreapを確認。100ms処理・200ms kill-after・内2s外5s上限を維持。外側watchdog発火経路の全子孫停止保証は未検証。
+- 編集中局所検証: Node410/410、固定監査58/58、unit3114/3114、lint/type/Pages build成功。最終commit後の再受入と区別する。最終候補の結果はPR #145/Issue #144への実測追補を参照し、未確認CIを成功としない。
+- 通常push dry-runはUsername不足、候補8cac179のGitHub commit objectは404。履歴を捨てるsquashやforce更新は行わない。正規の同一履歴提出はBLOCKED。WebKitは7共有ライブラリ不足でNOT_TESTED、正式GUI全6条件と最終HEAD CIは未完了。
+- Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHED。製品接続・実データ書込みなし。限定マージNO。保全先: https://chatgpt.com/space/page_88e0a98e26b48191b00d2cac91810ee7 。旧失敗・原票・文書を保持。
+
+## 2026-11-14 (JST): Stage 3B-11 原票保全とabort監査の再開
+
+- Library保存・実再取得・独立hash/CRC/復元照合後、候補d03f44aを別作業領域へ復元。元領域は変更せず、remoteレビュー文書57b0c73を通常mergeで保持。
+- 同一の未提出abort原票削除反例を修正前6 PASS/1 FAILで再現。主transactionの開始・scope・読取・照合・書込要求・native abort・complete不在と、page/boot/session/operation束縛を検査。write request成功をabortの必須条件にしない。
+- Gの擬似ack消失はUNKNOWNと実commit・最終独立読戻しを別照合。実通信切断やOS停止の証明ではない。
+- 局所監査35件と新規19件成功。全ブラウザ・正式GUI・最終CI・原artifact監査はこの記録時点で未完了、限定マージNO。Stage 3B HOLD、製品接続禁止を維持。
+- Refs #144 / PR #145。[保全と復元監査](https://chatgpt.com/space/page_88e0a98e26b48191b00d2cac91810ee7)。旧失敗票・レビューは保持。
+
+
+## 2026-11-14 (JST): Stage 3B-11 隔離原子更新検証の着手
+
+- Issue #144。PR #143 のマージと最新 main 164dcaf0e630cc5a1464283b9847656d602fa734 を確認し専用枝を作成。
+- [実行前計画](docs/maintenance/storage-atomic-stage3b11/README.md)を固定。既存 token/receipt と実ブラウザ原票基盤を調査し、同一 IDB transaction 内の再照合を隔離合成環境だけで検証する。
+- Stage 3B HOLD・実データ書込み禁止は維持。製品保存方式・正式GUI契約は変更しない。
+- 初期計画時点の実装・試験・独立レビュー・CI・保全は未実施。結果は実行対象SHAごとに記録し、既存成功を流用しない。
+
 ## 2026-11-11 (JST): Stage 3B-10 実ブラウザ複数タブ検証を開始
 
 - 追加の独立反例で原因writer記録の全脱落、checking表示に隠れた通知失効漏れ、別条件traceの流用を確認。期待writer列・読取とcommitの対応・競合順序・通知失効・実validation中のchecking・条件別原票/traceの一対一対応を補強。19局所検査と未改変30原票の再照合が成功し、24原票変異を最終CIで検証する。WebKit正常系とChromiumのみの実ブラウザ変異検証を区別し、WebKit変異はNOT_TESTEDと明記。

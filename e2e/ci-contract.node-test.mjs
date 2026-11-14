@@ -241,15 +241,49 @@ test('OS and browser acquisition have separate bounded budgets without dependenc
   assert.ok(workflow.indexOf('id: os_install') < workflow.indexOf('id: browser_install'));
   for (const id of ['apt_config', 'os_install', 'browser_install', 'gui']) assert.doesNotMatch(stepWithId(id), /if: always|continue-on-error/);
 });
-test('bounded acquisition timeout fails and preserves its stage log and timing', async () => {
+for (const startupDelayMs of [0, 200]) test(`bounded acquisition timeout fails and preserves its stage log and timing (startup ${startupDelayMs}ms)`, async () => {
   const cwd = await mkdtemp(join(tmpdir(), 'calculator-ci-timeout-'));
   try {
     await prepareStageWrapper(cwd);
-    const result = spawnSync(process.execPath, ['e2e/run-stage.mjs', 'os-install', 'timeout', '--verbose', '--kill-after=0.2s', '0.1s', process.execPath, '-e', 'console.log("synthetic stalled acquisition"); require("node:child_process").spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], { stdio: "inherit" }); setInterval(() => {}, 1000)'], { cwd, encoding: 'utf8', timeout: 5000 });
+    // Node preparation has a separate finite outer budget. Keep GNU timeout's
+    // original 100 ms active-work budget and its process-group termination.
+    // The controlled preload is the same startup-delay input used by the RED
+    // probe: under the old timeout it could prevent the first marker entirely.
+    await writeFile(join(cwd, 'startup-delay.cjs'), `Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ${startupDelayMs});`);
+    await writeFile(join(cwd, 'stalled-acquisition.sh'), `#!/bin/sh
+trap 'wait "$child"; exit 143' TERM
+sleep 60 &
+child=$!
+printf '%s %s\\n' "$$" "$child" > acquisition-pids.txt
+printf '%s\\n' 'synthetic stalled acquisition'
+wait "$child"
+`);
+    await writeFile(join(cwd, 'prepared-acquisition.cjs'), `
+      const { spawnSync } = require('node:child_process');
+      console.log('synthetic preparation ready');
+      const result = spawnSync('timeout', ['--verbose', '--kill-after=0.2s', '0.1s',
+        'sh', 'stalled-acquisition.sh'], { stdio: 'inherit', timeout: 2000 });
+      if (result.error) { console.error(result.error); process.exit(1); }
+      console.log('synthetic timeout closed ' + result.status);
+      process.exit(result.status ?? 1);
+    `);
+    const result = spawnSync(process.execPath, ['e2e/run-stage.mjs', 'os-install',
+      process.execPath, '--require', './startup-delay.cjs', 'prepared-acquisition.cjs'], { cwd, encoding: 'utf8', timeout: 5000 });
+    assert.equal(result.error, undefined, 'outer watchdog must not be the source of failure');
     assert.equal(result.status, 124);
     const timing = JSON.parse(await readFile(join(cwd, 'gui-evidence/os-install-timing.json'), 'utf8'));
     assert.equal(timing.status, 'failed'); assert.equal(timing.exitCode, 124);
-    assert.match(await readFile(join(cwd, 'gui-evidence/os-install.log'), 'utf8'), /synthetic stalled acquisition/);
+    assert.ok(timing.durationMs >= startupDelayMs, 'preparation remains inside the recorded total duration');
+    const log = await readFile(join(cwd, 'gui-evidence/os-install.log'), 'utf8');
+    assert.match(log, /synthetic preparation ready[\s\S]*synthetic stalled acquisition[\s\S]*synthetic timeout closed 124/);
+    assert.match(log, /sending signal TERM/);
+    const pids = (await readFile(join(cwd, 'acquisition-pids.txt'), 'utf8')).trim().split(/\s+/).map(Number);
+    assert.equal(pids.length, 2);
+    assert.equal(new Set(pids).size, 2);
+    for (const pid of pids) {
+      assert.ok(Number.isInteger(pid) && pid > 1);
+      assert.throws(() => process.kill(pid, 0), { code: 'ESRCH' }, 'timed-out command and descendant must have exited and been reaped');
+    }
   } finally { await rm(cwd, { recursive: true, force: true }); }
 });
 
