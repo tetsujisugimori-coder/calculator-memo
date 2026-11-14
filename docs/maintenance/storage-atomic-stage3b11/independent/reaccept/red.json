@@ -1,0 +1,17 @@
+[
+  {
+    "id": "g-final-native-complete-removed",
+    "accepted": true,
+    "sha256": "b46b77722333f3a13a8d9392d819993a1e60034e8241c83aa44f475a1470bca1"
+  },
+  {
+    "id": "e-request-incarnation-contradiction",
+    "accepted": true,
+    "sha256": "8782bf8309065783934f097e0b432c2bcd02f9f0c8a69006279a577bbb3ab88e"
+  },
+  {
+    "id": "e-dependency-receipt-count-zero",
+    "accepted": true,
+    "sha256": "39a8c56a77d156a71fc6263dd7402fa371b36a56d92285a315298a476b5b6bbf"
+  }
+]

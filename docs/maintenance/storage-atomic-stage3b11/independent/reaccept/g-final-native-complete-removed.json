@@ -1,0 +1,1047 @@
+{
+  "engine": "chromium",
+  "name": "G-lost-ack",
+  "sha": "52fb6ec06345169440c2211746ce4942eac6bdc8",
+  "tree": "80b06dd62b4995b3aca5961a109995d53c82fcdd",
+  "run": "local",
+  "attempt": "local",
+  "browserVersion": "141.0.7390.37",
+  "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+  "sentinelName": "outside-atomic-sentinel-a9af23d4-cbb3-4bfc-8c9f-20d96d97efcc",
+  "status": "PASS",
+  "executionAllowed": false,
+  "writeAllowed": false,
+  "authority": "NOT_ESTABLISHED",
+  "classification": "VERIFIED-isolated-contract",
+  "events": [
+    {
+      "txId": "85ce4926-c66a-499e-a2eb-43260ab37d19",
+      "mode": "readwrite",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 1,
+      "wall": "2026-11-13T23:12:10.689Z",
+      "mono": 167.20000000298023,
+      "monotonic": 167.20000000298023,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "85ce4926-c66a-499e-a2eb-43260ab37d19",
+      "mode": "readwrite",
+      "receiptCount": 0,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 2,
+      "wall": "2026-11-13T23:12:10.690Z",
+      "mono": 168.40000000596046,
+      "monotonic": 168.40000000596046,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "85ce4926-c66a-499e-a2eb-43260ab37d19",
+      "mode": "readwrite",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-complete",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 3,
+      "wall": "2026-11-13T23:12:10.691Z",
+      "mono": 169,
+      "monotonic": 169,
+      "pageOrdinal": 1
+    },
+    {
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "initialized",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 4,
+      "wall": "2026-11-13T23:12:10.691Z",
+      "mono": 169,
+      "monotonic": 169,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "90f4f32d-f5f3-4495-845a-1058572a8f7e",
+      "mode": "readonly",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 5,
+      "wall": "2026-11-13T23:12:10.691Z",
+      "mono": 169.20000000298023,
+      "monotonic": 169.20000000298023,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "90f4f32d-f5f3-4495-845a-1058572a8f7e",
+      "mode": "readonly",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:A"
+      },
+      "current": "A",
+      "receiptCount": 1,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 6,
+      "wall": "2026-11-13T23:12:10.692Z",
+      "mono": 170.10000000149012,
+      "monotonic": 170.10000000149012,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "90f4f32d-f5f3-4495-845a-1058572a8f7e",
+      "mode": "readonly",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-complete",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 7,
+      "wall": "2026-11-13T23:12:10.692Z",
+      "mono": 170.40000000596046,
+      "monotonic": 170.40000000596046,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "ff83e6fe-24fb-4c25-b05c-b5661b5019d4",
+      "mode": "readonly",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 8,
+      "wall": "2026-11-13T23:12:10.697Z",
+      "mono": 175.40000000596046,
+      "monotonic": 175.40000000596046,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "ff83e6fe-24fb-4c25-b05c-b5661b5019d4",
+      "mode": "readonly",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:A"
+      },
+      "current": "A",
+      "receiptCount": 1,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 9,
+      "wall": "2026-11-13T23:12:10.698Z",
+      "mono": 176.5,
+      "monotonic": 176.5,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "ff83e6fe-24fb-4c25-b05c-b5661b5019d4",
+      "mode": "readonly",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-complete",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 10,
+      "wall": "2026-11-13T23:12:10.698Z",
+      "mono": 176.80000000447035,
+      "monotonic": 176.80000000447035,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "decisionId": "4d63d48a-15f5-4bf4-bea7-9e9723604596",
+      "expectedToken": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 0,
+        "latestOperation": "genesis"
+      },
+      "fingerprint": "1:A",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "decision-created",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 11,
+      "wall": "2026-11-13T23:12:10.699Z",
+      "mono": 177.40000000596046,
+      "monotonic": 177.40000000596046,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "request": {
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "expectedToken": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "incarnation": "inc-1",
+        "generation": 0,
+        "explicitOperationId": "op-a",
+        "fingerprint": "1:A",
+        "expectedRaw": "A",
+        "candidateRaw": "B",
+        "candidateFingerprint": "1:B",
+        "decisionId": "4d63d48a-15f5-4bf4-bea7-9e9723604596",
+        "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+        "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+        "pageId": "A"
+      },
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "update-request",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 12,
+      "wall": "2026-11-13T23:12:10.703Z",
+      "mono": 181.70000000298023,
+      "monotonic": 181.80000000447035,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121-reserve",
+      "mode": "readwrite",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 13,
+      "wall": "2026-11-13T23:12:10.703Z",
+      "mono": 182,
+      "monotonic": 182,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121-reserve",
+      "mode": "readwrite",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:A"
+      },
+      "current": "A",
+      "receiptCount": 1,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 14,
+      "wall": "2026-11-13T23:12:10.704Z",
+      "mono": 182.70000000298023,
+      "monotonic": 182.70000000298023,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121-reserve",
+      "mode": "readwrite",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-complete",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 15,
+      "wall": "2026-11-13T23:12:10.705Z",
+      "mono": 183.30000000447035,
+      "monotonic": 183.30000000447035,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "mode": "readwrite",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 16,
+      "wall": "2026-11-13T23:12:10.705Z",
+      "mono": 183.5,
+      "monotonic": 183.5,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "mode": "readwrite",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:A"
+      },
+      "current": "A",
+      "receiptCount": 1,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 17,
+      "wall": "2026-11-13T23:12:10.706Z",
+      "mono": 184.30000000447035,
+      "monotonic": 184.30000000447035,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 0,
+        "latestOperation": "genesis",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:A"
+      },
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "compare-success",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 18,
+      "wall": "2026-11-13T23:12:10.706Z",
+      "mono": 184.5,
+      "monotonic": 184.5,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "token": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 1,
+        "latestOperation": "op-a"
+      },
+      "raw": "B",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "write-request",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 19,
+      "wall": "2026-11-13T23:12:10.706Z",
+      "mono": 184.80000000447035,
+      "monotonic": 184.90000000596046,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "write-request-success",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 20,
+      "wall": "2026-11-13T23:12:10.707Z",
+      "mono": 185.10000000149012,
+      "monotonic": 185.10000000149012,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "mode": "readwrite",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-complete",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 21,
+      "wall": "2026-11-13T23:12:10.707Z",
+      "mono": 185.40000000596046,
+      "monotonic": 185.40000000596046,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "62389406-4152-4a4d-9b27-5dac89fc13eb",
+      "mode": "readwrite",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 22,
+      "wall": "2026-11-13T23:12:10.707Z",
+      "mono": 185.70000000298023,
+      "monotonic": 185.70000000298023,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "62389406-4152-4a4d-9b27-5dac89fc13eb",
+      "mode": "readwrite",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 1,
+        "latestOperation": "op-a",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:B"
+      },
+      "current": "B",
+      "receiptCount": 2,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 23,
+      "wall": "2026-11-13T23:12:10.708Z",
+      "mono": 186.5,
+      "monotonic": 186.5,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "62389406-4152-4a4d-9b27-5dac89fc13eb",
+      "mode": "readwrite",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-complete",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 24,
+      "wall": "2026-11-13T23:12:10.708Z",
+      "mono": 186.80000000447035,
+      "monotonic": 186.80000000447035,
+      "pageOrdinal": 1
+    },
+    {
+      "operationId": "op-a",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121",
+      "result": {
+        "executionAllowed": false,
+        "writeAllowed": false,
+        "authority": "NOT_ESTABLISHED",
+        "stage": "HOLD",
+        "status": "UNKNOWN",
+        "reason": "Error: ack-lost-after-complete",
+        "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121"
+      },
+      "status": "UNKNOWN",
+      "reason": "Error: ack-lost-after-complete",
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "update-result",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+      "sequence": 25,
+      "wall": "2026-11-13T23:12:10.709Z",
+      "mono": 187.20000000298023,
+      "monotonic": 187.20000000298023,
+      "pageOrdinal": 1
+    },
+    {
+      "txId": "a10458ae-ad86-4fd3-9530-922c9033e448",
+      "mode": "readonly",
+      "scope": [
+        "state",
+        "receipts",
+        "copies",
+        "attempts"
+      ],
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-start",
+      "pageId": "C",
+      "boot": "1f5efbde-377d-4083-b1a4-f4d616e02b03",
+      "session": "4263d9e0-01c9-4289-9b6a-5c98a88be348",
+      "sequence": 1,
+      "wall": "2026-11-13T23:12:10.718Z",
+      "mono": 69.79999999701977,
+      "monotonic": 69.79999999701977,
+      "pageOrdinal": 3
+    },
+    {
+      "txId": "a10458ae-ad86-4fd3-9530-922c9033e448",
+      "mode": "readonly",
+      "head": {
+        "structure": 1,
+        "incarnation": "inc-1",
+        "generation": 1,
+        "latestOperation": "op-a",
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "fingerprint": "1:B"
+      },
+      "current": "B",
+      "receiptCount": 2,
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "tx-read",
+      "pageId": "C",
+      "boot": "1f5efbde-377d-4083-b1a4-f4d616e02b03",
+      "session": "4263d9e0-01c9-4289-9b6a-5c98a88be348",
+      "sequence": 2,
+      "wall": "2026-11-13T23:12:10.720Z",
+      "mono": 71.69999999552965,
+      "monotonic": 71.69999999552965,
+      "pageOrdinal": 3
+    },
+    {
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "closed",
+      "pageId": "A",
+      "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+      "session": "7d2ad9f9-874a-47c8-b846-c4c1bd2c86a5",
+      "sequence": 26,
+      "wall": "2026-11-13T23:12:10.726Z",
+      "mono": 204.10000000149012,
+      "monotonic": 204.10000000149012,
+      "pageOrdinal": 1
+    },
+    {
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "closed",
+      "pageId": "B",
+      "boot": "06e37c9b-7400-494e-9da4-b0c299d86a79",
+      "session": "473a1d30-b8ec-4d99-a2f0-de97edc37808",
+      "sequence": 1,
+      "wall": "2026-11-13T23:12:10.728Z",
+      "mono": 151.40000000596046,
+      "monotonic": 151.40000000596046,
+      "pageOrdinal": 2
+    },
+    {
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "kind": "closed",
+      "pageId": "C",
+      "boot": "1f5efbde-377d-4083-b1a4-f4d616e02b03",
+      "session": "34842876-6bdb-43a4-9e30-c7012854a083",
+      "sequence": 3,
+      "wall": "2026-11-13T23:12:10.732Z",
+      "mono": 83.19999999552965,
+      "monotonic": 83.19999999552965,
+      "pageOrdinal": 3
+    }
+  ],
+  "journal": [
+    {
+      "ordinal": 1,
+      "label": "init",
+      "pageId": "A",
+      "method": "initialize",
+      "args": [],
+      "started": 4217.895023,
+      "result": {
+        "current": "A",
+        "head": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 0,
+          "latestOperation": "genesis",
+          "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+          "target": "current",
+          "fingerprint": "1:A"
+        },
+        "receipts": {
+          "genesis": {
+            "operationId": "genesis",
+            "token": {
+              "structure": 1,
+              "incarnation": "inc-1",
+              "generation": 0,
+              "latestOperation": "genesis"
+            },
+            "raw": "A",
+            "fingerprint": "1:A",
+            "previous": null
+          }
+        },
+        "copies": {},
+        "attempts": {},
+        "hold": false,
+        "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+        "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a"
+      },
+      "finished": 4227.561692
+    },
+    {
+      "ordinal": 2,
+      "label": "request-a",
+      "pageId": "A",
+      "method": "request",
+      "args": [
+        "op-a",
+        "B"
+      ],
+      "started": 4227.621693,
+      "result": {
+        "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+        "target": "current",
+        "expectedToken": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "incarnation": "inc-1",
+        "generation": 0,
+        "explicitOperationId": "op-a",
+        "fingerprint": "1:A",
+        "expectedRaw": "A",
+        "candidateRaw": "B",
+        "candidateFingerprint": "1:B",
+        "decisionId": "4d63d48a-15f5-4bf4-bea7-9e9723604596",
+        "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+        "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+        "pageId": "A"
+      },
+      "finished": 4233.470942
+    },
+    {
+      "ordinal": 3,
+      "label": "update-a",
+      "pageId": "A",
+      "method": "update",
+      "args": [
+        {
+          "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+          "target": "current",
+          "expectedToken": {
+            "structure": 1,
+            "incarnation": "inc-1",
+            "generation": 0,
+            "latestOperation": "genesis"
+          },
+          "incarnation": "inc-1",
+          "generation": 0,
+          "explicitOperationId": "op-a",
+          "fingerprint": "1:A",
+          "expectedRaw": "A",
+          "candidateRaw": "B",
+          "candidateFingerprint": "1:B",
+          "decisionId": "4d63d48a-15f5-4bf4-bea7-9e9723604596",
+          "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+          "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+          "pageId": "A"
+        },
+        {
+          "loseAck": true
+        }
+      ],
+      "role": "update",
+      "started": 4233.5159,
+      "result": {
+        "executionAllowed": false,
+        "writeAllowed": false,
+        "authority": "NOT_ESTABLISHED",
+        "stage": "HOLD",
+        "status": "UNKNOWN",
+        "reason": "Error: ack-lost-after-complete",
+        "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121"
+      },
+      "finished": 4246.776167
+    },
+    {
+      "ordinal": 4,
+      "label": "final",
+      "pageId": "C",
+      "method": "snapshot",
+      "args": [],
+      "started": 4246.801866,
+      "result": {
+        "current": "B",
+        "head": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 1,
+          "latestOperation": "op-a",
+          "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+          "target": "current",
+          "fingerprint": "1:B"
+        },
+        "receipts": {
+          "genesis": {
+            "operationId": "genesis",
+            "token": {
+              "structure": 1,
+              "incarnation": "inc-1",
+              "generation": 0,
+              "latestOperation": "genesis"
+            },
+            "raw": "A",
+            "fingerprint": "1:A",
+            "previous": null
+          },
+          "op-a": {
+            "operationId": "op-a",
+            "token": {
+              "structure": 1,
+              "incarnation": "inc-1",
+              "generation": 1,
+              "latestOperation": "op-a"
+            },
+            "raw": "B",
+            "fingerprint": "1:B",
+            "previous": "genesis"
+          }
+        },
+        "copies": {
+          "1": {
+            "raw": "A",
+            "token": {
+              "structure": 1,
+              "incarnation": "inc-1",
+              "generation": 0,
+              "latestOperation": "genesis"
+            },
+            "operationId": "op-a"
+          }
+        },
+        "attempts": {
+          "op-a": {
+            "request": {
+              "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+              "target": "current",
+              "expectedToken": {
+                "structure": 1,
+                "incarnation": "inc-1",
+                "generation": 0,
+                "latestOperation": "genesis"
+              },
+              "incarnation": "inc-1",
+              "generation": 0,
+              "explicitOperationId": "op-a",
+              "fingerprint": "1:A",
+              "expectedRaw": "A",
+              "candidateRaw": "B",
+              "candidateFingerprint": "1:B",
+              "decisionId": "4d63d48a-15f5-4bf4-bea7-9e9723604596",
+              "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+              "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+              "pageId": "A"
+            },
+            "status": "UNKNOWN",
+            "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76"
+          }
+        },
+        "hold": true,
+        "boot": "1f5efbde-377d-4083-b1a4-f4d616e02b03",
+        "session": "4263d9e0-01c9-4289-9b6a-5c98a88be348"
+      },
+      "finished": 4255.605836
+    }
+  ],
+  "results": [
+    {
+      "executionAllowed": false,
+      "writeAllowed": false,
+      "authority": "NOT_ESTABLISHED",
+      "stage": "HOLD",
+      "status": "UNKNOWN",
+      "reason": "Error: ack-lost-after-complete",
+      "txId": "a82477e8-c2a1-40ee-b9c4-ecb937859121"
+    }
+  ],
+  "errors": [],
+  "transitions": [],
+  "cleanup": {
+    "sentinelBefore": "outside-synthetic-namespace",
+    "localBefore": {
+      "outside-atomic-sentinel": "unchanged"
+    },
+    "before": [
+      "outside-atomic-sentinel-a9af23d4-cbb3-4bfc-8c9f-20d96d97efcc"
+    ],
+    "deleted": true,
+    "after": [
+      "outside-atomic-sentinel-a9af23d4-cbb3-4bfc-8c9f-20d96d97efcc"
+    ],
+    "sentinelAfter": "outside-synthetic-namespace",
+    "localAfter": {
+      "outside-atomic-sentinel": "unchanged"
+    },
+    "contextClosed": true
+  },
+  "final": {
+    "current": "B",
+    "head": {
+      "structure": 1,
+      "incarnation": "inc-1",
+      "generation": 1,
+      "latestOperation": "op-a",
+      "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+      "target": "current",
+      "fingerprint": "1:B"
+    },
+    "receipts": {
+      "genesis": {
+        "operationId": "genesis",
+        "token": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "raw": "A",
+        "fingerprint": "1:A",
+        "previous": null
+      },
+      "op-a": {
+        "operationId": "op-a",
+        "token": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 1,
+          "latestOperation": "op-a"
+        },
+        "raw": "B",
+        "fingerprint": "1:B",
+        "previous": "genesis"
+      }
+    },
+    "copies": {
+      "1": {
+        "raw": "A",
+        "token": {
+          "structure": 1,
+          "incarnation": "inc-1",
+          "generation": 0,
+          "latestOperation": "genesis"
+        },
+        "operationId": "op-a"
+      }
+    },
+    "attempts": {
+      "op-a": {
+        "request": {
+          "namespace": "stage3b11-test-67ae2549-8880-4f9b-8882-dd71e3d4eb60",
+          "target": "current",
+          "expectedToken": {
+            "structure": 1,
+            "incarnation": "inc-1",
+            "generation": 0,
+            "latestOperation": "genesis"
+          },
+          "incarnation": "inc-1",
+          "generation": 0,
+          "explicitOperationId": "op-a",
+          "fingerprint": "1:A",
+          "expectedRaw": "A",
+          "candidateRaw": "B",
+          "candidateFingerprint": "1:B",
+          "decisionId": "4d63d48a-15f5-4bf4-bea7-9e9723604596",
+          "session": "a040bddf-a987-4139-b1dd-c9bc5bbf0c1a",
+          "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76",
+          "pageId": "A"
+        },
+        "status": "UNKNOWN",
+        "boot": "5e5a0199-168a-4cd2-8e32-42ff3d91ab76"
+      }
+    },
+    "hold": true,
+    "boot": "1f5efbde-377d-4083-b1a4-f4d616e02b03",
+    "session": "4263d9e0-01c9-4289-9b6a-5c98a88be348"
+  },
+  "trace": {
+    "file": "chromium-G-lost-ack.zip",
+    "sha256": "413a6ffab43fe383f81cb6d8f0b7b01102144ab850ffc44ac4aa500326c83669"
+  },
+  "raw": {
+    "file": "chromium-G-lost-ack-raw.json",
+    "sha256": "25437318b3db0654e31629199b4de3b5d1cd703d3864bf73504cf6e90844b662"
+  }
+}

@@ -15,3 +15,6 @@ test('abort rejects both complete and abort',()=>{const r=structuredClone(E),e=s
 test('write request success not required to prove requested abort',()=>{const r=structuredClone(E);r.events=r.events.filter(e=>e.kind!=='write-request-success');renumber(r);assert.equal(validateAtomicCase(r),true);});
 test('ack loss rejects missing main complete',()=>{const r=structuredClone(G);r.events=r.events.filter(e=>!(e.txId===main(r)&&e.kind==='tx-complete'));renumber(r);assert.throws(()=>validateAtomicCase(r));});
 test('ack loss rejects receipt body substitution',()=>{const r=structuredClone(G);r.final.receipts['op-a'].raw='tampered';r.journal.at(-1).result=structuredClone(r.final);assert.throws(()=>validateAtomicCase(r));});
+const red=JSON.parse(await readFile(new URL('../docs/maintenance/storage-atomic-stage3b11/independent/reaccept/red.json',import.meta.url),'utf8'));
+const {createHash}=await import('node:crypto');
+for(const item of red)test('independent fixed RED/GREEN '+item.id,async()=>{const bytes=await readFile(new URL('../docs/maintenance/storage-atomic-stage3b11/independent/reaccept/'+item.id+'.json',import.meta.url));assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);assert.equal(item.accepted,true,'preserved RED result');assert.throws(()=>validateAtomicCase(JSON.parse(bytes)));});
