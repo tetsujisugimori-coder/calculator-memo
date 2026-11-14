@@ -1,0 +1,14 @@
+not ok 1 - bounded acquisition timeout fails and preserves its stage log and timing (startup 0ms)
+  ---
+  failureType: 'testCodeFailure'
+  error: 0 !== 124
+  actual: 0
+  expected: 124
+  ...
+not ok 2 - bounded acquisition timeout fails and preserves its stage log and timing (startup 200ms)
+  ---
+  failureType: 'testCodeFailure'
+  error: 0 !== 124
+  actual: 0
+  expected: 124
+  ...

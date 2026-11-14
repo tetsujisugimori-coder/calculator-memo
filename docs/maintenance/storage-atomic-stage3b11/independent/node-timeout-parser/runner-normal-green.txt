@@ -1,0 +1,2 @@
+ok 1 - bounded acquisition timeout fails and preserves its stage log and timing (startup 0ms)
+ok 2 - bounded acquisition timeout fails and preserves its stage log and timing (startup 200ms)

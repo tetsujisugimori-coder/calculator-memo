@@ -1,0 +1,8 @@
+not ok 1 - bounded acquisition timeout fails and preserves its stage log and timing (startup 0ms)
+  ---
+  error: did not match the regular expression synthetic preparation ready; actual: ''
+  ...
+not ok 2 - bounded acquisition timeout fails and preserves its stage log and timing (startup 200ms)
+  ---
+  error: ENOENT missing prerequisite unrelated failure
+  ...

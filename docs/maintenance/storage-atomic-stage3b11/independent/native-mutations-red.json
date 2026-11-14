@@ -1,0 +1,32 @@
+{
+  "source": "original successful A row inside incomplete local Chromium campaign; NOT full acceptance",
+  "campaign": "52fb6ec06345169440c2211746ce4942eac6bdc8",
+  "results": [
+    {
+      "name": "missing-commit-read",
+      "expected": "REJECT",
+      "accepted": true,
+      "inputSha256": "a54bae29e65119da3bc9f150a8aa597eefb3c88d3769be6868cfe5dc5980306b"
+    },
+    {
+      "name": "missing-native-read",
+      "expected": "REJECT",
+      "accepted": false,
+      "error": "AssertionError [ERR_ASSERTION]: final-native-read-required",
+      "inputSha256": "b08668f44c944457161e0faa28125a36a27c8f866e2693ec793a1e61c27ff369"
+    },
+    {
+      "name": "receipt-payload-mismatch",
+      "expected": "REJECT",
+      "accepted": true,
+      "inputSha256": "6b571c5d1ab91fd41ccb55029b884257d5177873a8d0bf4f70eabd3d834b6940"
+    },
+    {
+      "name": "missing-native-scope",
+      "expected": "REJECT",
+      "accepted": true,
+      "inputSha256": "bf0615dc2b3655e9ff6aa7e397e6927389c8eeb2f07304b65d4f29042c813a03"
+    }
+  ],
+  "auditorSha256": "c98f4d00b467a6911fdc9b37fd982ae8e14a2140a8e6767ab996b6c53a4080c3"
+}

@@ -1,0 +1,281 @@
+{
+  "name": "A-same-token",
+  "engine": "chromium",
+  "status": "PASS",
+  "errors": [],
+  "browserVersion": "test-only-not-browser",
+  "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+  "sentinelName": "sentinel",
+  "executionAllowed": false,
+  "writeAllowed": false,
+  "authority": "NOT_ESTABLISHED",
+  "classification": "VERIFIED-isolated-contract",
+  "results": [
+    {
+      "status": "VERIFIED",
+      "txId": "A"
+    },
+    {
+      "status": "REJECTED",
+      "txId": "B"
+    }
+  ],
+  "final": {
+    "head": {
+      "generation": 1
+    },
+    "current": "B",
+    "receipts": {
+      "genesis": {},
+      "op-a": {}
+    },
+    "copies": {
+      "1": {}
+    }
+  },
+  "events": [
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "A",
+      "pageOrdinal": 1,
+      "boot": "A",
+      "session": "A",
+      "sequence": 1,
+      "monotonic": 1,
+      "kind": "update-request",
+      "txId": "A",
+      "operationId": "op-a",
+      "request": {
+        "explicitOperationId": "op-a"
+      }
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "A",
+      "pageOrdinal": 1,
+      "boot": "A",
+      "session": "A",
+      "sequence": 2,
+      "monotonic": 2,
+      "kind": "compare-success",
+      "txId": "A",
+      "operationId": "op-a"
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "A",
+      "pageOrdinal": 1,
+      "boot": "A",
+      "session": "A",
+      "sequence": 3,
+      "monotonic": 3,
+      "kind": "write-request",
+      "txId": "A",
+      "operationId": "op-a"
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "A",
+      "pageOrdinal": 1,
+      "boot": "A",
+      "session": "A",
+      "sequence": 4,
+      "monotonic": 4,
+      "kind": "tx-complete",
+      "txId": "A",
+      "operationId": "op-a"
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "A",
+      "pageOrdinal": 1,
+      "boot": "A",
+      "session": "A",
+      "sequence": 5,
+      "monotonic": 5,
+      "kind": "readback-match",
+      "txId": "A",
+      "operationId": "op-a"
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "A",
+      "pageOrdinal": 1,
+      "boot": "A",
+      "session": "A",
+      "sequence": 6,
+      "monotonic": 6,
+      "kind": "update-result",
+      "txId": "A",
+      "operationId": "op-a",
+      "result": {
+        "status": "VERIFIED",
+        "txId": "A"
+      }
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "B",
+      "pageOrdinal": 2,
+      "boot": "B",
+      "session": "B",
+      "sequence": 1,
+      "monotonic": 1,
+      "kind": "update-request",
+      "txId": "B",
+      "operationId": "op-b",
+      "request": {
+        "explicitOperationId": "op-b"
+      }
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "B",
+      "pageOrdinal": 2,
+      "boot": "B",
+      "session": "B",
+      "sequence": 2,
+      "monotonic": 2,
+      "kind": "update-result",
+      "txId": "B",
+      "operationId": "op-b",
+      "result": {
+        "status": "REJECTED",
+        "txId": "B"
+      }
+    },
+    {
+      "namespace": "stage3b11-test-11111111-1111-1111-1111-111111111111",
+      "pageId": "C",
+      "pageOrdinal": 3,
+      "boot": "C",
+      "session": "C",
+      "sequence": 1,
+      "monotonic": 1,
+      "kind": "tx-read",
+      "head": {
+        "generation": 1
+      },
+      "current": "B",
+      "receiptCount": 2
+    }
+  ],
+  "journal": [
+    {
+      "ordinal": 1,
+      "label": "init",
+      "method": "initialize",
+      "pageId": "A",
+      "args": [],
+      "result": {},
+      "started": 0,
+      "finished": 1
+    },
+    {
+      "ordinal": 2,
+      "label": "request-a",
+      "method": "request",
+      "pageId": "A",
+      "args": [],
+      "result": {
+        "explicitOperationId": "op-a"
+      },
+      "started": 1,
+      "finished": 2
+    },
+    {
+      "ordinal": 3,
+      "label": "request-b",
+      "method": "request",
+      "pageId": "B",
+      "args": [],
+      "result": {
+        "explicitOperationId": "op-b"
+      },
+      "started": 2,
+      "finished": 3
+    },
+    {
+      "ordinal": 4,
+      "label": "update-a",
+      "method": "update",
+      "pageId": "A",
+      "args": [
+        {
+          "explicitOperationId": "op-a"
+        },
+        {}
+      ],
+      "result": {
+        "status": "VERIFIED",
+        "txId": "A"
+      },
+      "role": "update",
+      "started": 3,
+      "finished": 4
+    },
+    {
+      "ordinal": 5,
+      "label": "update-b",
+      "method": "update",
+      "pageId": "B",
+      "args": [
+        {
+          "explicitOperationId": "op-b"
+        },
+        {}
+      ],
+      "result": {
+        "status": "REJECTED",
+        "txId": "B"
+      },
+      "role": "update",
+      "started": 4,
+      "finished": 5
+    },
+    {
+      "ordinal": 6,
+      "label": "final",
+      "method": "snapshot",
+      "pageId": "C",
+      "args": [],
+      "result": {
+        "head": {
+          "generation": 1
+        },
+        "current": "B",
+        "receipts": {
+          "genesis": {},
+          "op-a": {}
+        },
+        "copies": {
+          "1": {}
+        }
+      },
+      "started": 5,
+      "finished": 6
+    }
+  ],
+  "raw": {
+    "file": "chromium-A-same-token-raw.json",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "trace": {
+    "file": "chromium-A-same-token.zip",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "cleanup": {
+    "deleted": true,
+    "contextClosed": true,
+    "before": [
+      "sentinel"
+    ],
+    "after": [
+      "sentinel"
+    ],
+    "sentinelBefore": "outside-synthetic-namespace",
+    "sentinelAfter": "outside-synthetic-namespace",
+    "localBefore": {},
+    "localAfter": {}
+  }
+}

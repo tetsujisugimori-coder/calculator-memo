@@ -1,0 +1,7 @@
+{
+  "scope": "intermediate incomplete campaign; not final acceptance",
+  "baselineAccepted": true,
+  "mutatedAccepted": true,
+  "inputSha256": "a78a57873fb99b95632c02e03c6ccbfa50b71738927cba9458c3fe070e963e32",
+  "auditorSha256": "1eb214c4a22efff54a4f6da35c7025f98fba03edf66104f6a4a5dfa8f62f68f7"
+}

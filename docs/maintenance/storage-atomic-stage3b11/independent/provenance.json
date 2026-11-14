@@ -1,0 +1,18 @@
+{
+  "sourceCampaign": "52fb6ec06345169440c2211746ce4942eac6bdc8",
+  "sourceTree": "80b06dd62b4995b3aca5961a109995d53c82fcdd",
+  "sourceCampaignStatus": "FAIL",
+  "scope": "Successful A row within INCOMPLETE Chromium campaign, not full acceptance",
+  "sourceBrowser": "141.0.7390.37",
+  "initialReviewerHarnessError": "Vite build result shape TypeError before browser; corrected harness, not product failure",
+  "hashes": {
+    "sparse-native-chain-input.json": "1f8a9a40930cfe5198cbf150cebd2904f5ded5e957baa66a665b640f3e9aff0a",
+    "auditor-before.mjs.txt": "c98f4d00b467a6911fdc9b37fd982ae8e14a2140a8e6767ab996b6c53a4080c3",
+    "cross-page-green.json": "74faf40f83c88b06cc6fffda76cf2a5f485b31dcc8b2ad8fceaad01104a70681",
+    "cross-page-red.json": "d0070b8a0b0280d110e742f6bb1957b05cddd9a959a94b0396bfae1ed0fa2d10",
+    "native-mutations-red.json": "c87195c14b4ee6883d122f5e15776821a604b87f1c0116125fe8c991050bdad8",
+    "native-a-original.json": "2053a7ce6db374120798e0fbdca31d7262c5768afb4e69241471f2f625bcf964",
+    "sparse-auditor-red.json": "8e2608c82f5737f4b16ede925b02f7b2cd6c9e2fb350e3e7b48a4952f0d98945",
+    "fixture-before.ts.txt": "5f454e3442f0a9454c0d273160c294826dbb4efd1194172387d67d0983620b7f"
+  }
+}

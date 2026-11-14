@@ -1,0 +1,18 @@
+{
+  "kind": "synthetic-fixed-validator-counterexample",
+  "status": "old-global-assertions-false-acceptance",
+  "results": [
+    {
+      "mode": "false-success",
+      "oldGlobalAssertionsAccept": true,
+      "secondConditionIntendedReason": false,
+      "sha256": "4ac83716eb0c81d05b50e0558977e5ad3d76d7eccbc9a90086d8166129d121fd"
+    },
+    {
+      "mode": "drop-log",
+      "oldGlobalAssertionsAccept": true,
+      "secondConditionIntendedReason": false,
+      "sha256": "ab7d9ca38c4a8a56798ead5865ef0f15175fec978913b73752d1e76a35678318"
+    }
+  ]
+}
