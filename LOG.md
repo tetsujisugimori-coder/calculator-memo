@@ -1,6 +1,20 @@
 # Calculator Memo 開発履歴・設計判断
 
 
+
+## 2026-11-14 (JST): Stage 3B-11 提出候補の受入とWindows原証拠保全
+
+- 受入対象の実装HEAD `39f04dd8e0182e976b51422486a53f58be2f995b` / tree `6aa8df3a3bb60e86f4c60914098b5ee2871356b8`。保全候補2b750222と最新レビューf0c0c336を通常merge/commit/pushで保持しGitHubから読戻し。初回5141bfdと第2回0f98d652の負対照FAILは削除せず、主transactionの故障注入対象とnative診断理由の対応を局所修正。製品・validator・fixture本体・Node原試験・正式GUI条件・既存時間予算は不変更。
+- 環境と通常回帰: GitHub Actions Ubuntu24.04 / Node22.13.0。全Node契約433/433・skip0、単体135files/3114tests、lint exit0（既存warning3）、型検査・通常build・Pages build exit0。Windows Node24.20.0の固定16局所試験と、原ZIP中の旧Node24.22.1実測は別証拠。
+- [隔離atomic run43596639007/attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/43596639007): Chromium/WebKit各28正常、証拠変異12、実browser故障16を全実行。原artifact14114927100は6,566,965 bytes / SHA256 `c5ca7b895f95d7fad8604ed47129b2c067228f138368114f866a14307ae187ae`。別担当が206CRC、正常/故障72traceのhash/CRC、同一HEAD/tree/run/attempt、原票とsummary・ケース集合・cleanupを再照合PASS。
+- Node正常準備0/200msと失敗exit誤成功・stageログ欠落各2条件は、各TAP blockの理由/actual/expected、原log hash、限定wrapper変異とcleanupを独立再確認。ready/stalled/closed124順序・TERM・timing124・fixture shell/子孫ESRCHは不変の試験本体がLinuxで成功。inner一時fixtureの原log/PIDは従来finallyで削除される限界を残す。過去無計測失敗の一意原因・外側watchdog発火時の全子孫停止は未確定。
+- E-abortは同一主txの開始/読取/比較/書込要求/abortとcomplete不在、G-lost-ackはcomplete/receipt/独立readbackを両engine原票で確認。UNKNOWN・HOLDと自動再試行禁止を維持。観測結果と実commitを混同しない。
+- [正式GUI run43596638947/attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/43596638947): 既存6条件/1128checks/592geometry/132PNG、成功trace0、touch各1344を維持。6原ZIP＋aggregate＋CI独立manifestを実取得し、別担当が既存監査器でWindows独立再集計PASS。PNG全hash/chunkCRC/decompress、geometry、inventory、provenance、配信HEAD/run/attemptが一致。originalsInventorySHA256 `a077bbfbb29c30c78c46d505a7e35ce406560994cbf1fc885aa2bb55722d71c0`。Windows監査の初回長パス展開失敗は元エラーを残し短い別領域で解消、原ZIP不変。
+- 実装39f04ddの14workflowはterminal、13success・条件外PR113 diagnosticの1skip。独立レビューで今回範囲の未解決P1/P2なし。これは記録前実装HEADの結果であり、**本記録を含む新しい最終HEADのCI/原artifact監査は [PR #145 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145/checks) と同PR/Issueの最終SHA/run付き追補を参照**。この記録自身の未確認成功を先取りしない。
+- Windows保全先 `C:\Users\tetsu\Dev-Artifact-Archive\calculator-memo\PR-145\`。原ZIP23,798,010 bytes/SHA9675c8bf...は独立コピー読戻し一致。旧候補ZIP・固定反例・全履歴・初回/第2回の失敗および修正pushによる旧正式GUI取消をHEAD別に保持。最終記録HEADの原artifact/履歴bundle・全hash台帳と別領域復元の完了結果もPR追補で報告する。作業cloneは `C:\Users\tetsu\Dev-Workspace\calculator-memo\restored-stage3b11`（元ローカルmain未更新）。
+- Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。戻し方はこの隔離試験/文書/追加CIだけを通常revertし原証拠を保持。実データ変更はない。
+- Stage 3B HOLD / executionAllowed=false / writeAllowed=false / authority=NOT_ESTABLISHED。実データ・製品保存経路・移行/実復元・UNKNOWN後自動再試行は禁止。実機Safari/private/実quota/eviction/媒体耐久性/OS強制終了/非協調旧writer完全排他はUNKNOWN/NOT_TESTED。テスト・文書に限定したマージ推奨は最終記録HEADのCI・独立原証拠監査完了後に判断し、製品HOLD解除とは分ける。Draft解除/マージ/公開/ブランチ削除/main更新なし。
+
 ## 2026-11-14 (JST): Stage 3B-11 Windows復元と履歴を保持した正規提出
 
 - Windows原ZIPをsize 23,798,010 bytes / SHA-256 `9675c8bf4432976cd8a934339e72b6bbe88a22aa56cb0226c4e44836b6fc14d0`、132 CRC、manifest131全サイズ/hashで照合。RESULT.mdに従い別cloneへ候補 `2b7502227228654857b2393936285a2cd76c50ad` / tree `d1334fb9af8ed13586745639e25a2978c28efb28` を復元しfsck --full成功。原ZIP・内包旧ZIP・原反例・失敗ログは変更しない。
