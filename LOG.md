@@ -1,5 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
+
+## 2026-11-14 (JST): Stage 3B-11 Windows復元と履歴を保持した正規提出
+
+- Windows原ZIPをsize 23,798,010 bytes / SHA-256 `9675c8bf4432976cd8a934339e72b6bbe88a22aa56cb0226c4e44836b6fc14d0`、132 CRC、manifest131全サイズ/hashで照合。RESULT.mdに従い別cloneへ候補 `2b7502227228654857b2393936285a2cd76c50ad` / tree `d1334fb9af8ed13586745639e25a2978c28efb28` を復元しfsck --full成功。原ZIP・内包旧ZIP・原反例・失敗ログは変更しない。
+- 最新レビュー文書HEAD `f0c0c3362860e57cf596058256c8852fff034a11` を通常merge `8763d928f291708a874204ad9f7bef32b50db296` で保持。Windows checkoutの改行変換を独立担当が検出し、当該cloneのautocrlfを停止してGit archiveから原バイトを復元。ローカルmainは更新しない。
+- 第一希望は既存Linux環境での全受入。WindowsにはWSL distributionがないため、既存Actions Ubuntu24.04 / Node22.13.0を使用する。過去Node24結果は別の証拠。既存隔離atomic jobへ全Node契約と、同一0/200ms入力の正常対照・失敗exit誤成功・stageログ欠落各2条件（4故障検出）を追加。故障は専用一時コピーに限定し、原wrapper・製品・既存GUI・時間予算は不変更。
+- 検証結果: 原保全物の照合と復元PASS。提出後の全Node・単体・lint・型・両build・両browser28ケースと故障対照・正式GUI6/1128/592/132・原artifact独立監査は、この記録commitの最終HEAD ChecksとPRのSHA/run/attempt付き結果で確認する。現時点の未実行を成功としない。
+- Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。原失敗と過去レビューを保持。Windows原ZIP: `C:\Users\tetsu\Dev-Workspace\calculator-memo\calculator-stage3b11-node-reaccept-2b750222.zip`。最終原artifact保全・独立読戻しは確認待ち。
+- Stage 3B HOLD / executionAllowed=false / writeAllowed=false / authority=NOT_ESTABLISHED。外側watchdog全子孫停止、過去無計測失敗の一意原因、実機Safari/媒体耐久性は未確定。実データ/製品接続/UNKNOWN自動再試行なし。全受入前のマージ推奨NO、Draft解除・マージ・公開・ブランチ削除なし。
+
 ## 2026-11-14 (JST): Stage 3B-11 Node timeout契約の準備境界
 
 - Library保全ZIP（12,388,155 bytes、SHA-256 c04fae8f2d0dbd5213d7218dd23792b36aaf7d16c0db5880061be2892d40c318）を新領域で実取得。CRC198、manifest197、候補8cac179/tree664cab4、Git整合性を独立照合。remote c73ad183のレビュー文書を通常mergeし両履歴を保持。

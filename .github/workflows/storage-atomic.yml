@@ -39,6 +39,11 @@ jobs:
           df -i "$GITHUB_WORKSPACE"
           npm ci --ignore-scripts
           npm ci --prefix e2e --ignore-scripts
+      - name: Complete Linux Node contracts and timeout fault controls
+        id: all_node
+        run: |
+          node e2e/run-stage.mjs atomic-all-node node --test e2e/*.node-test.mjs docs/maintenance/storage-atomic-stage3b11/independent/auditor-counterexamples.node-test.mjs
+          node e2e/run-stage.mjs atomic-timeout-controls node e2e/node-timeout-negative-controls.mjs
       - name: Atomic update and evidence contracts
         id: controls
         run: |
