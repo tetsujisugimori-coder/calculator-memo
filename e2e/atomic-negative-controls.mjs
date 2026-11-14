@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {readdir,readFile,writeFile} from 'node:fs/promises';
-import {validateAtomicEvidence,validateAtomicCase,verifyAtomicFiles} from './storage-atomic-evidence.mjs';
-import { narrowMainAtomicScope } from './atomic-negative-control-inputs.mjs';
+import {validateAtomicEvidence,verifyAtomicFiles} from './storage-atomic-evidence.mjs';
+import { narrowMainAtomicScope, validateAtomicMutantFailure } from './atomic-negative-control-inputs.mjs';
 const roots=(await readdir('gui-evidence')).filter(n=>n.startsWith('atomic-'));let normal,dir;
 for(const n of roots){try{const x=JSON.parse(await readFile(`gui-evidence/${n}/summary.json`));if(x.sha===process.env.EXPECTED_SHA&&x.status==='PASS'&&x.mutant==='none'){normal=x;dir=`gui-evidence/${n}`;}}catch{/* non-summary directories are not acceptance */}}
 assert.ok(normal,'complete-same-head-normal-evidence-required');validateAtomicEvidence(normal);await verifyAtomicFiles(normal,dir);
@@ -22,14 +22,18 @@ const mutations={
  finalMismatch:x=>{const r=x.rows[0];r.final.current='forged';},
  cleanupFailure:x=>{x.rows[0].cleanup.deleted=false;},
 };
-const targets=[['compare-outside','B-after-observation','scenario-outcome'],['accept-stale','B-after-observation','scenario-outcome'],['missing-store','A-same-token','scenario-outcome'],['abort-success','E-abort','compare-write-complete-result-order|scenario-outcome'],['early-success','A-same-token','compare-write-complete-result-order|independent-readback|required'],['ignore-receipt','S-readback-mismatch','scenario-outcome'],['old-session','I-late-response','scenario-outcome'],['no-incarnation','K-incarnation-reset','scenario-outcome']];
+const targets=[['compare-outside','B-after-observation','scenario-outcome'],['accept-stale','B-after-observation','scenario-outcome'],['missing-store','A-same-token','scenario-outcome'],['abort-success','E-abort','verified-native-chain:tx-complete'],['early-success','A-same-token','verified-native-chain:readback'],['ignore-receipt','S-readback-mismatch','scenario-outcome'],['old-session','I-late-response','scenario-outcome'],['no-incarnation','K-incarnation-reset','scenario-outcome']];
 try{
  for(const [name,mutate] of Object.entries(mutations)){const x=structuredClone(normal);mutate(x);let error;try{validateAtomicEvidence(x);}catch(e){error=String(e);}report.evidenceMutations.push({name,expected:'REJECT',actual:error?'REJECT':'ACCEPT',error});assert.ok(error,`undetected-evidence:${name}`);}
  for(const engine of ['chromium','webkit'])for(const [mutant,caseName,reason] of targets){
   const p=spawnSync(process.execPath,['e2e/run-storage-atomic.mjs'],{env:{...process.env,ATOMIC_MUTANT:mutant,ATOMIC_CASE:caseName,ATOMIC_ENGINE:engine},encoding:'utf8',timeout:60000,maxBuffer:2*1024*1024});
   const lines=(p.stderr+'\n'+p.stdout).split('\n');let output;for(const l of lines)try{const o=JSON.parse(l);if(o.out)output=o;}catch{/* preserve original text below */}
   const item={engine,mutant,caseName,exitCode:p.status,signal:p.signal,error:String(p.error||''),stdout:p.stdout,stderr:p.stderr,expected:'semantic-RED',actual:'NOT_DETECTED',out:output?.out};report.browserMutants.push(item);
-  assert.equal(p.status,1,`mutant-exit:${engine}:${mutant}`);assert.equal(p.signal,null);assert.ok(output?.out,'mutant-summary-missing');const x=JSON.parse(await readFile(`${output.out}/summary.json`));assert.equal(x.sha,normal.sha);assert.equal(x.tree,normal.tree);assert.equal(x.mutant,mutant);assert.equal(x.rows.length,1);const r=x.rows[0];assert.equal(r.name,caseName);assert.equal(r.engine,engine);assert.equal(r.cleanup.contextClosed,true,'environment-error-is-not-semantic-RED');assert.equal(r.cleanup.deleted,true);assert.ok(r.events.some(e=>e.kind==='update-request'));assert.match(x.error,new RegExp(reason),'wrong-failure-reason');assert.throws(()=>validateAtomicCase(r));item.actual='DETECTED-semantic-RED';await writeFile(`${dir}/negative-controls.json`,JSON.stringify(report,null,2)+'\n');
+  try {
+  assert.equal(p.status,1,`mutant-exit:${engine}:${mutant}`);assert.equal(p.signal,null);assert.ok(output?.out,'mutant-summary-missing');const x=JSON.parse(await readFile(`${output.out}/summary.json`));assert.equal(x.sha,normal.sha);assert.equal(x.tree,normal.tree);assert.equal(x.run,normal.run);assert.equal(x.attempt,normal.attempt);assert.equal(x.dirty,false);assert.equal(x.bundleHash,normal.bundleHash);assert.equal(x.mutant,mutant);await verifyAtomicFiles(x,output.out);assert.equal(x.rows.length,1);const r=x.rows[0];for(const key of ['sha','tree','run','attempt'])assert.equal(r[key],normal[key]);assert.equal(r.name,caseName);assert.equal(r.engine,engine);assert.equal(r.cleanup.contextClosed,true,'environment-error-is-not-semantic-RED');assert.equal(r.cleanup.deleted,true);assert.ok(r.events.some(e=>e.kind==='update-request'));assert.equal(x.status,'FAIL');item.independentError=validateAtomicMutantFailure(r,x.error,mutant,reason);item.actual='DETECTED-semantic-RED';
+  } catch(error) { item.failure=String(error); }
+  await writeFile(`${dir}/negative-controls.json`,JSON.stringify(report,null,2)+'\n');
  }
+ assert.equal(report.browserMutants.length,16);assert.ok(report.browserMutants.every(item=>item.actual==='DETECTED-semantic-RED'),'every-browser-mutant-must-be-semantic-RED');
  report.status='PASS-controls-only';
 }catch(e){report.status='FAIL';report.error=String(e);process.exitCode=1;}finally{await writeFile(`${dir}/negative-controls.json`,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({out:dir,status:report.status,evidence:report.evidenceMutations.length,browser:report.browserMutants.length}));}
