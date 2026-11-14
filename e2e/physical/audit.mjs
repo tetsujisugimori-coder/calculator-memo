@@ -22,7 +22,7 @@ export function auditRow(r,identity){
  if(r.case==='lost-ack')assert.equal(r.result.reason,'Error: ack-lost-after-complete','ack-loss-reason');
  if(r.case==='readback-mismatch')assert.equal(r.result.reason,'Error: readback-mismatch','readback-fault-reason');
  if(r.case==='missing-receipt'){assert.equal(r.after.receipts.genesis,undefined,'missing-genesis');assert.equal(r.diagnosis.integrityError,'receipt-copy-count');assert.equal(r.result.reason,'Error: receipt-copy-count');}
- const nativeReadback=own.find(e=>e.kind==='readback');if(nativeReadback){assert.equal(nativeReadback.snapshot.current,r.after.current,'native-readback-current');assert.deepEqual(nativeReadback.snapshot.head,r.after.head,'native-readback-head');assert.deepEqual(nativeReadback.snapshot.receipts,r.after.receipts,'native-readback-receipts');}
+ const nativeReadback=own.find(e=>e.kind==='readback');if(r.result.status==='VERIFIED')ordered(['tx-complete','readback','readback-match','update-result']);if(r.case==='readback-mismatch')assert.ok(nativeReadback,'fault-readback-required');if(nativeReadback){assert.equal(nativeReadback.snapshot.current,r.after.current,'native-readback-current');assert.deepEqual(nativeReadback.snapshot.head,r.after.head,'native-readback-head');assert.deepEqual(nativeReadback.snapshot.receipts,r.after.receipts,'native-readback-receipts');}
  if(r.result.status==='UNKNOWN'){
   assert.ok(r.retry.txId&&r.retry.txId!==r.result.txId,'retry-id');const retryEvents=r.events.filter(e=>e.txId===r.retry.txId);
   assert.ok(retryEvents.some(e=>e.kind==='update-request'&&JSON.stringify(e.request)===JSON.stringify(r.request)),'retry-native-request');assert.ok(retryEvents.some(e=>e.kind==='update-result'&&JSON.stringify(e.result)===JSON.stringify(r.retry)),'retry-native-result');assert.ok(!retryEvents.some(e=>e.kind==='write-request'),'retry-no-write');
@@ -43,4 +43,4 @@ export function auditRow(r,identity){
  if(r.case==='eviction-injected'){assert.equal(r.eviction.exists,false,'synthetic-deletion');assert.equal(r.eviction.kind,'synthetic-owned-db-deletion');}
  return true;
 }
-export function auditSuite(s){assert.equal(s.rows.length,20,'complete-matrix');assert.equal(new Set(s.rows.map(r=>r.trial)).size,20,'unique-trials');for(const engine of ['chromium','webkit'])for(const name of CASES){const rows=s.rows.filter(r=>r.engine===engine&&r.case===name);assert.equal(rows.length,1,'case-matrix');auditRow(rows[0],s);}return true;}
+export function auditSuite(s){assert.equal(s.rows.length,20,'complete-matrix');assert.equal(new Set(s.rows.map(r=>r.trial)).size,20,'unique-trials');assert.equal(new Set(s.rows.map(r=>r.namespace)).size,20,'unique-namespaces');for(const engine of ['chromium','webkit'])for(const name of CASES){const rows=s.rows.filter(r=>r.engine===engine&&r.case===name);assert.equal(rows.length,1,'case-matrix');auditRow(rows[0],s);}return true;}
