@@ -1,5 +1,10 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-15 (JST): Stage 3B-12 CI discovery failure correction
+- PR #147 / Issue #146, HEAD613c run43653999264 attempt1: native Chromium/WebKit 10 cases each completed; evidence controls stopped before mutations because `physical-browser.log` and `physical-browser-timing.json` were counted as suite directories (3 != 1). Original failure ZIP14138556486 retained; SHA256 fc9c8e9a34869a7b663a6734a173b8f64903b6d337a596a8feb16270f346ebbd, 2,038,876 bytes, CRC60 verified.
+- Correct directory discovery using Dirent.isDirectory; retain exactly-one constraint and reject zero/multiple/symlink-only candidates. Same CI sibling-file counterexample RED before correction, GREEN after. No case/timeout/expected outcome relaxed; no product changes. New exact-HEAD CI and artifact audit remain pending and must not inherit613c successes.
+- Overall PARTIAL / physical NOT_TESTED / limited merge NO pending final evidence. Stage3B HOLD and real-data prohibition unchanged.
+
 ## 2026-11-15 (JST): Stage 3B-12 isolated physical observation foundation
 - Base merge ffd99fc404328c35bc365d8587c204e6174e5e66 / tree 536ba2539a7c868a7d30bd237150c90f1d3c4b80 verified; clean dedicated clone. Refs #146. Draft PR not yet created.
 - Reuse unchanged Stage3B11 native atomic fixture on a dedicated loopback origin. Add observation auditor, manual synthetic page/protocol, fixed 20 cloud cases and evidence faults. Product code, storage, existing CI budgets and formal GUI expectations unchanged.

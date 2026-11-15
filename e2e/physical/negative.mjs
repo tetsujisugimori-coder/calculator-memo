@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import {readdir,readFile,writeFile} from 'node:fs/promises';
-import {auditFiles} from './files.mjs';
+import {readFile,writeFile} from 'node:fs/promises';
+import {auditFiles,findOriginalSuite} from './files.mjs';
 import {auditSuite} from './audit.mjs';
-const dirs=(await readdir('gui-evidence')).filter(x=>x.startsWith('physical-'));assert.equal(dirs.length,1,'one-original-suite');const dir=`gui-evidence/${dirs[0]}`,original=JSON.parse(await readFile(`${dir}/summary.json`));auditSuite(original);await auditFiles(dir);
+const dir=await findOriginalSuite(),original=JSON.parse(await readFile(`${dir}/summary.json`));auditSuite(original);await auditFiles(dir);
 const mutations={
  'missing-complete':s=>{const r=s.rows[0];r.events=r.events.filter(e=>!(e.txId===r.result.txId&&e.kind==='tx-complete'));},
  'readback-mismatch':s=>s.rows[0].after.current='tampered',

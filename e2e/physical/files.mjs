@@ -4,6 +4,11 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {auditSuite} from './audit.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
+export async function findOriginalSuite(root='gui-evidence'){
+ const candidates=(await readdir(root,{withFileTypes:true})).filter(e=>e.name.startsWith('physical-')&&e.isDirectory());
+ assert.equal(candidates.length,1,'one-original-suite');
+ return `${root}/${candidates[0].name}`;
+}
 export async function auditFiles(dir){
  const s=JSON.parse(await readFile(`${dir}/summary.json`));assert.equal(s.audit,'PASS','terminal-suite');assert.equal(s.error,undefined,'terminal-error');auditSuite(s);
  assert.equal(execFileSync('git',['rev-parse',`${s.sha}^{tree}`],{encoding:'utf8'}).trim(),s.tree,'git-tree');
