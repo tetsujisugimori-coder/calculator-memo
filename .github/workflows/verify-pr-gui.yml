@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
+      SOURCE_REQUIRE_BUILD: 'true'
+      SOURCE_BUILD_INPUTS: '["github-pages/index.html", "github-pages/main.tsx", "components/CalculatorApp.tsx"]'
+      SOURCE_REQUIRE_BROWSER: 'false'
       SOURCE_PROOF_DIR: ${{ github.workspace }}/gui-evidence/source-proof
       SOURCE_REQUIRED_LOADS: '["e2e/run-stage.mjs"]'
       SOURCE_WORKFLOW_PATH: .github/workflows/verify-pr-gui.yml
@@ -59,7 +62,9 @@ jobs:
         run: node e2e/run-stage.mjs unit npm test
       - name: Lint
         id: lint
-        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs lint npm run lint
+        env:
+          NODE_OPTIONS: --import=${{ github.workspace }}/e2e/source-load-register.mjs
+        run: node e2e/run-stage.mjs lint npm run lint
       - name: Type check
         id: types
         run: node e2e/run-stage.mjs types npx --no-install tsc --noEmit
@@ -140,6 +145,9 @@ jobs:
           - webkit-mobile-390px
           - webkit-mobile-375px
     env:
+      SOURCE_REQUIRE_BUILD: 'true'
+      SOURCE_BUILD_INPUTS: '["github-pages/index.html", "github-pages/main.tsx", "components/CalculatorApp.tsx"]'
+      SOURCE_REQUIRE_BROWSER: 'true'
       SOURCE_PROOF_DIR: ${{ github.workspace }}/gui-evidence/source-proof
       SOURCE_REQUIRED_LOADS: '["e2e/run-formal-scenario.mjs", "e2e/scenario.mjs"]'
       SOURCE_WORKFLOW_PATH: .github/workflows/verify-pr-gui.yml
@@ -181,8 +189,10 @@ jobs:
         id: browser_install
         run: node e2e/run-stage.mjs browser-install timeout --verbose --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install chromium webkit
       - name: Execute exactly one full historical GUI scenario
+        env:
+          NODE_OPTIONS: --import=${{ github.workspace }}/e2e/source-load-register.mjs
         id: gui
-        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/run-formal-scenario.mjs
+        run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/run-formal-scenario.mjs
       - name: Verify unchanged runtime source and captured bytes after execution
         id: source_after
         if: always() && steps.source_before.outcome == 'success'

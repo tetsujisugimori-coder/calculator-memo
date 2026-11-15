@@ -1,4 +1,6 @@
 # Stage 3B-12 execution ledger
+
+Latest implementation adds actual Vite input/generated output and browser delivery capture; first-party source-chain acceptance remains PENDING on the new exact HEAD. The earlier32596e3 atomic FAIL is preserved with its original ZIP receipt; its workflow-format assertion was restored unchanged and local11/11 now passes. Baseline a879 original27 ZIPs were independently re-downloaded/verified (176,377,841bytes); this does not prove the new candidate or a current Library readback. See SOURCE-PROOF.md, independent/source-review.md and the two original-artifact receipts. Public boundary remains unresolved / limited merge NO.
 ## 2026-11-15 JST: source-proof and public-boundary reacceptance
 
 Baseline HEAD `a879727bfd4ec5701c6e8ce70ece3278a35b159d` / tree `ec8d816875aa8330aa1184485b6abf118cfbd519`. GitHub API independently confirms baseline 14 successful workflows and one conditional skip; these are historical results, not new-source acceptance. The initial ledger below remains unchanged history, including its PENDING states.

@@ -17,7 +17,7 @@ writeFileSync(join(fixture,workflow),'name: Source test\non: [pull_request]\njob
 writeFileSync(join(fixture,'e2e/main.mjs'),"import {value} from './dep.mjs'; import {createRequire} from 'node:module'; const require=createRequire(import.meta.url); if(value!==1||require('./dep.cjs')!==1)throw Error('fixture');\n");
 writeFileSync(join(fixture,'e2e/dep.mjs'),'export const value=1;\n');
 writeFileSync(join(fixture,'e2e/dep.cjs'),'module.exports=1;\n');
-for(const p of ['source-proof.mjs','source-load-register.mjs','source-load-hook.mjs','source-load-write.mjs'])cpSync(join(repository,'e2e',p),join(fixture,'e2e',p));
+for(const p of ['source-proof.mjs','source-load-register.mjs','source-load-hook.mjs','source-load-write.mjs','source-build-proof.mjs','source-browser-bytes.mjs'])cpSync(join(repository,'e2e',p),join(fixture,'e2e',p));
 run('git',['init','-q']);run('git',['config','core.autocrlf','false']);run('git',['add','.']);
 const commit=message=>run('git',['-c','user.name=Source proof fixture','-c','user.email=source-proof@example.invalid','-c','core.autocrlf=false','commit','-qm',message]);
 commit('normal source');const head=run('git',['rev-parse','HEAD']).trim();
@@ -25,7 +25,7 @@ writeFileSync(join(fixture,workflow),'name: Different workflow\non: [pull_reques
 const other=run('git',['rev-parse','HEAD']).trim();run('git',['checkout','-q',head]);
 const root=join(fixture,'original');
 const binding={workflowSha:head,run:'independent-fixture',attempt:'1',requiredLoads:['e2e/main.mjs','e2e/dep.mjs','e2e/dep.cjs']};
-const env={...process.env,NODE_OPTIONS:'',EXPECTED_SHA:head,GITHUB_WORKFLOW_SHA:head,GITHUB_WORKFLOW_REF:'fixture/repo/'+workflow+'@refs/pull/1/merge',GITHUB_SHA:head,GITHUB_RUN_ID:binding.run,GITHUB_RUN_ATTEMPT:binding.attempt,SOURCE_PROOF_DIR:root,SOURCE_WORKFLOW_PATH:workflow,SOURCE_REQUIRED_LOADS:JSON.stringify(binding.requiredLoads)};
+const env={...process.env,NODE_OPTIONS:'',SOURCE_REQUIRE_BUILD:'false',SOURCE_REQUIRE_BROWSER:'false',SOURCE_BUILD_INPUTS:'[]',EXPECTED_SHA:head,GITHUB_WORKFLOW_SHA:head,GITHUB_WORKFLOW_REF:'fixture/repo/'+workflow+'@refs/pull/1/merge',GITHUB_SHA:head,GITHUB_RUN_ID:binding.run,GITHUB_RUN_ATTEMPT:binding.attempt,SOURCE_PROOF_DIR:root,SOURCE_WORKFLOW_PATH:workflow,SOURCE_REQUIRED_LOADS:JSON.stringify(binding.requiredLoads)};
 run(process.execPath,['e2e/source-proof.mjs','before'],{env});
 run(process.execPath,['--import','./e2e/source-load-register.mjs','e2e/main.mjs'],{env});
 run(process.execPath,['e2e/source-proof.mjs','after'],{env});

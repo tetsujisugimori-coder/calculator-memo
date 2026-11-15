@@ -1,3 +1,4 @@
+import {captureBrowserSource} from '../source-browser-bytes.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {mkdir,writeFile,readFile,readdir} from 'node:fs/promises';
@@ -13,7 +14,7 @@ const save=()=>writeFile(`${out}/summary.json`,JSON.stringify(s,null,2));const s
 let browser,context;
 try{for(const engine of ['chromium','webkit']){browser=await({chromium,webkit}[engine]).launch();for(const name of CASES){
  const r={...s,rows:undefined,engine,case:name,trial:randomUUID(),device:`cloud-${engine}`,browserVersion:browser.version(),mode:'cloud-synthetic',physicalAcceptance:'NOT_TESTED',durability:'UNKNOWN',namespace:'stage3b11-test-'+randomUUID(),events:[],errors:[],transitions:[],executionAllowed:false,writeAllowed:false,authority:'NOT_ESTABLISHED',evidence:'INCOMPLETE',cleanup:false};s.rows.push(r);await save();
- context=await browser.newContext({serviceWorkers:'block',recordHar:{path:`${out}/${engine}-${name}.har`,content:'embed',mode:'full'}});context.setDefaultTimeout(30000);await context.route('**/*',route=>new URL(route.request().url()).origin===server.origin?route.continue():route.abort());await context.tracing.start({screenshots:false,snapshots:true,sources:true});
+ context=await browser.newContext({serviceWorkers:'block',recordHar:{path:`${out}/${engine}-${name}.har`,content:'embed',mode:'full'}});const verifyBrowserSource=captureBrowserSource(context,{origin:server.origin,bundleHash:s.bundleSHA256,documentPath:'e2e/physical/manual.html',condition:engine+":"+name});context.setDefaultTimeout(30000);await context.route('**/*',route=>new URL(route.request().url()).origin===server.origin?route.continue():route.abort());await context.tracing.start({screenshots:false,snapshots:true,sources:true});
  await context.exposeBinding('recordPhysical',(_source,e)=>r.events.push(e));
  const delivered=[];context.on('response',response=>{if(response.url()===server.origin+'/fixture.mjs')delivered.push(response.body().then(bytes=>{assert.equal(response.status(),200);assert.equal(hash(bytes),s.bundleSHA256,'served-bundle-bytes');r.servedSHA256=hash(bytes);}));});
  const page=await context.newPage();page.on('pageerror',e=>r.errors.push(String(e)));
@@ -34,7 +35,7 @@ try{for(const engine of ['chromium','webkit']){browser=await({chromium,webkit}[e
  await call(page,'close');await page.evaluate(async n=>{await new Promise((yes,no)=>{const req=indexedDB.deleteDatabase(n);req.onsuccess=yes;req.onerror=()=>no(req.error);req.onblocked=()=>no(Error('cleanup-blocked'));});},r.namespace);
  const exists=await page.evaluate(async n=>(await indexedDB.databases()).some(d=>d.name===n),r.namespace);assert.equal(exists,false);r.cleanup=true;
  if(name==='eviction-injected')r.eviction={kind:'synthetic-owned-db-deletion',exists};
- await Promise.all(delivered);assert.ok(delivered.length,'served-response-required');r.evidence='COMPLETE';auditRow(r,s);r.audit='PASS';
+ await Promise.all(delivered);await verifyBrowserSource();assert.ok(delivered.length,'served-response-required');r.evidence='COMPLETE';auditRow(r,s);r.audit='PASS';
  }catch(e){r.errors.push(String(e.stack||e));r.audit='FAIL';throw e;}finally{await context.tracing.stop({path:`${out}/${engine}-${name}.zip`});await context.close();context=null;await save();}
  }await browser.close();browser=null;}auditSuite(s);s.audit='PASS';
 }catch(e){s.error=String(e.stack||e);process.exitCode=1;}finally{await context?.close();await browser?.close();server.server.close();await save();const manifest={};for(const name of await readdir(out)){const bytes=await readFile(`${out}/${name}`);manifest[name]={size:bytes.length,sha256:hash(bytes)};}await writeFile(`${out}/manifest.json`,JSON.stringify(manifest,null,2));}

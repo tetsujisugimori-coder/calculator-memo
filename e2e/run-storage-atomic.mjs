@@ -1,3 +1,4 @@
+import {captureBrowserSource} from './source-browser-bytes.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash,randomUUID} from 'node:crypto';
@@ -5,6 +6,7 @@ import {createServer} from 'node:http';
 import {once} from 'node:events';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {build} from 'vite';
+import {sourceBuildProof} from './source-build-proof.mjs';
 import {chromium,webkit} from './node_modules/playwright/index.mjs';
 import {CASES,EXPECTATIONS,validateAtomicCase,validateAtomicEvidence,verifyAtomicFiles} from './storage-atomic-evidence.mjs';
 const git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim(),hash=b=>createHash('sha256').update(b).digest('hex');
@@ -18,7 +20,7 @@ const selected=process.env.ATOMIC_CASE?CASES.filter(n=>n===process.env.ATOMIC_CA
 async function sentinel(p,name,create){return p.evaluate(async({name,create})=>{const db=await new Promise((yes,no)=>{const r=indexedDB.open(name,1);r.onupgradeneeded=()=>{if(create)r.result.createObjectStore('sentinel');else r.transaction.abort();};r.onsuccess=()=>yes(r.result);r.onerror=()=>no(r.error);});try{return await new Promise((yes,no)=>{const tx=db.transaction('sentinel',create?'readwrite':'readonly'),r=create?tx.objectStore('sentinel').put('outside-synthetic-namespace','value'):tx.objectStore('sentinel').get('value');tx.oncomplete=()=>yes(create?'outside-synthetic-namespace':r.result);tx.onabort=()=>no(tx.error);});}finally{db.close();}},{name,create});}
 try{
  assert.equal(sha,process.env.EXPECTED_SHA||sha);assert.equal(result.dirty,false,'commit-before-browser-evidence');
- const built=await build({configFile:false,logLevel:'error',build:{write:false,minify:false,lib:{entry:'e2e/fixtures/storage-atomic.ts',formats:['es']},rolldownOptions:{output:{codeSplitting:false}}}});const chunks=(Array.isArray(built)?built:[built]).flatMap(x=>x.output).filter(x=>x.type==='chunk');assert.equal(chunks.length,1);const code=chunks[0].code;result.bundleHash=hash(code);await writeFile(`${out}/fixture.mjs.txt`,code);
+ const built=await build({configFile:false,logLevel:'error',plugins:[sourceBuildProof('atomic-fixture')],build:{write:false,minify:false,lib:{entry:'e2e/fixtures/storage-atomic.ts',formats:['es']},rolldownOptions:{output:{codeSplitting:false}}}});const chunks=(Array.isArray(built)?built:[built]).flatMap(x=>x.output).filter(x=>x.type==='chunk');assert.equal(chunks.length,1);const code=chunks[0].code;result.bundleHash=hash(code);await writeFile(`${out}/fixture.mjs.txt`,code);
  server=createServer((req,res)=>{res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',req.url==='/fixture.mjs'?'text/javascript':'text/html');res.end(req.url==='/fixture.mjs'?code:'<!doctype html><title>Stage 3B-11 isolated HOLD</title><p>Synthetic IndexedDB research. No product data.</p>');});server.listen(0,'127.0.0.1');await once(server,'listening');result.origin=`http://127.0.0.1:${server.address().port}`;
  const engines=process.env.ATOMIC_ENGINE?[process.env.ATOMIC_ENGINE]:['chromium','webkit'];
  for(const engine of engines){
@@ -26,7 +28,7 @@ try{
   browser=await({chromium,webkit}[engine]).launch({headless:true,...(engine==='webkit'&&process.env.WEBKIT_EXECUTABLE_PATH?{executablePath:process.env.WEBKIT_EXECUTABLE_PATH}:{})});
   for(const name of selected){
    const row={engine,name,sha,tree:result.tree,run:result.run,attempt:result.attempt,browserVersion:browser.version(),namespace:`stage3b11-test-${randomUUID()}`,sentinelName:`outside-atomic-sentinel-${randomUUID()}`,status:'running',executionAllowed:false,writeAllowed:false,authority:'NOT_ESTABLISHED',classification:EXPECTATIONS[name].classification||'VERIFIED-isolated-contract',events:[],journal:[],results:[],errors:[],transitions:[],cleanup:{}};result.rows.push(row);await save();
-   context=await browser.newContext({serviceWorkers:'block'});await context.route('**/*',r=>new URL(r.request().url()).origin===result.origin?r.continue():r.abort());await context.tracing.start({screenshots:false,snapshots:true,sources:true});
+   context=await browser.newContext({serviceWorkers:'block'});const verifyBrowserSource=captureBrowserSource(context,{origin:result.origin,bundleHash:result.bundleHash,condition:engine+":"+name+":"+mutant});await context.route('**/*',r=>new URL(r.request().url()).origin===result.origin?r.continue():r.abort());await context.tracing.start({screenshots:false,snapshots:true,sources:true});
    const identities=new Map();let onCompare;
    await context.exposeBinding('recordAtomic',(source,event)=>{const i=identities.get(source.page);assert.ok(i);assert.equal(source.frame,source.page.mainFrame());assert.equal(event.pageId,i.pageId);i.boot??=event.boot;assert.equal(event.boot,i.boot);row.events.push({...event,pageOrdinal:i.ordinal});if(event.kind==='compare-success'&&onCompare){const cb=onCompare;onCompare=null;cb();}});
    async function install(p,id){identities.get(p).boot=null;await p.goto(result.origin);await p.evaluate(async c=>{const {startAtomic}=await import('/fixture.mjs');window.atomic=startAtomic(c,e=>window.recordAtomic(e));await window.atomic.flush();},{namespace:row.namespace,pageId:id,mutant});}
@@ -63,7 +65,7 @@ try{
     for(const p of [a,b,c])if(!p.isClosed())await p.evaluate(async()=>{await window.atomic.flush();await window.atomic.close();});
     row.cleanup.deleted=await a.evaluate(name=>new Promise((yes,no)=>{const r=indexedDB.deleteDatabase(name);r.onsuccess=()=>yes(true);r.onerror=()=>no(r.error);r.onblocked=()=>no(Error('cleanup-blocked'));}),row.namespace);
     row.cleanup.after=await a.evaluate(async()=>(await indexedDB.databases()).map(d=>d.name).sort());row.cleanup.sentinelAfter=await sentinel(a,row.sentinelName,false);row.cleanup.localAfter=await a.evaluate(()=>Object.fromEntries(Object.entries(localStorage).sort()));
-    row.trace={file:`${engine}-${name}.zip`};await context.tracing.stop({path:`${out}/${row.trace.file}`});row.trace.sha256=hash(await readFile(`${out}/${row.trace.file}`));await context.close();context=null;row.cleanup.contextClosed=true;row.status='PASS';
+    row.trace={file:`${engine}-${name}.zip`};await context.tracing.stop({path:`${out}/${row.trace.file}`});row.trace.sha256=hash(await readFile(`${out}/${row.trace.file}`));await verifyBrowserSource();await context.close();context=null;row.cleanup.contextClosed=true;row.status='PASS';
    });}catch(e){row.status='FAIL';row.error=String(e);if(context)await context.tracing.stop({path:`${out}/${engine}-${name}-failure.zip`}).catch(()=>{});throw e;}finally{const raw=JSON.stringify({events:row.events,journal:row.journal},null,2)+'\n';row.raw={file:`${engine}-${name}-raw.json`,sha256:hash(raw)};await writeFile(`${out}/${row.raw.file}`,raw);await save();}
    try{validateAtomicCase(row);}catch(e){row.status='FAIL';row.error=String(e);row.validationStack=e.stack;await save();throw e;}await save();
   }

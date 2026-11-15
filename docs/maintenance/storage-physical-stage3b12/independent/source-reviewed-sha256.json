@@ -1,0 +1,51 @@
+{
+  "scope": "Local follow-up source review; not final CI acceptance",
+  "recordedAt": "2026-11-15T12:14:23.952Z",
+  "files": [
+    {
+      "path": "e2e/source-proof.mjs",
+      "size": 9434,
+      "sha256": "b201992c37b8642f39116e4d038b503fb94528f8e08c4ed31ff970f38c0e4d4f"
+    },
+    {
+      "path": "e2e/source-load-register.mjs",
+      "size": 673,
+      "sha256": "ab475d32b88c160ce74e81e270331fba9ba512db88b64b625145e5ed020ee942"
+    },
+    {
+      "path": "e2e/source-load-hook.mjs",
+      "size": 283,
+      "sha256": "f7247a3c60bc4d8d68867d825f660eee9cc62744b6f143ef7859a6bbc5aff9f9"
+    },
+    {
+      "path": "e2e/source-load-write.mjs",
+      "size": 858,
+      "sha256": "77e8948d6625e23f287e0ea8b263d3c666d5f77e49621fd531980d847a875d30"
+    },
+    {
+      "path": "e2e/source-proof.node-test.mjs",
+      "size": 8646,
+      "sha256": "3e1c18274871cc06956cf2ccf2bc4ecaa58ee219a9bb2f4c50f7ba78c7fd1173"
+    },
+    {
+      "path": "e2e/source-build-proof.mjs",
+      "size": 6344,
+      "sha256": "691dcd1c8f1f2be2ed867ba9f21b443c74ff648bf746a8e448a6f1e1380a4f8a"
+    },
+    {
+      "path": "e2e/source-build-proof.node-test.mjs",
+      "size": 6417,
+      "sha256": "9329a28ee27e601cb028df39636c066cd42337a1f10aef11d8c990de96491af9"
+    },
+    {
+      "path": "e2e/source-browser-bytes.mjs",
+      "size": 4395,
+      "sha256": "c639cac370dabcc6b7f5faaab1bda22557e3c468decbfc43dc7d4cf67102958e"
+    },
+    {
+      "path": "e2e/source-browser-bytes.node-test.mjs",
+      "size": 4366,
+      "sha256": "1821bc6b81d8f8222292bc9bdd4c254b532a93cd45531b919e97eeff3732528b"
+    }
+  ]
+}

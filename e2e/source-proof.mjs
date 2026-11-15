@@ -5,6 +5,8 @@ import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync,mkdirSync,readdirSync,lstatSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {verifyBuildProof} from './source-build-proof.mjs';
+import {verifyBrowserProof} from './source-browser-bytes.mjs';
 export const sha256 = b => createHash('sha256').update(b).digest('hex');
 export const blobId = b => createHash('sha1').update(Buffer.from(`blob ${b.length}\0`)).update(b).digest('hex');
 const git = (...args) => execFileSync('git',args,{maxBuffer:64*1024*1024});
@@ -54,9 +56,10 @@ export function verifyArchive(root, expectedHead, expectedWorkflow, binding={}) 
   }
   assert.ok(binding.requiredLoads?.length,'required-entrypoints');
   for(const path of binding.requiredLoads)assert.ok(events.some(e=>e.path===path&&e.kind!=='preload'),`missing-executed-source:${path}`);
-  const allowed=new Set([...before.entries.map(e=>e.sha256),...events.map(e=>e.sha256)]);
+  const builds=binding.requireBuild?verifyBuildProof(root,{head:expectedHead,run:before.run,attempt:before.attempt,after:after.capturedAt,requiredInputs:binding.requiredBuildInputs}):null;
+  const allowed=new Set([...before.entries.map(e=>e.sha256),...events.map(e=>e.sha256),...(builds?.hashes||[])]);
   for(const name of readdirSync(`${root}/bytes`))assert.ok(allowed.has(name.replace(/\.txt$/,'')),'extra-source-bytes');
-  return {status:'PASS',head:expectedHead,tree:before.tree,files:expected.length,loads:events.length,workflow:before.workflow,limits:['Node ESM load results and CJS compilation captured; native binaries, browser internals and filesystem reads are not loader events.','Git snapshot covers selected first-party source and fixture bytes. Package load bytes are captured but not Git-owned.','No claim of physical durability or tamper-proof CI.']};
+  return {status:'PASS',head:expectedHead,tree:before.tree,files:expected.length,loads:events.length,workflow:before.workflow,builds:builds?{status:builds.status,count:builds.builds,inputs:builds.inputs.length,outputs:builds.outputs.length}:null,limits:['Node ESM load results and CJS compilation captured; native binaries, browser internals and arbitrary filesystem reads are not loader events.','Git snapshot covers selected first-party source and fixture bytes. Package load bytes are captured but not Git-owned.','No claim of physical durability or tamper-proof CI.']};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const phase=process.argv[2],root=process.env.SOURCE_PROOF_DIR||'gui-evidence/source-proof';mkdirSync(root,{recursive:true});
@@ -72,6 +75,20 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  }else if(phase==='after'){
   const before=JSON.parse(readFileSync(`${root}/before.json`));
   writeFileSync(`${root}/after.json`,JSON.stringify({...before,head,tree:str('rev-parse','HEAD^{tree}'),capturedAt:new Date().toISOString(),entries:inventory(head,true)},null,2)+'\n');
-  const result=verifyArchive(root,process.env.EXPECTED_SHA,workflowPath,{workflowSha:process.env.GITHUB_WORKFLOW_SHA,run:process.env.GITHUB_RUN_ID||'local',attempt:process.env.GITHUB_RUN_ATTEMPT||'local',requiredLoads:JSON.parse(process.env.SOURCE_REQUIRED_LOADS||'[]')});writeFileSync(`${root}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
+  const binding={workflowSha:process.env.GITHUB_WORKFLOW_SHA,run:process.env.GITHUB_RUN_ID||'local',attempt:process.env.GITHUB_RUN_ATTEMPT||'local',requiredLoads:JSON.parse(process.env.SOURCE_REQUIRED_LOADS||'[]'),requireBuild:process.env.SOURCE_REQUIRE_BUILD==='true',requiredBuildInputs:JSON.parse(process.env.SOURCE_BUILD_INPUTS||'[]')};
+  const result=verifyArchive(root,process.env.EXPECTED_SHA,workflowPath,binding);
+  if(process.env.SOURCE_REQUIRE_BROWSER==='true'){
+   const builds=verifyBuildProof(root,{...binding,head:process.env.EXPECTED_SHA});
+   const after=JSON.parse(readFileSync(`${root}/after.json`));
+   let expectedConditions;
+   if(workflowPath.endsWith('/storage-physical.yml')){const {CASES}=await import('./physical/audit.mjs');expectedConditions=['chromium','webkit'].flatMap(engine=>CASES.map(name=>engine+':'+name));}
+   else if(workflowPath.endsWith('/storage-atomic.yml')){
+    const {CASES}=await import('./storage-atomic-evidence.mjs');
+    const faults=[['compare-outside','B-after-observation'],['accept-stale','B-after-observation'],['missing-store','A-same-token'],['abort-success','E-abort'],['early-success','A-same-token'],['ignore-receipt','S-readback-mismatch'],['old-session','I-late-response'],['no-incarnation','K-incarnation-reset']];
+    expectedConditions=['chromium','webkit'].flatMap(engine=>[...CASES.map(name=>engine+':'+name+':none'),...faults.map(([mutant,name])=>engine+':'+name+':'+mutant)]);
+   }else expectedConditions=[process.env.E2E_SCENARIO];
+   result.browser=await verifyBrowserProof(root,{head:process.env.EXPECTED_SHA,run:binding.run,attempt:binding.attempt,before:before.capturedAt,after:after.capturedAt,sources:before.entries,expectedConditions},builds.outputs);
+  }
+  writeFileSync(`${root}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
  }else throw Error('phase-required');
 }
