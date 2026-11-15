@@ -1,5 +1,10 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-15 (JST): Stage 3B-11 negative-control winner binding
+- Stage3B12 run43658397718 at017b succeeded20 cases/21 evidence controls. Existing Stage3B11 run43658397633 passed56 cases but its negative audit rejected Chromium early-success evidence: update-b won, while helper required update-a. Original runner and independent validator both correctly rejected missing readback. This was helper over-rejection, not product success or an undetected semantic fault.
+- Preserve both actual engine diagnostics. Bind exactly one VERIFIED update-a/update-b call and its tx/page/boot/operation rather than assuming a scheduling winner; apply same binding to scope mutation. Zero/multiple/foreign/missing evidence stays rejected. No runner, product, expectation, timeout or browser skip changes. Same captured Chromium RED before/GREEN after; WebKit retained. Independent review and next exact-HEAD CI are separate requirements.
+- Original physical/atomic ZIPs are retained in Library with API digest/CRC verification; final evidence and GUI acceptance remain pending. Draft/HOLD and physical NOT_TESTED unchanged. Refs #146/#147.
+
 ## 2026-11-15 (JST): Stage 3B-12 CI discovery failure correction
 - PR #147 / Issue #146, HEAD613c run43653999264 attempt1: native Chromium/WebKit 10 cases each completed; evidence controls stopped before mutations because `physical-browser.log` and `physical-browser-timing.json` were counted as suite directories (3 != 1). Original failure ZIP14138556486 retained; SHA256 fc9c8e9a34869a7b663a6734a173b8f64903b6d337a596a8feb16270f346ebbd, 2,038,876 bytes, CRC60 verified.
 - Correct directory discovery using Dirent.isDirectory; retain exactly-one constraint and reject zero/multiple/symlink-only candidates. Same CI sibling-file counterexample RED before correction, GREEN after. No case/timeout/expected outcome relaxed; no product changes. New exact-HEAD CI and artifact audit remain pending and must not inherit613c successes.

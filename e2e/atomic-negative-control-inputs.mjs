@@ -1,11 +1,18 @@
 import assert from 'node:assert/strict';
 import { validateAtomicCase } from './storage-atomic-evidence.mjs';
+function verifiedWriter(row) {
+  const calls = row.journal.filter(j => ['update-a', 'update-b'].includes(j.label) && j.result?.status === 'VERIFIED');
+  assert.equal(calls.length, 1, 'exactly-one-verified-writer');
+  const call = calls[0];
+  assert.ok(call.args[0]?.boot && call.args[0]?.explicitOperationId && call.pageId && call.result.txId, 'verified-writer-binding');
+  return call;
+}
 // Mutate the VERIFIED main transaction, identified by the host result and native
 // page/boot/operation binding. The earlier reservation shares operationId.
 export function narrowMainAtomicScope(evidence) {
   const row = evidence.rows.find(r => r.name === 'A-same-token');
   assert.ok(row, 'scope-control-normal-case-required');
-  const call = row.journal.find(j => j.label === 'update-a');
+  const call = verifiedWriter(row);
   assert.equal(call.result.status, 'VERIFIED');
   const request = call.args[0];
   const matches = row.events.filter(e => e.kind === 'tx-start' && e.txId === call.result.txId
@@ -28,9 +35,9 @@ export function validateAtomicMutantFailure(row, originalError, mutant, reason) 
   assert.match(originalError, new RegExp(reason), 'original-semantic-failure-reason');
   assert.match(error, new RegExp(reason), 'independent-semantic-failure-reason');
   if (mutant === 'abort-success' || mutant === 'early-success') {
-    const call = row.journal.find(j => j.label === 'update-a');
+    const call = verifiedWriter(row);
     assert.equal(call.result.status, 'VERIFIED');
-    const own = row.events.filter(e => e.txId === call.result.txId && e.boot === call.args[0].boot && e.pageId === call.pageId);
+    const own = row.events.filter(e => e.txId === call.result.txId && e.boot === call.args[0].boot && e.pageId === call.pageId && e.operationId === call.args[0].explicitOperationId);
     assert.equal(own.filter(e => e.kind === 'update-result' && e.result.status === 'VERIFIED').length, 1);
     if (mutant === 'abort-success') {
       assert.equal(own.filter(e => e.kind === 'tx-abort').length, 1);
