@@ -1,0 +1,2808 @@
+{
+  "head": "fa8cc7d4cc492322cf7fd78553412a11261c76c3",
+  "checkedAtUTC": "2026-11-15T12:52:56.932373+00:00",
+  "runStates": [
+    {
+      "id": 43714772002,
+      "name": "Stage 3B-2 storage architecture PoC",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771970,
+      "name": "Stage 3B-1 isolated storage safety",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771979,
+      "name": "Stage 3B synthetic recovery races",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771965,
+      "name": "Stage 3B-6 read-only recovery reconciliation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771952,
+      "name": "Stage 3B-4 isolated IndexedDB acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714772014,
+      "name": "Stage 3B-5 isolated migration and branch rescue",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771946,
+      "name": "Stage 3B-11 isolated atomic compare/update",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714772110,
+      "name": "Stage 3B-3 storage facade acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771945,
+      "name": "Restore plan acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714772130,
+      "name": "Stage 3B synthetic decision lifecycle",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714772153,
+      "name": "Selective restore Stage 3A acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714772181,
+      "name": "Stage 3B real-browser multi-tab",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714772112,
+      "name": "Stage 3B-12 isolated physical-storage observations",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43714771995,
+      "name": "PR 113 WebKit frame observation pair",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 43714771991,
+      "name": "PR GUI regression",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "count": 27,
+  "totalBytes": 402798009,
+  "artifacts": [
+    {
+      "artifactId": 14162400627,
+      "runId": 43714772002,
+      "attempt": 1,
+      "name": "pr-storage-architecture-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162400627.zip",
+      "size": 132190,
+      "sha256": "9236b8d275bf3694c01983c671c1e98752c4a51d315bc3a9d2ccf5d21ff0e38b",
+      "githubDigest": "sha256:9236b8d275bf3694c01983c671c1e98752c4a51d315bc3a9d2ccf5d21ff0e38b",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 15
+    },
+    {
+      "artifactId": 14162181252,
+      "runId": 43714771970,
+      "attempt": 1,
+      "name": "pr-storage-safety-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162181252.zip",
+      "size": 1766922,
+      "sha256": "f1739aa358eaa82afbe60524e1ec5f3f619156d02b9bf0ad21693d1b62121b4f",
+      "githubDigest": "sha256:f1739aa358eaa82afbe60524e1ec5f3f619156d02b9bf0ad21693d1b62121b4f",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 17
+    },
+    {
+      "artifactId": 14162086524,
+      "runId": 43714771979,
+      "attempt": 1,
+      "name": "pr-storage-recovery-races-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162086524.zip",
+      "size": 19375308,
+      "sha256": "a3ccec6658b45de966c9cbacef1a0dbb263f26dc64cbe1ddfbf591ac5fbcc0d6",
+      "githubDigest": "sha256:a3ccec6658b45de966c9cbacef1a0dbb263f26dc64cbe1ddfbf591ac5fbcc0d6",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 28
+    },
+    {
+      "artifactId": 14162380913,
+      "runId": 43714771965,
+      "attempt": 1,
+      "name": "pr-storage-reconciliation-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162380913.zip",
+      "size": 13178790,
+      "sha256": "9d6a8b28a3418030e438c7d2abaaebd40fff543ab717ffcc2982965602e125be",
+      "githubDigest": "sha256:9d6a8b28a3418030e438c7d2abaaebd40fff543ab717ffcc2982965602e125be",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 73
+    },
+    {
+      "artifactId": 14162226313,
+      "runId": 43714771952,
+      "attempt": 1,
+      "name": "pr-storage-idb-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162226313.zip",
+      "size": 3194124,
+      "sha256": "e37baf0acd160b1ab6bdc63c633363964a3cf0a4ff035f1b6f0f55233f1845b0",
+      "githubDigest": "sha256:e37baf0acd160b1ab6bdc63c633363964a3cf0a4ff035f1b6f0f55233f1845b0",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 29
+    },
+    {
+      "artifactId": 14162116509,
+      "runId": 43714772014,
+      "attempt": 1,
+      "name": "pr-storage-migration-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162116509.zip",
+      "size": 6055188,
+      "sha256": "316586080924f2733bca8926d99ce54ef8a17b4cfbf07996d7eed5cc14e4ee28",
+      "githubDigest": "sha256:316586080924f2733bca8926d99ce54ef8a17b4cfbf07996d7eed5cc14e4ee28",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 21
+    },
+    {
+      "artifactId": 14161937034,
+      "runId": 43714771946,
+      "attempt": 1,
+      "name": "pr-storage-atomic-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14161937034.zip",
+      "size": 26488720,
+      "sha256": "bfcc18c1357a4102a1f263107c74f71f064533a1af2bb570f39bdbf782f54871",
+      "githubDigest": "sha256:bfcc18c1357a4102a1f263107c74f71f064533a1af2bb570f39bdbf782f54871",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 8497
+    },
+    {
+      "artifactId": 14162865063,
+      "runId": 43714772110,
+      "attempt": 1,
+      "name": "pr-storage-facade-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162865063.zip",
+      "size": 7347755,
+      "sha256": "e1d3402b3f42114d1cb50096a82eb1ef24448f8a84c8e4168c3c59ed3c89b768",
+      "githubDigest": "sha256:e1d3402b3f42114d1cb50096a82eb1ef24448f8a84c8e4168c3c59ed3c89b768",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 75
+    },
+    {
+      "artifactId": 14162017089,
+      "runId": 43714771945,
+      "attempt": 1,
+      "name": "pr-selective-restore-plan-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162017089.zip",
+      "size": 12967896,
+      "sha256": "521a3b3f3a3f2e5134e57f63acb7b1ad1a6acc76dc6b383d7e022f0dd2d73088",
+      "githubDigest": "sha256:521a3b3f3a3f2e5134e57f63acb7b1ad1a6acc76dc6b383d7e022f0dd2d73088",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 107
+    },
+    {
+      "artifactId": 14162241552,
+      "runId": 43714772130,
+      "attempt": 1,
+      "name": "pr-storage-decision-lifecycle-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162241552.zip",
+      "size": 4345143,
+      "sha256": "0ab4938d63d25dd6ea05c587299ed7cf9bab0e907077286ee4c2769383b89096",
+      "githubDigest": "sha256:0ab4938d63d25dd6ea05c587299ed7cf9bab0e907077286ee4c2769383b89096",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 34
+    },
+    {
+      "artifactId": 14161219764,
+      "runId": 43714772153,
+      "attempt": 1,
+      "name": "pr-selective-safety-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14161219764.zip",
+      "size": 4377426,
+      "sha256": "545483858a69854a18b60e97bab75c79a932424485a52068dc3f12ecda508c87",
+      "githubDigest": "sha256:545483858a69854a18b60e97bab75c79a932424485a52068dc3f12ecda508c87",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43
+    },
+    {
+      "artifactId": 14162616011,
+      "runId": 43714772181,
+      "attempt": 1,
+      "name": "pr-storage-multitab-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162616011.zip",
+      "size": 9137475,
+      "sha256": "b232ed82744ebfd5bec04621d3fb1de29df1b17b67f751e1c9f0fbba06e78e06",
+      "githubDigest": "sha256:b232ed82744ebfd5bec04621d3fb1de29df1b17b67f751e1c9f0fbba06e78e06",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 89
+    },
+    {
+      "artifactId": 14161848621,
+      "runId": 43714772112,
+      "attempt": 1,
+      "name": "pr-storage-physical-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14161848621.zip",
+      "size": 27676550,
+      "sha256": "5252b00d657fabdcd49308a6e8305d92310f46ff7891580ccb5577b3111e19f0",
+      "githubDigest": "sha256:5252b00d657fabdcd49308a6e8305d92310f46ff7891580ccb5577b3111e19f0",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1448
+    },
+    {
+      "artifactId": 14162710378,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "pr-recovery-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162710378.zip",
+      "size": 4547661,
+      "sha256": "a48bc09b570d963c420be771c06f786a13391a751c3ca408774dc18d1ad02439",
+      "githubDigest": "sha256:a48bc09b570d963c420be771c06f786a13391a751c3ca408774dc18d1ad02439",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43
+    },
+    {
+      "artifactId": 14162690892,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1-webkit-mobile-390px",
+      "file": "14162690892.zip",
+      "size": 35944532,
+      "sha256": "acc4479c7c3d07da2d43f9806dadd25302def9c5039d51a1673d586a93be6d5d",
+      "githubDigest": "sha256:acc4479c7c3d07da2d43f9806dadd25302def9c5039d51a1673d586a93be6d5d",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2405
+    },
+    {
+      "artifactId": 14162685327,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "pr-checks-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162685327.zip",
+      "size": 44507288,
+      "sha256": "196771d9d1b1636ddfb404125192428f368b750f58fe99500259d5d30a199742",
+      "githubDigest": "sha256:196771d9d1b1636ddfb404125192428f368b750f58fe99500259d5d30a199742",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 5469
+    },
+    {
+      "artifactId": 14162670034,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "pr-restore-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162670034.zip",
+      "size": 1842128,
+      "sha256": "12f7e4292371407e658c7cac010e71c91f5d0e191954f0bc47a8f0a85ff0cff8",
+      "githubDigest": "sha256:12f7e4292371407e658c7cac010e71c91f5d0e191954f0bc47a8f0a85ff0cff8",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 27
+    },
+    {
+      "artifactId": 14162527357,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-independent-audit-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162527357.zip",
+      "size": 784669,
+      "sha256": "4b97599d53660bf5d722ff9602a100acd2776cde05d356837132836ad0193ddf",
+      "githubDigest": "sha256:4b97599d53660bf5d722ff9602a100acd2776cde05d356837132836ad0193ddf",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1
+    },
+    {
+      "artifactId": 14162385376,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "pr-backup-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162385376.zip",
+      "size": 1690647,
+      "sha256": "72845b665aa04f6a18ac9fa656a416159e93405fab247c1e6f364532cd0551e1",
+      "githubDigest": "sha256:72845b665aa04f6a18ac9fa656a416159e93405fab247c1e6f364532cd0551e1",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 27
+    },
+    {
+      "artifactId": 14162346589,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-aggregate-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162346589.zip",
+      "size": 510,
+      "sha256": "264248c559810dd6dea8d633749f712438ad67233334991b150d7441af0269d2",
+      "githubDigest": "sha256:264248c559810dd6dea8d633749f712438ad67233334991b150d7441af0269d2",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1
+    },
+    {
+      "artifactId": 14162126742,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1-chromium-desktop-1365px",
+      "file": "14162126742.zip",
+      "size": 29389062,
+      "sha256": "95203811cf3c2481d9ec675f35b63616c4673f6d1725cb8c716ab6cefefd793f",
+      "githubDigest": "sha256:95203811cf3c2481d9ec675f35b63616c4673f6d1725cb8c716ab6cefefd793f",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2404
+    },
+    {
+      "artifactId": 14162111514,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "pr-selection-preview-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14162111514.zip",
+      "size": 3719251,
+      "sha256": "ea6cf5d11421f10e3ac7a5472602f7490d9da2ca967c870309c0a11526aeda0f",
+      "githubDigest": "sha256:ea6cf5d11421f10e3ac7a5472602f7490d9da2ca967c870309c0a11526aeda0f",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 35
+    },
+    {
+      "artifactId": 14162077442,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1-chromium-narrow-390px",
+      "file": "14162077442.zip",
+      "size": 27912893,
+      "sha256": "bba3ec2a861c4edf1ebb912c71c23d16417b4821ac399c5716aa10428bb45787",
+      "githubDigest": "sha256:bba3ec2a861c4edf1ebb912c71c23d16417b4821ac399c5716aa10428bb45787",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2404
+    },
+    {
+      "artifactId": 14162041322,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1-chromium-mobile-390px",
+      "file": "14162041322.zip",
+      "size": 34583850,
+      "sha256": "c5c3b2bd83857a2ed0ccfbf9ee2dcc1696b4fd14fdc0cd9ec49265aef0a0fb33",
+      "githubDigest": "sha256:c5c3b2bd83857a2ed0ccfbf9ee2dcc1696b4fd14fdc0cd9ec49265aef0a0fb33",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2404
+    },
+    {
+      "artifactId": 14162027705,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1-chromium-mobile-375px",
+      "file": "14162027705.zip",
+      "size": 30579536,
+      "sha256": "aba3965433e3cd8160972a58c83ca97fda815f6a6145ab6646873d08737bf08e",
+      "githubDigest": "sha256:aba3965433e3cd8160972a58c83ca97fda815f6a6145ab6646873d08737bf08e",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2404
+    },
+    {
+      "artifactId": 14161957762,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "formal-gui-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1-webkit-mobile-375px",
+      "file": "14161957762.zip",
+      "size": 31262464,
+      "sha256": "629603bcf6937b9168f46f4ae95b64bf09257b1748e7a1fb36a74eb7442deee9",
+      "githubDigest": "sha256:629603bcf6937b9168f46f4ae95b64bf09257b1748e7a1fb36a74eb7442deee9",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2405
+    },
+    {
+      "artifactId": 14161911469,
+      "runId": 43714771991,
+      "attempt": 1,
+      "name": "pr-quote-overflow-fa8cc7d4cc492322cf7fd78553412a11261c76c3-1",
+      "file": "14161911469.zip",
+      "size": 19990031,
+      "sha256": "7f9255e7cb0c0ce0d540236a1fa4f5a3f80fd56a9b8ee8fbc917de124078fe01",
+      "githubDigest": "sha256:7f9255e7cb0c0ce0d540236a1fa4f5a3f80fd56a9b8ee8fbc917de124078fe01",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 65
+    }
+  ],
+  "origin": "GitHub Actions ZIPs preserved unchanged locally; Library storage/readback NOT_PERFORMED",
+  "workflowConclusions": {
+    "success": 14,
+    "conditionalSkipped": 1,
+    "failure": 0
+  },
+  "contentInspection": {
+    "head": "fa8cc7d4cc492322cf7fd78553412a11261c76c3",
+    "checkedAtUTC": "2026-11-15T12:52:26.129745+00:00",
+    "status": "PASS for available original bytes; runtime source proof separately reviewed",
+    "counts": {
+      "inventoryEntries": 30530,
+      "manifestEntries": 51,
+      "nestedZips": 142,
+      "nestedEntries": 1024,
+      "png": 395,
+      "physicalSources": 9,
+      "HARdeliveredBundles": 26,
+      "physicalTraceConditions": 20
+    },
+    "formalGUI": [
+      {
+        "artifactId": 14162690892,
+        "condition": "webkit-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162126742,
+        "condition": "chromium-desktop-1365px",
+        "checks": 188,
+        "geometry": 100,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162077442,
+        "condition": "chromium-narrow-390px",
+        "checks": 187,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162041322,
+        "condition": "chromium-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162027705,
+        "condition": "chromium-mobile-375px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14161957762,
+        "condition": "webkit-mobile-375px",
+        "checks": 189,
+        "geometry": 100,
+        "png": 22,
+        "status": "passed"
+      }
+    ],
+    "physical": {
+      "artifactId": 14161848621,
+      "rows": 20,
+      "sourcePaths": [
+        "e2e/physical/run.mjs",
+        "e2e/physical/audit.mjs",
+        "e2e/physical/server.mjs",
+        "e2e/physical/manual.html",
+        "e2e/physical/negative.mjs",
+        "e2e/physical/files.mjs",
+        "e2e/fixtures/storage-atomic.ts",
+        "e2e/fixtures/storage-idb.ts",
+        "docs/maintenance/storage-physical-stage3b12/PLAN.md"
+      ],
+      "traceConditions": "20 browser/namespace bindings PASS",
+      "additionalRuntimeSourceProof": "Inspected separately by source_independent; this content receipt checks original physical source/HAR/trace fields"
+    },
+    "perArtifact": [
+      {
+        "artifactId": 14162400627,
+        "inventorySizeEntries": 14,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162181252,
+        "inventorySizeEntries": 16,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162086524,
+        "inventorySizeEntries": 27,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 6
+      },
+      {
+        "artifactId": 14162380913,
+        "inventorySizeEntries": 72,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162226313,
+        "inventorySizeEntries": 15,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162116509,
+        "inventorySizeEntries": 20,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161937034,
+        "inventorySizeEntries": 8496,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 72
+      },
+      {
+        "artifactId": 14162865063,
+        "inventorySizeEntries": 74,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162017089,
+        "inventorySizeEntries": 106,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162241552,
+        "inventorySizeEntries": 33,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161219764,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162616011,
+        "inventorySizeEntries": 88,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 34
+      },
+      {
+        "artifactId": 14161848621,
+        "inventorySizeEntries": 1447,
+        "manifestHashEntries": 51,
+        "nestedZipsCRC": 20
+      },
+      {
+        "artifactId": 14162710378,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162690892,
+        "inventorySizeEntries": 2404,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162685327,
+        "inventorySizeEntries": 5468,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162670034,
+        "inventorySizeEntries": 26,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162527357,
+        "inventorySizeEntries": 0,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162385376,
+        "inventorySizeEntries": 26,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162346589,
+        "inventorySizeEntries": 0,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162126742,
+        "inventorySizeEntries": 2403,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162111514,
+        "inventorySizeEntries": 34,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162077442,
+        "inventorySizeEntries": 2403,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162041322,
+        "inventorySizeEntries": 2403,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14162027705,
+        "inventorySizeEntries": 2403,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161957762,
+        "inventorySizeEntries": 2404,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161911469,
+        "inventorySizeEntries": 64,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 10
+      }
+    ],
+    "limits": [
+      "No Library retrieval/readback",
+      "This content inspector delegates new runtime source/load/build/browser attribution to source_independent",
+      "No new browser run; original evidence replay/content inspection"
+    ]
+  },
+  "formalInspection": {
+    "head": "fa8cc7d4cc492322cf7fd78553412a11261c76c3",
+    "checkedAtUTC": "2026-11-15T12:52:27.718612+00:00",
+    "status": "PASS",
+    "totals": {
+      "conditions": 6,
+      "checks": 1128,
+      "geometry": 592,
+      "pngs": 132
+    },
+    "conditions": [
+      {
+        "artifactId": 14162690892,
+        "condition": "webkit-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "pngs": [
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-audit-roundtrip-target.png",
+            "size": 360962,
+            "sha256": "9e96b0cf9095b9431584609101e74a9022b16537937e875ce95a27e8b96bae0d",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-basic-math-domain-error.png",
+            "size": 1461934,
+            "sha256": "255154e59b152846c17843ddecbb2a2e996684bc3ecf4c25043328b7cfd9a50e",
+            "width": 1170,
+            "height": 25443,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-comparison-material-preview.png",
+            "size": 307654,
+            "sha256": "fb294de7ddbed4b0000d64c6a42c64b46a233bb1e1ff9145ddb7395d367c4b92",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-comparison-source-detail.png",
+            "size": 297461,
+            "sha256": "eaec9b510104a5842bda81ff6948569129844742f7066f930bdd240e08fc3f47",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-default-id-unrelated-rollback.png",
+            "size": 462327,
+            "sha256": "772aeb1ec6cd1876c87f72c0d57c7818a35d133bda47b7782a015def54e301c1",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-diagnostics-dark-enlarged.png",
+            "size": 315636,
+            "sha256": "833208e09aacdc159f5e370718cce7f57f740b5a5b0f9a10779a62d78c145f5e",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-diagnostics-independent-causes.png",
+            "size": 377754,
+            "sha256": "7960edf7cc2293dca559503ef1859da53650b65453f402f7efc67a2c09e7224e",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-formula-library-controls.png",
+            "size": 494782,
+            "sha256": "743a1a9bdf2839c7d17f955dd728ab403bd2c96e0252888634fbb8cef648713a",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-graph-dark-enlarged-selection.png",
+            "size": 328106,
+            "sha256": "383a649d3846e248345db8916a47cffdf8a8735a958f37dd86fa516a37d380e7",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-graph-error-detail.png",
+            "size": 385845,
+            "sha256": "2dff1bc6d540a6af008e2265fa30f95ae1afeb2158d134411e515c2a360bd781",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-graph-limit-fallback.png",
+            "size": 523653,
+            "sha256": "3290761eec52d50305bd8ecc851c8001859778d6df0e3bbc85c5536ec16ffbc5",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-graph-selected-card.png",
+            "size": 334677,
+            "sha256": "c9efab0a3d2e70e5accefbfcc811bdf7cfa0db56926189fe8402df271f2f6a52",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-graph-trial-comparison.png",
+            "size": 333325,
+            "sha256": "7eacc00e842aef70d7c16df0c01c7c8755f3e4cf709b7aa42e10e4ecda1cc5dc",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-guide.png",
+            "size": 446068,
+            "sha256": "da65cc76f30119cbfa68f6009d1edd35c140f9f8e925f6085976e49058352eeb",
+            "width": 1170,
+            "height": 4575,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-header.png",
+            "size": 403105,
+            "sha256": "1cd6d299b6674a5448f4bad6419298db16e28d36d23992850a2e8ab571d90d57",
+            "width": 1170,
+            "height": 4575,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-normal-memos-after-repair.png",
+            "size": 405042,
+            "sha256": "9ccdcf1834373661c5ccd90b9a067493321fe6731fbdf2e494b3dd3d5e01faf5",
+            "width": 1170,
+            "height": 5121,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-protected-dark-large-text.png",
+            "size": 1052878,
+            "sha256": "b2551b61c33385931297ebd6d2e2424aac99aae7d51bd1c4111ccb3315556bcf",
+            "width": 1170,
+            "height": 8547,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-reference-dark-enlarged-picker.png",
+            "size": 498626,
+            "sha256": "19e0f0933fec6d7867d03e62d0bf075673df0e18f6d4d81639b2542ddd36506f",
+            "width": 1170,
+            "height": 5976,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-trial-dark-enlarged-delta.png",
+            "size": 232199,
+            "sha256": "eb38cfa11e5577623f75a6fa769a0a8c40a1d6a6626772b68fa42e5e171aec36",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-trial-failure.png",
+            "size": 381294,
+            "sha256": "93d86cdbb41de425e8f85ec5242d12fb1e4b52b0906558e0a352ad4b33242c7a",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-trial-success.png",
+            "size": 400238,
+            "sha256": "8ad2d8e080cbae633d4fc9b728340a0d4041b835e4fca32df6af69cff37ea084",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-390px/webkit-mobile-390px-variables-dark-result-stress.png",
+            "size": 805479,
+            "sha256": "9724ecccd7813f9ffd2fccb63b02efca4405a2be8df7fd043e23a1ef20dc66bb",
+            "width": 1170,
+            "height": 10806,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          }
+        ],
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162126742,
+        "condition": "chromium-desktop-1365px",
+        "checks": 188,
+        "geometry": 100,
+        "pngs": [
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-audit-roundtrip-target.png",
+            "size": 191448,
+            "sha256": "5024505be7d6d4ece5db3b02cb752a7948d8d47fae5cdf0c957705150c5ac88e",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-basic-math-domain-error.png",
+            "size": 164288,
+            "sha256": "db4418c023ce95fadafac7e92e57362ab8c8f88a543a2fda2aff00fb20b1c964",
+            "width": 1365,
+            "height": 1243,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-comparison-material-preview.png",
+            "size": 187921,
+            "sha256": "8d83ffcd0418a9f052ce7ce2bd378bd368c4ee8b38624ae9287ef158bc852c12",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-comparison-source-detail.png",
+            "size": 193726,
+            "sha256": "f4e87f1aae70694f1b263175bb03bd91fbd82b749e62932e78a7ca3758e2feff",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-default-id-unrelated-rollback.png",
+            "size": 178948,
+            "sha256": "1dc3f2d6ec8d92749f8e899d52bb768b7dc37e460649aee6aaa4f423a826d939",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-diagnostics-dark-enlarged.png",
+            "size": 185946,
+            "sha256": "cbb8e01e9df073ff899ae430d9d6216ea1bfe41c71317ff80bf6683cdc632716",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-diagnostics-independent-causes.png",
+            "size": 166067,
+            "sha256": "1591cc74e2ebbf91624f90e71166da7aaf4d8b45d2063763c42289ab6ab91ce6",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-formula-library-controls.png",
+            "size": 224634,
+            "sha256": "6dceb9101de4aae93bfd730a84a7a8f5fee8529b9ab4d758805b945c36f491b9",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-graph-dark-enlarged-selection.png",
+            "size": 168637,
+            "sha256": "bc2f303bba2c4e7ba01b074ea412fff6044aa05d3f155502f5b71cf99cfdd6f4",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-graph-error-detail.png",
+            "size": 170308,
+            "sha256": "6ca8a45dcd85b094b70b69d7ae478e0264bcc8ebffccbce1ac82959f3c2cb0d4",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-graph-limit-fallback.png",
+            "size": 295285,
+            "sha256": "beb15e706835cdf548f434c1a323052f0d55a0af786c0915d89a40d702e3ab30",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-graph-selected-card.png",
+            "size": 141678,
+            "sha256": "f1483e5b3c02fa06d045d5f565785df8a46cef05a7ad1e304733e65cda614dc2",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-graph-trial-comparison.png",
+            "size": 227275,
+            "sha256": "05ebc918c19161c81710e95e1b4ea1001a2ce636352e4db89fe1acfbf883d6ac",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-guide.png",
+            "size": 167878,
+            "sha256": "a6294a8a64dc8e58d18253511006974ecd06950416b8b6f957f0eaa2bf66962f",
+            "width": 1365,
+            "height": 1153,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-header.png",
+            "size": 131919,
+            "sha256": "25d9cb3a7290ae8b3f2e7f9b31df119f658451ffd380025b44b1cb7fed3895f7",
+            "width": 1365,
+            "height": 1152,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-normal-memos-after-repair.png",
+            "size": 134471,
+            "sha256": "3bee728477dbf3447613c7a5e90dc3887b72a141aa53abaf5a33908ecad4d036",
+            "width": 1365,
+            "height": 1144,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-protected-dark-large-text.png",
+            "size": 309608,
+            "sha256": "e93deb1d90d4d1980eb50447ab6ebdc8a12276aa4d582b41d4c61ef0825cfcd5",
+            "width": 1365,
+            "height": 2235,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-reference-dark-enlarged-picker.png",
+            "size": 182233,
+            "sha256": "67c835af4b79b2266600c3b8dfe307edca65ee7611cffaba20259d612da9396b",
+            "width": 1365,
+            "height": 1248,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-trial-dark-enlarged-delta.png",
+            "size": 162375,
+            "sha256": "f0754e2723c5adac62c246b19f84a98d84595860640894d7d568cb5a948a3c7d",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-trial-failure.png",
+            "size": 165294,
+            "sha256": "2e7b5362893f3e038a75cd34528935d018e49de51a307caf2024e8b33dd43b15",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-trial-success.png",
+            "size": 174460,
+            "sha256": "ce56b6cbe2b02a4163b5d0185acfb8a41106fadb25de34ec07344045217ce4a9",
+            "width": 1365,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-desktop-1365px/chromium-desktop-1365px-variables-dark-result-stress.png",
+            "size": 164107,
+            "sha256": "9bdf7bbbc01e2fed27a75b59b7aed6aeb0a9c346cdbcfac1a2c83392bbd230a3",
+            "width": 1365,
+            "height": 1153,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          }
+        ],
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162077442,
+        "condition": "chromium-narrow-390px",
+        "checks": 187,
+        "geometry": 98,
+        "pngs": [
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-audit-roundtrip-target.png",
+            "size": 98601,
+            "sha256": "c7b58deadea94ee71fb129b43acdab53146fdba5152ccad1014b6ba9d5a76c82",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-basic-math-domain-error.png",
+            "size": 316038,
+            "sha256": "5d0a1017434e4f00948df2b6c7b37717a5940bba18df192946f404721d63ca21",
+            "width": 390,
+            "height": 8664,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-comparison-material-preview.png",
+            "size": 93154,
+            "sha256": "2bb683b9a8047742d5a10f8e65d1a6263b534123330df0bbe06e1be5b63d6c0f",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-comparison-source-detail.png",
+            "size": 102035,
+            "sha256": "1c9306be1b40da6e3294ff36e865ffbfbcad17fd202659d191aaca1ff2c86ea1",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-default-id-unrelated-rollback.png",
+            "size": 96559,
+            "sha256": "0661dd9806f67868d7c9b5a353b9168b0f1993a4ad54c7622c8c919beffddfee",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-diagnostics-dark-enlarged.png",
+            "size": 86755,
+            "sha256": "fc26318392016447dfe4a8197b3f982acdb9c471c0db6b8a825774dbd2ae2b7e",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-diagnostics-independent-causes.png",
+            "size": 86635,
+            "sha256": "ecde30bbdf18937d51b79320762936ef85c758c418652afc08cd419757312038",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-formula-library-controls.png",
+            "size": 103662,
+            "sha256": "a8badb5e467b5c67f18c3722bdacb546e4c1386ea96c9df6ca19c2bf9f619a61",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-graph-dark-enlarged-selection.png",
+            "size": 82193,
+            "sha256": "8f13a3593a47726b4e777584fb7d4a13d8e837fca0d98d0f4fd135b9468c1a1c",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-graph-error-detail.png",
+            "size": 95059,
+            "sha256": "3a97a1b0a200a29936ce2a77fd9dfafbaba286aa4a0f8d8fb572e19a05d9a62a",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-graph-limit-fallback.png",
+            "size": 141094,
+            "sha256": "7616b1203a554c70c1cfaa51f91910106e2eb69717440cf2798985505af7956a",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-graph-selected-card.png",
+            "size": 75318,
+            "sha256": "dd750a5af502e41f221ab8c3a11bcd345700e74750d312c2031e081b8f16043f",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-graph-trial-comparison.png",
+            "size": 104164,
+            "sha256": "40197a1abd27aad73842e6d051597aca146232f5f23e9bf25e17c24b889af81c",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-guide.png",
+            "size": 110563,
+            "sha256": "a620fa1f1e1027d6f919923f192f3d8fac7fb9104a2683e40ef3e8e393b8d061",
+            "width": 390,
+            "height": 1527,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-header.png",
+            "size": 93592,
+            "sha256": "02269ce144fecd082de359cf18ad7996036b02235ed3d2c02b557bbb9134bb9b",
+            "width": 390,
+            "height": 1527,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-normal-memos-after-repair.png",
+            "size": 92783,
+            "sha256": "b62cfd05737ba6d6d541c1ce90e892b61f125b281f767c22df416ffbb03337a6",
+            "width": 390,
+            "height": 1711,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-protected-dark-large-text.png",
+            "size": 260651,
+            "sha256": "a8e000ee45368091904defe7a91a1018cf938bf9aabe939363e0bc8917f8cda0",
+            "width": 390,
+            "height": 2865,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-reference-dark-enlarged-picker.png",
+            "size": 120021,
+            "sha256": "04d2c043dcdd238a14c7f079fecde348ca20a6f0f6ebc4f9a9095a28b515fc3c",
+            "width": 390,
+            "height": 1969,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-trial-dark-enlarged-delta.png",
+            "size": 70005,
+            "sha256": "af5be9d4b3f540b72c7e3308b9a03a34bd906884f6ad856091413c89d3feba2b",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-trial-failure.png",
+            "size": 94085,
+            "sha256": "db94845b4427cc376412691e670bf8a955f20bfe9306910e8490068ed65be25b",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-trial-success.png",
+            "size": 94527,
+            "sha256": "22302a352ec833d1f76833b56fdee43d433986be0e5de8f9b2b9ddf62cca26bd",
+            "width": 390,
+            "height": 1000,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-narrow-390px/chromium-narrow-390px-variables-dark-result-stress.png",
+            "size": 190784,
+            "sha256": "a4880205bfc9f81b8d3ca3d451e4ca691eeb5410c79ea80a9f06269a4e114446",
+            "width": 390,
+            "height": 3613,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          }
+        ],
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162041322,
+        "condition": "chromium-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "pngs": [
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-audit-roundtrip-target.png",
+            "size": 300815,
+            "sha256": "3a916d1f49837d95d96773b96fabc826503bc9b23c03575f671b0d2ce89c1b5b",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-basic-math-domain-error.png",
+            "size": 1204278,
+            "sha256": "e2114293b350ce7806ceb356d0bec6ca240be53e76cca3f7d335c9c3e59fd96d",
+            "width": 1170,
+            "height": 26130,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-comparison-material-preview.png",
+            "size": 266982,
+            "sha256": "24567e21320cfcaa5769656437c47b406804add329ea651a73bb8619c0e3b25e",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-comparison-source-detail.png",
+            "size": 322404,
+            "sha256": "d3cd15dfae7358348ce15362f75801e66cb7c06a1ab89ad4faeae5f064a73b93",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-default-id-unrelated-rollback.png",
+            "size": 376902,
+            "sha256": "d21b20063a82e55cf702f7324ef52ca0b2e706273f4d73fd7f552d87a6949edd",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-diagnostics-dark-enlarged.png",
+            "size": 283972,
+            "sha256": "9f975ab93028e0e115b99cf2e37b909f18cb872fd315c5b787fb16cbb24c8295",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-diagnostics-independent-causes.png",
+            "size": 326796,
+            "sha256": "5d9301f0dab340a18a3d9c4b594cf6e0d8247bb8eeaa284e5afaf81900482bce",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-formula-library-controls.png",
+            "size": 377339,
+            "sha256": "92824537b2651070e0a1d5a86d9b82a8dd62fb10bfaf22248c7af766bc031626",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-graph-dark-enlarged-selection.png",
+            "size": 297492,
+            "sha256": "4680c21b9e3d52cf693c530f02ad1b5378f0e3cfe1a6e6ec3e317b43f90d2ac3",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-graph-error-detail.png",
+            "size": 347736,
+            "sha256": "c8051593bbc94dcb174f8785acfd00c834e92629269139c06b4bb8725dd82116",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-graph-limit-fallback.png",
+            "size": 453821,
+            "sha256": "b84f551361cc475cf12766d835ae3d6133a4d9ea8caec070949bd5b819eb5fd0",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-graph-selected-card.png",
+            "size": 297385,
+            "sha256": "9aa27ea1f0fff83fb4c2a6904d03d89a39cc8e52a3e430016ca0850b43e0683a",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-graph-trial-comparison.png",
+            "size": 306413,
+            "sha256": "6eb98ba0bc0caa38f6451ca5b56c8b153541cab66141aedaa827fe2dba235736",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-guide.png",
+            "size": 397909,
+            "sha256": "11e65dcf9c36f55e7c9d183c53c74e613a8ec3e3a3bede79994867a23ef99321",
+            "width": 1170,
+            "height": 4581,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-header.png",
+            "size": 350710,
+            "sha256": "a9720f54b4cb8143d2e343d04e508cc066d649bb781e736cd2e1c19798fc51e3",
+            "width": 1170,
+            "height": 4581,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-normal-memos-after-repair.png",
+            "size": 357534,
+            "sha256": "446ab963790b423ed81fd39618c6f1ccce0b18f300a8e2300c28bf8720ef11f7",
+            "width": 1170,
+            "height": 5136,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-protected-dark-large-text.png",
+            "size": 888277,
+            "sha256": "5848ff68ab1fa2e2791cce6f1f3cacabf7d7dd513c537bce1a06f73fd9c6c099",
+            "width": 1170,
+            "height": 8595,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-reference-dark-enlarged-picker.png",
+            "size": 449411,
+            "sha256": "19bd46425cd5ec7a271ee264f72e4d6dd32c574e301c06e8c9be881d23d2ebd7",
+            "width": 1170,
+            "height": 5907,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-trial-dark-enlarged-delta.png",
+            "size": 215827,
+            "sha256": "def32dae68c53705e8673101ab621d6b164f36252f0e609ced81ea0885c24587",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-trial-failure.png",
+            "size": 334732,
+            "sha256": "7d963dd525bd24291302d827217d54e9f4f3cad9e8cc1ef084cf72fbd347d1b4",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-trial-success.png",
+            "size": 365757,
+            "sha256": "d452d143048476a43ec33b914112c46f6c48cdedb808317e5abf9b91286a4a00",
+            "width": 1170,
+            "height": 2532,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-390px/chromium-mobile-390px-variables-dark-result-stress.png",
+            "size": 702444,
+            "sha256": "e02745fc09e0a6d65330dd7f5a64ec1bd6089f301ed80b7afd9b59a1c9012ea2",
+            "width": 1170,
+            "height": 10851,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          }
+        ],
+        "status": "passed"
+      },
+      {
+        "artifactId": 14162027705,
+        "condition": "chromium-mobile-375px",
+        "checks": 188,
+        "geometry": 98,
+        "pngs": [
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-audit-roundtrip-target.png",
+            "size": 153189,
+            "sha256": "15fe0025ab41dc5b7a0d20ab881d899e0df3b320980dcd48dfbc5d0040c4c0b7",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-basic-math-domain-error.png",
+            "size": 748161,
+            "sha256": "1c8b6d7cce9a38f1457fdaba9063d3036f35b6177f4f928b926cbc20fda4699a",
+            "width": 750,
+            "height": 17556,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-comparison-material-preview.png",
+            "size": 147968,
+            "sha256": "d2a286a1851a87a661fa88667ff3eb3f88a55108f9e0cbbcd703744554062fe0",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-comparison-source-detail.png",
+            "size": 159570,
+            "sha256": "f71287c8e977ea7afd4c9c5a089d933e13aa9406db229a77ae14e743956d580b",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-default-id-unrelated-rollback.png",
+            "size": 218884,
+            "sha256": "e3c489dfc2530ed47392067ffb4df8d9c91d55c51fad1a3f0d855da7803b199a",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-diagnostics-dark-enlarged.png",
+            "size": 133052,
+            "sha256": "fee8ceb9c0c7c684264cc7cfdca39c5794d997a65cf8a535e189131c486bc6a5",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-diagnostics-independent-causes.png",
+            "size": 158695,
+            "sha256": "0c5a307a6d6e0ccb8f3eabf53433055a41739ac91e96536f07ba96408515e953",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-formula-library-controls.png",
+            "size": 200068,
+            "sha256": "8c95eb2f654119b3e9cd3c4137b6d08ab29cfd3c0fffe07a8367cc987952d479",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-graph-dark-enlarged-selection.png",
+            "size": 126443,
+            "sha256": "2ce2e74b85922f1b838f9e1c6697b9fb7d71c4fe317ed33505b8b5f18491ebf1",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-graph-error-detail.png",
+            "size": 182281,
+            "sha256": "df3392aeb4ecd54b3dc1e60cd1cdd8a9b1f902bc344864d1716020a66dc3be74",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-graph-limit-fallback.png",
+            "size": 213155,
+            "sha256": "ea53c1975f058f5c60f05c94a6293d7ccf52613f2fc3daba1c8e52023405aea7",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-graph-selected-card.png",
+            "size": 155332,
+            "sha256": "4fa4084f4964f3a043da11950e9dccc5d5eb0405b79f18612cf0000381b62a3f",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-graph-trial-comparison.png",
+            "size": 123406,
+            "sha256": "40aff836dfdc8ce64f73285be6194c188b1cc02e2ae26b818029b6bb3b0c36d0",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-guide.png",
+            "size": 255752,
+            "sha256": "66ec964fdca48db0391b55a31ff59ad923a42cce4a8b5e2bc51d84eff8491308",
+            "width": 750,
+            "height": 3160,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-header.png",
+            "size": 222249,
+            "sha256": "ad78eea7c3e11b02bdf82705b9f1e2bf54ad7dc6f3c16e799d64f5647568135e",
+            "width": 750,
+            "height": 3160,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-normal-memos-after-repair.png",
+            "size": 226811,
+            "sha256": "0f264465de4203aef75d16628a94e7cac04f66e465f5b72451fad86642e2a517",
+            "width": 750,
+            "height": 3492,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-protected-dark-large-text.png",
+            "size": 587774,
+            "sha256": "2ffe3c5b73015bef89b11318f5ee505a2afb4b6ece56b35eb24e558e41e7349f",
+            "width": 750,
+            "height": 6054,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-reference-dark-enlarged-picker.png",
+            "size": 282999,
+            "sha256": "b9c361e29364c854ab01fa2173779ea6682828a10ebcc3d3ef6b82a03f3efe77",
+            "width": 750,
+            "height": 3916,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-trial-dark-enlarged-delta.png",
+            "size": 112153,
+            "sha256": "38f5d277ea1c69081508bb71b1fbe2768f5aa129889f054797d064a1bc990756",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-trial-failure.png",
+            "size": 169147,
+            "sha256": "a9e086473397d0ad8eb412ff76a13a31dd798f7aa09fb76b241d497a7e6597c6",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-trial-success.png",
+            "size": 161704,
+            "sha256": "5b8d641a39d5fd20a0fecaf38474e794ed99cae5ba378ffc6853ccfefdf57387",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "chromium-mobile-375px/chromium-mobile-375px-variables-dark-result-stress.png",
+            "size": 481146,
+            "sha256": "549eeeffa601416776dd7240a68267ddcc583d8f083c5bc256f78ee0657c186f",
+            "width": 750,
+            "height": 7340,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          }
+        ],
+        "status": "passed"
+      },
+      {
+        "artifactId": 14161957762,
+        "condition": "webkit-mobile-375px",
+        "checks": 189,
+        "geometry": 100,
+        "pngs": [
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-audit-roundtrip-target.png",
+            "size": 181414,
+            "sha256": "2e73f57290b158ecaf948ab12fb32a3808cc7862be05f4d9d54f243ad2dc50b4",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-basic-math-domain-error.png",
+            "size": 875997,
+            "sha256": "e390351484d51a91ed7e3b1345e500a48f2b83d0796acfa2f22ac8e6847699b8",
+            "width": 750,
+            "height": 16766,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-comparison-material-preview.png",
+            "size": 152790,
+            "sha256": "86cf6a2937c1d6cf819d7daf23b90025570de75bae3b5793bf86cc1cb8db5df6",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-comparison-source-detail.png",
+            "size": 157421,
+            "sha256": "5d2bd17cca751acc6eef10d66da54e16e9b4e7e9aa891a27e63c7e3209304e54",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-default-id-unrelated-rollback.png",
+            "size": 273428,
+            "sha256": "67496a8a426c26bf902de4420f9d3de9151b3b23a078a715ddf3b95e554f6822",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-diagnostics-dark-enlarged.png",
+            "size": 149902,
+            "sha256": "b943f4d7a2562d28c980d23b451fa920342c7e069f6f520f58c10ae57d8d3f0b",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-diagnostics-independent-causes.png",
+            "size": 179886,
+            "sha256": "1152b70d7b576335b29dff367eec7f081aef3992ecc63e102806f10bcc5c89d2",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-formula-library-controls.png",
+            "size": 236313,
+            "sha256": "60de82a32e28a360a64797d088158cd5463212288795be0c51efd2ba9ba83724",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-graph-dark-enlarged-selection.png",
+            "size": 134698,
+            "sha256": "b4c06ee8e343e8d9b04bb9adc6eec327a6824b3256903649095bb17623d2bfd2",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-graph-error-detail.png",
+            "size": 207982,
+            "sha256": "031639384141ee96cbc30928237de4d2bdb600fe0cbef811a0b11940b8fa75a4",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-graph-limit-fallback.png",
+            "size": 242160,
+            "sha256": "76ecee987ed4fe0484d75133bbf905cf8be9da5dee1952a36995f15b0e7b9506",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-graph-selected-card.png",
+            "size": 176492,
+            "sha256": "dd418f331d23e9a993560d106cd7e2d6fc214b8670660367e9c078c9952cfcb5",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-graph-trial-comparison.png",
+            "size": 131961,
+            "sha256": "32e55dcbed145d71011092cfc5338c90d21411e09f90d286934c98c927885b0c",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-guide.png",
+            "size": 287118,
+            "sha256": "8f123e5bc4a3f6f560c524cab25ac92a3ae9c9d42d10d95de83d74dda648bf43",
+            "width": 750,
+            "height": 3154,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-header.png",
+            "size": 250926,
+            "sha256": "47afc120328c3c5a455a2fe25158ccf9ac21226624158b3ceb9f1ae2777a40e7",
+            "width": 750,
+            "height": 3154,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-normal-memos-after-repair.png",
+            "size": 251205,
+            "sha256": "1a25c719dbdd90d0260917891c395545d25a1dda15b89b429d28359461b042ee",
+            "width": 750,
+            "height": 3480,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-protected-dark-large-text.png",
+            "size": 673610,
+            "sha256": "9f55868f1aea1f561b611baed8fb6421744f2478dd0f5971e17b3c5d2b633ff3",
+            "width": 750,
+            "height": 6018,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-reference-dark-enlarged-picker.png",
+            "size": 315634,
+            "sha256": "0b215b600924f842feb0859806aef7cbd46343ebf95bcf0d0aa4d8d2174b64af",
+            "width": 750,
+            "height": 3962,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-trial-dark-enlarged-delta.png",
+            "size": 117005,
+            "sha256": "ad2839f76ba3a4b34f20dc343a7bf690e3d25271152142704a2c2d1b8400047b",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-trial-failure.png",
+            "size": 195451,
+            "sha256": "6dc04cfe2111583e5aa53866c257b1926d7e0894047f3beb2c4487c7792c4d06",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-trial-success.png",
+            "size": 185082,
+            "sha256": "13dfea3be5c75b3dc02534c595201adc7d48b0baba2884fb70cb4e0318c3893e",
+            "width": 750,
+            "height": 1334,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          },
+          {
+            "path": "webkit-mobile-375px/webkit-mobile-375px-variables-dark-result-stress.png",
+            "size": 537138,
+            "sha256": "9f4f91acb88d70c07f74aae9900c765f2d2fe118d1fdfa3eb795a9f296344327",
+            "width": 750,
+            "height": 7308,
+            "chunkCRC": "PASS",
+            "decodedScanlines": "PASS"
+          }
+        ],
+        "status": "passed"
+      }
+    ],
+    "limits": "Independent Python content inspection; no new browser or human pixel review. Runtime source attribution separately inspected."
+  },
+  "semanticReplay": {
+    "origin": "Saved GitHub original artifact replay; no new browser execution",
+    "auditor": "Provided production validators independently reexecuted; not a separate reimplementation",
+    "physical": {
+      "normal": 20,
+      "mutations": [
+        {
+          "name": "missing-complete",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: sequence"
+        },
+        {
+          "name": "readback-mismatch",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-readback-current"
+        },
+        {
+          "name": "missing-receipt",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-readback-receipts"
+        },
+        {
+          "name": "tampered-receipt",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-readback-receipts"
+        },
+        {
+          "name": "old-generation",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-readback-receipts"
+        },
+        {
+          "name": "false-success",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: observation-result"
+        },
+        {
+          "name": "missing-case",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: complete-matrix"
+        },
+        {
+          "name": "served-mismatch",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: served-bundle"
+        },
+        {
+          "name": "mixed-device",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: device-binding"
+        },
+        {
+          "name": "foreign-head",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: identity:sha"
+        },
+        {
+          "name": "mixed-trial",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: unique-trials"
+        },
+        {
+          "name": "foreign-namespace",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: namespace"
+        },
+        {
+          "name": "physical-overclaim",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+        },
+        {
+          "name": "interruption-overclaim",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: observation-result"
+        },
+        {
+          "name": "native-readback-omitted",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-chain:readback"
+        },
+        {
+          "name": "abort-chain-omitted",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-chain:tx-start"
+        },
+        {
+          "name": "replay-chain-omitted",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: retry-native-request"
+        },
+        {
+          "name": "wrong-scope",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-scope"
+        },
+        {
+          "name": "native-readback-corrupt",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-readback-current"
+        },
+        {
+          "name": "unrelated-ack-failure",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: ack-loss-reason"
+        },
+        {
+          "name": "receipt-fault-not-injected",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: missing-genesis"
+        }
+      ]
+    },
+    "atomic": {
+      "normal": 56,
+      "evidence": [
+        {
+          "name": "missingRaw",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: native-events-required"
+        },
+        {
+          "name": "duplicateRaw",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: raw-sequence"
+        },
+        {
+          "name": "reorderRaw",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: raw-sequence"
+        },
+        {
+          "name": "foreignHead",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+        },
+        {
+          "name": "missingCase",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: exact-browser-case-set"
+        },
+        {
+          "name": "foreignTrace",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+        },
+        {
+          "name": "missingWriter",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: missing-competitor-raw"
+        },
+        {
+          "name": "missingTxRead",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:tx-read"
+        },
+        {
+          "name": "wrongScope",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: complete-store-scope"
+        },
+        {
+          "name": "successBeforeComplete",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: raw-clock"
+        },
+        {
+          "name": "finalMismatch",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: independent-final-readback"
+        },
+        {
+          "name": "cleanupFailure",
+          "status": "REJECTED",
+          "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+        }
+      ],
+      "browserFaultReplays": [
+        {
+          "engine": "chromium",
+          "mutant": "compare-outside",
+          "caseName": "B-after-observation",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "accept-stale",
+          "caseName": "B-after-observation",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "missing-store",
+          "caseName": "A-same-token",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "abort-success",
+          "caseName": "E-abort",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:tx-complete"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "early-success",
+          "caseName": "A-same-token",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:readback"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "ignore-receipt",
+          "caseName": "S-readback-mismatch",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "old-session",
+          "caseName": "I-late-response",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "chromium",
+          "mutant": "no-incarnation",
+          "caseName": "K-incarnation-reset",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "compare-outside",
+          "caseName": "B-after-observation",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "accept-stale",
+          "caseName": "B-after-observation",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "missing-store",
+          "caseName": "A-same-token",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "abort-success",
+          "caseName": "E-abort",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:tx-complete"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "early-success",
+          "caseName": "A-same-token",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:readback"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "ignore-receipt",
+          "caseName": "S-readback-mismatch",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "old-session",
+          "caseName": "I-late-response",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        },
+        {
+          "engine": "webkit",
+          "mutant": "no-incarnation",
+          "caseName": "K-incarnation-reset",
+          "status": "DETECTED-semantic-RED",
+          "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+        }
+      ],
+      "traceChecks": [
+        {
+          "engine": "chromium",
+          "case": "E-abort",
+          "mutant": "abort-success",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "E-abort",
+          "mutant": "abort-success",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "B-after-observation",
+          "mutant": "accept-stale",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "B-after-observation",
+          "mutant": "accept-stale",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "B-after-observation",
+          "mutant": "compare-outside",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "B-after-observation",
+          "mutant": "compare-outside",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "A-same-token",
+          "mutant": "early-success",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "A-same-token",
+          "mutant": "early-success",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "S-readback-mismatch",
+          "mutant": "ignore-receipt",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "S-readback-mismatch",
+          "mutant": "ignore-receipt",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "A-same-token",
+          "mutant": "missing-store",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "A-same-token",
+          "mutant": "missing-store",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "K-incarnation-reset",
+          "mutant": "no-incarnation",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "K-incarnation-reset",
+          "mutant": "no-incarnation",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "A-same-token",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "B-after-observation",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "C-before-transaction",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "D-queued-writer",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "E-abort",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "F-close-transaction",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "G-lost-ack",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "H-notifications",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "H-missing-notification",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "I-old-session",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "I-late-response",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "J-generation-aba",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "J-unobserved-aba",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "K-rollback",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "K-incarnation-reset",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "L-lock-failure",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "L-waiting-close",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "M-noncooperative",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "N-reload",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "O-media-mismatch",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "P-target-mismatch",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "Q-missing-generation",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "Q-overflow",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "Q-bad-receipt",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "R-unknown-reuse",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "R-cross-page-unknown",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "S-exception",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "S-readback-mismatch",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "A-same-token",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "B-after-observation",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "C-before-transaction",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "D-queued-writer",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "E-abort",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "F-close-transaction",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "G-lost-ack",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "H-notifications",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "H-missing-notification",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "I-old-session",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "I-late-response",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "J-generation-aba",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "J-unobserved-aba",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "K-rollback",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "K-incarnation-reset",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "L-lock-failure",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "L-waiting-close",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "M-noncooperative",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "N-reload",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "O-media-mismatch",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "P-target-mismatch",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "Q-missing-generation",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "Q-overflow",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "Q-bad-receipt",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "R-unknown-reuse",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "R-cross-page-unknown",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "S-exception",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "S-readback-mismatch",
+          "mutant": "none",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "chromium",
+          "case": "I-late-response",
+          "mutant": "old-session",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        },
+        {
+          "engine": "webkit",
+          "case": "I-late-response",
+          "mutant": "old-session",
+          "crc": "PASS",
+          "browserNamespace": "PASS"
+        }
+      ]
+    },
+    "head": "fa8cc7d4cc492322cf7fd78553412a11261c76c3",
+    "tree": "2504b622d575969734a65c50f45e043825f0ef10",
+    "checkedAtUTC": "2026-11-15T12:43:38.079228+00:00",
+    "semanticLabels": {
+      "physical-overclaim": "physicalAcceptance must remain NOT_TESTED",
+      "atomic.foreignHead": "row HEAD must equal suite HEAD",
+      "atomic.foreignTrace": "trace filename must bind exact engine and case",
+      "atomic.cleanupFailure": "cleanup.deleted must be true"
+    }
+  },
+  "runtimeSourceAttribution": {
+    "separateIndependentReceipt": "independent-source-receipt.json",
+    "size": 14690,
+    "sha256": "82bc3dc289fbb1f1f1a0ed141cf893dc5dd8b6b7ccb106b3cc3e538583aa7688",
+    "status": "PASS all nine original source archives; verified independently by source_independent",
+    "claimLimit": "This artifact inspector did not replace that separate source verifier with head/workflow metadata"
+  },
+  "library": "NOT_PERFORMED: locally preserved GitHub originals; no Library storage/readback",
+  "postCreatedReport": "This receipt and independent scripts were created after original CI; they do not replace or modify original ZIPs"
+}

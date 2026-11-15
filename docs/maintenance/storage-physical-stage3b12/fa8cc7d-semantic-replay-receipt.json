@@ -1,0 +1,808 @@
+{
+  "origin": "Saved GitHub original artifact replay; no new browser execution",
+  "auditor": "Provided production validators independently reexecuted; not a separate reimplementation",
+  "physical": {
+    "normal": 20,
+    "mutations": [
+      {
+        "name": "missing-complete",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: sequence"
+      },
+      {
+        "name": "readback-mismatch",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-readback-current"
+      },
+      {
+        "name": "missing-receipt",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-readback-receipts"
+      },
+      {
+        "name": "tampered-receipt",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-readback-receipts"
+      },
+      {
+        "name": "old-generation",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-readback-receipts"
+      },
+      {
+        "name": "false-success",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: observation-result"
+      },
+      {
+        "name": "missing-case",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: complete-matrix"
+      },
+      {
+        "name": "served-mismatch",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: served-bundle"
+      },
+      {
+        "name": "mixed-device",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: device-binding"
+      },
+      {
+        "name": "foreign-head",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: identity:sha"
+      },
+      {
+        "name": "mixed-trial",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: unique-trials"
+      },
+      {
+        "name": "foreign-namespace",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: namespace"
+      },
+      {
+        "name": "physical-overclaim",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+      },
+      {
+        "name": "interruption-overclaim",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: observation-result"
+      },
+      {
+        "name": "native-readback-omitted",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-chain:readback"
+      },
+      {
+        "name": "abort-chain-omitted",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-chain:tx-start"
+      },
+      {
+        "name": "replay-chain-omitted",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: retry-native-request"
+      },
+      {
+        "name": "wrong-scope",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-scope"
+      },
+      {
+        "name": "native-readback-corrupt",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-readback-current"
+      },
+      {
+        "name": "unrelated-ack-failure",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: ack-loss-reason"
+      },
+      {
+        "name": "receipt-fault-not-injected",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: missing-genesis"
+      }
+    ]
+  },
+  "atomic": {
+    "normal": 56,
+    "evidence": [
+      {
+        "name": "missingRaw",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: native-events-required"
+      },
+      {
+        "name": "duplicateRaw",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: raw-sequence"
+      },
+      {
+        "name": "reorderRaw",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: raw-sequence"
+      },
+      {
+        "name": "foreignHead",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+      },
+      {
+        "name": "missingCase",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: exact-browser-case-set"
+      },
+      {
+        "name": "foreignTrace",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+      },
+      {
+        "name": "missingWriter",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: missing-competitor-raw"
+      },
+      {
+        "name": "missingTxRead",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:tx-read"
+      },
+      {
+        "name": "wrongScope",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: complete-store-scope"
+      },
+      {
+        "name": "successBeforeComplete",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: raw-clock"
+      },
+      {
+        "name": "finalMismatch",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: independent-final-readback"
+      },
+      {
+        "name": "cleanupFailure",
+        "status": "REJECTED",
+        "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+      }
+    ],
+    "browserFaultReplays": [
+      {
+        "engine": "chromium",
+        "mutant": "compare-outside",
+        "caseName": "B-after-observation",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "accept-stale",
+        "caseName": "B-after-observation",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "missing-store",
+        "caseName": "A-same-token",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "abort-success",
+        "caseName": "E-abort",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:tx-complete"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "early-success",
+        "caseName": "A-same-token",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:readback"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "ignore-receipt",
+        "caseName": "S-readback-mismatch",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "old-session",
+        "caseName": "I-late-response",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "chromium",
+        "mutant": "no-incarnation",
+        "caseName": "K-incarnation-reset",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "compare-outside",
+        "caseName": "B-after-observation",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "accept-stale",
+        "caseName": "B-after-observation",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "missing-store",
+        "caseName": "A-same-token",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "abort-success",
+        "caseName": "E-abort",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:tx-complete"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "early-success",
+        "caseName": "A-same-token",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: verified-native-chain:readback"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "ignore-receipt",
+        "caseName": "S-readback-mismatch",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "old-session",
+        "caseName": "I-late-response",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      },
+      {
+        "engine": "webkit",
+        "mutant": "no-incarnation",
+        "caseName": "K-incarnation-reset",
+        "status": "DETECTED-semantic-RED",
+        "reason": "AssertionError [ERR_ASSERTION]: scenario-outcome"
+      }
+    ],
+    "traceChecks": [
+      {
+        "engine": "chromium",
+        "case": "E-abort",
+        "mutant": "abort-success",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "E-abort",
+        "mutant": "abort-success",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "B-after-observation",
+        "mutant": "accept-stale",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "B-after-observation",
+        "mutant": "accept-stale",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "B-after-observation",
+        "mutant": "compare-outside",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "B-after-observation",
+        "mutant": "compare-outside",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "A-same-token",
+        "mutant": "early-success",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "A-same-token",
+        "mutant": "early-success",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "S-readback-mismatch",
+        "mutant": "ignore-receipt",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "S-readback-mismatch",
+        "mutant": "ignore-receipt",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "A-same-token",
+        "mutant": "missing-store",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "A-same-token",
+        "mutant": "missing-store",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "K-incarnation-reset",
+        "mutant": "no-incarnation",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "K-incarnation-reset",
+        "mutant": "no-incarnation",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "A-same-token",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "B-after-observation",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "C-before-transaction",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "D-queued-writer",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "E-abort",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "F-close-transaction",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "G-lost-ack",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "H-notifications",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "H-missing-notification",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "I-old-session",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "I-late-response",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "J-generation-aba",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "J-unobserved-aba",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "K-rollback",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "K-incarnation-reset",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "L-lock-failure",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "L-waiting-close",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "M-noncooperative",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "N-reload",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "O-media-mismatch",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "P-target-mismatch",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "Q-missing-generation",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "Q-overflow",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "Q-bad-receipt",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "R-unknown-reuse",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "R-cross-page-unknown",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "S-exception",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "S-readback-mismatch",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "A-same-token",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "B-after-observation",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "C-before-transaction",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "D-queued-writer",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "E-abort",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "F-close-transaction",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "G-lost-ack",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "H-notifications",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "H-missing-notification",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "I-old-session",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "I-late-response",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "J-generation-aba",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "J-unobserved-aba",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "K-rollback",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "K-incarnation-reset",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "L-lock-failure",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "L-waiting-close",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "M-noncooperative",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "N-reload",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "O-media-mismatch",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "P-target-mismatch",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "Q-missing-generation",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "Q-overflow",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "Q-bad-receipt",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "R-unknown-reuse",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "R-cross-page-unknown",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "S-exception",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "S-readback-mismatch",
+        "mutant": "none",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "case": "I-late-response",
+        "mutant": "old-session",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "case": "I-late-response",
+        "mutant": "old-session",
+        "crc": "PASS",
+        "browserNamespace": "PASS"
+      }
+    ]
+  },
+  "head": "fa8cc7d4cc492322cf7fd78553412a11261c76c3",
+  "tree": "2504b622d575969734a65c50f45e043825f0ef10",
+  "checkedAtUTC": "2026-11-15T12:43:38.079228+00:00",
+  "semanticLabels": {
+    "physical-overclaim": "physicalAcceptance must remain NOT_TESTED",
+    "atomic.foreignHead": "row HEAD must equal suite HEAD",
+    "atomic.foreignTrace": "trace filename must bind exact engine and case",
+    "atomic.cleanupFailure": "cleanup.deleted must be true"
+  }
+}
