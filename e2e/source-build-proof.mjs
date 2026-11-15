@@ -29,8 +29,8 @@ export function sourceBuildProof(label='vite'){
   else record.inputs.push({...captured,status:original&&captured.sha256===original.sha256&&captured.size===original.size&&captured.blob===original.blob?'MATCH':'UNKNOWN'});
   save();
  };
- save();
- return {name:'calculator-runtime-source-proof',enforce:'pre',
+ return {name:'calculator-runtime-source-proof',enforce:'pre',apply:'build',
+  buildStart(){record.startedAt=new Date().toISOString();save();},
   transform(code,id){input(code,id,id.includes('?')||id.split('?')[0].endsWith('.html')?'vite-derived':'vite-input');return null;},
   transformIndexHtml:{order:'pre',handler(html,context){input(html,context.filename,'vite-input-html');return html;}},
   generateBundle:{order:'post',handler(_options,bundle){

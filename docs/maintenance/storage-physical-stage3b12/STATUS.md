@@ -1,5 +1,13 @@
 # Stage 3B-12 execution ledger
 
+## 2026-11-15 JST: full source-chain candidate retained as FAIL; capture repair submitted
+
+b326ee76a18fa9e97274aecc37a71693e1f57dbe / tree6f9deccfb200b1a09242e9599a0b806ac265dd59:13 successful workflows /1 GUI failure /1 conditional skip. Its27 original ZIPs402,143,526bytes were independently digest/size/SHA/CRC checked. Physical/atomic/checks actual Git source/load/build bytes passed; six formal GUI source artifacts failed. Original GUI1128 checks/592 geometry/132 ordinary PNG plus6 failure PNG do not make failed GUI successful. [Original archive](b326ee7-original-artifact-receipt.json), [source receipt](b326ee7-source-audit-receipt.json), [semantic replay](b326ee7-semantic-replay-receipt.json).
+
+Capture repair preserves these original failures: Vite preview cannot create a phantom build record; exact route-fulfilled writer HTML is mapped to its Git helper and actual body instead of a nonexistent dist file. Atomic constant HTML is additionally checked. Local source controls20+12+5 pass; repair CI remains to be confirmed on the actual submitted head. The final submitted head/tree and terminal CI/original-archive decisions are recorded in the latest PR147 reacceptance report, separately from this predecessor. This document's own commit CI must be checked, as required by AGENTS.md.
+
+Public document correction is now prepared in separate [Draft PR149](https://github.com/tetsujisugimori-coder/calculator-memo/pull/149), tracked by #148. Main is unmodified, the three references remain on public main until human merge; denied comments and historical/shared access remain unresolved/UNKNOWN. Overall PARTIAL / limited merge NO; Stage3B HOLD remains.
+
 Latest implementation adds actual Vite input/generated output and browser delivery capture; first-party source-chain acceptance remains PENDING on the new exact HEAD. The earlier32596e3 atomic FAIL is preserved with its original ZIP receipt; its workflow-format assertion was restored unchanged and local11/11 now passes. Baseline a879 original27 ZIPs were independently re-downloaded/verified (176,377,841bytes); this does not prove the new candidate or a current Library readback. See SOURCE-PROOF.md, independent/source-review.md and the two original-artifact receipts. Public boundary remains unresolved / limited merge NO.
 ## 2026-11-15 JST: source-proof and public-boundary reacceptance
 
