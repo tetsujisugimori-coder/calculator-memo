@@ -1,5 +1,13 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-15 (JST): Separate public-reference document correction (Refs #148)
+- Change: replace only the private Space references in the two PR145 review records and the private Library identifier in the selective-plan verification record. Preserve all review findings, old failures, dates, public artifact hashes and Git history. No product, workflow or test changes.
+- Reason: keep owner-only acquisition references and internal identifiers off current public document pages. This separately scoped branch starts at main ffd99fc404328c35bc365d8587c204e6174e5e66; Stage3B12 PR147 remains independent.
+- Verification: exact byte replacement at one reference in each of three files; all other original document bytes preserved apart from existing Git checkout CRLF conversion. Initial raw Git-vs-checkout byte check failed on line endings; normalized check passed. Current worktree private-reference scan and git diff --check pass. New Draft PR and exact-HEAD CI pending at this record; their actual results belong to its Checks, not older PR145/147 success.
+- Remaining: unmerged main, historic blobs/caches and two earlier-denied PR147 comment edits remain unresolved. No denied operation retried, source-side access revoked, original archive deleted or Git history rewritten. Owner/admin redaction/sharing assessment and external access verification remain UNKNOWN. Refs #148 and #146; closes neither. Stage3B HOLD and executionAllowed=false/writeAllowed=false/authority=NOT_ESTABLISHED remain.
+- Decision: ordinary additive document commit preserves history; any historical sensitive-data purge requires an authorized administrator assessment and separate approval. Human review/merge only; no publication or merge performed.
+
+
 
 
 ## 2026-11-14 (JST): Stage 3B-11 提出候補の受入とWindows原証拠保全

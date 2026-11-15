@@ -6,7 +6,7 @@
 
 - fresh isolated clone: `C:/Users/tetsu/Documents/Codex/2026-11-01/task-6/repo`、branch `feat/selective-restore-plan`。
 - remote main `528a6a0a9a51077c5a81bf78c8a6724b5eb1da77`、tree `17ae5b5532754e6da005f39c33520b8598f66538`。#113 mergedをAPIで確認。実行計画の既存Issue/PR重複なし。
-- Library `libfile_febf5aa6df648191ae12d1b610910ed7`、全492行/has_more=false/version nullのread内容をそのままIssue本文へ保存し、別fetchで全文一致。原本バイナリ同一性とは区別。
+- Library `[owner-only archive reference withheld; Refs #148]`、全492行/has_more=false/version nullのread内容をそのままIssue本文へ保存し、別fetchで全文一致。原本バイナリ同一性とは区別。
 - 既存checkoutは読取のみ。新機能は計画・検証・表示まで。保存実行、main push、merge、auto-merge、Ready、公開を行わない。
 
 ## 事前設計と方式
