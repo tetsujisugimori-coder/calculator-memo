@@ -40,7 +40,7 @@ jobs:
           npm ci --ignore-scripts
           npm ci --prefix e2e --ignore-scripts
       - name: Physical evidence node contracts
-        run: node --test e2e/physical-audit.node-test.mjs
+        run: node --test e2e/physical-audit.node-test.mjs e2e/physical-p2.node-test.mjs
       - name: Fixed browser setup
         id: browsers
         timeout-minutes: 5

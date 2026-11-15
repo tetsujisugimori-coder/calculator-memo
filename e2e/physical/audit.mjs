@@ -33,14 +33,65 @@ export function auditRow(r,identity){
   assert.ok(complete&&!abort,'commit-chain');let prior=-1;for(const k of ['tx-start','tx-read','compare-success','write-request','write-request-success','tx-complete']){const i=kinds.indexOf(k);assert.ok(i>prior,`ordered:${k}`);prior=i;}
   const receipt=r.after.receipts[r.request.explicitOperationId];assert.ok(receipt,'receipt');assert.equal(receipt.raw,r.request.candidateRaw,'receipt-raw');assert.equal(r.after.current,r.request.candidateRaw,'current');assert.equal(receipt.token.generation,r.request.generation+1,'generation');assert.equal(receipt.operationId,r.request.explicitOperationId,'operation');assert.equal(receipt.token.latestOperation,r.request.explicitOperationId,'receipt-operation');assert.equal(receipt.previous,r.request.expectedToken.latestOperation,'receipt-previous');assert.equal(receipt.token.incarnation,r.request.incarnation,'receipt-incarnation');assert.deepEqual(receipt.token,{structure:r.after.head.structure,incarnation:r.after.head.incarnation,generation:r.after.head.generation,latestOperation:r.after.head.latestOperation},'head-receipt');
  }
- if(r.case==='abort'||r.case==='quota-injected')assert.ok(abort&&!complete,'native-abort');
+ if(r.case==='abort'||r.case==='quota-injected'){
+  assert.ok(abort&&!complete,'native-abort');
+  // Reservation/UNKNOWN changes attempts and HOLD, not the protected committed state.
+  for(const key of ['current','head','receipts','copies'])assert.deepEqual(r.after[key],r.before[key],`abort-preserved:${key}`);
+  assert.deepEqual(r.after.attempts,{...r.before.attempts,[r.request.explicitOperationId]:{request:r.request,status:'UNKNOWN',boot:r.request.boot}},'abort-attempt');
+  assert.equal(r.after.hold,true,'abort-hold');
+ }
  if(r.case==='quota-injected')assert.match(r.result.reason,/QuotaExceededError/,'quota-reason');
  if(r.case==='missing-receipt')assert.ok(r.diagnosis.integrityError,'integrity-reason');
  if(r.case==='stale-writer'){assert.equal(r.after.current,'OTHER');assert.equal(r.result.reason,'compare-mismatch');}
  if(r.case==='interrupted'){assert.ok(r.transitions.includes('close-session-before-update'));assert.match(r.result.reason,/session-or-runtime-hold/);}
  if(r.result.status==='UNKNOWN'){assert.equal(r.retry.status,'REJECTED','no-replay');assert.equal(r.diagnosis.status,'UNKNOWN');assert.equal(r.diagnosis.retryAllowed,false);}
- if(r.case==='reload')assert.equal(r.reopened.current,r.after.current,'reload-readback');
+ if(r.case==='reload'){
+  assert.equal(r.reopened.current,r.after.current,'reload-readback');
+  for(const key of ['head','receipts','copies','attempts'])assert.deepEqual(r.reopened[key],r.after[key],`reload-persistent:${key}`);
+  assert.ok(r.reopened.boot&&r.reopened.boot!==r.after.boot,'reload-new-boot');
+  assert.ok(r.reopened.session&&r.reopened.session!==r.after.session,'reload-new-session');
+  const reads=r.events.filter(e=>e.boot===r.reopened.boot&&e.kind==='tx-read');
+  assert.equal(reads.length,1,'reload-native-read');
+  const read=reads[0],tx=r.events.filter(e=>e.txId===read.txId);
+  assert.deepEqual(tx.map(e=>e.kind),['tx-start','tx-read','tx-complete'],'reload-native-chain');
+  for(const e of tx){assert.equal(e.boot,r.reopened.boot,'reload-boot-binding');assert.equal(e.session,r.reopened.session,'reload-session-binding');assert.equal(e.pageId,'A2','reload-page-binding');}
+  assert.ok(r.events.indexOf(tx[0])>r.events.indexOf(own.at(-1)),'reload-after-update');
+  assert.equal(tx[0].mode,'readonly','reload-readonly');
+  assert.deepEqual([...tx[0].scope].sort(),['attempts','copies','receipts','state'],'reload-scope');
+  assert.equal(read.current,r.reopened.current,'reload-native-current');assert.deepEqual(read.head,r.reopened.head,'reload-native-head');
+  assert.equal(read.receiptCount,Object.keys(r.reopened.receipts).length,'reload-native-receipts');
+ }
  if(r.case==='eviction-injected'){assert.equal(r.eviction.exists,false,'synthetic-deletion');assert.equal(r.eviction.kind,'synthetic-owned-db-deletion');}
+ if(r.result.status==='UNKNOWN'){
+  const retryEvents=r.events.filter(e=>e.txId===r.retry.txId);
+  assert.deepEqual(retryEvents.map(e=>e.kind),['update-request','update-result'],'retry-cardinality-order');
+  for(const e of retryEvents){for(const key of ['pageId','boot','session'])assert.equal(e[key],r.request[key],`retry-binding:${key}`);assert.equal(e.operationId,r.request.explicitOperationId,'retry-binding:operation');}
+  assert.ok(r.events.indexOf(retryEvents[0])>r.events.indexOf(own.at(-1)),'retry-after-result');
+ }
+ const expectedKinds={
+  normal:['update-request','tx-start','tx-read','compare-success','write-request','write-request-success','tx-complete','readback','readback-match','update-result'],
+  'lost-ack':['update-request','tx-start','tx-read','compare-success','write-request','write-request-success','tx-complete','update-result'],
+  abort:['update-request','tx-start','tx-read','compare-success','write-request','write-request-success','tx-abort','update-result'],
+  'readback-mismatch':['update-request','tx-start','tx-read','compare-success','write-request','write-request-success','tx-complete','readback','update-result'],
+  'stale-writer':['update-request','tx-start','tx-read','compare-rejected','tx-complete','update-result'],
+  'missing-receipt':['update-request','tx-start','tx-read','tx-abort','update-result'],
+  'quota-injected':['update-request','tx-start','tx-read','compare-success','tx-abort','update-result'],
+  interrupted:['update-request','update-result']
+ };
+ assert.deepEqual(own.map(e=>e.kind),expectedKinds[r.case]||expectedKinds.normal,'main-event-cardinality-order');
+ let session=r.request.session;
+ if(r.case==='interrupted'){
+  const changes=r.events.filter(e=>e.kind==='session-invalidated');
+  assert.equal(changes.length,1,'interrupted-session-evidence');const change=changes[0];
+  assert.equal(change.pageId,r.request.pageId,'interrupted-page');assert.equal(change.boot,r.request.boot,'interrupted-boot');
+  assert.ok(change.session&&change.session!==session,'interrupted-new-session');
+  assert.ok(r.events.indexOf(change)<r.events.indexOf(own[0]),'interrupted-before-request');session=change.session;
+ }
+ for(const e of own){
+  assert.equal(e.operationId,r.request.explicitOperationId,'main-operation-binding');
+  assert.equal(e.pageId,r.request.pageId,'main-page-binding');assert.equal(e.boot,r.request.boot,'main-boot-binding');
+  assert.equal(e.session,session,'main-session-binding');
+ }
  return true;
 }
 export function auditSuite(s){assert.equal(s.rows.length,20,'complete-matrix');assert.equal(new Set(s.rows.map(r=>r.trial)).size,20,'unique-trials');assert.equal(new Set(s.rows.map(r=>r.namespace)).size,20,'unique-namespaces');for(const engine of ['chromium','webkit'])for(const name of CASES){const rows=s.rows.filter(r=>r.engine===engine&&r.case===name);assert.equal(rows.length,1,'case-matrix');auditRow(rows[0],s);}return true;}
