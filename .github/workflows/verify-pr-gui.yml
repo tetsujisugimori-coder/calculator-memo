@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
+      SOURCE_PROOF_DIR: ${{ github.workspace }}/gui-evidence/source-proof
+      SOURCE_REQUIRED_LOADS: '["e2e/run-stage.mjs"]'
+      SOURCE_WORKFLOW_PATH: .github/workflows/verify-pr-gui.yml
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
       PR_BRANCH: ${{ github.head_ref }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -35,6 +38,11 @@ jobs:
           node-version: 22.13.0
           # Verification/artifact upload must not compete with optional post-job cache saving.
           package-manager-cache: false
+      - name: Capture exact source and execution workflow before execution
+        id: source_before
+        run: |
+          git fetch --no-tags --depth=1 https://github.com/${{ github.repository }}.git "$GITHUB_WORKFLOW_SHA"
+          node e2e/source-proof.mjs before
       - name: Install locked app dependencies
         id: app_install
         run: |
@@ -51,7 +59,7 @@ jobs:
         run: node e2e/run-stage.mjs unit npm test
       - name: Lint
         id: lint
-        run: node e2e/run-stage.mjs lint npm run lint
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs lint npm run lint
       - name: Type check
         id: types
         run: node e2e/run-stage.mjs types npx --no-install tsc --noEmit
@@ -61,6 +69,12 @@ jobs:
       - name: Pages static build
         id: pages_build
         run: node e2e/run-stage.mjs pages-build npm run build:pages
+      - name: Verify unchanged runtime source and captured bytes after execution
+        id: source_after
+        if: always() && steps.source_before.outcome == 'success'
+        env:
+          NODE_OPTIONS: ''
+        run: node e2e/source-proof.mjs after
       - name: Preserve outcomes even when setup or tests fail
         if: always()
         env:
@@ -126,6 +140,9 @@ jobs:
           - webkit-mobile-390px
           - webkit-mobile-375px
     env:
+      SOURCE_PROOF_DIR: ${{ github.workspace }}/gui-evidence/source-proof
+      SOURCE_REQUIRED_LOADS: '["e2e/run-formal-scenario.mjs", "e2e/scenario.mjs"]'
+      SOURCE_WORKFLOW_PATH: .github/workflows/verify-pr-gui.yml
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
       PR_BRANCH: ${{ github.head_ref }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -143,6 +160,11 @@ jobs:
         with:
           node-version: 22.13.0
           package-manager-cache: false
+      - name: Capture exact source and execution workflow before execution
+        id: source_before
+        run: |
+          git fetch --no-tags --depth=1 https://github.com/${{ github.repository }}.git "$GITHUB_WORKFLOW_SHA"
+          node e2e/source-proof.mjs before
       - name: Install locked application and isolated GUI dependencies
         id: gui_install
         run: |
@@ -160,7 +182,13 @@ jobs:
         run: node e2e/run-stage.mjs browser-install timeout --verbose --signal=TERM --kill-after=10s 180s node e2e/node_modules/playwright/cli.js install chromium webkit
       - name: Execute exactly one full historical GUI scenario
         id: gui
-        run: node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/run-formal-scenario.mjs
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs gui /usr/bin/time -v -o gui-evidence/gui-resources.log node e2e/run-formal-scenario.mjs
+      - name: Verify unchanged runtime source and captured bytes after execution
+        id: source_after
+        if: always() && steps.source_before.outcome == 'success'
+        env:
+          NODE_OPTIONS: ''
+        run: node e2e/source-proof.mjs after
       - name: Preserve single-job outcomes even on error
         if: always()
         env:

@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
+      SOURCE_PROOF_DIR: ${{ github.workspace }}/gui-evidence/source-proof
+      SOURCE_REQUIRED_LOADS: '["e2e/physical/audit.mjs", "e2e/physical/run.mjs", "e2e/physical/negative.mjs", "e2e/physical-p2.node-test.mjs", "e2e/physical-p2-extra.node-test.mjs"]'
+      SOURCE_WORKFLOW_PATH: .github/workflows/storage-physical.yml
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
       CI: 'true'
       TMPDIR: ${{ github.workspace }}/work/stage3b12-tmp
@@ -31,6 +34,11 @@ jobs:
         with:
           node-version: 22.13.0
           package-manager-cache: false
+      - name: Capture exact source and execution workflow before execution
+        id: source_before
+        run: |
+          git fetch --no-tags --depth=1 https://github.com/${{ github.repository }}.git "$GITHUB_WORKFLOW_SHA"
+          node e2e/source-proof.mjs before
       - name: Locked dependencies
         id: dependencies
         run: |
@@ -40,7 +48,7 @@ jobs:
           npm ci --ignore-scripts
           npm ci --prefix e2e --ignore-scripts
       - name: Physical evidence node contracts
-        run: node --test e2e/physical-audit.node-test.mjs e2e/physical-p2.node-test.mjs
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node --test e2e/physical-audit.node-test.mjs e2e/physical-p2.node-test.mjs e2e/physical-p2-extra.node-test.mjs
       - name: Fixed browser setup
         id: browsers
         timeout-minutes: 5
@@ -49,9 +57,15 @@ jobs:
           node e2e/run-stage.mjs storage-reconciliation-install timeout --signal=TERM --kill-after=10s 280s node e2e/node_modules/playwright/cli.js install --with-deps chromium webkit
       - name: Fixed cloud synthetic observations (not physical acceptance)
         timeout-minutes: 8
-        run: node e2e/run-stage.mjs physical-browser timeout --signal=TERM --kill-after=10s 450s node e2e/physical/run.mjs
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs physical-browser timeout --signal=TERM --kill-after=10s 450s node e2e/physical/run.mjs
       - name: Evidence fault controls
-        run: node e2e/physical/negative.mjs
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/physical/negative.mjs
+      - name: Verify unchanged runtime source and captured bytes after execution
+        id: source_after
+        if: always() && steps.source_before.outcome == 'success'
+        env:
+          NODE_OPTIONS: ''
+        run: node e2e/source-proof.mjs after
       - name: Preserve failures and outcomes
         if: always()
         env:

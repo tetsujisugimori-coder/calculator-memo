@@ -1,0 +1,27 @@
+# Runtime source receipt and scope
+
+2026-11-15 JST. Refs #146 / Draft #147; baseline `a879727bfd4ec5701c6e8ce70ece3278a35b159d`, tree `ec8d816875aa8330aa1184485b6abf118cfbd519`.
+
+## Dependency inventory
+
+The physical entrypoints are `e2e/physical/run.mjs`, `negative.mjs`, `audit.mjs`, `files.mjs`, `server.mjs`, `manual.html`, both P2 regression tests and the original compressed summary. The fixture build reads `e2e/fixtures/storage-atomic.ts`, `storage-idb.ts` and their transitive first-party imports, Vite and its installed dependencies. The original twelve counterexamples, extra mutation receipt, and winner-regression JSON are retained. Node contract discovery additionally executes the selected `.node-test.mjs` files and the 3B11 independent auditor contracts.
+
+3B11 runs `run-storage-atomic.mjs`, `atomic-negative-controls.mjs`, `storage-atomic-evidence.mjs` and its negative-control helpers, shared `run-stage.mjs`, fixture TypeScript and transitive imports. Its existing generated fixture bytes, trace and raw-event hashes remain separate evidence. Formal GUI executes `run-formal-scenario.mjs`, `scenario.mjs`, `scenario-config.mjs`, `ci-contract.mjs`, the imported exercise modules and preview process. The application build reads app/components/lib/public, config and lockfiles. Matrix conditions, 1128 checks, 592 geometry and 132 PNG remain unchanged.
+
+The three workflow YAML files are themselves evidence. The source selection in `source-proof.mjs` intentionally includes the broader tracked first-party source/test/config/fixture closure, not just these names. Markdown is not treated as executed JavaScript. Relevant physical/atomic fixture JSON, compressed original summary, scripts and receipts are included. Unrelated owner-only archive references are not copied into source artifacts.
+
+## Original CI capture
+
+Before execution, disk bytes are compared to Git objects at the PR head. Every selected file has relative path, actual size, SHA-256 and computed Git blob ID. Actual bytes are stored under `source-proof/bytes/<sha256>.txt`; this suffix avoids generated TypeScript discovery. `before.json` records PR head, actual checkout, tree, workflow execution SHA/ref, event SHA, run/attempt and capture time. The workflow execution commit is fetched explicitly and its actual YAML bytes must equal the head YAML; equal bytes do not imply equal commit identity.
+
+Instrumented Node commands capture ESM `nextLoad` return bytes and CJS `_compile` input bytes. Each load receipt records path, size, digest, PID, capture kind/time and run/attempt. Content-addressed bytes are retained for loaded packages as well as Git-owned files. Explicit entrypoints must appear as actual loads, so an inventory or preload alone cannot pass. Startup-sensitive timeout fault controls are left uninstrumented; their original budgets and assertions are unchanged.
+
+After execution, selected disk bytes are compared again against Git and the pre-execution snapshot. The verifier rejects missing, duplicate, foreign, changed or inconsistent source, manifest, archive bytes, head, workflow and execution binding. `after.json` and `result.json` are produced in the original CI artifact. A failed capture/verification fails the job, and existing `always()` artifact upload preserves available failure evidence. Missing post-evidence is incomplete, never PASS. Original snapshots are not reconstructed after a failed run.
+
+## Limits requiring explicit classification
+
+This is a finite source receipt, not a protected attestation service. The PR can change its verifier/workflow; independent review and GitHub original-artifact digest checks remain necessary. Pre/post equality cannot exclude a transient filesystem edit reverted between captures when that read bypasses the loader. ESM loader returns and CJS compiler input cover Node module execution, not every filesystem read, Vite/native parser read, subprocess binary or browser engine. Third-party loaded bytes have lockfile context but no first-party Git blob ownership.
+
+Physical HAR already checks delivered generated fixture bytes. Existing 3B11 generated fixture bytes and hashes are retained. The complete transformed TypeScript-to-bundle-to-browser attribution and formal GUI served asset byte chain are **UNKNOWN** beyond their existing evidence; selected source inventory alone is not promoted into proof of execution. Native package/browser binaries are outside the Git source claim. Capture files and manifests are original only when generated inside their reported CI run; later independent calculations are supplemental receipts.
+
+These limits and unresolved public references keep overall **PARTIAL / limited merge NO**. Source-specific PASS must name its inspected scope. Physical Safari, private browsing, standalone, OS termination and media durability remain NOT_TESTED. Stage 3B HOLD, `executionAllowed=false`, `writeAllowed=false`, `authority=NOT_ESTABLISHED`, and no automatic retry after UNKNOWN remain in force. No product storage operation is introduced.

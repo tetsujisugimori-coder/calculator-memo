@@ -1,6 +1,15 @@
 # Calculator Memo 開発履歴・設計判断
 
 
+## 2026-11-15 (JST): PR147 runtime source and public-boundary reacceptance
+- Baseline a879727bfd4ec5701c6e8ce70ece3278a35b159d/tree ec8d816875aa8330aa1184485b6abf118cfbd519; latest main ffd99fc404328c35bc365d8587c204e6174e5e66; clean existing PR branch continued without replacing prior fixes. GitHub baseline14 success/conditional1skip directly confirmed; not new-source results.
+- Added original pre/post selected source bytes/size/SHA256/Git blob receipts, PR/checkout/tree/workflow execution SHA distinction, actual ESM load/CJS compile bytes and required entrypoint checks in physical/atomic/formal workflows. [Scope and remaining UNKNOWN attribution](docs/maintenance/storage-physical-stage3b12/SOURCE-PROOF.md). No product or test expectation/timeout change.
+- Independent source controls and original P2 regression are retained/run separately from new browser observations. Initial Windows checks: P2 normal20 and52 mutations accepted/rejected as expected; physical discovery symlink EPERM and existing Linux shell/timeout contracts fail in this environment. No changed expectations. Target ESLint succeeds. New exact-HEAD formal CI/artifact receipts remain PENDING and must be checked on this commit itself.
+- [Public inventory](docs/maintenance/storage-physical-stage3b12/public-reference-followup.md): two previously denied comment edits remain untouched; separate three-document cleanup tracked in [Issue148](https://github.com/tetsujisugimori-coder/calculator-memo/issues/148). Supported owner/admin redaction/access-revocation routes researched, not completed. External access/history/private archive readback UNKNOWN. No private URLs/IDs copied.
+- Prior PENDING, old FAIL, original ZIP and reviews retained. Independent reviewer identified preload-only/workflow/execution-binding false acceptance in initial new verifier; fixed binding and explicit load-set requirements before submission. Final independent results in source-review receipt. Whole bundle/browser attribution still UNKNOWN; PARTIAL/limited merge NO, Stage3B HOLD and false write/execution authority maintained.
+- Related [Issue146](https://github.com/tetsujisugimori-coder/calculator-memo/issues/146), [Draft PR147](https://github.com/tetsujisugimori-coder/calculator-memo/pull/147). No merge/publication/real-data write. Revert this additive evidence change to roll back; no data conversion.
+
+
 ## 2026-11-15 (JST): PR147 physical auditor P2 three-part correction
 - Previous limited YES at d679 is superseded by review5908839661: three evidence false-accepts, not observed product corruption. Start f643aaa added only review/LOG; old CI is not new-HEAD evidence.
 - Fix: abort/quota protects current/head/receipts/copies while validating legitimate UNKNOWN reservation/HOLD; main/retry event identity/cardinality/order; reload persistent fields plus new boot/session readonly chain. No product fixture/storage path/timeout/expectation change.

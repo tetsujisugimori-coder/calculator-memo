@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
+      SOURCE_PROOF_DIR: ${{ github.workspace }}/gui-evidence/source-proof
+      SOURCE_REQUIRED_LOADS: '["e2e/run-storage-atomic.mjs", "e2e/atomic-negative-controls.mjs", "e2e/storage-atomic-evidence.mjs"]'
+      SOURCE_WORKFLOW_PATH: .github/workflows/storage-atomic.yml
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
       CI: 'true'
       TMPDIR: ${{ github.workspace }}/work/stage3b11-tmp
@@ -31,6 +34,11 @@ jobs:
         with:
           node-version: 22.13.0
           package-manager-cache: false
+      - name: Capture exact source and execution workflow before execution
+        id: source_before
+        run: |
+          git fetch --no-tags --depth=1 https://github.com/${{ github.repository }}.git "$GITHUB_WORKFLOW_SHA"
+          node e2e/source-proof.mjs before
       - name: Locked dependencies
         id: dependencies
         run: |
@@ -59,11 +67,17 @@ jobs:
       - name: Chromium and WebKit isolated three-page acceptance
         id: acceptance
         timeout-minutes: 8
-        run: node e2e/run-stage.mjs atomic-browser timeout --signal=TERM --kill-after=10s 450s node e2e/run-storage-atomic.mjs
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs atomic-browser timeout --signal=TERM --kill-after=10s 450s node e2e/run-storage-atomic.mjs
       - name: Real browser mutants must be RED
         id: mutants
         timeout-minutes: 8
-        run: node e2e/run-stage.mjs atomic-negative-controls timeout --signal=TERM --kill-after=10s 450s node e2e/atomic-negative-controls.mjs
+        run: NODE_OPTIONS="--import=${GITHUB_WORKSPACE}/e2e/source-load-register.mjs" node e2e/run-stage.mjs atomic-negative-controls timeout --signal=TERM --kill-after=10s 450s node e2e/atomic-negative-controls.mjs
+      - name: Verify unchanged runtime source and captured bytes after execution
+        id: source_after
+        if: always() && steps.source_before.outcome == 'success'
+        env:
+          NODE_OPTIONS: ''
+        run: node e2e/source-proof.mjs after
       - name: Preserve failures and outcomes
         if: always()
         env:

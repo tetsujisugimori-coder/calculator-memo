@@ -1,4 +1,16 @@
 # Stage 3B-12 execution ledger
+## 2026-11-15 JST: source-proof and public-boundary reacceptance
+
+Baseline HEAD `a879727bfd4ec5701c6e8ce70ece3278a35b159d` / tree `ec8d816875aa8330aa1184485b6abf118cfbd519`. GitHub API independently confirms baseline 14 successful workflows and one conditional skip; these are historical results, not new-source acceptance. The initial ledger below remains unchanged history, including its PENDING states.
+
+New work adds original before/after Git byte receipts, actual Node loader/compiler capture, execution-workflow identity and independent fault controls. See [source scope and explicit UNKNOWN limits](SOURCE-PROOF.md). Final submitted SHA and its CI/artifact results are recorded in PR #147's latest reacceptance report and the appended LOG record; no earlier SHA's success is substituted. New exact-HEAD CI and original artifact independent readback are PENDING until observed.
+
+Public acquisition references remain UNRESOLVED: two denied-edit comments were not retried, and three separate-stage documents are tracked by [Issue #148](https://github.com/tetsujisugimori-coder/calculator-memo/issues/148). See [resource inventory, authorized actors and UNKNOWN external access](public-reference-followup.md). Original 27-ZIP private ledger's historical existence is recorded there; current private readback is UNKNOWN in this environment. No private acquisition URL/ID is reproduced.
+
+**Overall PARTIAL / limited merge NO.** Stage3B HOLD; `executionAllowed=false`, `writeAllowed=false`, `authority=NOT_ESTABLISHED`; no product writes/migration/restore or automatic retry after UNKNOWN. Physical Safari/private/standalone/OS/media remain NOT_TESTED. No merge, Draft release or publication.
+
+## Historical initial ledger (retained)
+
 2026-11-15 JST. Issue #146 / Draft PR #147. Overall PARTIAL, physical acceptance NOT_TESTED, limited merge recommendation NO pending final CI/archives.
 
 - Base main ffd99fc404328c35bc365d8587c204e6174e5e66 / tree536ba2539a7c868a7d30bd237150c90f1d3c4b80. Initial clean local commit7d70a23 had exact tree3aa912efc6f3c946d6bdf904382cfe45ebccd6f1. Git HTTPS push dry-run failed missing Username. Authorized GitHub blob/tree/commit branch route submitted 1c86805 with same parent/tree. Local intermediate commits remain retained; no published history replaced.
