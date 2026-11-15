@@ -1,5 +1,10 @@
 # Calculator Memo 開発履歴・設計判断
 
+## 2026-11-15 (JST): Stage 3B-12 独立レビューでP2を3件再現
+- 対象HEAD d6790765a17e1f75a7597ffe8712f95c0f06975b。原physical20行の正常受理と、abort/quota後の状態破損・別操作/ページイベント・reload後receipt/head破損の6種類×2engine=12件誤受理を確認。総合PARTIAL、限定マージ推奨NOへ改訂。原実行の破損発生を意味しない。
+- 原ZIP27本/175,590,022 bytesのサイズ・SHA/CRC、正式GUI6/1128/592/132、局所15Node成功を確認。実機・物理耐久NOT_TESTED、HOLD/実書込み禁止は継続。Library取得リンク残存は別の未完了項目。
+- [レビュー本文](docs/reviews/pr-147-20261115-122418-JST.md)、関連Issue #146 / PR #147。今回は文書記録のみで実装修正なし。文書追加後HEADのCIはPR Checksを参照し、旧HEAD成功を流用しない。
+
 ## 2026-11-15 (JST): Stage 3B-11 negative-control winner binding
 - Stage3B12 run43658397718 at017b succeeded20 cases/21 evidence controls. Existing Stage3B11 run43658397633 passed56 cases but its negative audit rejected Chromium early-success evidence: update-b won, while helper required update-a. Original runner and independent validator both correctly rejected missing readback. This was helper over-rejection, not product success or an undetected semantic fault.
 - Preserve both actual engine diagnostics. Bind exactly one VERIFIED update-a/update-b call and its tx/page/boot/operation rather than assuming a scheduling winner; apply same binding to scope mutation. Zero/multiple/foreign/missing evidence stays rejected. No runner, product, expectation, timeout or browser skip changes. Same captured Chromium RED before/GREEN after; WebKit retained. Independent review and next exact-HEAD CI are separate requirements.
