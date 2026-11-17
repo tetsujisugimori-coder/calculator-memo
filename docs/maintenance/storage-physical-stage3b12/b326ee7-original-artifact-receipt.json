@@ -1,0 +1,803 @@
+{
+  "head": "b326ee76a18fa9e97274aecc37a71693e1f57dbe",
+  "checkedAtUTC": "2026-11-15T12:30:27.715769+00:00",
+  "runStates": [
+    {
+      "id": 43712861922,
+      "name": "PR 113 WebKit frame observation pair",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 43712861919,
+      "name": "Stage 3B-1 isolated storage safety",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861941,
+      "name": "Stage 3B-3 storage facade acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861850,
+      "name": "Stage 3B-2 storage architecture PoC",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861904,
+      "name": "Stage 3B-12 isolated physical-storage observations",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861819,
+      "name": "Selective restore Stage 3A acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861837,
+      "name": "Stage 3B-6 read-only recovery reconciliation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861908,
+      "name": "Stage 3B-4 isolated IndexedDB acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861829,
+      "name": "Stage 3B real-browser multi-tab",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861831,
+      "name": "Stage 3B synthetic recovery races",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861887,
+      "name": "Stage 3B synthetic decision lifecycle",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861847,
+      "name": "Restore plan acceptance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861853,
+      "name": "Stage 3B-11 isolated atomic compare/update",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861826,
+      "name": "Stage 3B-5 isolated migration and branch rescue",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43712861856,
+      "name": "PR GUI regression",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "count": 27,
+  "totalBytes": 402143526,
+  "artifacts": [
+    {
+      "artifactId": 14160698359,
+      "runId": 43712861919,
+      "attempt": 1,
+      "name": "pr-storage-safety-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14160698359.zip",
+      "size": 1766937,
+      "sha256": "a6cd1520449adfe9e1fdf27651162f5236e7051e9225f284a2c340d201ff37ee",
+      "githubDigest": "sha256:a6cd1520449adfe9e1fdf27651162f5236e7051e9225f284a2c340d201ff37ee",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 17
+    },
+    {
+      "artifactId": 14161123781,
+      "runId": 43712861941,
+      "attempt": 1,
+      "name": "pr-storage-facade-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161123781.zip",
+      "size": 7344990,
+      "sha256": "ecfd4447cc87d517ed05db3645ebe61f7d643cef14f32af5fdd76075af504cd2",
+      "githubDigest": "sha256:ecfd4447cc87d517ed05db3645ebe61f7d643cef14f32af5fdd76075af504cd2",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 75
+    },
+    {
+      "artifactId": 14160763072,
+      "runId": 43712861850,
+      "attempt": 1,
+      "name": "pr-storage-architecture-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14160763072.zip",
+      "size": 132196,
+      "sha256": "0fca3bf326b053006b43aeed58072d78c5f01a1f76a4ee0c3c9db16d3ef692c4",
+      "githubDigest": "sha256:0fca3bf326b053006b43aeed58072d78c5f01a1f76a4ee0c3c9db16d3ef692c4",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 15
+    },
+    {
+      "artifactId": 14161187011,
+      "runId": 43712861904,
+      "attempt": 1,
+      "name": "pr-storage-physical-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161187011.zip",
+      "size": 27593171,
+      "sha256": "6f9101bd2062c63af4aaaf58fda4eac29427b969d55c7d0de607cc5b7df379e1",
+      "githubDigest": "sha256:6f9101bd2062c63af4aaaf58fda4eac29427b969d55c7d0de607cc5b7df379e1",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1444
+    },
+    {
+      "artifactId": 14160993629,
+      "runId": 43712861819,
+      "attempt": 1,
+      "name": "pr-selective-safety-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14160993629.zip",
+      "size": 4377437,
+      "sha256": "cd81e919e076f2b0079a617199afb85e1d08c88c686767a380ca1add2308a7c5",
+      "githubDigest": "sha256:cd81e919e076f2b0079a617199afb85e1d08c88c686767a380ca1add2308a7c5",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43
+    },
+    {
+      "artifactId": 14161062239,
+      "runId": 43712861837,
+      "attempt": 1,
+      "name": "pr-storage-reconciliation-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161062239.zip",
+      "size": 13179140,
+      "sha256": "1f03affbcc19d056036161ceff81346758ac8df259ad2d8d1fa733e481ff6819",
+      "githubDigest": "sha256:1f03affbcc19d056036161ceff81346758ac8df259ad2d8d1fa733e481ff6819",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 73
+    },
+    {
+      "artifactId": 14161611835,
+      "runId": 43712861908,
+      "attempt": 1,
+      "name": "pr-storage-idb-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161611835.zip",
+      "size": 3193154,
+      "sha256": "e65498e8d3eb6bf6741138f73a1c3f971486dd7285ae156a0e243382b246bd3a",
+      "githubDigest": "sha256:e65498e8d3eb6bf6741138f73a1c3f971486dd7285ae156a0e243382b246bd3a",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 29
+    },
+    {
+      "artifactId": 14161138207,
+      "runId": 43712861829,
+      "attempt": 1,
+      "name": "pr-storage-multitab-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161138207.zip",
+      "size": 9040758,
+      "sha256": "db811d3776a3ede2cd9674b85ac8556e8cedbd64e3751926b1c5a46287caa770",
+      "githubDigest": "sha256:db811d3776a3ede2cd9674b85ac8556e8cedbd64e3751926b1c5a46287caa770",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 89
+    },
+    {
+      "artifactId": 14161532146,
+      "runId": 43712861831,
+      "attempt": 1,
+      "name": "pr-storage-recovery-races-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161532146.zip",
+      "size": 19072794,
+      "sha256": "84bcf21c13e469d42c526f117aba828fbb022781a9c5d13ee1c1fed768a0444b",
+      "githubDigest": "sha256:84bcf21c13e469d42c526f117aba828fbb022781a9c5d13ee1c1fed768a0444b",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 28
+    },
+    {
+      "artifactId": 14160967517,
+      "runId": 43712861887,
+      "attempt": 1,
+      "name": "pr-storage-decision-lifecycle-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14160967517.zip",
+      "size": 4345151,
+      "sha256": "3b50d3a3e38e7a0501034e618e0aa6ae7075da68b77bbf054b0e9106b15bce92",
+      "githubDigest": "sha256:3b50d3a3e38e7a0501034e618e0aa6ae7075da68b77bbf054b0e9106b15bce92",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 34
+    },
+    {
+      "artifactId": 14161432502,
+      "runId": 43712861847,
+      "attempt": 1,
+      "name": "pr-selective-restore-plan-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161432502.zip",
+      "size": 12967914,
+      "sha256": "b374742e901718f5df78f0bcb2a59e6081c0784e904ad42aa76af5ce33e88212",
+      "githubDigest": "sha256:b374742e901718f5df78f0bcb2a59e6081c0784e904ad42aa76af5ce33e88212",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 107
+    },
+    {
+      "artifactId": 14161721458,
+      "runId": 43712861853,
+      "attempt": 1,
+      "name": "pr-storage-atomic-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161721458.zip",
+      "size": 26191710,
+      "sha256": "0575f5b44ed6cc98b52058c2d1d13cfc4888c576cc33db09a2d67ad0a880c58e",
+      "githubDigest": "sha256:0575f5b44ed6cc98b52058c2d1d13cfc4888c576cc33db09a2d67ad0a880c58e",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 8270
+    },
+    {
+      "artifactId": 14161216820,
+      "runId": 43712861826,
+      "attempt": 1,
+      "name": "pr-storage-migration-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161216820.zip",
+      "size": 6055169,
+      "sha256": "367ba2f26a34559e518c6770b4b20e6eb4d6b7319356f9f81c997bfa79ced038",
+      "githubDigest": "sha256:367ba2f26a34559e518c6770b4b20e6eb4d6b7319356f9f81c997bfa79ced038",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 21
+    },
+    {
+      "artifactId": 14161855458,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-mobile-375px",
+      "file": "14161855458.zip",
+      "size": 30742204,
+      "sha256": "93f017d87a5b21b8d14cccaa19ec9cf272a33520b82e81f4430b019a779e0d59",
+      "githubDigest": "sha256:93f017d87a5b21b8d14cccaa19ec9cf272a33520b82e81f4430b019a779e0d59",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2387
+    },
+    {
+      "artifactId": 14161815678,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "pr-restore-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161815678.zip",
+      "size": 1841556,
+      "sha256": "c3a09989eacc1097d225eac1c8cb7e73ca9a71f249c452b7db9f0171e3132b52",
+      "githubDigest": "sha256:c3a09989eacc1097d225eac1c8cb7e73ca9a71f249c452b7db9f0171e3132b52",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 27
+    },
+    {
+      "artifactId": 14161765905,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "pr-quote-overflow-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161765905.zip",
+      "size": 19984394,
+      "sha256": "a46bddd20c1738c2b54bb6c9735a5451654934cfe5a0f475f4c72fd1f2553aec",
+      "githubDigest": "sha256:a46bddd20c1738c2b54bb6c9735a5451654934cfe5a0f475f4c72fd1f2553aec",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 65
+    },
+    {
+      "artifactId": 14161622433,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "pr-recovery-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161622433.zip",
+      "size": 4548256,
+      "sha256": "32dc54a33e4341cffc0c50def10f503ea63482b9cce0936c19fe317ae33afab3",
+      "githubDigest": "sha256:32dc54a33e4341cffc0c50def10f503ea63482b9cce0936c19fe317ae33afab3",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43
+    },
+    {
+      "artifactId": 14161607836,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-narrow-390px",
+      "file": "14161607836.zip",
+      "size": 27933602,
+      "sha256": "982dbef390ea18ca9ed05739b7d280652d7690d3cf46c0640c5f5f67b7c0ad10",
+      "githubDigest": "sha256:982dbef390ea18ca9ed05739b7d280652d7690d3cf46c0640c5f5f67b7c0ad10",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2387
+    },
+    {
+      "artifactId": 14161597275,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "pr-checks-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161597275.zip",
+      "size": 44436492,
+      "sha256": "5d507795b5117556566a00d5b4b0bad6ea6446d472feb4f78ed99d0d64bf346d",
+      "githubDigest": "sha256:5d507795b5117556566a00d5b4b0bad6ea6446d472feb4f78ed99d0d64bf346d",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 5465
+    },
+    {
+      "artifactId": 14161532431,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "pr-backup-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161532431.zip",
+      "size": 1687587,
+      "sha256": "1b4a91a828347c74674d0a00187308e1e7177d0b74c1ab4ff4132bbf628cca60",
+      "githubDigest": "sha256:1b4a91a828347c74674d0a00187308e1e7177d0b74c1ab4ff4132bbf628cca60",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 27
+    },
+    {
+      "artifactId": 14161358764,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-mobile-390px",
+      "file": "14161358764.zip",
+      "size": 34849559,
+      "sha256": "454ac5cccf9dc1eca63ecabd08816cee142f00e3463b6c8e0e1f727467783d88",
+      "githubDigest": "sha256:454ac5cccf9dc1eca63ecabd08816cee142f00e3463b6c8e0e1f727467783d88",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2387
+    },
+    {
+      "artifactId": 14161244897,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-independent-audit-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14161244897.zip",
+      "size": 432,
+      "sha256": "7fc3bbfeba2e68c48f0ff2d1986bce535111a44f7fa66ed0a3dd107e5cc507ae",
+      "githubDigest": "sha256:7fc3bbfeba2e68c48f0ff2d1986bce535111a44f7fa66ed0a3dd107e5cc507ae",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1
+    },
+    {
+      "artifactId": 14161133210,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-webkit-mobile-375px",
+      "file": "14161133210.zip",
+      "size": 31457224,
+      "sha256": "1a674fd949d6ccc7b85e4c93d1ab5abd4f47a1f95d909c2640cda62c0262171c",
+      "githubDigest": "sha256:1a674fd949d6ccc7b85e4c93d1ab5abd4f47a1f95d909c2640cda62c0262171c",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2388
+    },
+    {
+      "artifactId": 14160948982,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-aggregate-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14160948982.zip",
+      "size": 468,
+      "sha256": "f4949234a2c24eb961ccea82a68827a81c2a56bda6b4f46544fa65c5f22fdcff",
+      "githubDigest": "sha256:f4949234a2c24eb961ccea82a68827a81c2a56bda6b4f46544fa65c5f22fdcff",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1
+    },
+    {
+      "artifactId": 14160933097,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "pr-selection-preview-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "file": "14160933097.zip",
+      "size": 3718724,
+      "sha256": "9fb953e7c6e42e2d7c9c085df936a80e855193a00d03211ba1a83fbabd42a108",
+      "githubDigest": "sha256:9fb953e7c6e42e2d7c9c085df936a80e855193a00d03211ba1a83fbabd42a108",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 35
+    },
+    {
+      "artifactId": 14160773703,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-desktop-1365px",
+      "file": "14160773703.zip",
+      "size": 29441179,
+      "sha256": "2452b6f4cc1b196af08dc5213a9fa8e7a70174f232e55a9b664fbfe0933e2dbe",
+      "githubDigest": "sha256:2452b6f4cc1b196af08dc5213a9fa8e7a70174f232e55a9b664fbfe0933e2dbe",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2387
+    },
+    {
+      "artifactId": 14160764474,
+      "runId": 43712861856,
+      "attempt": 1,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-webkit-mobile-390px",
+      "file": "14160764474.zip",
+      "size": 36241328,
+      "sha256": "a58232d676e22978016d1040e631fd27ded61c631135bf9264bc76cbbac9223e",
+      "githubDigest": "sha256:a58232d676e22978016d1040e631fd27ded61c631135bf9264bc76cbbac9223e",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 2388
+    }
+  ],
+  "origin": "GitHub Actions ZIPs preserved unchanged locally; Library storage/readback NOT_PERFORMED",
+  "workflowConclusions": {
+    "success": 13,
+    "failure": 1,
+    "conditionalSkipped": 1
+  },
+  "overallAcceptance": "FAIL: formal GUI and new runtime-source proof on GUI; integrity of archived original ZIP bytes PASS",
+  "contentInspection": {
+    "head": "b326ee76a18fa9e97274aecc37a71693e1f57dbe",
+    "checkedAtUTC": "2026-11-15T12:30:42.506669+00:00",
+    "status": "Archive integrity PASS; formal GUI/source proof FAIL retained separately",
+    "counts": {
+      "inventoryEntries": 30193,
+      "manifestEntries": 51,
+      "nestedZips": 142,
+      "nestedEntries": 1009,
+      "png": 401,
+      "physicalSources": 9,
+      "HARdeliveredBundles": 26,
+      "physicalTraceConditions": 20
+    },
+    "formalGUI": [
+      {
+        "artifactId": 14161855458,
+        "condition": "chromium-mobile-375px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 23,
+        "status": "failed"
+      },
+      {
+        "artifactId": 14161607836,
+        "condition": "chromium-narrow-390px",
+        "checks": 187,
+        "geometry": 98,
+        "png": 23,
+        "status": "failed"
+      },
+      {
+        "artifactId": 14161358764,
+        "condition": "chromium-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 23,
+        "status": "failed"
+      },
+      {
+        "artifactId": 14161133210,
+        "condition": "webkit-mobile-375px",
+        "checks": 189,
+        "geometry": 100,
+        "png": 23,
+        "status": "failed"
+      },
+      {
+        "artifactId": 14160773703,
+        "condition": "chromium-desktop-1365px",
+        "checks": 188,
+        "geometry": 100,
+        "png": 23,
+        "status": "failed"
+      },
+      {
+        "artifactId": 14160764474,
+        "condition": "webkit-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 23,
+        "status": "failed"
+      }
+    ],
+    "physical": {
+      "artifactId": 14161187011,
+      "rows": 20,
+      "sourcePaths": [
+        "e2e/physical/run.mjs",
+        "e2e/physical/audit.mjs",
+        "e2e/physical/server.mjs",
+        "e2e/physical/manual.html",
+        "e2e/physical/negative.mjs",
+        "e2e/physical/files.mjs",
+        "e2e/fixtures/storage-atomic.ts",
+        "e2e/fixtures/storage-idb.ts",
+        "docs/maintenance/storage-physical-stage3b12/PLAN.md"
+      ],
+      "traceConditions": "20 browser/namespace bindings PASS",
+      "additionalRuntimeSourceProof": "Inspected separately by source_independent; this content receipt checks original physical source/HAR/trace fields"
+    },
+    "perArtifact": [
+      {
+        "artifactId": 14160698359,
+        "inventorySizeEntries": 16,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161123781,
+        "inventorySizeEntries": 74,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14160763072,
+        "inventorySizeEntries": 14,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161187011,
+        "inventorySizeEntries": 1443,
+        "manifestHashEntries": 51,
+        "nestedZipsCRC": 20
+      },
+      {
+        "artifactId": 14160993629,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161062239,
+        "inventorySizeEntries": 72,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161611835,
+        "inventorySizeEntries": 15,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161138207,
+        "inventorySizeEntries": 88,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 34
+      },
+      {
+        "artifactId": 14161532146,
+        "inventorySizeEntries": 27,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 6
+      },
+      {
+        "artifactId": 14160967517,
+        "inventorySizeEntries": 33,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161432502,
+        "inventorySizeEntries": 106,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161721458,
+        "inventorySizeEntries": 8269,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 72
+      },
+      {
+        "artifactId": 14161216820,
+        "inventorySizeEntries": 20,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161855458,
+        "inventorySizeEntries": 2386,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161815678,
+        "inventorySizeEntries": 26,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161765905,
+        "inventorySizeEntries": 64,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 10
+      },
+      {
+        "artifactId": 14161622433,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161607836,
+        "inventorySizeEntries": 2386,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161597275,
+        "inventorySizeEntries": 5464,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161532431,
+        "inventorySizeEntries": 26,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161358764,
+        "inventorySizeEntries": 2386,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161244897,
+        "inventorySizeEntries": 0,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14161133210,
+        "inventorySizeEntries": 2387,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14160948982,
+        "inventorySizeEntries": 0,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14160933097,
+        "inventorySizeEntries": 34,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14160773703,
+        "inventorySizeEntries": 2386,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14160764474,
+        "inventorySizeEntries": 2387,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      }
+    ],
+    "limits": [
+      "No Library retrieval/readback",
+      "This content inspector delegates new runtime source/load/build/browser attribution to source_independent",
+      "No new browser run; original evidence replay/content inspection"
+    ]
+  },
+  "formalFailureInspection": [
+    {
+      "artifactId": 14161855458,
+      "condition": "chromium-mobile-375px",
+      "failure": "source-browser-bytes.mjs:38 tries dist-pages/__audit_storage_writer.html; ENOENT after scenario assertions",
+      "checks": 188,
+      "geometry": 98,
+      "retainedCheckpointPNGs": 22,
+      "allExportedPNGs": 23
+    },
+    {
+      "artifactId": 14161607836,
+      "condition": "chromium-narrow-390px",
+      "failure": "source-browser-bytes.mjs:38 tries dist-pages/__audit_storage_writer.html; ENOENT after scenario assertions",
+      "checks": 187,
+      "geometry": 98,
+      "retainedCheckpointPNGs": 22,
+      "allExportedPNGs": 23
+    },
+    {
+      "artifactId": 14161358764,
+      "condition": "chromium-mobile-390px",
+      "failure": "source-browser-bytes.mjs:38 tries dist-pages/__audit_storage_writer.html; ENOENT after scenario assertions",
+      "checks": 188,
+      "geometry": 98,
+      "retainedCheckpointPNGs": 22,
+      "allExportedPNGs": 23
+    },
+    {
+      "artifactId": 14161133210,
+      "condition": "webkit-mobile-375px",
+      "failure": "source-browser-bytes.mjs:38 tries dist-pages/__audit_storage_writer.html; ENOENT after scenario assertions",
+      "checks": 189,
+      "geometry": 100,
+      "retainedCheckpointPNGs": 22,
+      "allExportedPNGs": 23
+    },
+    {
+      "artifactId": 14160773703,
+      "condition": "chromium-desktop-1365px",
+      "failure": "source-browser-bytes.mjs:38 tries dist-pages/__audit_storage_writer.html; ENOENT after scenario assertions",
+      "checks": 188,
+      "geometry": 100,
+      "retainedCheckpointPNGs": 22,
+      "allExportedPNGs": 23
+    },
+    {
+      "artifactId": 14160764474,
+      "condition": "webkit-mobile-390px",
+      "failure": "source-browser-bytes.mjs:38 tries dist-pages/__audit_storage_writer.html; ENOENT after scenario assertions",
+      "checks": 188,
+      "geometry": 98,
+      "retainedCheckpointPNGs": 22,
+      "allExportedPNGs": 23
+    }
+  ],
+  "formalArtifactTotals": {
+    "conditions": 6,
+    "checks": 1128,
+    "geometry": 592,
+    "retainedCheckpointPNGs": 132,
+    "additionalFailurePNGs": 6,
+    "allExportedPNGs": 138,
+    "suiteAcceptance": "FAIL; counts do not override failure"
+  },
+  "aggregateAndIndependentOracle": "Both original reports status failed because prerequisite matrixResult=failure; no independent-oracle success claimed",
+  "libraryReadback": "NOT_PERFORMED; local preserved GitHub originals only"
+}

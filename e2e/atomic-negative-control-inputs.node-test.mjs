@@ -55,3 +55,23 @@ test('unrelated startup error never counts as the fixed abort semantic RED', () 
   assert.throws(() => validateAtomicMutantFailure(abortDiagnostic.rows[0], 'ENOENT: browser setup failed',
     'abort-success', 'verified-native-chain:tx-complete'), /original-semantic-failure-reason/);
 });
+
+for (const engine of ['chromium','webkit']) {
+ const raw = JSON.parse(readFileSync(new URL(`../docs/maintenance/storage-physical-stage3b12/independent/winner-regression/${engine}-early-success.json`,import.meta.url)));
+ test(`${engine} fixed native early-success winner is bound by result not caller order`,()=>{
+  assert.equal(raw.sha,'017b66972bf055fec8fd6b4d356a10aa9b3f1d7a');
+  assert.match(validateAtomicMutantFailure(raw.rows[0],raw.error,'early-success','verified-native-chain:readback'),/verified-native-chain:readback/);
+ });
+ test(`${engine} wrong or missing winner evidence cannot count as semantic detection`,()=>{
+  for (const fault of ['zero','multiple','foreign-premature','missing-premature']) {
+   const r=structuredClone(raw.rows[0]);
+   const winner=r.journal.find(j=>['update-a','update-b'].includes(j.label)&&j.result?.status==='VERIFIED');
+   if(fault==='zero')winner.result.status='REJECTED';
+   if(fault==='multiple')r.journal.push(structuredClone(winner));
+   const ev=r.events.find(e=>e.kind==='premature-result'&&e.txId===winner.result.txId);
+   if(fault==='foreign-premature')ev.txId='foreign';
+   if(fault==='missing-premature')r.events=r.events.filter(e=>e!==ev);
+   assert.throws(()=>validateAtomicMutantFailure(r,raw.error,'early-success','verified-native-chain:readback'),fault);
+  }
+ });
+}

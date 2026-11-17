@@ -1,0 +1,92 @@
+{
+  "head": "d6790765a17e1f75a7597ffe8712f95c0f06975b",
+  "sourceSummarySHA256": "81da784a8eb95ed787bce902d547fe0379005b46d41ee7c4c30ff1967cf42bba",
+  "normal": "ACCEPTED",
+  "results": [
+    {
+      "engine": "chromium",
+      "name": "foreign-operation-id",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "chromium",
+      "name": "foreign-page-session",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-partial-current",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-receipts-lost",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "chromium",
+      "name": "quota-partial-current",
+      "caseName": "quota-injected",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "chromium",
+      "name": "reload-missing-receipts",
+      "caseName": "reload",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "webkit",
+      "name": "foreign-operation-id",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "webkit",
+      "name": "foreign-page-session",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-partial-current",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-receipts-lost",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "webkit",
+      "name": "quota-partial-current",
+      "caseName": "quota-injected",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    },
+    {
+      "engine": "webkit",
+      "name": "reload-missing-receipts",
+      "caseName": "reload",
+      "expected": "REJECTED",
+      "actual": "FALSE_ACCEPT"
+    }
+  ],
+  "limit": "Evidence mutations only; no product or browser execution. These do not show the original native observations were corrupt."
+}

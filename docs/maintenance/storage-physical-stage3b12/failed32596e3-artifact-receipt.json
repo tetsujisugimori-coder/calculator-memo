@@ -1,0 +1,32 @@
+{
+  "head": "32596e3969ecea70e8ff22473ab5f963b99c2e7b",
+  "runId": 43711730362,
+  "attempt": 1,
+  "conclusion": "failure",
+  "checkedAtUTC": "2026-11-15T12:07:31.326349+00:00",
+  "artifacts": [
+    {
+      "artifactId": 14160548766,
+      "runId": 43711730362,
+      "attempt": 1,
+      "head": "32596e3969ecea70e8ff22473ab5f963b99c2e7b",
+      "name": "pr-storage-atomic-32596e3969ecea70e8ff22473ab5f963b99c2e7b-1",
+      "file": "14160548766.zip",
+      "size": 7983755,
+      "sha256": "4b2de241f565b88385a97ff00716bdaddc706bed5b1097f61d3dc6353adcceab",
+      "githubDigest": "sha256:4b2de241f565b88385a97ff00716bdaddc706bed5b1097f61d3dc6353adcceab",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 482
+    }
+  ],
+  "preservation": "GitHub original ZIP bytes unchanged; no Library storage/readback performed",
+  "failureClassification": "Independently inspected preserved atomic-all-node.log: formal-split.node-test.mjs:49 failed its exact id/gui run-command regular expression. atomic-ci-outcomes.json confirms source_before success, all_node failure, browser/acceptance/control steps skipped and source_after failure. Primary failure is workflow instrumentation versus an existing static contract, not an unexplained browser failure. Source verifier runtime-loads-required detail was reported by implementer; this inspector did not independently retrieve the source_after step stdout.",
+  "independentLogInspection": {
+    "nodeFailure": "formal-split.node-test.mjs:49 testCodeFailure; line59 expected /id: gui\\n        run: node e2e\\/run-stage\\.mjs gui /",
+    "steps": "source_before success; all_node failure; controls/browsers/acceptance/mutants skipped; source_after failure",
+    "availableInventorySizeEntries": 481,
+    "classification": "Workflow instrumentation changed the static command contract. Browser acceptance never ran. Secondary after-source proof FAIL is correctly retained, not a native source mismatch or UNKNOWN primary cause."
+  }
+}

@@ -9,6 +9,75 @@
 
 
 
+## 2026-11-15 21:55 JST: PR147 repaired source implementation final CI/original signoff
+- Implementation fa8cc7d4cc492322cf7fd78553412a11261c76c3/tree2504b622d575969734a65c50f45e043825f0ef10:14 successful workflows/1 conditional skip/0 fail or cancel. Node578, unit135files/3114, lint/type/normal+Pages builds PASS. FormalGUI6/1128/592/132 passed with original PNG validation; previous failed candidates remain separate.
+- Original27 ZIP402,798,009bytes official digest/size/SHA/CRC/available manifests/trace/PNG independently PASS, unchanged originals reread locally. [Archive](docs/maintenance/storage-physical-stage3b12/fa8cc7d-original-artifact-receipt.json). [Semantic replay](docs/maintenance/storage-physical-stage3b12/fa8cc7d-semantic-replay-receipt.json):physical20/21,atomic56/12+16 intended acceptance/rejection; saved evidence replay is not fresh browser testing.
+- [Independent source9/9](docs/maintenance/storage-physical-stage3b12/fa8cc7d-source-audit-receipt.json):487 selected first-party Git actual byte/blob/tree matches per source artifact;12822 actual loads;25 Vite builds/1147 input records/984 outputs;4798 actual browser responses and exact conditions. Independent original-clone source9/synthetic6 faults rejected, normal maintained; local controls37/37. Third-party/native/browser binary provenance and arbitrary FS reads are outside the first-party claim.
+- This commit records already observed implementation results without code/expectation/timeout changes. Its own exact-head CI and original ZIP acceptance must be confirmed in PR147 latest report/Checks; do not apply fa8 success to this later HEAD. Previous PENDING/FAIL/logs/reviews/ZIPs retained, no repeat CI fishing.
+- Public boundary UNRESOLVED: denied2 comments not retried, document cleanup Draft149/029e152 has13success/1skip but remains unmerged; historical versions/source access/revocation UNKNOWN. Refs#148; [public ledger](docs/maintenance/storage-physical-stage3b12/public-reference-followup.md). Current original ZIP preservation is Windows-local GitHub original readback, no new Library save/readback; older owner-only Library ledger current access/retention UNKNOWN.
+- Overall PARTIAL/limited merge NO. Refs#146/#147. Stage3B HOLD,executionAllowed=false,writeAllowed=false,authority=NOT_ESTABLISHED,no automatic retry after UNKNOWN; physicalSafari/private/standalone/OS/media NOT_TESTED. No merge/main write/publication/product write/restore/migration.
+
+
+## 2026-11-15 (JST): PR147 original GUI capture failures retained and repaired
+- b326ee7/tree6f9decc:13 workflow success/1 GUI FAIL/1 conditional skip. Whole original27 ZIP402,143,526bytes digest/size/SHA/CRC independently PASS; physical20/21 and atomic56/12+16 semantic replay PASS, not new browser trials. Source original483files each physical/atomic/checks match Git plus loader/Vite/browser evidence; six formal source artifacts FAIL. [Original receipt](docs/maintenance/storage-physical-stage3b12/b326ee7-original-artifact-receipt.json), [independent source](docs/maintenance/storage-physical-stage3b12/b326ee7-source-audit-receipt.json), [semantic replay](docs/maintenance/storage-physical-stage3b12/b326ee7-semantic-replay-receipt.json).
+- GUI completed original6/1128/592/132 ordinary PNG, then capture drain failed on missing dist __audit_storage_writer.html; six failure PNG also preserved. after rejected extra INCOMPLETE preview record. These are evidence-capture defects, not declared product failures, and original FAIL is not converted to PASS.
+- Same-input repair: apply=build and buildStart capture exclude preview config from creating an unexecuted build; original INCOMPLETE refusal remains. Seven existing route.fulfill title-only documents are exact helper-literal/actual-response evidence, not dist assets; modified or injected-script responses and unknown paths remain rejected. Atomic constant HTML is additionally bound to its Git helper. Local source20/Vite12/browser5 PASS; initial test regex selecting an unrelated body was corrected as a test-harness error. No product/expected result/timeout relaxation.
+- Public document cleanup is prepared in [Draft149](https://github.com/tetsujisugimori-coder/calculator-memo/pull/149), ref #148, not merged; main refs, denied2 comments and history/sharing UNKNOWN remain blockers. Original32596e3 multitab actual-send-required FAIL is independently preserved; next substantive b326 run passed unchanged multitab. Cause of prior recording order remains UNKNOWN; no unchanged rerun or assertion change.
+- Initial GitHub app connector MCP handshake failed; direct authenticated GitHub CLI/API supplied all repository/Issue/PR/run reads and permitted operations. Private Library tools are unavailable here; current ZIP preservation is Windows-local GitHub original download/readback, not a new Library copy/readback. No private acquisition URLs/IDs published.
+- Local typecheck initially included the separate document worktree under work/ and reported three worker/db environment type errors. Moved that clean worktree with git worktree move to the checked temporary directory, without deleting files or changing tsconfig; same typecheck then exit0. This local contamination failure is retained, not product failure or CI success.
+- Overall PARTIAL/limited merge NO, refs #146/#147. This final source/document candidate's own exact-HEAD CI and original artifacts must be checked; earlier PENDING/FAIL remains history. No main write, force push, merge, publication, production writes/migration/restore, or automatic retry after UNKNOWN. Stage3B HOLD and false execution/write authority maintained.
+
+
+## 2026-11-15 (JST): PR147 Vite input/output and browser-delivery source chain
+- Added actual Vite transform/HTML input capture and generated chunk/asset bytes; raw inputs are compared to Git/snapshot, derived inputs remain distinct, output first-party module coverage is required. Actual browser response bytes bind physical HTML and fixture scripts / atomic fixture scripts / formal GUI built assets; all20 physical /56+16 atomic /exact GUI conditions require script receipts. Capture manifests remain original CI artifacts, later audit receipts are supplemental.
+- Independent Node20/Vite11/browser3 controls PASS; actual earlier-transform1byte fault rejects UNKNOWN, HTML generation hook omission reproduced and fixed by post-order hook. Local Pages diagnostic115 raw inputs/1derived/138 outputs, no unknown input; Windows disk snapshot only, not formal Git equality. Typecheck0, target lint0. New exact-HEAD CI remains pending and cannot inherit old results.
+- Candidate32596e3 atomic run43711730362 failed existing formal-split workflow-format contract after inline NODE_OPTIONS insertion. Corrected env layout without altering original regex/assertions; local formal-split11/11 PASS. Source after correctly failed because browser was not executed. [Original failed ZIP receipt](docs/maintenance/storage-physical-stage3b12/failed32596e3-artifact-receipt.json): artifact14160548766,7,983,755bytes, official digest/size/SHA/482CRC PASS. No unchanged-failure rerun.
+- [Baseline a879 original27 ZIP receipt](docs/maintenance/storage-physical-stage3b12/baseline-original-artifact-receipt.json):176,377,841bytes; all original GitHub ZIP digest/size/SHA/CRC PASS, GUI6/1128/592/132 independently reaggregated. This is current GitHub download, not new private Library readback; old d679 set175,590,022bytes is separate. Original files retained in ignored work directory.
+- P2 same original20/12 independently replayed; existing53 plus reconstructed extra47 Node cases total100PASS. Extra46 names/semantic reasons match historical receipt, but missing old mutation input bytes are not invented. Saved-evidence replay is not new browser execution.
+- refs #146/#147, dependency #148. Public-boundary denial/owner-admin remedies remain unresolved, access UNKNOWN; PARTIAL/limited merge NO. No product writes, expected-value/timeout changes, merge or publication. Stage3B HOLD / false execution/write authority / no retry after UNKNOWN remain. [Source scope](docs/maintenance/storage-physical-stage3b12/SOURCE-PROOF.md).
+
+
+## 2026-11-15 (JST): PR147 runtime source and public-boundary reacceptance
+- Baseline a879727bfd4ec5701c6e8ce70ece3278a35b159d/tree ec8d816875aa8330aa1184485b6abf118cfbd519; latest main ffd99fc404328c35bc365d8587c204e6174e5e66; clean existing PR branch continued without replacing prior fixes. GitHub baseline14 success/conditional1skip directly confirmed; not new-source results.
+- Added original pre/post selected source bytes/size/SHA256/Git blob receipts, PR/checkout/tree/workflow execution SHA distinction, actual ESM load/CJS compile bytes and required entrypoint checks in physical/atomic/formal workflows. [Scope and remaining UNKNOWN attribution](docs/maintenance/storage-physical-stage3b12/SOURCE-PROOF.md). No product or test expectation/timeout change.
+- Independent source controls and original P2 regression are retained/run separately from new browser observations. Initial Windows checks: P2 normal20 and52 mutations accepted/rejected as expected; physical discovery symlink EPERM and existing Linux shell/timeout contracts fail in this environment. No changed expectations. Target ESLint succeeds. New exact-HEAD formal CI/artifact receipts remain PENDING and must be checked on this commit itself.
+- [Public inventory](docs/maintenance/storage-physical-stage3b12/public-reference-followup.md): two previously denied comment edits remain untouched; separate three-document cleanup tracked in [Issue148](https://github.com/tetsujisugimori-coder/calculator-memo/issues/148). Supported owner/admin redaction/access-revocation routes researched, not completed. External access/history/private archive readback UNKNOWN. No private URLs/IDs copied.
+- Prior PENDING, old FAIL, original ZIP and reviews retained. Independent reviewer identified preload-only/workflow/execution-binding false acceptance in initial new verifier; fixed binding and explicit load-set requirements before submission. Final independent results in source-review receipt. Whole bundle/browser attribution still UNKNOWN; PARTIAL/limited merge NO, Stage3B HOLD and false write/execution authority maintained.
+- Related [Issue146](https://github.com/tetsujisugimori-coder/calculator-memo/issues/146), [Draft PR147](https://github.com/tetsujisugimori-coder/calculator-memo/pull/147). No merge/publication/real-data write. Revert this additive evidence change to roll back; no data conversion.
+
+
+## 2026-11-15 (JST): PR147 physical auditor P2 three-part correction
+- Previous limited YES at d679 is superseded by review5908839661: three evidence false-accepts, not observed product corruption. Start f643aaa added only review/LOG; old CI is not new-HEAD evidence.
+- Fix: abort/quota protects current/head/receipts/copies while validating legitimate UNKNOWN reservation/HOLD; main/retry event identity/cardinality/order; reload persistent fields plus new boot/session readonly chain. No product fixture/storage path/timeout/expectation change.
+- Original reviewer ZIP404671 bytes/SHA d3604e42f0e09baa56a90f30a5dcb75f86946b02d542bbcf8a4a38ac2a137583 retrieved/CRC verified. Exact original script+summary preserved;12 old FALSE_ACCEPT ->12 intended semantic rejections;20 originals accepted. Added53 Node regressions; full Node494, unit3114, lint/typecheck, normal/Pages builds PASS; original21 evidence controls PASS on copied old artifact (not new browser execution).
+- Separate reviewer repeated12 RED/GREEN and added46 semantic counterexamples, all rejected; no blocking P1/P2 in locally reviewed correction. Final newHEAD CI/archive pending. Independent receipt under p2-regression.
+- Public link inventory: former9 comments vs current8 explained by earlier successful removal from6886093027. Six remaining non-denied comments edited to remove URL only;6886627108/6886671946 remain BLOCKED after permission denial, no retry/bypass. Old review identifier removed via UI; all13 comments and6 reviews read back. Seven of former9 comments now clean, two blocked remain. PR/Issue bodies and submitted reviews contain no acquisition identifier. Private mapping stays outside repository.
+- Real Safari/quota/eviction/OS/media NOT_TESTED/UNKNOWN; Stage3B HOLD; executionAllowed=false/writeAllowed=false/authority=NOT_ESTABLISHED. No new publication/merge. Limited merge NO until exact final CI and independent archive acceptance.
+- Refs #146/#147. This commit's own CI remains to be checked; previous results remain historical.
+
+## 2026-11-15 (JST): Stage 3B-12 独立レビューでP2を3件再現
+- 対象HEAD d6790765a17e1f75a7597ffe8712f95c0f06975b。原physical20行の正常受理と、abort/quota後の状態破損・別操作/ページイベント・reload後receipt/head破損の6種類×2engine=12件誤受理を確認。総合PARTIAL、限定マージ推奨NOへ改訂。原実行の破損発生を意味しない。
+- 原ZIP27本/175,590,022 bytesのサイズ・SHA/CRC、正式GUI6/1128/592/132、局所15Node成功を確認。実機・物理耐久NOT_TESTED、HOLD/実書込み禁止は継続。Library取得リンク残存は別の未完了項目。
+- [レビュー本文](docs/reviews/pr-147-20261115-122418-JST.md)、関連Issue #146 / PR #147。今回は文書記録のみで実装修正なし。文書追加後HEADのCIはPR Checksを参照し、旧HEAD成功を流用しない。
+
+## 2026-11-15 (JST): Stage 3B-11 negative-control winner binding
+- Stage3B12 run43658397718 at017b succeeded20 cases/21 evidence controls. Existing Stage3B11 run43658397633 passed56 cases but its negative audit rejected Chromium early-success evidence: update-b won, while helper required update-a. Original runner and independent validator both correctly rejected missing readback. This was helper over-rejection, not product success or an undetected semantic fault.
+- Preserve both actual engine diagnostics. Bind exactly one VERIFIED update-a/update-b call and its tx/page/boot/operation rather than assuming a scheduling winner; apply same binding to scope mutation. Zero/multiple/foreign/missing evidence stays rejected. No runner, product, expectation, timeout or browser skip changes. Same captured Chromium RED before/GREEN after; WebKit retained. Independent review and next exact-HEAD CI are separate requirements.
+- Original physical/atomic ZIPs are retained in Library with API digest/CRC verification; final evidence and GUI acceptance remain pending. Draft/HOLD and physical NOT_TESTED unchanged. Refs #146/#147.
+
+## 2026-11-15 (JST): Stage 3B-12 CI discovery failure correction
+- PR #147 / Issue #146, HEAD613c run43653999264 attempt1: native Chromium/WebKit 10 cases each completed; evidence controls stopped before mutations because `physical-browser.log` and `physical-browser-timing.json` were counted as suite directories (3 != 1). Original failure ZIP14138556486 retained; SHA256 fc9c8e9a34869a7b663a6734a173b8f64903b6d337a596a8feb16270f346ebbd, 2,038,876 bytes, CRC60 verified.
+- Correct directory discovery using Dirent.isDirectory; retain exactly-one constraint and reject zero/multiple/symlink-only candidates. Same CI sibling-file counterexample RED before correction, GREEN after. No case/timeout/expected outcome relaxed; no product changes. New exact-HEAD CI and artifact audit remain pending and must not inherit613c successes.
+- Overall PARTIAL / physical NOT_TESTED / limited merge NO pending final evidence. Stage3B HOLD and real-data prohibition unchanged.
+
+## 2026-11-15 (JST): Stage 3B-12 isolated physical observation foundation
+- Base merge ffd99fc404328c35bc365d8587c204e6174e5e66 / tree 536ba2539a7c868a7d30bd237150c90f1d3c4b80 verified; clean dedicated clone. Refs #146. Draft PR not yet created.
+- Reuse unchanged Stage3B11 native atomic fixture on a dedicated loopback origin. Add observation auditor, manual synthetic page/protocol, fixed 20 cloud cases and evidence faults. Product code, storage, existing CI budgets and formal GUI expectations unchanged.
+- Physical Safari/private/standalone/background, real quota/eviction/OS interruption/media durability NOT_TESTED/UNKNOWN. Manual page namespace reopen support and public HTTPS availability remain incomplete; no publication authorized or performed.
+- Initial node checks passed; exact final HEAD browser/CI/independent review/archive pending. Results must be read from final PR checks and raw evidence, not inferred here. Stage3B HOLD; executionAllowed=false; writeAllowed=false; authority=NOT_ESTABLISHED; UNKNOWN never authorizes replay.
+- Revert only new test/docs/workflow files to undo. No real data changed. Limited merge recommendation pending, physical acceptance NO.
+
+
 
 ## 2026-11-14 (JST): Stage 3B-11 提出候補の受入とWindows原証拠保全
 
@@ -19,7 +88,7 @@
 - E-abortは同一主txの開始/読取/比較/書込要求/abortとcomplete不在、G-lost-ackはcomplete/receipt/独立readbackを両engine原票で確認。UNKNOWN・HOLDと自動再試行禁止を維持。観測結果と実commitを混同しない。
 - [正式GUI run43596638947/attempt1](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/43596638947): 既存6条件/1128checks/592geometry/132PNG、成功trace0、touch各1344を維持。6原ZIP＋aggregate＋CI独立manifestを実取得し、別担当が既存監査器でWindows独立再集計PASS。PNG全hash/chunkCRC/decompress、geometry、inventory、provenance、配信HEAD/run/attemptが一致。originalsInventorySHA256 `a077bbfbb29c30c78c46d505a7e35ce406560994cbf1fc885aa2bb55722d71c0`。Windows監査の初回長パス展開失敗は元エラーを残し短い別領域で解消、原ZIP不変。
 - 実装39f04ddの14workflowはterminal、13success・条件外PR113 diagnosticの1skip。独立レビューで今回範囲の未解決P1/P2なし。これは記録前実装HEADの結果であり、**本記録を含む新しい最終HEADのCI/原artifact監査は [PR #145 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145/checks) と同PR/Issueの最終SHA/run付き追補を参照**。この記録自身の未確認成功を先取りしない。
-- Windows保全先 `C:\Users\tetsu\Dev-Artifact-Archive\calculator-memo\PR-145\`。原ZIP23,798,010 bytes/SHA9675c8bf...は独立コピー読戻し一致。旧候補ZIP・固定反例・全履歴・初回/第2回の失敗および修正pushによる旧正式GUI取消をHEAD別に保持。最終記録HEADの原artifact/履歴bundle・全hash台帳と別領域復元の完了結果もPR追補で報告する。作業cloneは `C:\Users\tetsu\Dev-Workspace\calculator-memo\restored-stage3b11`（元ローカルmain未更新）。
+- Windows保全先 `承認済みWindows保管先のPR-145専用領域`。原ZIP23,798,010 bytes/SHA9675c8bf...は独立コピー読戻し一致。旧候補ZIP・固定反例・全履歴・初回/第2回の失敗および修正pushによる旧正式GUI取消をHEAD別に保持。最終記録HEADの原artifact/履歴bundle・全hash台帳と別領域復元の完了結果もPR追補で報告する。作業cloneは `Windows上のStage3B11復元作業領域`（元ローカルmain未更新）。
 - Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。戻し方はこの隔離試験/文書/追加CIだけを通常revertし原証拠を保持。実データ変更はない。
 - Stage 3B HOLD / executionAllowed=false / writeAllowed=false / authority=NOT_ESTABLISHED。実データ・製品保存経路・移行/実復元・UNKNOWN後自動再試行は禁止。実機Safari/private/実quota/eviction/媒体耐久性/OS強制終了/非協調旧writer完全排他はUNKNOWN/NOT_TESTED。テスト・文書に限定したマージ推奨は最終記録HEADのCI・独立原証拠監査完了後に判断し、製品HOLD解除とは分ける。Draft解除/マージ/公開/ブランチ削除/main更新なし。
 
@@ -32,7 +101,7 @@
 - 初回提出 `5141bfd1` / run43595322176/attempt1はNode契約とChromium/WebKit各28正常成功、負対照は `undetected-evidence:wrongScope` でFAIL。原artifact14113344348（SHA256 `16702139b83b00e985ff1329c6aedab51d4678d0905c7207925880df73426770`）を無変更取得。注入が予約txを対象にしていたため、主txをjournal結果txId/page/boot/operationで一意選択へ修正。同一原票の正常受理・旧注入見逃し・修正注入complete-store-scope拒否を3固定試験で確認。原raw/summary行と入力形式取り違えの初回ローカル失敗も保持。
 - 修正候補 `0f98d652` / run43595932071/attempt1は全Node・両browser56正常成功、browser故障4件目abort-successで旧診断名期待と現行verified-native-chain:tx-completeが不一致。原artifact14114536673（SHA256 `a1c9d28bc146072101bc5890fa1b2670aa145f215e82156873950487c33e6d0f`）を保持。validator/fixture/正常期待を弱めず、abort/early-successの理由を現契約のcomplete/readback不在へ束縛し、同一主txのnative原票も確認する。失敗後のFAILラベルだけで拒否を確認せず、診断cloneで原票内容の独立再拒否を要求。全16browser変異の個別結果を完走保存する。元失敗と修正後は別HEADとして扱う。
 - 検証結果: 原保全物の照合と復元PASS。提出後の全Node・単体・lint・型・両build・両browser28ケースと故障対照・正式GUI6/1128/592/132・原artifact独立監査は、この記録commitの最終HEAD ChecksとPRのSHA/run/attempt付き結果で確認する。現時点の未実行を成功としない。
-- Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。原失敗と過去レビューを保持。Windows原ZIP: `C:\Users\tetsu\Dev-Workspace\calculator-memo\calculator-stage3b11-node-reaccept-2b750222.zip`。最終原artifact保全・独立読戻しは確認待ち。
+- Refs [Issue #144](https://github.com/tetsujisugimori-coder/calculator-memo/issues/144) / [Draft PR #145](https://github.com/tetsujisugimori-coder/calculator-memo/pull/145)。原失敗と過去レビューを保持。Windows原ZIP: `Windows上のcalculator-stage3b11-node-reaccept-2b750222.zip`。最終原artifact保全・独立読戻しは確認待ち。
 - Stage 3B HOLD / executionAllowed=false / writeAllowed=false / authority=NOT_ESTABLISHED。外側watchdog全子孫停止、過去無計測失敗の一意原因、実機Safari/媒体耐久性は未確定。実データ/製品接続/UNKNOWN自動再試行なし。全受入前のマージ推奨NO、Draft解除・マージ・公開・ブランチ削除なし。
 
 ## 2026-11-14 (JST): Stage 3B-11 Node timeout契約の準備境界
@@ -42,7 +111,7 @@
 - 試験fixtureのNode準備を処理予算から分離。0/200ms準備、ready→stalled marker→GNU timeout 124、TERM、stage timing、shell/子孫の終了とreapを確認。100ms処理・200ms kill-after・内2s外5s上限を維持。外側watchdog発火経路の全子孫停止保証は未検証。
 - 編集中局所検証: Node410/410、固定監査58/58、unit3114/3114、lint/type/Pages build成功。最終commit後の再受入と区別する。最終候補の結果はPR #145/Issue #144への実測追補を参照し、未確認CIを成功としない。
 - 通常push dry-runはUsername不足、候補8cac179のGitHub commit objectは404。履歴を捨てるsquashやforce更新は行わない。正規の同一履歴提出はBLOCKED。WebKitは7共有ライブラリ不足でNOT_TESTED、正式GUI全6条件と最終HEAD CIは未完了。
-- Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHED。製品接続・実データ書込みなし。限定マージNO。保全先: https://chatgpt.com/space/page_88e0a98e26b48191b00d2cac91810ee7 。旧失敗・原票・文書を保持。
+- Stage 3B HOLD、executionAllowed=false、writeAllowed=false、authority=NOT_ESTABLISHED。製品接続・実データ書込みなし。限定マージNO。保全先: 本人限定保管先（取得先は非公開管理） 。旧失敗・原票・文書を保持。
 
 ## 2026-11-14 (JST): Stage 3B-11 原票保全とabort監査の再開
 
@@ -50,7 +119,7 @@
 - 同一の未提出abort原票削除反例を修正前6 PASS/1 FAILで再現。主transactionの開始・scope・読取・照合・書込要求・native abort・complete不在と、page/boot/session/operation束縛を検査。write request成功をabortの必須条件にしない。
 - Gの擬似ack消失はUNKNOWNと実commit・最終独立読戻しを別照合。実通信切断やOS停止の証明ではない。
 - 局所監査35件と新規19件成功。全ブラウザ・正式GUI・最終CI・原artifact監査はこの記録時点で未完了、限定マージNO。Stage 3B HOLD、製品接続禁止を維持。
-- Refs #144 / PR #145。[保全と復元監査](https://chatgpt.com/space/page_88e0a98e26b48191b00d2cac91810ee7)。旧失敗票・レビューは保持。
+- Refs #144 / PR #145。保全と復元監査（本人限定記録。取得先は非公開管理）。旧失敗票・レビューは保持。
 
 
 ## 2026-11-14 (JST): Stage 3B-11 隔離原子更新検証の着手
@@ -1280,7 +1349,7 @@
 - 変更理由: 従来390px検証はマウスclickのChromiumであり、WebKitとtouchを確認できていなかった。基点main `0fe78372917793ffccc755f4ac998e7ce4d62260` はPR #13の05:56:48 UTCマージをAPIで確認した。
 - 従来の方針 / 新しい方針: Chromium両幅の回帰を共通期待値のまま維持し、従来狭幅のマウス条件も保持した上でmobile/touchとWebKitを必須追加。check名は既存の必須チェック参照を壊さないため保持。public Pagesのworkflow、アプリ、保存形式、依存lockは変更しない。
 - 第一希望 / 制約と採用策: iPhone Safari実機での確認が最終的な補完目標。今回は実端末操作環境がなく、再現可能なLinux Actions上のWebKit mobile/touchを採用する。これは実機検証の代替完了ではなく追加証拠である。
-- 検証結果: cloud Node 24.19.0で91単体テスト・lint・型検査・通常/Pagesビルド成功。GUIの正確なSHAとActions結果は下記に記録する。ローカルWebKitは必要OSライブラリ不足を検出し、正規の--with-depsが利用できるActionsを最終検証環境とする。独立レビューで既存狭幅条件保持・失敗scenario状態・モーダル内部はみ出し検査を補強した。最初のローカルnpm ciは既定cache `/home/agent/.npm` が利用できず失敗し、作業可能な一時cacheへ切替えた。セキュリティ制限の解除はしていない。
+- 検証結果: cloud Node 24.19.0で91単体テスト・lint・型検査・通常/Pagesビルド成功。GUIの正確なSHAとActions結果は下記に記録する。ローカルWebKitは必要OSライブラリ不足を検出し、正規の--with-depsが利用できるActionsを最終検証環境とする。独立レビューで既存狭幅条件保持・失敗scenario状態・モーダル内部はみ出し検査を補強した。最初のローカルnpm ciは既定cache `既定npmキャッシュ領域` が利用できず失敗し、作業可能な一時cacheへ切替えた。セキュリティ制限の解除はしていない。
 - 関連 Issue・PR: [Issue #14](https://github.com/tetsujisugimori-coder/calculator-memo/issues/14)。[PR #15](https://github.com/tetsujisugimori-coder/calculator-memo/pull/15)。
 - 初回CIの失敗と訂正: [39104018483](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104018483)、head `d48a8b45fb0bc905e480904c963b1401f498fa7b` は単体・lint・型・両build・ブラウザインストール・Chromium3条件が成功。WebKit26のmaxTouchPoints=0（coarsePointer=true）をテストが誤って未対応と扱い、アプリ操作前に失敗した。pinned PlaywrightはhasTouchをWebKit touch emulationへ渡していることを確認。maxTouchPointsの値はそのまま記録し、各tapのtouchstart実配信を必須にする検証へ訂正する。アプリの計算・保存期待値は変更しない。再検証は下記のCIで成功した。
 - Actions再検証: [39104300480](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104300480)、head `79ea3ade4623effabf2d91722f11c3d688c9d1fe`、Node22.13.0 / Playwright1.56.1で91単体テスト・lint・型検査・通常/Pagesビルド・GUI全工程成功。2026-10-18 15:32:40〜15:34:00 JSTにChromium141.0.7390.37とWebKit26.0の5条件、48検証記録、エラー0を確認。3つのmobile条件で各126回のtapとtouchstart配信を確認し、配信SHAも一致。[25枚の画面・5本のtrace・ログ](https://github.com/tetsujisugimori-coder/calculator-memo/actions/runs/39104300480/artifacts/12127866708)は7日保持。成果物をダウンロードしSHA256とprovenanceを照合した。この記録追記後の最終SHAは[PR #15 Checks](https://github.com/tetsujisugimori-coder/calculator-memo/pull/15/checks)で別途再検証する。

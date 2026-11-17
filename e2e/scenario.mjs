@@ -1,3 +1,4 @@
+import { captureBrowserSource } from './source-browser-bytes.mjs';
 // Synthetic-only PR GUI regression harness. Run from the repository root.
 import assert from "node:assert/strict";
 import { runtimeResources } from "./runtime-resources.mjs";
@@ -44,6 +45,7 @@ await persist();
 const origin = "http://127.0.0.1:" + port;
 const base = origin + "/calculator-memo/";
 let server, log, browser, context, page, expect;
+let verifyBrowserSource;
 let serverReady = false;
 function assertOwnedServer() {
   assert.ok(server && serverReady && server.exitCode === null && server.signalCode === null && !metadata.serverError, "The preview started by this harness must still be alive");
@@ -3947,6 +3949,7 @@ async function exercise(scenario) {
   await stage(prefix + ": browser-context");
   browserErrors = [];
   context = await browser.newContext({ viewport: { width, height }, isMobile, hasTouch, deviceScaleFactor, locale: "ja-JP", timezoneId: "Asia/Tokyo", colorScheme: "light", serviceWorkers: "block" });
+  verifyBrowserSource = captureBrowserSource(context, { origin, directory: "dist-pages", condition: selected.id });
   await context.route("**/*", (route) => {
     if (new URL(route.request().url()).origin !== origin) {
       browserErrors.push({ type: "blocked-external-request", url: route.request().url() });
@@ -4370,6 +4373,7 @@ async function exercise(scenario) {
   await context.tracing.stop(); // Keep pre-failure history while running; do not compress/export successful traces.
   metadata.timings.trace.push({ operation: "stop-discard-success", durationMs: performance.now() - traceStop });
   record.status = "passed"; record.finishedAt = new Date().toISOString();
+  await verifyBrowserSource();
   await context.close(); context = null; page = null;
 }
 try {

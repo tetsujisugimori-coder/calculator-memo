@@ -1,0 +1,235 @@
+{
+  "normal20": "ACCEPTED",
+  "results": [
+    {
+      "engine": "chromium",
+      "name": "abort-current",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n\n'BAD' !== 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-head",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:head\n+ actual - expected\n\n  {\n+   BAD: true\n-   fingerprint: '1:A',\n-   generation: 0,\n-   incarnation: 'inc-1',\n-   latestOperation: 'genesis',\n-   namespace: 'stage3b11-test-be4af721-ac79-45ba-830b-583687d7289e',\n-   structure: 1,\n-   target: 'current'\n  }\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-receipts",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:receipts\n+ actual - expected\n\n  {\n+   BAD: true\n-   genesis: {\n-     fingerprint: '1:A',\n-     operationId: 'genesis',\n-     previous: null,\n-     raw: 'A',\n-     token: {\n-       generation: 0,\n-       incarnation: 'inc-1',\n-       latestOperation: 'genesis',\n-       structure: 1\n-     }\n-   }\n  }\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-copies",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:copies\n+ actual - expected\n\n+ {\n+   BAD: true\n+ }\n- {}\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "quota-injected-current",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n\n'BAD' !== 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "quota-injected-head",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:head\n+ actual - expected\n\n  {\n+   BAD: true\n-   fingerprint: '1:A',\n-   generation: 0,\n-   incarnation: 'inc-1',\n-   latestOperation: 'genesis',\n-   namespace: 'stage3b11-test-9eb37944-9029-4268-9a22-ae8aafe28f5d',\n-   structure: 1,\n-   target: 'current'\n  }\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "quota-injected-receipts",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:receipts\n+ actual - expected\n\n  {\n+   BAD: true\n-   genesis: {\n-     fingerprint: '1:A',\n-     operationId: 'genesis',\n-     previous: null,\n-     raw: 'A',\n-     token: {\n-       generation: 0,\n-       incarnation: 'inc-1',\n-       latestOperation: 'genesis',\n-       structure: 1\n-     }\n-   }\n  }\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "quota-injected-copies",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:copies\n+ actual - expected\n\n+ {\n+   BAD: true\n+ }\n- {}\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "main-pageId",
+      "reason": "AssertionError [ERR_ASSERTION]: main-page-binding\n\n'foreign' !== 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "retry-pageId",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:pageId\n\n'foreign' !== 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "main-boot",
+      "reason": "AssertionError [ERR_ASSERTION]: main-boot-binding\n+ actual - expected\n\n+ 'foreign'\n- 'c80384ef-8a11-4250-9495-4ac0d6621ab1'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "retry-boot",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:boot\n+ actual - expected\n\n+ 'foreign'\n- 'c80384ef-8a11-4250-9495-4ac0d6621ab1'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "main-session",
+      "reason": "AssertionError [ERR_ASSERTION]: main-session-binding\n+ actual - expected\n\n+ 'foreign'\n- 'f9624422-546d-46d0-ac32-6430a26e5897'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "retry-session",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:session\n+ actual - expected\n\n+ 'foreign'\n- 'f9624422-546d-46d0-ac32-6430a26e5897'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "main-operationId",
+      "reason": "AssertionError [ERR_ASSERTION]: main-operation-binding\n+ actual - expected\n\n+ 'foreign'\n- 'op-test'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "retry-operationId",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:operation\n+ actual - expected\n\n+ 'foreign'\n- 'op-test'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "duplicate-tx-complete",
+      "reason": "AssertionError [ERR_ASSERTION]: main-event-cardinality-order\n+ actual - expected\n... Skipped lines\n\n  [\n    'update-request',\n    'tx-start',\n    'tx-read',\n    'compare-success',\n...\n    'tx-complete',\n+   'tx-complete',\n    'readback',\n    'readback-match',\n    'update-result'\n  ]\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "duplicate-readback-match",
+      "reason": "AssertionError [ERR_ASSERTION]: main-event-cardinality-order\n+ actual - expected\n... Skipped lines\n\n  [\n    'update-request',\n    'tx-start',\n    'tx-read',\n    'compare-success',\n...\n    'readback-match',\n+   'readback-match',\n    'update-result'\n  ]\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "duplicate-update-result",
+      "reason": "AssertionError [ERR_ASSERTION]: main-event-cardinality-order\n+ actual - expected\n... Skipped lines\n\n  [\n    'update-request',\n    'tx-start',\n    'tx-read',\n    'compare-success',\n...\n    'update-result',\n+   'update-result'\n  ]\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "reload-invented-boot",
+      "reason": "AssertionError [ERR_ASSERTION]: reload-native-read\n\n0 !== 1\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "reload-native-count",
+      "reason": "AssertionError [ERR_ASSERTION]: reload-native-receipts\n\n999 !== 2\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "reload-readonly",
+      "reason": "AssertionError [ERR_ASSERTION]: reload-readonly\n+ actual - expected\n\n+ 'readwrite'\n- 'readonly'\n       ^\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "retry-duplicate",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-cardinality-order\n+ actual - expected\n\n  [\n    'update-request',\n+   'update-request',\n    'update-result'\n  ]\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-current",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n\n'BAD' !== 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-head",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:head\n+ actual - expected\n\n  {\n+   BAD: true\n-   fingerprint: '1:A',\n-   generation: 0,\n-   incarnation: 'inc-1',\n-   latestOperation: 'genesis',\n-   namespace: 'stage3b11-test-3dc83ed4-c33e-4fff-9cfe-d1d49dff6804',\n-   structure: 1,\n-   target: 'current'\n  }\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-receipts",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:receipts\n+ actual - expected\n\n  {\n+   BAD: true\n-   genesis: {\n-     fingerprint: '1:A',\n-     operationId: 'genesis',\n-     previous: null,\n-     raw: 'A',\n-     token: {\n-       generation: 0,\n-       incarnation: 'inc-1',\n-       latestOperation: 'genesis',\n-       structure: 1\n-     }\n-   }\n  }\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-copies",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:copies\n+ actual - expected\n\n+ {\n+   BAD: true\n+ }\n- {}\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "quota-injected-current",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n\n'BAD' !== 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "quota-injected-head",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:head\n+ actual - expected\n\n  {\n+   BAD: true\n-   fingerprint: '1:A',\n-   generation: 0,\n-   incarnation: 'inc-1',\n-   latestOperation: 'genesis',\n-   namespace: 'stage3b11-test-2aa3758f-9b0c-41b1-a950-fbdd05de46a5',\n-   structure: 1,\n-   target: 'current'\n  }\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "quota-injected-receipts",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:receipts\n+ actual - expected\n\n  {\n+   BAD: true\n-   genesis: {\n-     fingerprint: '1:A',\n-     operationId: 'genesis',\n-     previous: null,\n-     raw: 'A',\n-     token: {\n-       generation: 0,\n-       incarnation: 'inc-1',\n-       latestOperation: 'genesis',\n-       structure: 1\n-     }\n-   }\n  }\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "quota-injected-copies",
+      "reason": "AssertionError [ERR_ASSERTION]: abort-preserved:copies\n+ actual - expected\n\n+ {\n+   BAD: true\n+ }\n- {}\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "main-pageId",
+      "reason": "AssertionError [ERR_ASSERTION]: main-page-binding\n\n'foreign' !== 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "retry-pageId",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:pageId\n\n'foreign' !== 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "main-boot",
+      "reason": "AssertionError [ERR_ASSERTION]: main-boot-binding\n+ actual - expected\n\n+ 'foreign'\n- '3091412b-f252-4a0a-8e7a-cb455d1758a1'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "retry-boot",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:boot\n+ actual - expected\n\n+ 'foreign'\n- '3091412b-f252-4a0a-8e7a-cb455d1758a1'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "main-session",
+      "reason": "AssertionError [ERR_ASSERTION]: main-session-binding\n+ actual - expected\n\n+ 'foreign'\n- 'fffe6b6b-160d-489a-b14c-3bf6d33c1204'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "retry-session",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:session\n+ actual - expected\n\n+ 'foreign'\n- 'fffe6b6b-160d-489a-b14c-3bf6d33c1204'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "main-operationId",
+      "reason": "AssertionError [ERR_ASSERTION]: main-operation-binding\n+ actual - expected\n\n+ 'foreign'\n- 'op-test'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "retry-operationId",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-binding:operation\n+ actual - expected\n\n+ 'foreign'\n- 'op-test'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "duplicate-tx-complete",
+      "reason": "AssertionError [ERR_ASSERTION]: main-event-cardinality-order\n+ actual - expected\n... Skipped lines\n\n  [\n    'update-request',\n    'tx-start',\n    'tx-read',\n    'compare-success',\n...\n    'tx-complete',\n+   'tx-complete',\n    'readback',\n    'readback-match',\n    'update-result'\n  ]\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "duplicate-readback-match",
+      "reason": "AssertionError [ERR_ASSERTION]: main-event-cardinality-order\n+ actual - expected\n... Skipped lines\n\n  [\n    'update-request',\n    'tx-start',\n    'tx-read',\n    'compare-success',\n...\n    'readback-match',\n+   'readback-match',\n    'update-result'\n  ]\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "duplicate-update-result",
+      "reason": "AssertionError [ERR_ASSERTION]: main-event-cardinality-order\n+ actual - expected\n... Skipped lines\n\n  [\n    'update-request',\n    'tx-start',\n    'tx-read',\n    'compare-success',\n...\n    'update-result',\n+   'update-result'\n  ]\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "reload-invented-boot",
+      "reason": "AssertionError [ERR_ASSERTION]: reload-native-read\n\n0 !== 1\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "reload-native-count",
+      "reason": "AssertionError [ERR_ASSERTION]: reload-native-receipts\n\n999 !== 2\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "reload-readonly",
+      "reason": "AssertionError [ERR_ASSERTION]: reload-readonly\n+ actual - expected\n\n+ 'readwrite'\n- 'readonly'\n       ^\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "retry-duplicate",
+      "reason": "AssertionError [ERR_ASSERTION]: retry-cardinality-order\n+ actual - expected\n\n  [\n    'update-request',\n+   'update-request',\n    'update-result'\n  ]\n"
+    }
+  ]
+}

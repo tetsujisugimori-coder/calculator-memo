@@ -1,0 +1,88 @@
+{
+  "head": "32596e3969ecea70e8ff22473ab5f963b99c2e7b",
+  "runId": 43711730574,
+  "attempt": 1,
+  "conclusion": "failure",
+  "checkedAtUTC": "2026-11-15T12:14:32.579214+00:00",
+  "artifacts": [
+    {
+      "artifactId": 14160748177,
+      "runId": 43711730574,
+      "attempt": 1,
+      "head": "32596e3969ecea70e8ff22473ab5f963b99c2e7b",
+      "name": "pr-storage-multitab-32596e3969ecea70e8ff22473ab5f963b99c2e7b-1",
+      "file": "14160748177.zip",
+      "size": 4361566,
+      "sha256": "c613da9bfb28bf52aed1e6142b04696211c60ddd5d2893538ed6d66861445ffc",
+      "githubDigest": "sha256:c613da9bfb28bf52aed1e6142b04696211c60ddd5d2893538ed6d66861445ffc",
+      "sizeMatch": true,
+      "digestMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 74,
+      "inventorySizeEntries": 73
+    }
+  ],
+  "independentlyObservedFailures": [],
+  "ciOutcomes": [
+    {
+      "file": "multitab-ci-outcomes.json",
+      "steps": {
+        "checkout": {
+          "outputs": {
+            "commit": "32596e3969ecea70e8ff22473ab5f963b99c2e7b",
+            "ref": ""
+          },
+          "outcome": "success",
+          "conclusion": "success"
+        },
+        "node": {
+          "outputs": {
+            "node-version": "v22.13.0"
+          },
+          "outcome": "success",
+          "conclusion": "success"
+        },
+        "dependencies": {
+          "outputs": {},
+          "outcome": "success",
+          "conclusion": "success"
+        },
+        "controls": {
+          "outputs": {},
+          "outcome": "success",
+          "conclusion": "success"
+        },
+        "browsers": {
+          "outputs": {},
+          "outcome": "success",
+          "conclusion": "success"
+        },
+        "acceptance": {
+          "outputs": {},
+          "outcome": "failure",
+          "conclusion": "failure"
+        },
+        "mutants": {
+          "outputs": {},
+          "outcome": "skipped",
+          "conclusion": "skipped"
+        }
+      }
+    }
+  ],
+  "origin": "GitHub original ZIPs; Library retrieval/readback NOT_PERFORMED",
+  "failureClassification": {
+    "primary": "multitab-browser.log and original summary report AssertionError [ERR_ASSERTION]: actual-send-required",
+    "phase": "acceptance, not formal-split/all-Node static contract",
+    "nativeRows": "30 retained rows: Chromium15/WebKit15; no failed row status is recorded before terminal suite FAIL",
+    "controls": "unit61/61 and evidence contract19/19 PASS",
+    "cause": "UNKNOWN: successful retained rows do not replace the failed final suite-level assertion",
+    "retry": "No rerun requested; original failure remains FAIL"
+  },
+  "finiteRawInspection": {
+    "condition": "webkit / delayed-duplicate-reordered",
+    "observation": "One receive event precedes its matching send in the retained events array. Matching send exists later; no receive lacks a matching send in the complete array of any of the 30 rows.",
+    "validator": "e2e/storage-multitab-evidence.mjs:141 checks sends accumulated before each receive, consistent with actual-send-required.",
+    "cause": "Ordering origin/native causal timing remains UNKNOWN; no assertion relaxation or rerun performed."
+  }
+}

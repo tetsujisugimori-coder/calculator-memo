@@ -1,0 +1,104 @@
+{
+  "head": "d6790765a17e1f75a7597ffe8712f95c0f06975b",
+  "sourceSummarySHA256": "81da784a8eb95ed787bce902d547fe0379005b46d41ee7c4c30ff1967cf42bba",
+  "normal": "ACCEPTED",
+  "results": [
+    {
+      "engine": "chromium",
+      "name": "foreign-operation-id",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: main-operation-binding\n+ actual - expected\n\n+ 'foreign-operation'\n- 'op-test'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "foreign-page-session",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: main-page-binding\n+ actual - expected\n\n+ 'foreign-page'\n- 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-partial-current",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n+ actual - expected\n\n+ 'PARTIAL-WRITE'\n- 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "abort-receipts-lost",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: abort-preserved:receipts\n+ actual - expected\n\n+ {}\n- {\n-   genesis: {\n-     fingerprint: '1:A',\n-     operationId: 'genesis',\n-     previous: null,\n-     raw: 'A',\n-     token: {\n-       generation: 0,\n-       incarnation: 'inc-1',\n-       latestOperation: 'genesis',\n-       structure: 1\n-     }\n-   }\n- }\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "quota-partial-current",
+      "caseName": "quota-injected",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n+ actual - expected\n\n+ 'PARTIAL-WRITE'\n- 'A'\n"
+    },
+    {
+      "engine": "chromium",
+      "name": "reload-missing-receipts",
+      "caseName": "reload",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: reload-persistent:head\n+ actual - expected\n\n  {\n    fingerprint: '9:SYNTHETIC',\n+   generation: 999,\n-   generation: 1,\n    incarnation: 'inc-1',\n    latestOperation: 'op-test',\n    namespace: 'stage3b11-test-bffbac42-b7a2-44e0-8ae0-b3f9aa79307a',\n    structure: 1,\n    target: 'current'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "foreign-operation-id",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: main-operation-binding\n+ actual - expected\n\n+ 'foreign-operation'\n- 'op-test'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "foreign-page-session",
+      "caseName": "normal",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: main-page-binding\n+ actual - expected\n\n+ 'foreign-page'\n- 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-partial-current",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n+ actual - expected\n\n+ 'PARTIAL-WRITE'\n- 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "abort-receipts-lost",
+      "caseName": "abort",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: abort-preserved:receipts\n+ actual - expected\n\n+ {}\n- {\n-   genesis: {\n-     fingerprint: '1:A',\n-     operationId: 'genesis',\n-     previous: null,\n-     raw: 'A',\n-     token: {\n-       generation: 0,\n-       incarnation: 'inc-1',\n-       latestOperation: 'genesis',\n-       structure: 1\n-     }\n-   }\n- }\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "quota-partial-current",
+      "caseName": "quota-injected",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: abort-preserved:current\n+ actual - expected\n\n+ 'PARTIAL-WRITE'\n- 'A'\n"
+    },
+    {
+      "engine": "webkit",
+      "name": "reload-missing-receipts",
+      "caseName": "reload",
+      "expected": "REJECTED",
+      "actual": "REJECTED",
+      "error": "AssertionError [ERR_ASSERTION]: reload-persistent:head\n+ actual - expected\n\n  {\n    fingerprint: '9:SYNTHETIC',\n+   generation: 999,\n-   generation: 1,\n    incarnation: 'inc-1',\n    latestOperation: 'op-test',\n    namespace: 'stage3b11-test-bfe4066f-c0b9-4ce8-9c74-5cff0afcc712',\n    structure: 1,\n    target: 'current'\n"
+    }
+  ],
+  "limit": "Evidence mutations only; no product or browser execution. These do not show the original native observations were corrupt."
+}

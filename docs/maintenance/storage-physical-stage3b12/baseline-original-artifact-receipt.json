@@ -1,0 +1,774 @@
+{
+  "head": "a879727bfd4ec5701c6e8ce70ece3278a35b159d",
+  "checkedAtUTC": "2026-11-15T12:01:26.825463+00:00",
+  "count": 27,
+  "totalBytes": 176377841,
+  "artifacts": [
+    {
+      "artifactId": 14156676808,
+      "runId": 43701176003,
+      "attempt": 1,
+      "name": "pr-storage-recovery-races-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156676808.zip",
+      "size": 19202267,
+      "sha256": "08770155fa4f5fb4d4954cdbb5835fc69d10ab3b7b0876dde370f4c41c347346",
+      "githubDigest": "sha256:08770155fa4f5fb4d4954cdbb5835fc69d10ab3b7b0876dde370f4c41c347346",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 28,
+      "availableEvidence": [
+        "inventory.json",
+        "recovery-races-a879727bfd4e-a4fd5514-7dc8-4165-ab66-ba56b48de1ee/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156347281,
+      "runId": 43701176001,
+      "attempt": 1,
+      "name": "pr-storage-migration-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156347281.zip",
+      "size": 6055171,
+      "sha256": "0656379243bb6958dd696b098d06e608e6ec763d356de0cfa668ef4d394739d0",
+      "githubDigest": "sha256:0656379243bb6958dd696b098d06e608e6ec763d356de0cfa668ef4d394739d0",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 21,
+      "availableEvidence": [
+        "inventory.json",
+        "storage-migration-a879727bfd4e-2f436448-85de-41f3-b3b3-7766cf3285d6/summary.json",
+        "storage-migration-independent-58a22997-48b8-4a3a-8277-3266dde7e2c9/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156756777,
+      "runId": 43701176072,
+      "attempt": 1,
+      "name": "pr-storage-reconciliation-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156756777.zip",
+      "size": 13178206,
+      "sha256": "acb3915694b7169efad506900ce563e2fed6a262e9ea88d0d16f82f92cf6aa95",
+      "githubDigest": "sha256:acb3915694b7169efad506900ce563e2fed6a262e9ea88d0d16f82f92cf6aa95",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 73,
+      "availableEvidence": [
+        "independent-reconciliation-a879727bfd4e-384d927b-8855-4b3f-a567-ff17c154d4d7/summary.json",
+        "independent-reconciliation-a879727bfd4e-572f4f05-5df4-46fe-899e-04f1c9cf4a4a/summary.json",
+        "independent-reconciliation-a879727bfd4e-7719ff80-ec9c-4d2e-9d7a-55a9dd90d7aa/summary.json",
+        "independent-reconciliation-a879727bfd4e-a02dedcb-8c02-4c82-88e2-0d7c1a76d637/summary.json",
+        "inventory.json",
+        "storage-reconciliation-a879727bfd4e-d520c446-12b9-4448-b9b7-c574c1304dd5/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156094701,
+      "runId": 43701175964,
+      "attempt": 1,
+      "name": "pr-storage-architecture-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156094701.zip",
+      "size": 132186,
+      "sha256": "b3d935c1e50e68a463bcf31641b3cb76ca28fd225aa17667d463ff264a6645b0",
+      "githubDigest": "sha256:b3d935c1e50e68a463bcf31641b3cb76ca28fd225aa17667d463ff264a6645b0",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 15,
+      "availableEvidence": [
+        "inventory.json",
+        "storage-architecture-a879727bfd4e-987e1b23-1bcd-43b3-be4c-43a7c256cd18/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156701823,
+      "runId": 43701176039,
+      "attempt": 1,
+      "name": "pr-storage-decision-lifecycle-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156701823.zip",
+      "size": 4345160,
+      "sha256": "6c2e81a24e821ca6ff3036e8c4f74a16ce902eed8d97155b888a0731dec101bd",
+      "githubDigest": "sha256:6c2e81a24e821ca6ff3036e8c4f74a16ce902eed8d97155b888a0731dec101bd",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 34,
+      "availableEvidence": [
+        "decision-lifecycle-a879727bfd4e-5ae70624-caaf-4ea1-a0b6-e8194b5b3bdd/summary.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14156144683,
+      "runId": 43701175944,
+      "attempt": 1,
+      "name": "pr-storage-multitab-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156144683.zip",
+      "size": 9119801,
+      "sha256": "7d8c2ac13018479f71d4c99b51bcafd8313dc9afc646c93bc329e574f3f55949",
+      "githubDigest": "sha256:7d8c2ac13018479f71d4c99b51bcafd8313dc9afc646c93bc329e574f3f55949",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 89,
+      "availableEvidence": [
+        "inventory.json",
+        "multitab-a879727bfd4e-accept-stale-9c08ed63-bbe9-41a3-9163-71e6562d973c/summary.json",
+        "multitab-a879727bfd4e-disable-communication-daf5590a-28e6-41b1-9e06-7841e6d7c3cd/summary.json",
+        "multitab-a879727bfd4e-none-a23fe298-64bf-4cf9-a1f4-5b9dd7be9801/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156163162,
+      "runId": 43701176032,
+      "attempt": 1,
+      "name": "pr-storage-physical-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156163162.zip",
+      "size": 12782087,
+      "sha256": "68bcb5df9e237da3d3c32e066d01116043f9a465333fe6c3a51d4c0a69d40624",
+      "githubDigest": "sha256:68bcb5df9e237da3d3c32e066d01116043f9a465333fe6c3a51d4c0a69d40624",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 82,
+      "availableEvidence": [
+        "inventory.json",
+        "physical-a879727bfd4e-b26728cc-c8d0-492a-a7aa-dc3376cc26b7/manifest.json",
+        "physical-a879727bfd4e-b26728cc-c8d0-492a-a7aa-dc3376cc26b7/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156990926,
+      "runId": 43701175900,
+      "attempt": 1,
+      "name": "pr-selective-restore-plan-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156990926.zip",
+      "size": 12967901,
+      "sha256": "787ef97783708baf6fa5e9b88031612cbcc33661a0ce3e04040732fb55550119",
+      "githubDigest": "sha256:787ef97783708baf6fa5e9b88031612cbcc33661a0ce3e04040732fb55550119",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 107,
+      "availableEvidence": [
+        "inventory.json",
+        "selective-restore-plan-provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14155739201,
+      "runId": 43701176391,
+      "attempt": 1,
+      "name": "pr-storage-idb-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14155739201.zip",
+      "size": 3193354,
+      "sha256": "6143785b2917a1f98d168afd2d1325b93f655ba8f71915f75e8a70f9663a7b57",
+      "githubDigest": "sha256:6143785b2917a1f98d168afd2d1325b93f655ba8f71915f75e8a70f9663a7b57",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 29,
+      "availableEvidence": [
+        "gui-evidence/inventory.json",
+        "gui-evidence/storage-idb-a879727bfd4e-9320f3aa-c4fb-4026-bc87-a3e55ddfa0a6/summary.json",
+        "docs/maintenance/storage-idb-stage3b4/independent/ci/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14157110710,
+      "runId": 43701176383,
+      "attempt": 1,
+      "name": "pr-storage-safety-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14157110710.zip",
+      "size": 1766940,
+      "sha256": "7f23056e93af429959a2d97efbd726d94aa3d1816763882d8e943a96d82569da",
+      "githubDigest": "sha256:7f23056e93af429959a2d97efbd726d94aa3d1816763882d8e943a96d82569da",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 17,
+      "availableEvidence": [
+        "inventory.json",
+        "storage-safety-a879727bfd4e-2026-11-15T09-55-13-192Z-d0c3a6e9-795e-425b-be4c-63a4dd0c89a2/provenance.json",
+        "storage-safety-a879727bfd4e-2026-11-15T09-55-13-192Z-d0c3a6e9-795e-425b-be4c-63a4dd0c89a2/summary.json"
+      ]
+    },
+    {
+      "artifactId": 14156721076,
+      "runId": 43701175897,
+      "attempt": 1,
+      "name": "pr-storage-atomic-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156721076.zip",
+      "size": 6571655,
+      "sha256": "dfd62f89bbf68393e690a5e1c40e3631d4b5a262be92962572561db8a99ebf1a",
+      "githubDigest": "sha256:dfd62f89bbf68393e690a5e1c40e3631d4b5a262be92962572561db8a99ebf1a",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 206,
+      "availableEvidence": [
+        "atomic-a879727bfd4e-abort-success-92967057-4d4a-45b3-b6d3-21fd2424d5cc/summary.json",
+        "atomic-a879727bfd4e-abort-success-c7eba4fd-14d4-4acd-be8a-49ff609b2b3d/summary.json",
+        "atomic-a879727bfd4e-accept-stale-6bfbb38e-70bb-43cb-b321-c7bd757f070e/summary.json",
+        "atomic-a879727bfd4e-accept-stale-f7ae2827-bd2d-4f44-b84c-6729a928ddb2/summary.json",
+        "atomic-a879727bfd4e-compare-outside-10bc07ce-c512-4dbf-89d1-76ad93bd7da7/summary.json",
+        "atomic-a879727bfd4e-compare-outside-7b4fd0c7-45e6-42b8-9114-1b6cb953acf9/summary.json",
+        "atomic-a879727bfd4e-early-success-382dac81-b798-41c9-a072-2dde84998a58/summary.json",
+        "atomic-a879727bfd4e-early-success-a432dd2d-6a56-4300-b01b-eb967f31dc5b/summary.json",
+        "atomic-a879727bfd4e-ignore-receipt-d0951d69-d944-4b71-9669-1e019d1c0039/summary.json",
+        "atomic-a879727bfd4e-ignore-receipt-fbf48774-b2e1-4e02-b03e-7d9802b5ecf8/summary.json",
+        "atomic-a879727bfd4e-missing-store-18cc5c7e-76e1-432c-b9f8-35ed5d9919ae/summary.json",
+        "atomic-a879727bfd4e-missing-store-3f3161d3-afd9-4f64-b237-23b83943605e/summary.json",
+        "atomic-a879727bfd4e-no-incarnation-6699abd6-fa41-47a3-8149-203bc8c50fb7/summary.json",
+        "atomic-a879727bfd4e-no-incarnation-b0c8c35e-3104-4f16-8f62-4df53b87fbec/summary.json",
+        "atomic-a879727bfd4e-none-e70c1a7e-c1ae-416d-981a-edc26ba13b42/summary.json",
+        "atomic-a879727bfd4e-old-session-5bb26619-88f4-4c1b-8747-56ec7a64c2a1/summary.json",
+        "atomic-a879727bfd4e-old-session-e9281123-5c0a-45b8-86f7-372b15cfbf35/summary.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14156477185,
+      "runId": 43701176029,
+      "attempt": 1,
+      "name": "pr-selective-safety-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156477185.zip",
+      "size": 4377997,
+      "sha256": "f9fa3166332d81eb85538ef5821b9a902d8c65cc60f0f70d62e1041439410a89",
+      "githubDigest": "sha256:f9fa3166332d81eb85538ef5821b9a902d8c65cc60f0f70d62e1041439410a89",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "inventory.json",
+        "stage3a-a879727bfd4e-2026-11-15T09-55-28-714Z-e55c4e1a-0d24-4e4a-9205-6c320c3ed47a/provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14156796064,
+      "runId": 43701175929,
+      "attempt": 1,
+      "name": "pr-storage-facade-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156796064.zip",
+      "size": 7344428,
+      "sha256": "6dd641d59c1507983391b293501a815fa46e65e397336e929e2a9ddba80ec8e7",
+      "githubDigest": "sha256:6dd641d59c1507983391b293501a815fa46e65e397336e929e2a9ddba80ec8e7",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 75,
+      "availableEvidence": [
+        "inventory.json",
+        "storage-facade-a879727bfd4e-2026-11-15T09-55-02-849Z-e60bef07-c9db-4531-ae38-2e1f1cf3fe85/provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14157270560,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1-webkit-mobile-390px",
+      "file": "14157270560.zip",
+      "size": 11659195,
+      "sha256": "83b4942d7a37cca87b0d2b90e97d4e9be28de7a92d59a61e5242c8d9819d7286",
+      "githubDigest": "sha256:83b4942d7a37cca87b0d2b90e97d4e9be28de7a92d59a61e5242c8d9819d7286",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "inventory.json",
+        "webkit-mobile-390px/provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14157220578,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1-chromium-mobile-390px",
+      "file": "14157220578.zip",
+      "size": 10218350,
+      "sha256": "f528d7622bb0bdf790c111fa3b57c8e6b16703fecf45531460f967f8f034a706",
+      "githubDigest": "sha256:f528d7622bb0bdf790c111fa3b57c8e6b16703fecf45531460f967f8f034a706",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "chromium-mobile-390px/provenance.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14157205252,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "pr-checks-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14157205252.zip",
+      "size": 91776,
+      "sha256": "e346ae95c91dd2784c4b79d108f49563fed28992df2519819b4e6a4ce82ee363",
+      "githubDigest": "sha256:e346ae95c91dd2784c4b79d108f49563fed28992df2519819b4e6a4ce82ee363",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 18,
+      "availableEvidence": [
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14157146721,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-independent-audit-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14157146721.zip",
+      "size": 14519,
+      "sha256": "5d8cd354cf59b4782b31c93cf833cfdec2eb8a194e3cf65e615a5e09d8201a25",
+      "githubDigest": "sha256:5d8cd354cf59b4782b31c93cf833cfdec2eb8a194e3cf65e615a5e09d8201a25",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1,
+      "availableEvidence": [
+        "manifest.json"
+      ]
+    },
+    {
+      "artifactId": 14157120601,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "pr-selection-preview-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14157120601.zip",
+      "size": 3718780,
+      "sha256": "0a534735717d57a7ac485270349e82f5ec0528fef66765656ab2d4065ce2ccce",
+      "githubDigest": "sha256:0a534735717d57a7ac485270349e82f5ec0528fef66765656ab2d4065ce2ccce",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 35,
+      "availableEvidence": [
+        "inventory.json",
+        "selection-preview-provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14157115902,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1-chromium-mobile-375px",
+      "file": "14157115902.zip",
+      "size": 6240134,
+      "sha256": "0776759540c4fa98a35085f0e40e0178d0a2797912f6afa0968224c36dcc5c7d",
+      "githubDigest": "sha256:0776759540c4fa98a35085f0e40e0178d0a2797912f6afa0968224c36dcc5c7d",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "chromium-mobile-375px/provenance.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14156985577,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "pr-backup-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156985577.zip",
+      "size": 1697861,
+      "sha256": "3b2a29fa452273907aa0f65e850866895b4c7f31e4fe2ad360ffb54c64dcc0c1",
+      "githubDigest": "sha256:3b2a29fa452273907aa0f65e850866895b4c7f31e4fe2ad360ffb54c64dcc0c1",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 27,
+      "availableEvidence": [
+        "backup-provenance.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14156951288,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1-chromium-desktop-1365px",
+      "file": "14156951288.zip",
+      "size": 4999568,
+      "sha256": "f725cb2392acedb3ba8c65b1a854020495a0233e60d1ace53a5e7a318e5ef2c3",
+      "githubDigest": "sha256:f725cb2392acedb3ba8c65b1a854020495a0233e60d1ace53a5e7a318e5ef2c3",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "chromium-desktop-1365px/provenance.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14156861398,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "pr-recovery-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156861398.zip",
+      "size": 4547655,
+      "sha256": "62ddad269bbec9d50207a4ad096b05d47e5e5d7ccd132e2b66d070ae92cff98b",
+      "githubDigest": "sha256:62ddad269bbec9d50207a4ad096b05d47e5e5d7ccd132e2b66d070ae92cff98b",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "inventory.json",
+        "recovery-provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14156708222,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-aggregate-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156708222.zip",
+      "size": 514,
+      "sha256": "d02b5546a50f13e14f2821863cef87e7558d093473d78ebceab37b6c8eccb9f8",
+      "githubDigest": "sha256:d02b5546a50f13e14f2821863cef87e7558d093473d78ebceab37b6c8eccb9f8",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 1,
+      "availableEvidence": []
+    },
+    {
+      "artifactId": 14156547752,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "pr-restore-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156547752.zip",
+      "size": 1842141,
+      "sha256": "3bf3589664fd72b261c9ddf6a194be2a50a91b28d89e4327ec4fb70e8b726d1e",
+      "githubDigest": "sha256:3bf3589664fd72b261c9ddf6a194be2a50a91b28d89e4327ec4fb70e8b726d1e",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 27,
+      "availableEvidence": [
+        "inventory.json",
+        "restore-provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14156417853,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1-webkit-mobile-375px",
+      "file": "14156417853.zip",
+      "size": 6929736,
+      "sha256": "56a7568ecb9e246560cada7618f04b432ad0f0e7c044c6c891b88bfb6bca8207",
+      "githubDigest": "sha256:56a7568ecb9e246560cada7618f04b432ad0f0e7c044c6c891b88bfb6bca8207",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "inventory.json",
+        "webkit-mobile-375px/provenance.json"
+      ]
+    },
+    {
+      "artifactId": 14156393640,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "formal-gui-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1-chromium-narrow-390px",
+      "file": "14156393640.zip",
+      "size": 3531458,
+      "sha256": "06d51be8a64817c0c608df5794e92d463c344d09ec06450cfb4b55ef7562d0e6",
+      "githubDigest": "sha256:06d51be8a64817c0c608df5794e92d463c344d09ec06450cfb4b55ef7562d0e6",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 43,
+      "availableEvidence": [
+        "chromium-narrow-390px/provenance.json",
+        "inventory.json"
+      ]
+    },
+    {
+      "artifactId": 14156263758,
+      "runId": 43701175895,
+      "attempt": 1,
+      "name": "pr-quote-overflow-a879727bfd4ec5701c6e8ce70ece3278a35b159d-1",
+      "file": "14156263758.zip",
+      "size": 19849001,
+      "sha256": "4239d35db6a39e8dd55a2d3e8f53aaf50d58d855f6b3f22d184083a92dd1b80a",
+      "githubDigest": "sha256:4239d35db6a39e8dd55a2d3e8f53aaf50d58d855f6b3f22d184083a92dd1b80a",
+      "digestMatch": true,
+      "sizeMatch": true,
+      "zipCRC": "PASS",
+      "entryCount": 65,
+      "availableEvidence": [
+        "inventory.json"
+      ]
+    }
+  ],
+  "origin": "GitHub Actions artifact ZIP endpoint; no Library access/readback in this operation",
+  "contentInspection": {
+    "head": "a879727bfd4ec5701c6e8ce70ece3278a35b159d",
+    "checkedAtUTC": "2026-11-15T12:02:36.613812+00:00",
+    "status": "PASS for available original bytes; complete runtime identity remains UNKNOWN",
+    "counts": {
+      "inventoryEntries": 1254,
+      "manifestEntries": 51,
+      "nestedZips": 142,
+      "nestedEntries": 923,
+      "png": 395,
+      "physicalSources": 9,
+      "HARdeliveredBundles": 26,
+      "physicalTraceConditions": 20
+    },
+    "formalGUI": [
+      {
+        "artifactId": 14157270560,
+        "condition": "webkit-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14157220578,
+        "condition": "chromium-mobile-390px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14157115902,
+        "condition": "chromium-mobile-375px",
+        "checks": 188,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14156951288,
+        "condition": "chromium-desktop-1365px",
+        "checks": 188,
+        "geometry": 100,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14156417853,
+        "condition": "webkit-mobile-375px",
+        "checks": 189,
+        "geometry": 100,
+        "png": 22,
+        "status": "passed"
+      },
+      {
+        "artifactId": 14156393640,
+        "condition": "chromium-narrow-390px",
+        "checks": 187,
+        "geometry": 98,
+        "png": 22,
+        "status": "passed"
+      }
+    ],
+    "physical": {
+      "artifactId": 14156163162,
+      "rows": 20,
+      "sourcePaths": [
+        "e2e/physical/run.mjs",
+        "e2e/physical/audit.mjs",
+        "e2e/physical/server.mjs",
+        "e2e/physical/manual.html",
+        "e2e/physical/negative.mjs",
+        "e2e/physical/files.mjs",
+        "e2e/fixtures/storage-atomic.ts",
+        "e2e/fixtures/storage-idb.ts",
+        "docs/maintenance/storage-physical-stage3b12/PLAN.md"
+      ],
+      "traceConditions": "20 browser/namespace bindings PASS",
+      "missingRequiredRuntimeSources": [
+        "e2e/physical-p2.node-test.mjs",
+        "P2 regression original summary and controls",
+        "workflow YAML"
+      ],
+      "limitation": "Original artifact proves only captured nine source files; complete runtime source identity UNKNOWN"
+    },
+    "perArtifact": [
+      {
+        "artifactId": 14156676808,
+        "inventorySizeEntries": 27,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 6
+      },
+      {
+        "artifactId": 14156347281,
+        "inventorySizeEntries": 20,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156756777,
+        "inventorySizeEntries": 72,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156094701,
+        "inventorySizeEntries": 14,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156701823,
+        "inventorySizeEntries": 33,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156144683,
+        "inventorySizeEntries": 88,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 34
+      },
+      {
+        "artifactId": 14156163162,
+        "inventorySizeEntries": 81,
+        "manifestHashEntries": 51,
+        "nestedZipsCRC": 20
+      },
+      {
+        "artifactId": 14156990926,
+        "inventorySizeEntries": 106,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14155739201,
+        "inventorySizeEntries": 15,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157110710,
+        "inventorySizeEntries": 16,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156721076,
+        "inventorySizeEntries": 205,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 72
+      },
+      {
+        "artifactId": 14156477185,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156796064,
+        "inventorySizeEntries": 74,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157270560,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157220578,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157205252,
+        "inventorySizeEntries": 17,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157146721,
+        "inventorySizeEntries": 0,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157120601,
+        "inventorySizeEntries": 34,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14157115902,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156985577,
+        "inventorySizeEntries": 26,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156951288,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156861398,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156708222,
+        "inventorySizeEntries": 0,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156547752,
+        "inventorySizeEntries": 26,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156417853,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156393640,
+        "inventorySizeEntries": 42,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 0
+      },
+      {
+        "artifactId": 14156263758,
+        "inventorySizeEntries": 64,
+        "manifestHashEntries": 0,
+        "nestedZipsCRC": 10
+      }
+    ],
+    "limits": [
+      "No Library retrieval/readback",
+      "Atomic standalone manifest/HAR/full source capture absent in these originals",
+      "GUI runtime source identity metadata only",
+      "No new browser run; original evidence replay/content inspection"
+    ]
+  },
+  "runtimeSourceAcceptance": "UNKNOWN: original source set incomplete; current workflow/source proof implementation is separate",
+  "libraryReadback": "NOT_PERFORMED: this receipt reobtains GitHub originals, not Library stored copies"
+}

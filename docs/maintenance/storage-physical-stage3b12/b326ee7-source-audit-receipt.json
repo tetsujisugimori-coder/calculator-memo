@@ -1,0 +1,274 @@
+{
+  "head": "b326ee76a18fa9e97274aecc37a71693e1f57dbe",
+  "tree": "6f9deccfb200b1a09242e9599a0b806ac265dd59",
+  "checkedAtUTC": "2026-11-15T12:30:35.034497+00:00",
+  "reviewer": "separate source reviewer; independent Python byte/Git/graph/condition inspector, no application verifier imports",
+  "status": "PARTIAL: one or more original source-proof artifacts FAIL",
+  "artifacts": [
+    {
+      "status": "PASS",
+      "sourceFiles": 483,
+      "nodeLoadRecords": 425,
+      "builds": 1,
+      "buildInputs": 19,
+      "buildOutputs": 1,
+      "browserResponses": 52,
+      "browserScriptConditions": 20,
+      "workflowExecutionSHA": "49c96f62d196131fe5ed6e235c7ab447d4ecc080",
+      "workflowPath": ".github/workflows/storage-physical.yml",
+      "captureStart": "2026-11-15T12:15:32.651Z",
+      "captureEnd": "2026-11-15T12:17:34.231Z",
+      "artifactId": 14161187011,
+      "name": "pr-storage-physical-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "runId": 43712861904,
+      "attempt": 1,
+      "officialDigest": "sha256:6f9101bd2062c63af4aaaf58fda4eac29427b969d55c7d0de607cc5b7df379e1",
+      "zipBytes": 27593171,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "PASS",
+      "sourceFiles": 483,
+      "nodeLoadRecords": 6944,
+      "builds": 17,
+      "buildInputs": 323,
+      "buildOutputs": 17,
+      "browserResponses": 220,
+      "browserScriptConditions": 72,
+      "workflowExecutionSHA": "49c96f62d196131fe5ed6e235c7ab447d4ecc080",
+      "workflowPath": ".github/workflows/storage-atomic.yml",
+      "captureStart": "2026-11-15T12:15:39.280Z",
+      "captureEnd": "2026-11-15T12:18:44.954Z",
+      "artifactId": 14161721458,
+      "name": "pr-storage-atomic-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "runId": 43712861853,
+      "attempt": 1,
+      "officialDigest": "sha256:0575f5b44ed6cc98b52058c2d1d13cfc4888c576cc33db09a2d67ad0a880c58e",
+      "zipBytes": 26191710,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "FAIL",
+      "reason": "build-status",
+      "buildStates": [
+        {
+          "id": "592387b4-8144-4cfc-b7f0-3c42ac68ce9d",
+          "label": "pages",
+          "status": "INCOMPLETE"
+        },
+        {
+          "id": "da7e745a-554c-4e0b-a254-534eaeeb445d",
+          "label": "pages",
+          "status": "CAPTURED"
+        }
+      ],
+      "artifactId": 14161855458,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-mobile-375px",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:93f017d87a5b21b8d14cccaa19ec9cf272a33520b82e81f4430b019a779e0d59",
+      "zipBytes": 30742204,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "FAIL",
+      "reason": "build-status",
+      "buildStates": [
+        {
+          "id": "244430fd-2c57-4414-9874-ac0f67ed31c2",
+          "label": "pages",
+          "status": "INCOMPLETE"
+        },
+        {
+          "id": "b0a8b853-e0bc-4bdf-9347-c86ce9cddf3f",
+          "label": "pages",
+          "status": "CAPTURED"
+        }
+      ],
+      "artifactId": 14161607836,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-narrow-390px",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:982dbef390ea18ca9ed05739b7d280652d7690d3cf46c0640c5f5f67b7c0ad10",
+      "zipBytes": 27933602,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "PASS",
+      "sourceFiles": 483,
+      "nodeLoadRecords": 2441,
+      "builds": 1,
+      "buildInputs": 115,
+      "buildOutputs": 138,
+      "browserResponses": 0,
+      "browserScriptConditions": 0,
+      "workflowExecutionSHA": "49c96f62d196131fe5ed6e235c7ab447d4ecc080",
+      "workflowPath": ".github/workflows/verify-pr-gui.yml",
+      "captureStart": "2026-11-15T12:18:02.415Z",
+      "captureEnd": "2026-11-15T12:20:27.956Z",
+      "artifactId": 14161597275,
+      "name": "pr-checks-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:5d507795b5117556566a00d5b4b0bad6ea6446d472feb4f78ed99d0d64bf346d",
+      "zipBytes": 44436492,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "FAIL",
+      "reason": "build-status",
+      "buildStates": [
+        {
+          "id": "666bbbb2-7429-4926-9646-3d5e2831191b",
+          "label": "pages",
+          "status": "CAPTURED"
+        },
+        {
+          "id": "6e0fa950-189c-4caf-b853-1a1052620005",
+          "label": "pages",
+          "status": "INCOMPLETE"
+        }
+      ],
+      "artifactId": 14161358764,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-mobile-390px",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:454ac5cccf9dc1eca63ecabd08816cee142f00e3463b6c8e0e1f727467783d88",
+      "zipBytes": 34849559,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "FAIL",
+      "reason": "build-status",
+      "buildStates": [
+        {
+          "id": "0cced567-ea5c-4f62-b081-7601239f802a",
+          "label": "pages",
+          "status": "INCOMPLETE"
+        },
+        {
+          "id": "88365c5e-053e-472d-a833-436ae14d3cd5",
+          "label": "pages",
+          "status": "CAPTURED"
+        }
+      ],
+      "artifactId": 14161133210,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-webkit-mobile-375px",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:1a674fd949d6ccc7b85e4c93d1ab5abd4f47a1f95d909c2640cda62c0262171c",
+      "zipBytes": 31457224,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "FAIL",
+      "reason": "build-status",
+      "buildStates": [
+        {
+          "id": "718dc13a-c12a-4b69-9ced-7f30f713045b",
+          "label": "pages",
+          "status": "CAPTURED"
+        },
+        {
+          "id": "adbf8e21-e55a-4ea1-9f18-4df6761040df",
+          "label": "pages",
+          "status": "INCOMPLETE"
+        }
+      ],
+      "artifactId": 14160773703,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-chromium-desktop-1365px",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:2452b6f4cc1b196af08dc5213a9fa8e7a70174f232e55a9b664fbfe0933e2dbe",
+      "zipBytes": 29441179,
+      "zipCRC": "PASS"
+    },
+    {
+      "status": "FAIL",
+      "reason": "build-status",
+      "buildStates": [
+        {
+          "id": "6d195345-bd53-4b8f-bd3a-90846c591386",
+          "label": "pages",
+          "status": "INCOMPLETE"
+        },
+        {
+          "id": "8a71e096-930e-40a9-8465-25230202c50e",
+          "label": "pages",
+          "status": "CAPTURED"
+        }
+      ],
+      "artifactId": 14160764474,
+      "name": "formal-gui-b326ee76a18fa9e97274aecc37a71693e1f57dbe-1-webkit-mobile-390px",
+      "runId": 43712861856,
+      "attempt": 1,
+      "officialDigest": "sha256:a58232d676e22978016d1040e631fd27ded61c631135bf9264bc76cbbac9223e",
+      "zipBytes": 36241328,
+      "zipCRC": "PASS"
+    }
+  ],
+  "sourceFaultControls": [
+    {
+      "artifactId": 14161187011,
+      "name": "one-byte-runtime",
+      "status": "REJECTED",
+      "reason": "load-git:e2e/physical/run.mjs"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "missing-file",
+      "status": "REJECTED",
+      "reason": "'bytes/29072bb1af3b589b0131806dd4119db6d671a86fafbe57c595b34d4d68fcb6d1.txt'"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "different-version",
+      "status": "REJECTED",
+      "reason": "git-file:e2e/source-proof.mjs"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "wrong-head",
+      "status": "REJECTED",
+      "reason": "head-binding"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "wrong-workflow",
+      "status": "REJECTED",
+      "reason": "workflow-post-binding"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "manifest-tamper",
+      "status": "REJECTED",
+      "reason": "git-file:.github/workflows/deploy-pages.yml"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "duplicate-source",
+      "status": "REJECTED",
+      "reason": "source-duplicates"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "mixed-source",
+      "status": "REJECTED",
+      "reason": "mixed-source-bytes"
+    },
+    {
+      "artifactId": 14161187011,
+      "name": "artifact-byte-hash",
+      "status": "REJECTED",
+      "reason": "captured-sha"
+    }
+  ],
+  "normalAfterSourceFaultControls": "ACCEPTED",
+  "limits": [
+    "First-party source and generated/served bytes only; native internals and arbitrary filesystem reads remain outside observer.",
+    "Git-format hashes independently recalculated; third-party package source has captured load bytes but no first-party Git ownership.",
+    "Original evidence inspection, not a new browser or physical-device test.",
+    "Workflow executed merge SHA is captured runtime metadata; its actual Git workflow bytes and submitted workflow bytes independently match. This is not tamper-proof remote attestation.",
+    "No Library persistence or readback claimed."
+  ]
+}
